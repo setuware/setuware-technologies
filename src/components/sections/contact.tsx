@@ -7,19 +7,19 @@ const contactInfo = [
   {
     icon: <Mail className="w-5 h-5" />,
     title: "Email",
-    value: "hello@setuware.com",
-    href: "mailto:hello@setuware.com",
+    value: "hello@setuwaresoftware.in",
+    href: "mailto:hello@setuwaresoftware.in",
   },
   {
     icon: <Phone className="w-5 h-5" />,
     title: "Phone",
-    value: "+1 (555) 123-4567",
-    href: "tel:+15551234567",
+    value: "+91 98765 43210",
+    href: "tel:+919876543210",
   },
   {
     icon: <MapPin className="w-5 h-5" />,
     title: "Location",
-    value: "San Francisco, CA",
+    value: "Bangalore, India",
     href: "https://maps.google.com",
   },
 ];
@@ -50,7 +50,7 @@ const socialLinks = [
 
 export function Contact() {
   return (
-    <section id="contact" className="py-24 relative overflow-hidden">
+    <section id="contact" className="py-24 bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12">
           <motion.div
@@ -60,12 +60,12 @@ export function Contact() {
             className="space-y-8"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center">
                 <Mail className="w-5 h-5 text-white" />
               </div>
-              <h2 className="text-3xl font-bold text-white">Get in Touch</h2>
+              <h2 className="text-3xl font-bold text-gray-900">Get in Touch</h2>
             </div>
-            <p className="text-lg text-gray-400 leading-relaxed">
+            <p className="text-lg text-gray-600 leading-relaxed">
               Have a project in mind? Let's build something amazing together.
               Reach out to us and we'll get back to you within 24 hours.
             </p>
@@ -77,14 +77,14 @@ export function Contact() {
                   href={item.href}
                   target={item.title === "Location" ? "_blank" : undefined}
                   rel="noopener noreferrer"
-                  className="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-white/5 hover:border-indigo-500/50 hover:bg-white/10 transition-all group"
+                  className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white hover:border-blue-500/50 hover:bg-blue-50 transition-all group"
                 >
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                     {item.icon}
                   </div>
                   <div>
-                    <div className="text-sm text-gray-400">{item.title}</div>
-                    <div className="text-base font-medium text-white">{item.value}</div>
+                    <div className="text-sm text-gray-500">{item.title}</div>
+                    <div className="text-base font-medium text-gray-900">{item.value}</div>
                   </div>
                 </a>
               ))}
@@ -97,7 +97,7 @@ export function Contact() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl flex items-center justify-center border border-white/10 bg-white/5 text-gray-300 hover:bg-indigo-500 hover:text-white hover:border-indigo-500 transition-all"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center border border-gray-200 bg-white text-gray-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all"
                 >
                   {social.icon}
                 </a>
@@ -110,14 +110,13 @@ export function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="p-8 rounded-2xl border border-white/10 bg-gray-900/50 shadow-2xl"
+            className="p-8 rounded-2xl border border-gray-100 bg-gray-50 shadow-xl"
           >
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 const formData = new FormData(e.currentTarget);
                 const data = Object.fromEntries(formData);
-                // TODO: Connect to backend API
                 console.log("Form submitted:", data);
                 alert("Thank you for your message! We'll get back to you soon.");
                 e.currentTarget.reset();
@@ -126,7 +125,7 @@ export function Contact() {
             >
               <div className="grid md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Full Name
                   </label>
                   <input
@@ -134,11 +133,11 @@ export function Contact() {
                     name="name"
                     placeholder="John Doe"
                     required
-                    className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Email Address
                   </label>
                   <input
@@ -146,12 +145,12 @@ export function Contact() {
                     name="email"
                     placeholder="john@company.com"
                     required
-                    className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Subject
                 </label>
                 <input
@@ -159,11 +158,11 @@ export function Contact() {
                   name="subject"
                   placeholder="Website Development"
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-all"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Message
                 </label>
                 <textarea
@@ -171,12 +170,12 @@ export function Contact() {
                   rows={5}
                   placeholder="Tell us about your project..."
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-all"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold text-lg shadow-[0_10px_15px_-3px_rgba(99,102,241,0.4)] hover:shadow-[0_20px_25px_-5px_rgba(99,102,241,0.3)] hover:from-indigo-700 hover:to-purple-700 transition-all"
+                className="w-full py-4 rounded-xl bg-blue-600 text-white font-semibold text-lg shadow-[0_10px_15px_-3px_rgba(59,130,246,0.4)] hover:bg-blue-700 hover:shadow-[0_20px_25px_-5px_rgba(59,130,246,0.3)] transition-all"
               >
                 Send Message
               </button>

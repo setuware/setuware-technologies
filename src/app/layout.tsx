@@ -5,30 +5,29 @@ import "./globals.css";
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://setuware.com"),
+  metadataBase: new URL("https://setuwaresoftware.in"),
   title: {
     template: "%s | Setuware Technologies",
-    default: "Setuware Technologies — Next-Gen Digital Solutions",
+    default: "Setuware Technologies — Production-Ready Software",
   },
   description:
-    "Setuware Technologies builds high-performance web applications, AI solutions, and digital products for modern startups and enterprises.",
+    "Setuware Technologies builds production-ready software from ideas to deployment. Web applications, AI solutions, and digital products for modern businesses.",
   keywords: [
     "Setuware Technologies",
     "web development",
     "AI solutions",
-    "Next.js",
+    "software development",
     "startup",
     "digital agency",
-    "software development",
   ],
   authors: [{ name: "Setuware Technologies" }],
   openGraph: {
-    title: "Setuware Technologies — Next-Gen Digital Solutions",
+    title: "Setuware Technologies — Production-Ready Software",
     description:
-      "Setuware Technologies builds high-performance web applications, AI solutions, and digital products.",
+      "Setuware Technologies builds production-ready software from ideas to deployment.",
     type: "website",
-    locale: "en_US",
-    url: "https://setuware.com",
+    locale: "en_IN",
+    url: "https://setuwaresoftware.in",
     siteName: "Setuware Technologies",
     images: [
       {
@@ -41,9 +40,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Setuware Technologies — Next-Gen Digital Solutions",
+    title: "Setuware Technologies — Production-Ready Software",
     description:
-      "Setuware Technologies builds high-performance web applications, AI solutions, and digital products.",
+      "Setuware Technologies builds production-ready software from ideas to deployment.",
     images: ["/og-image.jpg"],
     creator: "@setuware",
   },
@@ -65,7 +64,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col selection:bg-indigo-500/30">
+      <body className="min-h-full flex flex-col selection:bg-blue-500/20">
         {children}
       </body>
     </html>
