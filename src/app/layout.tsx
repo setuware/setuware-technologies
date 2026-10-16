@@ -5,6 +5,7 @@ import "./globals.css";
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://setuware.com"),
   title: {
     template: "%s | Setuware Technologies",
     default: "Setuware Technologies — Next-Gen Digital Solutions",
