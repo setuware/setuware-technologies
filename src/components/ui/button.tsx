@@ -1,63 +1,100 @@
-"use client";
-
 import * as React from "react";
-import { motion } from "framer-motion";
+import Link from "next/link";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * Server-renderable button. Hover and press states are CSS only, so this never
+ * pulls an animation runtime into a page that just needs a link that looks
+ * like a button.
+ */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-xl font-medium transition-[transform,background-color,border-color,box-shadow,color] duration-200 ease-out active:translate-y-px disabled:pointer-events-none disabled:opacity-55 motion-safe:hover:-translate-y-0.5",
   {
     variants: {
       variant: {
-        default:
-          "bg-indigo-600 text-white hover:bg-indigo-700 shadow-[0_10px_15px_-3px_rgba(99,102,241,0.4)] hover:shadow-[0_20px_25px_-5px_rgba(99,102,241,0.3)]",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        primary:
+          "bg-primary text-primary-foreground shadow-glow hover:bg-brand-700 dark:hover:bg-brand-300",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "border border-border bg-surface text-foreground hover:border-primary/45 hover:bg-surface-2",
+        ghost: "text-foreground hover:bg-surface-2",
+        outline:
+          "border border-primary/35 bg-transparent text-primary hover:border-primary hover:bg-primary/8",
         gradient:
-          "bg-gradient-to-r from-indigo-500 via-purple-600 to-fuchsia-600 text-white hover:from-indigo-600 hover:via-purple-700 hover:to-fuchsia-700 shadow-[0_10px_15px_-3px_rgba(99,102,241,0.4)] hover:shadow-[0_20px_25px_-5px_rgba(99,102,241,0.3)]",
+          "bg-[linear-gradient(100deg,var(--color-brand-600),var(--color-brand-500)_45%,var(--color-accent-500))] text-white shadow-glow hover:brightness-110",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
+        sm: "h-9 px-3.5 text-sm",
+        md: "h-11 px-5 text-[0.95rem]",
+        lg: "h-13 px-7 text-base",
         icon: "h-10 w-10",
-        full: "w-full h-12 px-6",
+      },
+      block: {
+        true: "w-full",
+        false: "",
       },
     },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
+    defaultVariants: { variant: "primary", size: "md", block: false },
   },
 );
 
-interface ButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onDrag">,
-    VariantProps<typeof buttonVariants> {
-  className?: string;
-}
+type ButtonVariantProps = VariantProps<typeof buttonVariants>;
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, ...props }, ref) => {
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    ButtonVariantProps {}
+
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  function Button({ className, variant, size, block, type = "button", ...props }, ref) {
     return (
-      <motion.button
+      <button
         ref={ref}
-        className={cn(buttonVariants({ variant, size, className }))}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.96 }}
-        {...(props as Record<string, unknown>)}
+        type={type}
+        className={cn(buttonVariants({ variant, size, block }), className)}
+        {...props}
       />
     );
   },
 );
-Button.displayName = "Button";
 
-export { Button, buttonVariants };
+export interface ButtonLinkProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof Link>, "href">,
+    ButtonVariantProps {
+  href: string;
+}
+
+/** Same visual treatment for navigation; keeps anchors as anchors for a11y. */
+export function ButtonLink({
+  className,
+  variant,
+  size,
+  block,
+  href,
+  ...props
+}: ButtonLinkProps) {
+  const external = /^(https?:|mailto:|tel:)/.test(href);
+
+  if (external) {
+    return (
+      <a
+        href={href}
+        className={cn(buttonVariants({ variant, size, block }), className)}
+        {...(href.startsWith("http")
+          ? { target: "_blank", rel: "noopener noreferrer" }
+          : {})}
+        {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+      />
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      className={cn(buttonVariants({ variant, size, block }), className)}
+      {...props}
+    />
+  );
+}
+
+export { buttonVariants };

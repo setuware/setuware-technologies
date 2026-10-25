@@ -1,126 +1,86 @@
-"use client";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 
-import { motion } from "framer-motion";
-import { Code2 } from "lucide-react";
+import { featuredCaseStudies } from "@/lib/content";
+import { images } from "@/lib/images";
+import { ButtonLink } from "@/components/ui/button";
+import { Reveal } from "@/components/ui/reveal";
 
-const projects = [
-  {
-    title: "E-Commerce Platform",
-    description:
-      "Full-stack e-commerce solution with Next.js, Stripe integration, and admin dashboard.",
-    image: "/projects/ecommerce.jpg",
-    category: "Web Development",
-    tech: ["Next.js", "TypeScript", "Stripe", "PostgreSQL", "Tailwind CSS"],
-    url: "/projects/ecommerce",
-    featured: true,
-  },
-  {
-    title: "AI Chatbot Assistant",
-    description:
-      "Intelligent customer support chatbot using OpenAI GPT-4 and vector embeddings.",
-    image: "/projects/chatbot.jpg",
-    category: "AI & ML",
-    tech: ["Next.js", "OpenAI", "Pinecone", "Node.js", "TypeScript"],
-    url: "/projects/chatbot",
-    featured: true,
-  },
-  {
-    title: "FinTech Mobile App",
-    description:
-      "Cross-platform banking app with real-time transactions and biometric authentication.",
-    image: "/projects/fintech.jpg",
-    category: "Mobile Apps",
-    tech: ["React Native", "Firebase", "TypeScript", "Redux"],
-    url: "/projects/fintech",
-    featured: false,
-  },
-  {
-    title: "SaaS Analytics Dashboard",
-    description:
-      "Real-time analytics platform with data visualization and custom reporting.",
-    image: "/projects/analytics.jpg",
-    category: "Web Development",
-    tech: ["Next.js", "Chart.js", "PostgreSQL", "Prisma", "Tailwind CSS"],
-    url: "/projects/analytics",
-    featured: false,
-  },
-];
-
+/**
+ * "Selected Projects".
+ *
+ * The lead project sits on a stack of offset cards, as in the design — the
+ * cards behind are decorative and `aria-hidden`, so the stack reads as one
+ * item rather than three empty ones.
+ */
 export function SelectedProjects() {
+  const lead = featuredCaseStudies[0];
+
   return (
-    <section id="projects" className="py-24 bg-gray-50 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Selected Projects
-          </h2>
-          <p className="text-lg text-gray-600">
-            A glimpse of our work across industries and technologies.
-          </p>
-        </div>
+    <section id="work" className="bg-background py-20 md:py-28">
+      <div className="container-page">
+        <h2 className="text-center font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]">
+          Selected Projects
+        </h2>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project) => (
-            <motion.div
-              key={project.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: projects.indexOf(project) * 0.1 }}
-              className="group relative p-8 rounded-2xl bg-white border border-gray-100 hover:border-blue-500/50 hover:-translate-y-2 hover:shadow-xl transition-all duration-300"
-            >
-              <div className="relative mb-6">
-                <div className="h-48 rounded-xl bg-gray-200 overflow-hidden">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                </div>
-                <span className="absolute top-3 left-3 px-2 py-1 rounded text-xs font-medium bg-blue-600 text-white uppercase tracking-tighter">
-                  {project.category}
-                </span>
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">
-                {project.title}
+        <Reveal className="relative mx-auto mt-12 max-w-4xl">
+          {/* Offset cards behind the active project. */}
+          <div
+            className="absolute inset-x-10 -top-4 h-16 rounded-[1.25rem] border border-border bg-surface-2/70"
+            aria-hidden
+          />
+          <div
+            className="absolute inset-x-5 -top-2 h-16 rounded-[1.25rem] border border-border bg-surface/90"
+            aria-hidden
+          />
+
+          <article className="relative grid overflow-hidden rounded-[1.25rem] border border-border bg-surface shadow-ambient md:grid-cols-[0.85fr_1fr]">
+            <div className="relative min-h-[16rem] bg-[linear-gradient(150deg,#0f172a,#2563eb)]">
+              <Image
+                src={images.projectMedicare.src}
+                alt={images.projectMedicare.alt}
+                fill
+                sizes="(min-width: 768px) 22rem, 90vw"
+                className="object-cover"
+              />
+            </div>
+
+            <div className="flex flex-col gap-4 p-7 md:p-9">
+              <h3 className="font-display text-[1.45rem] font-semibold leading-tight text-foreground">
+                MediCare — Healthcare
+                <br />
+                management app
               </h3>
-              <p className="text-gray-600 text-sm mb-4">
-                {project.description}
+              <p className="max-w-sm text-[0.86rem] leading-relaxed text-muted-foreground">
+                A user-friendly mobile app that helps patients manage
+                appointments, access medical records, connect with healthcare
+                providers, and stay on top of their health — all in one place.
               </p>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {project.tech.map((t) => (
-                  <span
-                    key={t}
-                    className="px-2 py-1 rounded bg-gray-100 text-gray-600 text-xs border border-gray-200"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-              <LinkExternal href={project.url}>
-                <button className="w-full py-3 rounded-xl border border-gray-200 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-500 transition-all">
-                  View Project <span className="ml-1">→</span>
-                </button>
-              </LinkExternal>
-            </motion.div>
-          ))}
-        </div>
 
-        <div className="mt-12 text-center">
-          <button className="px-6 py-3 rounded-xl border border-gray-200 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-500 transition-all">
-            View All Projects
-          </button>
+              <Link
+                href={`/work/${lead.slug}`}
+                className="group mt-auto inline-flex w-fit items-center gap-2 rounded-full border border-border px-5 py-2 text-xs font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+              >
+                View Project
+                <ArrowUpRight
+                  className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  aria-hidden
+                />
+              </Link>
+            </div>
+          </article>
+        </Reveal>
+
+        <div className="mt-10 flex justify-center">
+          <ButtonLink
+            href="/work"
+            className="rounded-full bg-foreground text-background shadow-none hover:bg-foreground/85"
+          >
+            Explore More Projects
+          </ButtonLink>
         </div>
       </div>
     </section>
-  );
-}
-
-function LinkExternal({ children, href }: { children: React.ReactNode; href: string }) {
-  return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="block">
-      {children}
-    </a>
   );
 }

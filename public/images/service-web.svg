@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-label="Service — web app placeholder">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1d4ed8"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <pattern id="p" width="33.333333333333336" height="33.333333333333336" patternUnits="userSpaceOnUse">
+      <path d="M 33.333333333333336 0 L 0 0 0 33.333333333333336" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="800" fill="url(#g)"/>
+  <rect width="1200" height="800" fill="url(#p)"/>
+  <circle cx="936" cy="192" r="208" fill="rgba(255,255,255,0.07)"/>
+  <circle cx="240" cy="640" r="144" fill="rgba(255,255,255,0.05)"/>
+  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle"
+        font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+        font-size="44" font-weight="600"
+        fill="rgba(255,255,255,0.72)">Service — web app</text>
+  <text x="50%" y="460" text-anchor="middle" dominant-baseline="middle"
+        font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+        font-size="24"
+        fill="rgba(255,255,255,0.45)">1200 × 800 · replace in public/images</text>
+</svg>

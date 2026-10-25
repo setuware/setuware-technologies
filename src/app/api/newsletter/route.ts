@@ -1,69 +1,42 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { clientKey, fail, looksLikeSpam, ok, rateLimitHeaders, readJson } from "@/lib/api";
+import { deliverLead } from "@/lib/leads";
+import { newsletterLimiter } from "@/lib/rate-limit";
+import { newsletterSchema } from "@/lib/validation";
 
-const newsletterSchema = z.object({
-  email: z.string().email("Invalid email address"),
-});
+export async function POST(request: Request) {
+  const limit = newsletterLimiter.consume(clientKey(request, "newsletter"));
+  const headers = rateLimitHeaders(limit);
 
-// In-memory storage for demo (replace with database in production)
-const newsletterSubscribers: Array<Record<string, unknown>> = [];
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const validated = newsletterSchema.parse(body);
-
-    // Check if already subscribed
-    const exists = newsletterSubscribers.find(
-      (s) => s.email === validated.email
-    );
-
-    if (exists) {
-      return NextResponse.json(
-        { success: false, message: "You are already subscribed to our newsletter." },
-        { status: 409 }
-      );
-    }
-
-    const subscriber = {
-      id: Date.now().toString(),
-      email: validated.email,
-      subscribedAt: new Date().toISOString(),
-      status: "active",
-    };
-
-    newsletterSubscribers.push(subscriber);
-
-    // TODO: Add to email marketing service (Mailchimp, ConvertKit, etc.)
-    // TODO: Send welcome email
-
-    return NextResponse.json(
-      {
-        success: true,
-        message: "Successfully subscribed to our newsletter!",
-        data: subscriber,
-      },
-      { status: 201 }
-    );
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, message: "Validation error", errors: error.errors },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      { success: false, message: "Internal server error" },
-      { status: 500 }
+  if (!limit.ok) {
+    return fail(
+      "rate_limited",
+      `Too many attempts. Try again in ${limit.retryAfter}s.`,
+      { headers },
     );
   }
+
+  const body = await readJson(request, newsletterSchema);
+  if (!body.ok) return body.response;
+
+  if (looksLikeSpam(body.value)) {
+    return ok({ email: body.value.email }, { status: 201, message: "You're on the list." });
+  }
+
+  const { honeypot: _honeypot, ...lead } = body.value;
+  await deliverLead("newsletter", lead);
+
+  // Subscribing twice is not an error worth surfacing — the same confirmation
+  // keeps the endpoint from leaking who is already on the list.
+  return ok(
+    { email: body.value.email },
+    {
+      status: 201,
+      message: "You're on the list. One email a month, unsubscribe any time.",
+      headers,
+    },
+  );
 }
 
 export async function GET() {
-  return NextResponse.json({
-    success: true,
-    data: newsletterSubscribers,
-    count: newsletterSubscribers.length,
-  });
+  return fail("bad_request", "This endpoint only accepts POST.");
 }

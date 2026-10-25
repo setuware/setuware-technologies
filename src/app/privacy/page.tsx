@@ -1,52 +1,79 @@
-import { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
+import { site } from "@/lib/site";
+import { LegalPage, type LegalSection } from "@/components/layout/legal-page";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy",
-  description: "Setuware Technologies Privacy Policy.",
-};
+export const metadata = pageMetadata({
+  title: "Privacy policy",
+  description: `How ${site.name} collects, uses and protects the personal data you share through this website.`,
+  path: "/privacy",
+});
+
+const SECTIONS: LegalSection[] = [
+  {
+    heading: "What we collect",
+    paragraphs: [
+      "Through this website we collect only what you choose to send us: your name, email address, phone number, company name and the contents of the message or quote request you submit.",
+      "Our servers also log standard request data — IP address, user agent and timestamp — which we use to rate-limit abuse and diagnose errors. These logs are retained for 30 days.",
+    ],
+    bullets: [
+      "Contact and quote forms: the details you type into them",
+      "Newsletter: your email address and where you subscribed from",
+      "Server logs: IP address, user agent, requested path, timestamp",
+      "Your browser's local storage: your theme choice and unsent form drafts, which stay on your device and are never sent to us",
+    ],
+  },
+  {
+    heading: "Why we collect it",
+    paragraphs: [
+      "To reply to your enquiry, prepare a quote, and — if you asked for it — send you our monthly email. We do not sell your data, and we do not share it with advertisers or data brokers.",
+    ],
+  },
+  {
+    heading: "Who else can see it",
+    paragraphs: [
+      "Enquiries are delivered to our internal tooling and the email provider we use to reply to you. Those processors act on our instructions only. We do not transfer your data to any third party for their own purposes.",
+    ],
+  },
+  {
+    heading: "How long we keep it",
+    paragraphs: [
+      "Enquiries are kept for 24 months so we have context if you come back to us. Newsletter subscriptions are kept until you unsubscribe. Server logs are deleted after 30 days.",
+    ],
+  },
+  {
+    heading: "Your rights",
+    paragraphs: [
+      `You can ask us for a copy of what we hold about you, ask us to correct it, or ask us to delete it. Email ${site.email} and we will action it within 30 days.`,
+      "Every newsletter email has a one-click unsubscribe link, and we honour it immediately.",
+    ],
+  },
+  {
+    heading: "Cookies and tracking",
+    paragraphs: [
+      "This site sets no advertising or cross-site tracking cookies. Your theme preference and any unsent form draft are stored in your browser's local storage and never leave your device.",
+    ],
+  },
+  {
+    heading: "Security",
+    paragraphs: [
+      "Traffic is encrypted in transit. Public form endpoints are rate-limited and validated server-side, and submitted enquiries are never exposed through any public endpoint.",
+    ],
+  },
+  {
+    heading: "Contact",
+    paragraphs: [
+      `Questions about this policy, or about data we hold: ${site.email}. Postal address: ${site.address.street}, ${site.address.city}, ${site.address.region} ${site.address.postalCode}, India.`,
+    ],
+  },
+];
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-gray-950">
-      <nav className="fixed top-0 z-50 w-full bg-transparent">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-xs">S</span>
-            </div>
-            <span className="text-xl font-bold tracking-tight text-white">Setuware</span>
-          </a>
-        </div>
-      </nav>
-
-      <div className="pt-20 max-w-3xl mx-auto px-6 py-24">
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-8">Privacy Policy</h1>
-        <div className="prose prose-invert text-gray-400 max-w-none">
-          <p className="mb-6 leading-relaxed">
-            At Setuware Technologies, we are committed to protecting your
-            privacy. This Privacy Policy explains how we collect, use, and
-            safeguard your information when you visit our website or use our
-            services.
-          </p>
-          <h2 className="text-2xl font-bold text-white mb-4">Information We Collect</h2>
-          <p className="mb-6 leading-relaxed">
-            We may collect personal information such as your name, email
-            address, and phone number when you submit our contact form or
-            subscribe to our newsletter.
-          </p>
-          <h2 className="text-2xl font-bold text-white mb-4">How We Use Your Information</h2>
-          <p className="mb-6 leading-relaxed">
-            We use your information to respond to your inquiries, send
-            newsletters, and improve our services. We do not sell your
-            personal information to third parties.
-          </p>
-          <h2 className="text-2xl font-bold text-white mb-4">Contact Us</h2>
-          <p className="mb-6 leading-relaxed">
-            If you have any questions about this Privacy Policy, please
-            contact us at hello@setuware.com.
-          </p>
-        </div>
-      </div>
-    </div>
+    <LegalPage
+      title="Privacy policy"
+      updated="2026-10-01"
+      intro="Plain-language summary: we collect what you send us, use it to reply to you, keep it no longer than we need, and never sell it."
+      sections={SECTIONS}
+    />
   );
 }

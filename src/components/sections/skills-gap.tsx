@@ -1,59 +1,78 @@
-"use client";
+import Image from "next/image";
 
-import { motion } from "framer-motion";
+import { images } from "@/lib/images";
+import { ButtonLink } from "@/components/ui/button";
+import { HeroVideo } from "@/components/interactive/hero-video";
+import { heroVideoPoster, heroVideoSources } from "@/lib/media";
 
+/**
+ * Skills-gap band.
+ *
+ * Dark panel with a portrait bleeding in from the right. When a hero video is
+ * configured it plays here instead of the still, which is what gives the
+ * section its play affordance — a decorative play button over a static image
+ * promises something that does not happen.
+ */
 export function SkillsGap() {
-  return (
-    <section id="skills" className="py-24 bg-blue-900 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.15),transparent_50%)]" />
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="space-y-8"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              This is how we hack over the skills gap.
-            </h2>
-            <p className="text-lg text-blue-100 leading-relaxed mb-6">
-              We bridge the gap between your vision and technical execution.
-              Our team brings expertise across the full stack, so you don't
-              have to worry about the complexity.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button className="flex-1 py-4 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-lg">
-                Learn More
-              </button>
-              <button className="flex-1 py-4 bg-transparent border border-blue-500 text-blue-100 rounded-xl font-semibold hover:bg-blue-500/10 transition-all">
-                Get Started
-              </button>
-            </div>
-          </motion.div>
+  const videoSources = heroVideoSources();
 
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="relative h-[400px] w-full flex items-center justify-center"
-          >
-            <div className="relative z-10 rounded-2xl overflow-hidden border border-blue-500/30 shadow-2xl">
-              <div className="w-full h-full bg-gradient-to-br from-blue-800 to-blue-900 p-8">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">S</span>
-                  </div>
-                  <h3 className="text-white font-bold">Setuware</h3>
-                </div>
-                <div className="space-y-4">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="h-3 rounded-full bg-blue-600/50 animate-pulse" />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
+  return (
+    <section className="bg-background py-6">
+      <div className="container-page">
+        <div className="relative isolate overflow-hidden rounded-[1.5rem] bg-[#16343f]">
+          <div className="absolute inset-y-0 right-0 w-[58%] md:w-[52%]">
+            {videoSources.length > 0 ? (
+              <HeroVideo
+                sources={videoSources}
+                poster={heroVideoPoster() ?? images.skillsGap.src}
+                fallback={
+                  <Image
+                    src={images.skillsGap.src}
+                    alt={images.skillsGap.alt}
+                    fill
+                    sizes="55vw"
+                    className="object-cover"
+                  />
+                }
+                className="size-full [&_video]:size-full [&_video]:rounded-none [&_video]:border-0 [&_video]:object-cover"
+              />
+            ) : (
+              <Image
+                src={images.skillsGap.src}
+                alt={images.skillsGap.alt}
+                fill
+                sizes="55vw"
+                className="object-cover"
+              />
+            )}
+          </div>
+
+          <div
+            className="absolute inset-0 bg-[linear-gradient(95deg,#16343f_0%,rgba(22,52,63,0.92)_42%,rgba(22,52,63,0.35)_75%,transparent_100%)]"
+            aria-hidden
+          />
+
+          <div className="relative max-w-lg px-7 py-16 md:px-12 md:py-20">
+            <h2 className="font-display text-3xl font-semibold leading-tight text-white sm:text-[2.3rem]">
+              This is how
+              <br />
+              we jetpack over the
+              <br />
+              skills gap.
+            </h2>
+            <p className="mt-5 max-w-sm text-[0.88rem] leading-relaxed text-white/70">
+              Access senior engineers on a full-service delivery team,
+              customised to meet your needs. No six-month recruitment cycle
+              before you can ship — this is how modern teams scale.
+            </p>
+
+            <ButtonLink
+              href="/contact"
+              className="mt-8 rounded-full border border-white/35 bg-transparent text-white shadow-none hover:bg-white/12"
+            >
+              Let&apos;s talk
+            </ButtonLink>
+          </div>
         </div>
       </div>
     </section>

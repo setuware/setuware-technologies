@@ -1,85 +1,97 @@
-"use client";
-
-import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 
-const articles = [
-  {
-    title: "How industry-specific websites help businesses scale",
-    description:
-      "Discover how tailored web solutions drive growth and efficiency across different sectors.",
-    image: "/articles/article1.jpg",
-    date: "Oct 10, 2024",
-    readTime: "5 min read",
-  },
-  {
-    title: "The future of AI in web development",
-    description:
-      "Exploring how artificial intelligence is changing the way we build digital products.",
-    image: "/articles/article2.jpg",
-    date: "Sep 25, 2024",
-    readTime: "7 min read",
-  },
-  {
-    title: "Why responsive design matters in 2024",
-    description:
-      "A deep dive into mobile-first design principles and their impact on user experience.",
-    image: "/articles/article3.jpg",
-    date: "Sep 15, 2024",
-    readTime: "4 min read",
-  },
-];
+import { images } from "@/lib/images";
+import { postsByDate } from "@/lib/posts";
+import { formatDate } from "@/lib/utils";
+import { ButtonLink } from "@/components/ui/button";
+import { Reveal } from "@/components/ui/reveal";
 
+/** Article slug to its image slot; the data layer stays free of asset paths. */
+const ARTICLE_IMAGES = [
+  images.articleAutomation,
+  images.articleProcesses,
+  images.articleGrowth,
+] as const;
+
+/**
+ * "Articles & insights".
+ *
+ * One lead article at double width with two beside it, mirroring the design.
+ * Only the lead image is sized large; the rest are served at card width so a
+ * phone never downloads a desktop-sized asset.
+ */
 export function Articles() {
-  return (
-    <section id="articles" className="py-24 bg-white relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Articles & insights
-          </h2>
-          <p className="text-lg text-gray-600">
-            Latest thoughts on technology, design, and business growth.
-          </p>
-        </div>
+  const [lead, ...rest] = postsByDate.slice(0, 3);
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {articles.map((article) => (
-            <motion.div
-              key={article.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: articles.indexOf(article) * 0.1 }}
-              className="group p-8 rounded-2xl bg-white border border-gray-100 hover:border-blue-500/50 transition-all duration-300"
-            >
-              <div className="h-40 rounded-xl bg-gray-200 overflow-hidden mb-6 group-hover:scale-105 transition-transform duration-300">
-                <img
-                  src={article.image}
-                  alt={article.title}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
+  return (
+    <section id="blog" className="bg-background py-20 md:py-24">
+      <div className="container-page">
+        <h2 className="text-center font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]">
+          Articles &amp; insights
+        </h2>
+
+        <div className="mt-12 grid gap-6 md:grid-cols-[1.25fr_1fr_1fr]">
+          <Reveal>
+            <Link href={`/blog/${lead.slug}`} className="group flex h-full flex-col gap-4">
+              <div className="relative aspect-[16/10] overflow-hidden rounded-[1rem]">
+                <Image
+                  src={ARTICLE_IMAGES[0].src}
+                  alt={ARTICLE_IMAGES[0].alt}
+                  fill
+                  sizes="(min-width: 768px) 32rem, 90vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                 />
               </div>
-              <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
-                <span>{article.date}</span>
-                <span>•</span>
-                <span>{article.readTime}</span>
+              <div>
+                <h3 className="text-[0.98rem] font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
+                  {lead.title}
+                </h3>
+                <time
+                  dateTime={lead.date}
+                  className="mt-2 block text-[11px] text-muted-foreground"
+                >
+                  {formatDate(lead.date)}
+                </time>
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                {article.title}
-              </h3>
-              <p className="text-gray-600 text-sm line-clamp-2">
-                {article.description}
-              </p>
-              <Link
-                href="/blog"
-                className="text-sm font-medium text-blue-600 hover:underline mt-4 inline-block"
-              >
-                Read more →
+            </Link>
+          </Reveal>
+
+          {rest.map((post, index) => (
+            <Reveal key={post.slug} delay={(index + 1) * 80}>
+              <Link href={`/blog/${post.slug}`} className="group flex h-full flex-col gap-4">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[1rem]">
+                  <Image
+                    src={ARTICLE_IMAGES[index + 1].src}
+                    alt={ARTICLE_IMAGES[index + 1].alt}
+                    fill
+                    sizes="(min-width: 768px) 20rem, 90vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-[0.9rem] font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
+                    {post.title}
+                  </h3>
+                  <time
+                    dateTime={post.date}
+                    className="mt-2 block text-[11px] text-muted-foreground"
+                  >
+                    {formatDate(post.date)}
+                  </time>
+                </div>
               </Link>
-            </motion.div>
+            </Reveal>
           ))}
+        </div>
+
+        <div className="mt-12 flex justify-center">
+          <ButtonLink
+            href="/blog"
+            className="rounded-full bg-foreground text-background shadow-none hover:bg-foreground/85"
+          >
+            Explore All Articles
+          </ButtonLink>
         </div>
       </div>
     </section>
