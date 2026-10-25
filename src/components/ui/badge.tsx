@@ -1,28 +1,24 @@
 import * as React from "react";
+
 import { cn } from "@/lib/utils";
 
-interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "secondary" | "destructive" | "outline";
-  className?: string;
+const tones = {
+  brand: "border-primary/25 bg-primary/10 text-primary",
+  neutral: "border-border bg-surface-2 text-muted-foreground",
+  success: "border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  warn: "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400",
+} as const;
+
+export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
+  tone?: keyof typeof tones;
 }
 
-export function Badge({
-  className,
-  variant = "default",
-  ...props
-}: BadgeProps) {
+export function Badge({ className, tone = "brand", ...props }: BadgeProps) {
   return (
-    <div
+    <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-        {
-          default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-          secondary:
-            "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-          destructive:
-            "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/90",
-          outline: "text-foreground border-input",
-        }[variant],
+        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium",
+        tones[tone],
         className,
       )}
       {...props}

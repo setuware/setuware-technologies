@@ -1,60 +1,50 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { clientKey, fail, looksLikeSpam, ok, rateLimitHeaders, readJson } from "@/lib/api";
+import { deliverLead } from "@/lib/leads";
+import { contactLimiter } from "@/lib/rate-limit";
+import { contactSchema } from "@/lib/validation";
 
-const contactSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  subject: z.string().min(2, "Subject must be at least 2 characters"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-});
+/**
+ * Project enquiries.
+ *
+ * There is deliberately no GET: submissions are forwarded, never stored and
+ * read back. Rate limiting comes before parsing so a flood costs us a map
+ * lookup rather than a JSON parse.
+ */
+export async function POST(request: Request) {
+  const limit = contactLimiter.consume(clientKey(request, "contact"));
+  const headers = rateLimitHeaders(limit);
 
-// In-memory storage for demo (replace with database in production)
-const contactSubmissions: Array<Record<string, unknown>> = [];
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const validated = contactSchema.parse(body);
-
-    const submission = {
-      id: Date.now().toString(),
-      ...validated,
-      createdAt: new Date().toISOString(),
-      status: "pending",
-    };
-
-    contactSubmissions.push(submission);
-
-    // TODO: Send email notification using Resend, SendGrid, or Nodemailer
-    // TODO: Save to database (PostgreSQL, MongoDB, etc.)
-
-    return NextResponse.json(
-      {
-        success: true,
-        message: "Thank you for your message! We'll get back to you within 24 hours.",
-        data: submission,
-      },
-      { status: 201 }
-    );
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, message: "Validation error", errors: error.errors },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      { success: false, message: "Internal server error" },
-      { status: 500 }
+  if (!limit.ok) {
+    return fail(
+      "rate_limited",
+      `Too many enquiries from this connection. Try again in ${limit.retryAfter}s, or email us directly.`,
+      { headers },
     );
   }
+
+  const body = await readJson(request, contactSchema);
+  if (!body.ok) return body.response;
+
+  // Silent success for obvious bots: telling a script it was detected only
+  // helps it adapt, and a real visitor can never reach this branch.
+  if (looksLikeSpam(body.value)) {
+    return ok({ reference: "STW-000000" }, { status: 201, message: "Thanks — we'll be in touch." });
+  }
+
+  const { honeypot: _honeypot, elapsedMs: _elapsedMs, ...lead } = body.value;
+  const result = await deliverLead("contact", lead);
+
+  return ok(
+    { reference: result.reference },
+    {
+      status: 201,
+      message: "Thanks — your brief is with us.",
+      headers,
+    },
+  );
 }
 
+/** Explicit, so a stray GET returns a clear error instead of a 405 from nowhere. */
 export async function GET() {
-  return NextResponse.json({
-    success: true,
-    data: contactSubmissions,
-    count: contactSubmissions.length,
-  });
+  return fail("bad_request", "This endpoint only accepts POST.");
 }

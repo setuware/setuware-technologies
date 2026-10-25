@@ -1,55 +1,71 @@
-import { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
+import { site } from "@/lib/site";
+import { LegalPage, type LegalSection } from "@/components/layout/legal-page";
 
-export const metadata: Metadata = {
-  title: "Terms of Service",
-  description: "Setuware Technologies Terms of Service.",
-};
+export const metadata = pageMetadata({
+  title: "Terms of service",
+  description: `The terms that apply to this website and to engagements with ${site.name}.`,
+  path: "/terms",
+});
+
+const SECTIONS: LegalSection[] = [
+  {
+    heading: "About these terms",
+    paragraphs: [
+      `These terms cover your use of this website. Client engagements are governed by the signed proposal and master services agreement for that project, which takes precedence over anything here if the two conflict.`,
+    ],
+  },
+  {
+    heading: "Quotes and estimates",
+    paragraphs: [
+      "The instant estimator produces an indicative range generated from our published rate card. It is not a contractual offer. A binding price is only the one in a written proposal signed by both parties after discovery.",
+      "Prices shown exclude GST and exclude third-party costs such as cloud hosting, payment gateway fees and software licences, which are billed to your own accounts at cost.",
+    ],
+  },
+  {
+    heading: "Intellectual property",
+    paragraphs: [
+      "On full payment, you own the source code, designs and documentation we produce for your project. We retain ownership of our pre-existing libraries and tooling, licensed to you perpetually and royalty-free for use within your project.",
+      "This website's own content, branding and copy remain our property.",
+    ],
+  },
+  {
+    heading: "Service levels",
+    paragraphs: [
+      "Uptime and response commitments apply only to clients on an active hosting or support plan, as set out in that plan. Published figures on this site describe our targets and are not a warranty to visitors generally.",
+    ],
+  },
+  {
+    heading: "Acceptable use",
+    paragraphs: [
+      "Do not attempt to disrupt this site, bypass its rate limits, or submit material that is unlawful or infringing. Automated scraping of this site at a rate that degrades it for others is not permitted.",
+    ],
+  },
+  {
+    heading: "Liability",
+    paragraphs: [
+      "This website is provided as-is. To the extent permitted by law, we are not liable for indirect or consequential loss arising from use of the site or reliance on estimates produced by it. Liability under a client engagement is set out in that engagement's agreement.",
+    ],
+  },
+  {
+    heading: "Governing law",
+    paragraphs: [
+      `These terms are governed by the laws of India, and the courts at ${site.address.city}, ${site.address.region} have exclusive jurisdiction.`,
+    ],
+  },
+  {
+    heading: "Contact",
+    paragraphs: [`Questions about these terms: ${site.email}.`],
+  },
+];
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-gray-950">
-      <nav className="fixed top-0 z-50 w-full bg-transparent">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-xs">S</span>
-            </div>
-            <span className="text-xl font-bold tracking-tight text-white">Setuware</span>
-          </a>
-        </div>
-      </nav>
-
-      <div className="pt-20 max-w-3xl mx-auto px-6 py-24">
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-8">Terms of Service</h1>
-        <div className="prose prose-invert text-gray-400 max-w-none">
-          <p className="mb-6 leading-relaxed">
-            Welcome to Setuware Technologies. By accessing or using our
-            website and services, you agree to these Terms of Service.
-          </p>
-          <h2 className="text-2xl font-bold text-white mb-4">Use of Services</h2>
-          <p className="mb-6 leading-relaxed">
-            You may use our services for lawful purposes only. You agree not
-            to misuse our website or services in any way that could harm
-            others or violate applicable laws.
-          </p>
-          <h2 className="text-2xl font-bold text-white mb-4">Intellectual Property</h2>
-          <p className="mb-6 leading-relaxed">
-            All content on this website, including text, images, logos, and
-            designs, is the property of Setuware Technologies and is protected
-            by copyright and trademark laws.
-          </p>
-          <h2 className="text-2xl font-bold text-white mb-4">Limitation of Liability</h2>
-          <p className="mb-6 leading-relaxed">
-            Setuware Technologies is not liable for any indirect, incidental,
-            or consequential damages arising from the use of our services.
-          </p>
-          <h2 className="text-2xl font-bold text-white mb-4">Contact Us</h2>
-          <p className="mb-6 leading-relaxed">
-            If you have any questions about these Terms, please contact us at
-            hello@setuware.com.
-          </p>
-        </div>
-      </div>
-    </div>
+    <LegalPage
+      title="Terms of service"
+      updated="2026-10-01"
+      intro="These terms cover the website. If we are working together, your signed proposal governs the engagement."
+      sections={SECTIONS}
+    />
   );
 }

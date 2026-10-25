@@ -1,0 +1,389 @@
+import type { IconName } from "@/lib/content";
+import { cn } from "@/lib/utils";
+
+/**
+ * Per-service motion graphic.
+ *
+ * Each service page gets a visual that shows what the work actually looks
+ * like — a build typing itself out, screens sliding through a phone, racks
+ * blinking, a retrieval graph firing. All CSS and SVG, all on `transform` and
+ * `opacity`, so there is nothing to download and nothing to decode.
+ *
+ * Marked `role="img"` with one label: a screen reader should hear a single
+ * description, not forty decorative rectangles.
+ */
+
+export interface ServiceVisualProps {
+  variant: IconName;
+  accent: readonly [string, string];
+  className?: string;
+}
+
+const LABELS: Record<IconName, string> = {
+  code: "Animated illustration of a web page being built line by line, with a live performance score.",
+  smartphone: "Animated illustration of app screens moving through a phone frame.",
+  server: "Animated illustration of server racks with health indicators and traffic throughput.",
+  sparkles: "Animated illustration of a retrieval graph answering a question from source documents.",
+  palette: "Animated illustration of a design system's colour, type and layout tokens.",
+  shield: "Animated illustration of a monitoring radar sweeping for incidents.",
+};
+
+export function ServiceVisual({ variant, accent, className }: ServiceVisualProps) {
+  return (
+    <div
+      className={cn(
+        "relative aspect-[4/3] w-full overflow-hidden rounded-card border border-border bg-surface shadow-ambient",
+        className,
+      )}
+      role="img"
+      aria-label={LABELS[variant]}
+      style={
+        {
+          "--accent-from": accent[0],
+          "--accent-to": accent[1],
+        } as React.CSSProperties
+      }
+    >
+      <div
+        className="absolute inset-0 opacity-[0.07]"
+        style={{
+          backgroundImage: `linear-gradient(135deg, ${accent[0]}, ${accent[1]})`,
+        }}
+        aria-hidden
+      />
+      <Variant variant={variant} />
+    </div>
+  );
+}
+
+function Variant({ variant }: { variant: IconName }) {
+  switch (variant) {
+    case "code":
+      return <CodeVisual />;
+    case "smartphone":
+      return <PhoneVisual />;
+    case "server":
+      return <ServerVisual />;
+    case "sparkles":
+      return <AiVisual />;
+    case "palette":
+      return <DesignVisual />;
+    case "shield":
+      return <SupportVisual />;
+    default:
+      return <CodeVisual />;
+  }
+}
+
+const gradient = "linear-gradient(90deg, var(--accent-from), var(--accent-to))";
+
+/** Web development: a page assembling itself, line by line. */
+function CodeVisual() {
+  const lines = [72, 48, 88, 36, 64, 52];
+
+  return (
+    <div className="absolute inset-0 flex flex-col gap-3 p-6">
+      <div className="flex items-center gap-1.5">
+        <span className="size-2 rounded-full bg-red-400/70" />
+        <span className="size-2 rounded-full bg-amber-400/70" />
+        <span className="size-2 rounded-full bg-emerald-400/70" />
+      </div>
+
+      <div className="flex flex-1 gap-4">
+        <div className="flex flex-1 flex-col justify-center gap-2.5">
+          {lines.map((width, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <span className="w-3 shrink-0 font-mono text-[9px] text-muted-foreground">
+                {index + 1}
+              </span>
+              <span
+                className="h-2 origin-left rounded-full motion-safe:animate-[type-line_4.5s_ease-in-out_infinite]"
+                style={{
+                  width: `${width}%`,
+                  backgroundImage: gradient,
+                  opacity: 0.55,
+                  animationDelay: `${index * 0.35}s`,
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="flex w-24 shrink-0 flex-col justify-center gap-2 rounded-xl border border-border bg-background/70 p-3">
+          <span className="text-[9px] uppercase tracking-wider text-muted-foreground">
+            Lighthouse
+          </span>
+          <span
+            className="font-mono text-2xl font-semibold motion-safe:animate-shimmer"
+            style={{
+              backgroundImage: gradient,
+              WebkitBackgroundClip: "text",
+              backgroundClip: "text",
+              color: "transparent",
+            }}
+          >
+            100
+          </span>
+          <span className="h-1 rounded-full bg-emerald-500/70" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** App development: screens sliding through a device frame. */
+function PhoneVisual() {
+  const screens = ["Home", "Jobs", "Sync", "Done"];
+
+  return (
+    <div className="absolute inset-0 flex items-center justify-center p-6">
+      <div className="relative h-full max-h-[15rem] w-[8.5rem] overflow-hidden rounded-[1.4rem] border-4 border-foreground/80 bg-background">
+        <span className="absolute left-1/2 top-1.5 z-10 h-1 w-10 -translate-x-1/2 rounded-full bg-foreground/60" />
+
+        <div className="flex h-full w-[400%] motion-safe:animate-[screen-slide_11s_ease-in-out_infinite]">
+          {screens.map((screen, index) => (
+            <div
+              key={screen}
+              className="flex h-full w-1/4 shrink-0 flex-col gap-2 p-3 pt-6"
+              style={{
+                backgroundImage:
+                  index % 2 === 0
+                    ? "linear-gradient(170deg, color-mix(in oklab, var(--accent-from) 16%, transparent), transparent)"
+                    : "linear-gradient(170deg, color-mix(in oklab, var(--accent-to) 16%, transparent), transparent)",
+              }}
+            >
+              <span className="text-[9px] font-semibold text-foreground">{screen}</span>
+              <span className="h-10 rounded-lg" style={{ backgroundImage: gradient, opacity: 0.35 }} />
+              <span className="h-2 w-3/4 rounded-full bg-foreground/15" />
+              <span className="h-2 w-1/2 rounded-full bg-foreground/15" />
+              <span className="mt-auto h-6 rounded-lg" style={{ backgroundImage: gradient, opacity: 0.8 }} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Managed hosting: racks with health LEDs and live throughput. */
+function ServerVisual() {
+  const racks = [0, 1, 2];
+  const bars = [40, 66, 52, 78, 60, 88, 70];
+
+  return (
+    <div className="absolute inset-0 flex gap-4 p-6">
+      <div className="flex flex-1 flex-col justify-center gap-2.5">
+        {racks.map((rack) => (
+          <div
+            key={rack}
+            className="flex items-center gap-2 rounded-lg border border-border bg-background/70 px-2.5 py-2"
+          >
+            <span className="flex gap-1">
+              {[0, 1, 2].map((led) => (
+                <span
+                  key={led}
+                  className="size-1.5 rounded-full bg-emerald-500 motion-safe:animate-[blink-led_2.4s_ease-in-out_infinite]"
+                  style={{ animationDelay: `${rack * 0.3 + led * 0.18}s` }}
+                />
+              ))}
+            </span>
+            <span className="font-mono text-[9px] text-muted-foreground">
+              node-{rack + 1}
+            </span>
+            <span className="ml-auto font-mono text-[9px] text-emerald-600 dark:text-emerald-400">
+              ok
+            </span>
+          </div>
+        ))}
+        <p className="mt-1 font-mono text-[9px] text-muted-foreground">
+          autoscaling · 3/8 active
+        </p>
+      </div>
+
+      <div className="flex w-24 shrink-0 flex-col justify-end gap-2 rounded-xl border border-border bg-background/70 p-3">
+        <div className="flex h-20 items-end gap-1">
+          {bars.map((height, index) => (
+            <span
+              key={index}
+              className="flex-1 origin-bottom rounded-sm motion-safe:animate-[bar-grow_2.6s_ease-in-out_infinite]"
+              style={{
+                height: `${height}%`,
+                backgroundImage: gradient,
+                animationDelay: `${index * 0.12}s`,
+              }}
+            />
+          ))}
+        </div>
+        <span className="text-[9px] text-muted-foreground">req/s</span>
+      </div>
+    </div>
+  );
+}
+
+/** AI integration: a question resolving against source documents. */
+function AiVisual() {
+  const sources = [0, 1, 2, 3];
+
+  return (
+    <div className="absolute inset-0 flex items-center justify-center p-6">
+      <svg viewBox="0 0 220 160" className="h-full w-full" aria-hidden>
+        <defs>
+          <linearGradient id="ai-stroke" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="var(--accent-from)" />
+            <stop offset="100%" stopColor="var(--accent-to)" />
+          </linearGradient>
+        </defs>
+
+        {sources.map((source) => {
+          const y = 28 + source * 35;
+          return (
+            <g key={source}>
+              <rect
+                x="12"
+                y={y - 11}
+                width="48"
+                height="22"
+                rx="5"
+                fill="var(--surface)"
+                stroke="currentColor"
+                className="text-border"
+              />
+              <line x1="20" y1={y - 4} x2="50" y2={y - 4} stroke="currentColor" className="text-border" strokeWidth="2" />
+              <line x1="20" y1={y + 3} x2="42" y2={y + 3} stroke="currentColor" className="text-border" strokeWidth="2" />
+
+              <path
+                d={`M60 ${y} C 95 ${y}, 95 80, 128 80`}
+                fill="none"
+                stroke="url(#ai-stroke)"
+                strokeWidth="1.8"
+                strokeDasharray="6 10"
+                className="motion-safe:animate-dash"
+                style={{ animationDelay: `${source * 0.3}s` }}
+              />
+            </g>
+          );
+        })}
+
+        <circle
+          cx="128"
+          cy="80"
+          r="20"
+          fill="var(--surface)"
+          stroke="url(#ai-stroke)"
+          strokeWidth="2.5"
+        />
+        <circle
+          cx="128"
+          cy="80"
+          r="7"
+          fill="url(#ai-stroke)"
+          className="motion-safe:animate-shimmer"
+        />
+
+        <path
+          d="M148 80 H 176"
+          stroke="url(#ai-stroke)"
+          strokeWidth="2"
+          strokeDasharray="5 7"
+          className="motion-safe:animate-dash"
+        />
+        <rect
+          x="176"
+          y="62"
+          width="32"
+          height="36"
+          rx="6"
+          fill="var(--surface)"
+          stroke="url(#ai-stroke)"
+          strokeWidth="2"
+        />
+        <line x1="183" y1="73" x2="201" y2="73" stroke="url(#ai-stroke)" strokeWidth="2" />
+        <line x1="183" y1="81" x2="196" y2="81" stroke="url(#ai-stroke)" strokeWidth="2" />
+        <line x1="183" y1="89" x2="199" y2="89" stroke="url(#ai-stroke)" strokeWidth="2" />
+      </svg>
+    </div>
+  );
+}
+
+/** Product design: tokens and layout blocks settling into a system. */
+function DesignVisual() {
+  const swatches = [0, 1, 2, 3, 4];
+
+  return (
+    <div className="absolute inset-0 flex flex-col gap-4 p-6">
+      <div className="flex gap-2">
+        {swatches.map((swatch) => (
+          <span
+            key={swatch}
+            className="size-8 rounded-lg motion-safe:animate-[swatch-pop_3.2s_ease-in-out_infinite]"
+            style={{
+              backgroundImage: gradient,
+              opacity: 0.35 + swatch * 0.15,
+              animationDelay: `${swatch * 0.22}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="flex items-baseline gap-2">
+        <span className="font-display text-2xl font-semibold text-foreground">Aa</span>
+        <span className="font-display text-lg font-medium text-muted-foreground">Aa</span>
+        <span className="text-sm text-muted-foreground">Aa</span>
+        <span className="ml-auto font-mono text-[9px] text-muted-foreground">
+          type scale
+        </span>
+      </div>
+
+      <div className="grid flex-1 grid-cols-3 gap-2">
+        {[0, 1, 2, 3, 4, 5].map((block) => (
+          <span
+            key={block}
+            className="rounded-lg border border-border bg-background/70 motion-safe:animate-float"
+            style={{ animationDelay: `${block * 0.4}s` }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Support: a monitoring radar sweeping, with an incident log. */
+function SupportVisual() {
+  return (
+    <div className="absolute inset-0 flex items-center gap-5 p-6">
+      <div className="relative aspect-square h-full max-h-[9.5rem] shrink-0">
+        <span className="absolute inset-0 rounded-full border border-border" />
+        <span className="absolute inset-[18%] rounded-full border border-border" />
+        <span className="absolute inset-[38%] rounded-full border border-border" />
+        <span
+          className="absolute inset-0 rounded-full motion-safe:animate-[radar-sweep_4s_linear_infinite]"
+          style={{
+            backgroundImage: `conic-gradient(from 0deg, transparent 0deg, color-mix(in oklab, var(--accent-from) 45%, transparent) 40deg, transparent 70deg)`,
+          }}
+        />
+        <span
+          className="absolute left-1/2 top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{ backgroundImage: gradient }}
+        />
+      </div>
+
+      <ul className="flex flex-1 flex-col gap-1.5 font-mono text-[9px]">
+        {[
+          { time: "02:14", text: "alert · latency p95", tone: "text-amber-600 dark:text-amber-400" },
+          { time: "02:15", text: "paged · on-call ack", tone: "text-muted-foreground" },
+          { time: "02:21", text: "resolved · rolled back", tone: "text-emerald-700 dark:text-emerald-400" },
+          { time: "09:00", text: "report sent to client", tone: "text-muted-foreground" },
+        ].map((entry, index) => (
+          <li
+            key={entry.time}
+            className="flex gap-2 rounded-md border border-border bg-background/70 px-2 py-1.5 motion-safe:animate-shimmer"
+            style={{ animationDelay: `${index * 0.7}s` }}
+          >
+            <span className="text-muted-foreground">{entry.time}</span>
+            <span className={entry.tone}>{entry.text}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
