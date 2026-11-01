@@ -142,7 +142,7 @@ export async function Footer() {
 
         <div className="mt-10 flex flex-col-reverse items-start justify-between gap-4 border-t border-white/10 pt-7 text-xs text-white/50 sm:flex-row sm:items-center">
           <p>
-            © {year} {site.name}. All rights reserved.
+            © {year} {site.name}. All Rights Reserved
           </p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <Link href="/privacy" className="transition-colors hover:text-white">
