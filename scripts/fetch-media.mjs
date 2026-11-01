@@ -10,7 +10,11 @@
  *
  * Requires ffmpeg on PATH (macOS: `brew install ffmpeg`).
  *
+ * Photos (also Pexels) are cropped to each image slot's exact size from
+ * src/lib/images.ts, so swapping them in never shifts the layout.
+ *
  * Output (all committed to the repo):
+ *   public/images/photos/<slot>.jpg  cropped, compressed photos
  *   public/media/<name>.mp4   H.264, 1920 wide, no audio, faststart
  *   public/media/<name>.webm  VP9, smaller where supported
  *   public/media/<name>.jpg   poster frame (first paint / reduced motion)
@@ -51,6 +55,49 @@ const CLIPS = [
     filter: "null",
   },
 ];
+
+/**
+ * Image slot (src/lib/images.ts key) → Pexels photo id and target size.
+ * Page: https://www.pexels.com/photo/<id>/
+ */
+const PHOTOS = [
+  { key: "heroBackdrop", id: 12899191, w: 1920, h: 1080 }, // software development discussion in office
+  { key: "aboutOffice", id: 7212929, w: 1080, h: 1200 }, // young team collaborating
+  { key: "serviceWeb", id: 69432, w: 1200, h: 800 }, // laptop and phone on a desk
+  { key: "serviceCloud", id: 5480781, w: 900, h: 700 }, // server racks in a data centre
+  { key: "caseStudyFeature", id: 7947996, w: 1000, h: 800 }, // charts on a laptop
+  { key: "projectMedicare", id: 3850268, w: 900, h: 1000 }, // using an app on a smartphone
+  { key: "skillsGap", id: 7876755, w: 1400, h: 900 }, // team around a laptop
+  { key: "articleAutomation", id: 6804068, w: 1200, h: 800 }, // people working at computers
+  { key: "articleProcesses", id: 196644, w: 900, h: 700 }, // wireframe sketches beside a phone
+  { key: "articleGrowth", id: 39190577, w: 900, h: 700 }, // team reviewing growth charts
+];
+
+async function downloadPhoto(id, dest) {
+  const urls = [
+    `https://www.pexels.com/photo/${id}/download/`,
+    `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=2800`,
+  ];
+  let lastError;
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, { redirect: "follow", headers: { "User-Agent": "Mozilla/5.0 (setuware media fetch)" } });
+      const type = res.headers.get("content-type") ?? "";
+      if (res.ok && type.startsWith("image/")) {
+        writeFileSync(dest, Buffer.from(await res.arrayBuffer()));
+        return;
+      }
+      lastError = new Error(`HTTP ${res.status} ${type}`);
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw lastError ?? new Error("download failed");
+}
+
+function slugify(key) {
+  return key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+}
 
 function run(cmd, args) {
   execFileSync(cmd, args, { stdio: ["ignore", "ignore", "inherit"] });
@@ -121,10 +168,33 @@ async function main() {
     }
   }
 
+  const photoDir = join(root, "public", "images", "photos");
+  mkdirSync(photoDir, { recursive: true });
+  manifest.images = {};
+  for (const photo of PHOTOS) {
+    const raw = join(tmpDir, `${photo.key}-source`);
+    const file = `${slugify(photo.key)}.jpg`;
+    try {
+      process.stdout.write(`↓ ${photo.key} (pexels photo ${photo.id}) … `);
+      await downloadPhoto(photo.id, raw);
+      // Fill the slot (cover), centre-crop, then encode at web quality.
+      run("ffmpeg", ["-y", "-i", raw, "-vf",
+        `scale=${photo.w}:${photo.h}:force_original_aspect_ratio=increase:flags=lanczos,crop=${photo.w}:${photo.h}`,
+        "-q:v", "4", join(photoDir, file)]);
+      manifest.images[photo.key] = `/images/photos/${file}`;
+      console.log("done");
+    } catch (error) {
+      console.log("FAILED");
+      console.error(`  ${error instanceof Error ? error.message : error}`);
+    }
+  }
+
   rmSync(tmpDir, { recursive: true, force: true });
   writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
-  console.log(`\nWrote ${Object.keys(manifest).filter((k) => manifest[k]).length} clip(s) to src/lib/media-manifest.json`);
-  console.log("Commit public/media and src/lib/media-manifest.json, then restart `npm run dev`.");
+  const clipCount = CLIPS.filter((c) => manifest[c.name]).length;
+  const photoCount = Object.keys(manifest.images).length;
+  console.log(`\n${clipCount}/${CLIPS.length} videos and ${photoCount}/${PHOTOS.length} photos written; see src/lib/media-manifest.json`);
+  console.log("Commit public/media, public/images/photos and src/lib/media-manifest.json, then restart `npm run dev`.");
 }
 
 main();

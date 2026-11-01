@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope } from "next/font/google";
+import { Manrope, Sora } from "next/font/google";
 
 import { organizationJsonLd } from "@/lib/seo";
 import { site } from "@/lib/site";
@@ -25,6 +25,14 @@ const inter = Manrope({
   display: "swap",
   preload: true,
   weight: ["400", "500", "600", "700", "800"],
+});
+
+/** Brand wordmark only (logo). */
+const brand = Sora({
+  variable: "--font-brand",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["600", "700"],
 });
 
 const display = Manrope({
@@ -98,7 +106,7 @@ export default function RootLayout({
     <html
       lang="en-IN"
       suppressHydrationWarning
-      className={`${inter.variable} ${display.variable}`}
+      className={`${inter.variable} ${display.variable} ${brand.variable}`}
     >
       <body
         className="flex min-h-dvh flex-col bg-background font-sans text-foreground antialiased"
