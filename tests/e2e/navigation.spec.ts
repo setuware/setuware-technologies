@@ -37,7 +37,7 @@ test.describe("navigation and rendering", () => {
       await page.getByRole("button", { name: /open menu/i }).click();
       await page
         .getByRole("dialog", { name: /site menu/i })
-        .getByRole("link", { name: "Work", exact: true })
+        .getByRole("link", { name: "Projects", exact: true })
         .click();
     } else {
       await page.getByRole("link", { name: "Projects", exact: true }).first().click();

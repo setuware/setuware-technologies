@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
+  AnimatePresence,
   motion,
   useMotionValueEvent,
   useScroll,
@@ -14,20 +15,20 @@ import { useScrollLock, useScrolled } from "@/lib/hooks";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/button";
-import { ServiceIcon } from "@/components/ui/service-icon";
 import { Logo } from "@/components/layout/logo";
 import { ThemeToggle } from "@/components/layout/theme";
 import { OPEN_COMMAND_EVENT } from "@/components/layout/command-menu-events";
 import { Magnetic, useReducedMotionSafe } from "@/components/motion/primitives";
 import { DURATION, EASE_OUT } from "@/components/motion/ease";
-import type { MobileService, NavLink } from "@/components/layout/nav-menu-data";
+import { DesktopMenus, NavItemIcon } from "@/components/layout/mega-menu";
+import type { NavEntry, NavMenu } from "@/components/layout/nav-menu-data";
 
 /**
  * Sticky header.
  *
- * Every destination is a plain link: one click, no hover step, and the whole
- * bar works identically with a keyboard, a touchscreen and a mouse. The
- * mobile drawer carries the same list plus direct service shortcuts.
+ * Services, Industries and Company open menus (see `mega-menu.tsx` for the
+ * hover, click and keyboard behaviour); everything else is a plain link. The
+ * mobile drawer lists the same items in accordion sections.
  *
  * The scroll listener lives in a shared rAF-throttled hook — an `onScroll`
  * prop on the header element would never fire, because the document scrolls,
@@ -70,18 +71,25 @@ function useAutoHide(pinned: boolean): boolean {
   return hidden && !pinned;
 }
 export interface NavbarProps {
-  links: readonly NavLink[];
-  /** Service shortcuts shown in the mobile drawer. */
-  services: readonly MobileService[];
+  links: readonly NavEntry[];
 }
 
-export function Navbar({ links, services }: NavbarProps) {
+export function Navbar({ links }: NavbarProps) {
   const pathname = usePathname();
   const scrolled = useScrolled(12);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [mobileSection, setMobileSection] = useState<string | null>(null);
   const [focusWithin, setFocusWithin] = useState(false);
   const reduceMotion = useReducedMotionSafe();
-  const hidden = useAutoHide(mobileOpen || focusWithin || Boolean(reduceMotion));
+  const hidden = useAutoHide(
+    mobileOpen || openMenu !== null || focusWithin || Boolean(reduceMotion),
+  );
+  const megaOpen = links.some(
+    (entry) => entry.kind === "menu" && entry.id === openMenu && entry.layout === "mega",
+  );
+  const menus = links.filter((entry): entry is NavMenu => entry.kind === "menu");
+  const plainLinks = links.filter((entry) => entry.kind === "link");
 
   useScrollLock(mobileOpen);
 
@@ -92,6 +100,7 @@ export function Navbar({ links, services }: NavbarProps) {
   if (drawerPath !== pathname) {
     setDrawerPath(pathname);
     setMobileOpen(false);
+    setOpenMenu(null);
   }
 
   useEffect(() => {
@@ -144,33 +153,12 @@ export function Navbar({ links, services }: NavbarProps) {
         >
           <Logo />
 
-          <div className="hidden items-center lg:ml-[calc(var(--s)*116)] lg:flex lg:h-[calc(var(--s)*40)] lg:gap-[calc(var(--s)*48)]">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                aria-current={isActive(link.href) ? "page" : undefined}
-                className={cn(
-                  "group/nav inline-flex items-center gap-[calc(var(--s)*8)] text-[calc(var(--s)*15)] font-medium leading-[normal] whitespace-nowrap transition-colors",
-                  isActive(link.href)
-                    ? "text-setu"
-                    : "text-foreground hover:text-setu",
-                )}
-              >
-                {link.label}
-                {link.chevron ? (
-                  // 9.9 × 10 slot in the design; the lucide glyph only fills
-                  // the middle half of its box, so it is drawn at twice the
-                  // slot size and pulled back in with negative margins.
-                  <ChevronDown
-                    aria-hidden
-                    strokeWidth={1.8}
-                    className="-m-[calc(var(--s)*5)] size-[calc(var(--s)*20)] transition-transform duration-200 group-hover/nav:translate-y-px"
-                  />
-                ) : null}
-              </Link>
-            ))}
-          </div>
+          <DesktopMenus
+            entries={links}
+            openId={openMenu}
+            onOpenChange={setOpenMenu}
+            isActive={isActive}
+          />
 
           <div className="flex items-center gap-2 lg:ml-auto lg:items-end lg:gap-[calc(var(--s)*34)]">
             <a
@@ -215,6 +203,16 @@ export function Navbar({ links, services }: NavbarProps) {
         </nav>
       </motion.header>
 
+      {/* Dims the page under an open mega menu; clicks fall through to the
+          outside-click handler, which closes it. */}
+      <div
+        aria-hidden
+        className={cn(
+          "pointer-events-none fixed inset-0 z-40 hidden bg-slate-950/25 transition-opacity duration-300 lg:block",
+          megaOpen ? "opacity-100" : "opacity-0",
+        )}
+      />
+
       {/* Mobile drawer */}
       <div
         className={cn(
@@ -249,43 +247,94 @@ export function Navbar({ links, services }: NavbarProps) {
           </button>
         </div>
 
-        <div className="mt-7 flex flex-col">
-          <span className="px-1 pb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            Services
-          </span>
-          {services.map((service) => (
-            <Link
-              key={service.slug}
-              href={`/services/${service.slug}`}
-              className="flex items-center gap-3 rounded-xl px-1 py-2.5 text-[0.95rem] text-foreground"
-            >
-              <ServiceIcon
-                name={service.icon}
-                accent={service.accent}
-                className="size-8"
-                size={16}
-              />
-              {service.name}
-            </Link>
-          ))}
+        <div className="mt-6 flex flex-col divide-y divide-border border-y border-border">
+          {menus.map((menu) => {
+            const expanded = mobileSection === menu.id;
+            const sectionId = `mobile-section-${menu.id}`;
+            return (
+              <div key={menu.id}>
+                <button
+                  type="button"
+                  aria-expanded={expanded}
+                  aria-controls={sectionId}
+                  onClick={() => setMobileSection(expanded ? null : menu.id)}
+                  className={cn(
+                    "flex w-full items-center justify-between px-1 py-3.5 text-left text-[0.98rem] font-semibold",
+                    expanded ? "text-setu" : "text-foreground",
+                  )}
+                >
+                  {menu.label}
+                  <ChevronDown
+                    aria-hidden
+                    className={cn(
+                      "size-4 text-muted-foreground transition-transform duration-300",
+                      expanded && "rotate-180 text-setu",
+                    )}
+                  />
+                </button>
+                <AnimatePresence initial={false}>
+                  {expanded ? (
+                    <motion.div
+                      id={sectionId}
+                      key="content"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.32, ease: EASE_OUT }}
+                      className="overflow-hidden"
+                    >
+                      <div className="flex flex-col gap-4 pb-4">
+                        {menu.columns.flatMap((column) => column.groups).map((group) => (
+                          <div key={group.title}>
+                            <p className="px-1 pb-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                              {group.title}
+                            </p>
+                            <ul className="flex flex-col">
+                              {group.items.map((item) => (
+                                <li key={item.href}>
+                                  <Link
+                                    href={item.href}
+                                    aria-current={isActive(item.href) ? "page" : undefined}
+                                    className={cn(
+                                      "flex items-center gap-3 rounded-xl px-1 py-2 text-[0.93rem]",
+                                      isActive(item.href) ? "text-setu" : "text-foreground",
+                                    )}
+                                  >
+                                    {item.icon ? <NavItemIcon icon={item.icon} compact /> : null}
+                                    {item.label}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                        {menu.footer ? (
+                          <Link
+                            href={menu.footer.href}
+                            className="inline-flex items-center gap-1.5 px-1 text-sm font-semibold text-setu"
+                          >
+                            {menu.footer.label}
+                            <ArrowRight className="size-3.5" aria-hidden />
+                          </Link>
+                        ) : null}
+                      </div>
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
+              </div>
+            );
+          })}
         </div>
 
-        <div className="mt-6 flex flex-col border-t border-border pt-5">
-          {[
-            { label: "Work", href: "/work" },
-            ...links,
-            { label: "Service status", href: "/status" },
-            { label: "Contact", href: "/contact" },
-          ]
-            // "Projects" and "Contact" are already in `links`; one entry per page.
-            .filter((item, index, all) => all.findIndex((other) => other.href === item.href) === index)
-            .map((item) => (
+        <div className="mt-3 flex flex-col">
+          {plainLinks.map((item) => (
             <Link
               key={item.href}
               href={item.href}
+              aria-current={isActive(item.href) ? "page" : undefined}
               className={cn(
-                "rounded-xl px-1 py-2.5 text-[0.95rem] font-medium",
-                isActive(item.href) ? "text-primary" : "text-foreground",
+                "rounded-xl px-1 py-2.5 text-[0.98rem] font-semibold",
+                isActive(item.href) ? "text-setu" : "text-foreground",
               )}
             >
               {item.label}

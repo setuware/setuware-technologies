@@ -16,6 +16,8 @@ import { getPost, posts, postsByDate, relatedPosts } from "@/lib/posts";
 import { getPostBody, postBodies } from "@/lib/post-bodies";
 import { SERVICE_RATES } from "@/lib/pricing";
 import { footerNav, mainNav } from "@/lib/site";
+import { industries } from "@/lib/industries";
+import { allNavHrefs } from "@/components/layout/nav-menu-data";
 
 /**
  * Content integrity.
@@ -38,6 +40,9 @@ const routes = new Set<string>([
   "/status",
   "/privacy",
   "/terms",
+  "/industries",
+  "/careers",
+  ...industries.map((industry) => `/industries/${industry.slug}`),
   ...services.map((service) => `/services/${service.slug}`),
   ...caseStudies.map((study) => `/work/${study.slug}`),
   ...posts.map((post) => `/blog/${post.slug}`),
@@ -68,6 +73,35 @@ describe("services", () => {
       expect(service.outcomes.length).toBeGreaterThanOrEqual(2);
       expect(service.deliverables.length).toBeGreaterThanOrEqual(3);
       expect(service.stack.length).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it("gives every service a full landing page", () => {
+    const offered = new Set(services.map((service) => service.slug));
+    for (const service of services) {
+      expect(service.group, service.slug).toBeDefined();
+      expect(service.headline?.length, service.slug).toBeGreaterThan(20);
+      expect(service.subheadline?.length, service.slug).toBeGreaterThan(60);
+      expect(service.seoTitle, service.slug).toBeDefined();
+      expect(service.seoDescription?.length ?? 0, service.slug).toBeLessThanOrEqual(170);
+      expect(service.problems?.length ?? 0).toBeGreaterThanOrEqual(3);
+      expect(service.features?.length ?? 0).toBeGreaterThanOrEqual(4);
+      expect(service.process?.length ?? 0).toBeGreaterThanOrEqual(4);
+      expect(service.process?.length ?? 0).toBeLessThanOrEqual(6);
+      expect(service.faqs?.length ?? 0).toBeGreaterThanOrEqual(4);
+      expect(service.faqs?.length ?? 0).toBeLessThanOrEqual(6);
+      for (const slug of service.related ?? []) {
+        expect(offered.has(slug)).toBe(true);
+        expect(slug).not.toBe(service.slug);
+      }
+    }
+  });
+
+  it("keeps banned filler words out of service copy", () => {
+    const banned =
+      /\b(seamless|cutting-edge|leverag\w*|robust|innovative|empower\w*|unlock\w*|elevat\w*|world-class|synergy|revolutioni[sz]e|journey|delve|game-changer|holistic|best-in-class)\b/i;
+    for (const service of services) {
+      expect(JSON.stringify(service)).not.toMatch(banned);
     }
   });
 
@@ -171,6 +205,12 @@ describe("navigation", () => {
       for (const link of group.links) {
         expect(routes.has(pathOf(link.href)), `${link.href} should resolve`).toBe(true);
       }
+    }
+  });
+
+  it("only links to routes that exist from the header menus", () => {
+    for (const href of allNavHrefs()) {
+      expect(routes.has(href.split("?")[0]), `${href} should resolve`).toBe(true);
     }
   });
 

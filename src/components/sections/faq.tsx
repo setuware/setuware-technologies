@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { faqGroups, faqs, type Faq as FaqItem } from "@/lib/content";
 import { AccordionRoot, AccordionRow } from "@/components/ui/accordion";
 import { TextReveal } from "@/components/motion/text-reveal";
@@ -36,8 +38,12 @@ export function Faq({ items = faqs }: FaqProps) {
           </TextReveal>
           <FadeUp delay={0.25} y={20}>
             <p className="mt-4 max-w-xs text-[0.85rem] leading-relaxed text-muted-foreground">
-              Pricing, timelines, who owns the code and what happens after
-              launch. Question not here? Ask us directly.
+              Cost, timelines, payments, who owns the site and what happens
+              after launch. Question not here?{" "}
+              <Link href="/contact" className="font-medium text-primary underline-offset-4 hover:underline">
+                Ask us directly
+              </Link>
+              .
             </p>
           </FadeUp>
         </div>

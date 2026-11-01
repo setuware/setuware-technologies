@@ -38,23 +38,23 @@ export function AboutPreview() {
           <Stagger className="flex flex-col gap-4" delay={0.15}>
             <StaggerItem y={24}>
               <p className="text-[1.02rem] font-semibold text-foreground">
-                Purpose-built software. Real-world impact.
+                Websites first. Everything digital after.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
               <p className="text-[0.92rem] leading-relaxed text-muted-foreground">
-                Setuware Technologies is a senior engineering team in Gurugram.
-                We design, build and run web apps, mobile apps and the cloud
-                they live on, for businesses whose software has to work on
-                Monday morning.
+                Setuware Technologies is a design and development team in
+                Gurugram. Most clients come to us for a website. Many stay for
+                the online store, the mobile app, the logo refresh, the Google
+                Ads or the CRM that follows.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
               <p className="text-[0.92rem] leading-relaxed text-muted-foreground">
-                We start with how your team works today: the spreadsheets, the
-                hand-offs, the steps someone still does by hand. Then we build
-                around that. A fixed-price scope before any code, a staging URL
-                from the first sprint, and the repo in your name from day one.
+                You get one team and one contact for all of it. We quote a fixed
+                price before work starts, show you progress every week, and
+                register the domain, code and hosting in your name. Nothing to
+                re-explain to a new agency each time you grow.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
@@ -111,7 +111,7 @@ export function AboutPreview() {
               ))}
             </div>
             <p className="mt-3 text-sm text-muted-foreground">
-              Teams who have shipped with us
+              Businesses who have launched with us
             </p>
           </div>
         </FadeUp>

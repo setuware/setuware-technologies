@@ -28,33 +28,34 @@ import { TextReveal } from "@/components/motion/text-reveal";
  */
 const DESIGN_COPY: Record<string, { tagline?: string; features?: readonly string[] }> = {
   "website-build": {
-    tagline: "Fast, SEO-ready business website.",
+    tagline: "A fast business website that brings in enquiries.",
     features: [
-      "Up to 8 pages, mobile-first",
-      "CMS your team can edit",
-      "Lighthouse 90+ on mobile",
-      "Domain, hosting and launch",
-      "3 months of fixes included",
+      "Up to 8 pages, designed mobile-first",
+      "Edit text and photos yourself",
+      "Contact form, WhatsApp and call buttons",
+      "SEO setup and Google Analytics",
+      "Domain, hosting and launch handled",
+      "3 months of support after launch",
     ],
   },
   "full-application-build": {
-    tagline: "Web or mobile app, built to ship.",
+    tagline: "An online store, web app or mobile app.",
     features: [
-      "Auth, roles and admin panel",
-      "Payments and email alerts",
-      "Cloud setup with CI/CD",
-      "Weekly demo on a staging URL",
-      "6 – 8 months support",
+      "Customer logins and an admin panel",
+      "UPI, card and net-banking payments",
+      "Order, booking and email alerts",
+      "Weekly progress on a preview link",
+      "6 – 8 months of support after launch",
     ],
   },
   "enterprise-engagement": {
-    tagline: "Large systems, one accountable team.",
+    tagline: "ERP, CRM and multi-team projects.",
     features: [
-      "Architecture and code review",
-      "Phased legacy migration",
+      "Custom ERP, CRM or customer portal",
+      "Move off old software in phases",
       "Milestones fixed in the contract",
-      "Dedicated team, one named lead",
-      "Extended support and on-call",
+      "One named project lead",
+      "Extended support and on-call cover",
     ],
   },
 };
@@ -220,8 +221,12 @@ export function FlexiblePlans() {
           </TextReveal>
           <FadeUp delay={0.25} y={18}>
             <p className="text-[15px] font-normal leading-[29px] tracking-[0.02em] text-black opacity-70 lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*29)] dark:text-white">
-              Fixed price, written scope, no hourly meter. You own the code
-              and the repo from day one.
+              One fixed price, agreed in writing before work starts. No hourly
+              billing, no surprise invoices, and you own everything we build.
+              Prices exclude GST.{" "}
+              <Link href="/pricing" className="font-medium text-setu underline-offset-4 hover:underline">
+                See full pricing
+              </Link>
             </p>
           </FadeUp>
         </div>

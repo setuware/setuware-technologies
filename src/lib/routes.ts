@@ -1,4 +1,5 @@
 import { caseStudies, services } from "./content";
+import { industries } from "./industries";
 import { posts } from "./posts";
 
 /**
@@ -11,6 +12,7 @@ export const KNOWN_SLUGS: Record<string, ReadonlySet<string>> = {
   services: new Set(services.map((service) => service.slug)),
   work: new Set(caseStudies.map((study) => study.slug)),
   blog: new Set(posts.map((post) => post.slug)),
+  industries: new Set(industries.map((industry) => industry.slug)),
 };
 
 /** True when `/<section>/<slug>` is a page we actually publish. */

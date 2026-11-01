@@ -152,7 +152,9 @@ export function SelectedProjects() {
                 <div className="relative h-full w-full">
                   <Image
                     src={images.projectMedicare.src}
-                    alt={images.projectMedicare.alt}
+                    // Decorative: the title beside it names the project, and
+                    // the slot's own alt describes a different placeholder.
+                    alt=""
                     fill
                     sizes="(min-width: 1024px) 589px, (min-width: 768px) 50vw, 90vw"
                     className="object-cover transition-[scale] duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/card:scale-[1.04]"
@@ -162,13 +164,14 @@ export function SelectedProjects() {
             </div>
 
             <div className="flex flex-col p-7 md:p-9 lg:pt-[calc(var(--s)*57)] lg:pr-[calc(var(--s)*46)] lg:pb-[calc(var(--s)*73)] lg:pl-[calc(var(--s)*79)]">
+              <p className="mb-3 text-[0.8rem] font-semibold tracking-[0.08em] text-setu uppercase lg:mb-[calc(var(--s)*12)] lg:text-[calc(var(--s)*13)]">
+                {lead.sector}
+              </p>
               <h3 className="max-w-[24rem] text-[1.6rem] leading-[1.36] font-semibold tracking-normal text-foreground lg:max-w-[calc(var(--s)*426)] lg:text-[calc(var(--s)*33)] lg:leading-[calc(var(--s)*45)]">
-                MediCare — Healthcare management app
+                {lead.title}
               </h3>
               <p className="mt-4 max-w-[30rem] text-[0.95rem] leading-[1.9] tracking-[0.02em] text-foreground/70 lg:mt-[calc(var(--s)*17)] lg:max-w-[calc(var(--s)*485)] lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*29)]">
-                Patients book appointments, open their medical records and
-                message their doctors from one mobile app. Large type, plain
-                words, and every common task one tap from the home screen.
+                {lead.summary}
               </p>
 
               <Magnetic strength={0.25} className="mt-8 w-fit lg:mt-auto">

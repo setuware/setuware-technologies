@@ -6,8 +6,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { images } from "@/lib/images";
-import { testimonials } from "@/lib/content";
-import { cn } from "@/lib/utils";
+import { carePlans, projectPackages } from "@/lib/plans";
+import { cn, formatINR } from "@/lib/utils";
 import { Counter } from "@/components/ui/counter";
 import { DURATION, EASE_OUT } from "@/components/motion/ease";
 import {
@@ -22,37 +22,30 @@ import { TextReveal } from "@/components/motion/text-reveal";
 
 const REASONS = [
   {
-    title: "Built Around Real Workflows",
-    body: "We sit with the people who will use the software, map every step, and cut the ones that don’t need a person. Scope is fixed in writing before we build.",
+    title: "You Own Everything",
+    body: "Domain, code, hosting and every login sit in your name from day one. Leave whenever you like and take it all with you.",
   },
   {
-    title: "Designed for Simplicity",
-    body: "Fewer screens, plain labels, no training manual. Your team clicks through a staging build every week, so problems surface before launch.",
+    title: "Mobile-First and Fast",
+    body: "We design for the phone first and test on real devices. Pages load in under two seconds on a mid-range phone.",
   },
   {
-    title: "Engineered for Reliability",
-    body: "Typed code, automated tests, monitoring and nightly backups from the first release. You own the code and the repo from day one.",
+    title: "SEO-Ready at Launch",
+    body: "Titles, sitemap, Search Console, analytics and enquiry tracking are set up before go-live, so Google finds you on day one.",
   },
 ] as const;
 
-/** The pull quote on the first tile (Figma 24:3132). */
-const QUOTE = {
-  title: "Better Workflows, Less Hassle",
-  body: "Setuware Technologies has made managing our daily operations much simpler. Everything feels more organized, and our team can get things done with less hassle.",
-  author: "Darcy Hutchinson",
-  role: "CEO at Globex Corp.",
-  initials: "DH",
+/** The first tile (Figma 24:3132): the fixed-price promise, in the pull-quote layout. */
+const PROMISE = {
+  title: "One Fixed Price, in Writing",
+  body: "You get a written quote with the pages, features, timeline and payment milestones before any work starts. If you ask for something new mid-project, we quote it first. The number never moves without your sign-off.",
+  badge: "₹",
+  label: "Written quote",
+  detail: "Before any work starts",
 } as const;
 
-/** Five overlapping faces on the "25+" tile (Figma 24:3146). */
-const FACES = [...testimonials.map((person) => person.initials), "AK", "RS"];
-
-/**
- * The image tile links to this case study, so its line states that study's
- * headline result (from its published summary) rather than a borrowed figure.
- */
-const FEATURE_SLUG = "fintech-dashboard-rebuild";
-const FEATURE_TITLE = "Month-end reports: from 48 seconds to under one";
+/** Ways to reach the team, sliding in on the support tile (Figma 24:3146). */
+const CHANNELS = ["Call", "WhatsApp", "Email"] as const;
 
 const TILE_RADIUS = "rounded-[1.25rem] lg:rounded-[calc(var(--s)*20)]";
 
@@ -71,8 +64,14 @@ function BentoTile({ className, children }: { className?: string; children: Reac
   );
 }
 
-/** Faces slide in one after another once their tile has landed. */
-const FACE_VARIANTS = {
+/** Headline figures, read from the published plans so they never drift. */
+const WEBSITE_FROM_K = Math.round(
+  (projectPackages.find((plan) => plan.id === "website-build")?.setupFrom ?? 20_000) / 1000,
+);
+const CARE_FROM = carePlans[0]?.monthly ?? 8_000;
+
+/** Channel chips slide in one after another once their tile has landed. */
+const CHIP_VARIANTS = {
   hidden: { opacity: 0, x: -14, scale: 0.85 },
   shown: (index: number) => ({
     opacity: 1,
@@ -89,11 +88,13 @@ const TILE =
 /**
  * Industry band (Figma 24:2610 → 24:2746).
  *
- * A 3-column bento on the 1400px column: pull quote, satisfaction figure and
- * a case-study image card on the top row (420px), project count and the
- * reasons tile (spanning two columns) beneath (444px). Tiles rise in a
- * stagger and respond to the cursor; the figures count up when they scroll
- * into view and the oversized "%" drifts against the scroll.
+ * A 3-column bento on the 1400px column, laid out as the design's tiles but
+ * carrying the reasons a business owner picks us: the fixed-price promise,
+ * the starting price and a link to our work on the top row (420px); post-
+ * launch support and the "why us" tile (spanning two columns) beneath
+ * (444px). Tiles rise in a stagger and respond to the cursor; the figures
+ * count up when they scroll into view and the oversized "₹" drifts against
+ * the scroll.
  */
 export function IndustryBento() {
   return (
@@ -112,10 +113,10 @@ export function IndustryBento() {
           </TextReveal>
           <FadeUp delay={0.35} y={20}>
             <p className="mx-auto mt-5 max-w-xl text-[0.95rem] leading-relaxed text-foreground/70 lg:mt-[calc(var(--s)*21)] lg:max-w-[calc(var(--s)*889)] lg:text-[calc(var(--s)*16)] lg:leading-[calc(var(--s)*32)]">
-              We learn how your team actually works before we write a line of
-              code. Then we build the software that removes the double entry,
-              the spreadsheets and the chasing, and keeps running when you
-              grow.
+              Clinics, schools, shops, restaurants, real estate firms and
+              manufacturers all need different things from a website. We learn
+              how your customers find you and what makes them call, then build
+              a site that brings in those enquiries and grows with you.
             </p>
           </FadeUp>
         </div>
@@ -124,42 +125,42 @@ export function IndustryBento() {
           stagger={0.1}
           className="mt-12 grid gap-4 md:grid-cols-2 lg:mt-[calc(var(--s)*40)] lg:grid-cols-3 lg:grid-rows-[calc(var(--s)*420)_calc(var(--s)*444)] lg:gap-[calc(var(--s)*25)]"
         >
-          {/* 1 — Pull quote (24:2684 / 24:3132). */}
+          {/* 1 — Fixed-price promise, in the pull-quote tile (24:2684 / 24:3132). */}
           <BentoTile>
             <figure
               className={`${TILE} flex flex-col p-6 sm:p-8 lg:pt-[calc(var(--s)*50)] lg:pr-[calc(var(--s)*56)] lg:pb-[calc(var(--s)*40)] lg:pl-[calc(var(--s)*62)]`}
             >
               <figcaption className="max-w-[16rem] text-[1.45rem] leading-[1.32] font-semibold tracking-[-0.02em] text-foreground lg:max-w-[calc(var(--s)*283)] lg:text-[calc(var(--s)*28)] lg:leading-[calc(var(--s)*37)]">
-                {QUOTE.title}
+                {PROMISE.title}
               </figcaption>
-              <blockquote className="mt-4 text-[0.92rem] leading-relaxed text-foreground/70 lg:mt-[calc(var(--s)*15)] lg:max-w-[calc(var(--s)*332)] lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*24)]">
-                <p>“{QUOTE.body}”</p>
-              </blockquote>
+              <p className="mt-4 text-[0.92rem] leading-relaxed text-foreground/70 lg:mt-[calc(var(--s)*15)] lg:max-w-[calc(var(--s)*332)] lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*24)]">
+                {PROMISE.body}
+              </p>
               <div className="mt-6 flex items-center gap-3.5 lg:mt-auto lg:gap-[calc(var(--s)*14)]">
                 <span
                   aria-hidden
                   className="inline-flex size-12 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#0a34a6,#00a1c6)] text-xs font-semibold text-white lg:size-[calc(var(--s)*55)] lg:text-[calc(var(--s)*15)]"
                 >
-                  {QUOTE.initials}
+                  {PROMISE.badge}
                 </span>
                 <span>
                   <span className="block text-base leading-6 font-semibold tracking-[-0.01em] text-foreground lg:text-[calc(var(--s)*18)] lg:leading-[calc(var(--s)*24)]">
-                    {QUOTE.author}
+                    {PROMISE.label}
                   </span>
                   <span className="block text-[0.8rem] leading-6 text-foreground/60 lg:text-[calc(var(--s)*13)] lg:leading-[calc(var(--s)*24)]">
-                    {QUOTE.role}
+                    {PROMISE.detail}
                   </span>
                 </span>
               </div>
             </figure>
           </BentoTile>
 
-          {/* 2 — Satisfaction figure (24:2612 / 24:2613 / 24:2734). */}
+          {/* 2 — Starting price (24:2612 / 24:2613 / 24:2734). */}
           <BentoTile>
             <div
               className={`${TILE} flex min-h-[15rem] flex-col justify-between p-7 lg:min-h-0 lg:pt-[calc(var(--s)*60)] lg:pb-[calc(var(--s)*56)] lg:pl-[calc(var(--s)*53)]`}
             >
-              {/* Oversized "%" glyph clipped by the tile (24:2615). */}
+              {/* Oversized "₹" glyph clipped by the tile (24:2615). */}
               <Parallax
                 speed={70}
                 className="pointer-events-none absolute top-[-11rem] left-[52%] select-none lg:top-[calc(var(--s)*-367)] lg:left-[calc(var(--s)*225)]"
@@ -168,22 +169,30 @@ export function IndustryBento() {
                   aria-hidden
                   className="block text-[22rem] leading-[1.366] font-bold text-setu/[0.04] lg:text-[calc(var(--s)*778)]"
                 >
-                  %
+                  ₹
                 </span>
               </Parallax>
               <span className="relative block text-[4.5rem] leading-none font-bold tracking-[-0.03em] text-foreground lg:text-[calc(var(--s)*88)] lg:leading-[calc(var(--s)*72)]">
-                <Counter to={95} suffix="%" />
+                <Counter to={WEBSITE_FROM_K} prefix="₹" suffix="k" />
               </span>
-              <p className="relative mt-8 max-w-[13rem] text-[1.45rem] leading-[1.32] font-semibold tracking-[-0.02em] text-foreground lg:mt-0 lg:max-w-[calc(var(--s)*225)] lg:text-[calc(var(--s)*28)] lg:leading-[calc(var(--s)*37)]">
-                Customer satisfaction rate
-              </p>
+              <div className="relative mt-8 lg:mt-0">
+                <p className="max-w-[15rem] text-[1.45rem] leading-[1.32] font-semibold tracking-[-0.02em] text-foreground lg:max-w-[calc(var(--s)*300)] lg:text-[calc(var(--s)*28)] lg:leading-[calc(var(--s)*37)]">
+                  Business websites start here
+                </p>
+                <Link
+                  href="/pricing"
+                  className="mt-3 inline-block text-[0.9rem] font-medium text-setu underline-offset-4 hover:underline lg:mt-[calc(var(--s)*12)] lg:text-[calc(var(--s)*15)]"
+                >
+                  See all prices
+                </Link>
+              </div>
             </div>
           </BentoTile>
 
-          {/* 3 — Case-study image card (24:2685 / 24:2740). */}
+          {/* 3 — Our work, image card (24:2685 / 24:2740). */}
           <BentoTile>
             <Link
-              href={`/work/${FEATURE_SLUG}`}
+              href="/work"
               className={`${TILE} group flex min-h-[15rem] flex-col justify-end bg-[#135b78] p-7 lg:min-h-0 lg:pb-[calc(var(--s)*65)] lg:pl-[calc(var(--s)*63)]`}
             >
               <ImageReveal delay={0.25} className="absolute inset-0">
@@ -202,38 +211,39 @@ export function IndustryBento() {
                 className="absolute inset-0 bg-[linear-gradient(200deg,rgba(10,52,166,0.35)_0%,rgba(0,161,198,0.45)_45%,rgba(4,48,74,0.85)_100%)]"
               />
               <p className="relative max-w-[18rem] text-[1.2rem] leading-[1.55] font-medium text-white lg:max-w-[calc(var(--s)*320)] lg:text-[calc(var(--s)*21)] lg:leading-[calc(var(--s)*33)]">
-                {FEATURE_TITLE}
+                Websites, online stores and apps we have built and still look
+                after
               </p>
               <span className="relative mt-6 inline-flex h-10 w-fit items-center rounded-full border-[1.5px] border-white/60 px-[2.1rem] text-[15px] font-semibold text-white transition-[background-color,translate] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-0.5 group-hover:bg-white/15 lg:mt-[calc(var(--s)*28)] lg:h-[calc(var(--s)*40)] lg:px-[calc(var(--s)*34)] lg:text-[calc(var(--s)*15)]">
-                View Case Study
+                View Our Work
               </span>
             </Link>
           </BentoTile>
 
-          {/* 4 — Project count (24:3140). */}
+          {/* 4 — Post-launch care and local support (24:3140). */}
           <BentoTile>
             <div
               className={`${TILE} flex flex-col p-7 lg:pt-[calc(var(--s)*69)] lg:pr-[calc(var(--s)*49)] lg:pb-[calc(var(--s)*60)] lg:pl-[calc(var(--s)*55)]`}
             >
-              <div className="flex" aria-hidden>
-                {FACES.map((initials, index) => (
-                  <motion.span
-                    key={initials}
+              <ul className="flex flex-wrap gap-2" aria-label="Ways to reach us">
+                {CHANNELS.map((channel, index) => (
+                  <motion.li
+                    key={channel}
                     custom={index}
-                    variants={FACE_VARIANTS}
-                    className="inline-flex size-12 items-center justify-center rounded-full border-2 border-white bg-[linear-gradient(135deg,#0a34a6,#00a1c6)] text-xs font-semibold text-white not-first:-ml-3.5 lg:size-[calc(var(--s)*61)] lg:text-[calc(var(--s)*15)] lg:not-first:-ml-[calc(var(--s)*16.73)]"
-                    style={{ zIndex: FACES.length - index }}
+                    variants={CHIP_VARIANTS}
+                    className="inline-flex h-10 items-center rounded-full bg-[linear-gradient(135deg,#0a34a6,#00a1c6)] px-5 text-sm font-semibold text-white lg:h-[calc(var(--s)*44)] lg:px-[calc(var(--s)*22)] lg:text-[calc(var(--s)*15)]"
                   >
-                    {initials}
-                  </motion.span>
+                    {channel}
+                  </motion.li>
                 ))}
-              </div>
+              </ul>
               <span className="mt-10 block text-[4.5rem] leading-none font-bold tracking-[-0.03em] text-foreground lg:mt-auto lg:text-[calc(var(--s)*88)] lg:leading-[calc(var(--s)*72)]">
-                <Counter to={25} suffix="+" />
+                <Counter to={3} />
               </span>
               <p className="mt-6 max-w-[21rem] text-base leading-[1.75] text-foreground/70 lg:mt-[calc(var(--s)*29)] lg:max-w-[calc(var(--s)*345)] lg:text-[calc(var(--s)*17)] lg:leading-[calc(var(--s)*30)]">
-                Web apps, mobile apps and internal tools, taken from first
-                workshop to production and still running.
+                Months of free support after launch, from a Gurugram team on IST
+                hours. Care plans from {formatINR(CARE_FROM)} a month after
+                that.
               </p>
             </div>
           </BentoTile>

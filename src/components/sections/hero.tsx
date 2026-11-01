@@ -2,7 +2,7 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 import { images } from "@/lib/images";
-import { heroBackdropPoster, heroBackdropSources } from "@/lib/media";
+import { committedVideo, heroBackdropPoster, heroBackdropSources } from "@/lib/media";
 import { ButtonLink } from "@/components/ui/button";
 import { FadeUp, Magnetic } from "@/components/motion/primitives";
 import { TextReveal } from "@/components/motion/text-reveal";
@@ -34,7 +34,9 @@ import {
  * Layout and type sizes are the Figma values — only transforms animate.
  */
 export function Hero() {
-  const videoSources = heroBackdropSources();
+  const committed = committedVideo("hero-bg");
+  const envSources = heroBackdropSources();
+  const videoSources = envSources.length > 0 ? envSources : committed.sources;
 
   return (
     // The header is fixed and solid, so the hero starts below it.
@@ -44,7 +46,7 @@ export function Hero() {
           <HeroMedia>
             <HeroBackdrop
               sources={videoSources}
-              poster={heroBackdropPoster() ?? images.heroBackdrop.src}
+              poster={heroBackdropPoster() ?? committed.poster ?? images.heroBackdrop.src}
               tone="dark"
             />
           </HeroMedia>
@@ -83,9 +85,10 @@ export function Hero() {
 
               <FadeUp immediate delay={0.75} y={24}>
                 <p className="text-base font-medium leading-relaxed opacity-78 sm:text-lg lg:ml-[calc(var(--s)*5)] lg:w-[calc(var(--s)*672)] lg:text-[calc(var(--s)*18)] lg:leading-[calc(var(--s)*32)]">
-                  One senior team from first sketch to monitored production.
-                  Fixed scope before code, a demo every week, and the repo is
-                  yours from day one.
+                  We build websites for businesses, then the online store,
+                  app, branding, SEO and software that come next. Fixed
+                  price from ₹20,000, live in 3 to 6 weeks, and you own
+                  everything we make.
                 </p>
               </FadeUp>
             </div>
