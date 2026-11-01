@@ -99,7 +99,7 @@ export function HeroBackdrop({ sources, poster, tone = "page" }: HeroBackdropPro
           ref={videoRef}
           className={cn(
             "size-full object-cover",
-            tone === "dark" ? "opacity-60" : "opacity-[0.28] dark:opacity-40",
+            tone === "dark" ? "opacity-100" : "opacity-[0.28] dark:opacity-40",
           )}
           poster={poster}
           preload="none"
@@ -130,8 +130,8 @@ export function HeroBackdrop({ sources, poster, tone = "page" }: HeroBackdropPro
       */}
       {tone === "dark" ? (
         <>
-          <div className="absolute inset-0 bg-[linear-gradient(95deg,rgba(6,9,18,0.94)_0%,rgba(6,9,18,0.78)_45%,rgba(6,9,18,0.5)_100%)]" />
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(to_top,rgba(6,9,18,0.92),transparent)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(95deg,rgba(6,9,18,0.82)_0%,rgba(6,9,18,0.45)_42%,rgba(6,9,18,0)_75%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(to_top,rgba(6,9,18,0.7),transparent)]" />
         </>
       ) : (
         <>

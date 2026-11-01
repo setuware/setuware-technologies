@@ -1,1 +1,26 @@
-{}
+{
+  "hero-bg": {
+    "mp4": "/media/hero-bg.mp4",
+    "webm": "/media/hero-bg.webm",
+    "poster": "/media/hero-bg.jpg",
+    "source": "generated: scripts/render-backdrops.mjs"
+  },
+  "skills-gap": {
+    "mp4": "/media/skills-gap.mp4",
+    "webm": "/media/skills-gap.webm",
+    "poster": "/media/skills-gap.jpg",
+    "source": "generated: scripts/render-backdrops.mjs"
+  },
+  "images": {
+    "heroBackdrop": "/images/photos/hero-backdrop.jpg",
+    "aboutOffice": "/images/photos/about-office.jpg",
+    "serviceWeb": "/images/photos/service-web.jpg",
+    "serviceCloud": "/images/photos/service-cloud.jpg",
+    "caseStudyFeature": "/images/photos/case-study-feature.jpg",
+    "projectMedicare": "/images/photos/project-medicare.jpg",
+    "skillsGap": "/images/photos/skills-gap.jpg",
+    "articleAutomation": "/images/photos/article-automation.jpg",
+    "articleProcesses": "/images/photos/article-processes.jpg",
+    "articleGrowth": "/images/photos/article-growth.jpg"
+  }
+}

@@ -106,7 +106,8 @@ interface ManifestEntry {
 export function committedVideo(
   name: "hero-bg" | "skills-gap",
 ): { sources: VideoSource[]; poster?: string } {
-  const entry = (manifest as Record<string, ManifestEntry | undefined>)[name];
+  // The manifest also holds an `images` map (photo slots), so go via unknown.
+  const entry = (manifest as unknown as Record<string, ManifestEntry | undefined>)[name];
   if (!entry) return { sources: [] };
   return {
     sources: [

@@ -17,7 +17,9 @@
     "loadtest": "node scripts/loadtest.mjs",
     "images:placeholders": "node scripts/generate-placeholders.mjs",
     "start:cluster": "node scripts/server.mjs",
-    "media:fetch": "node scripts/fetch-media.mjs"
+    "media:fetch": "node scripts/fetch-media.mjs",
+    "media:mockups": "node scripts/render-mockups.mjs",
+    "media:render": "node scripts/render-backdrops.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.2",
