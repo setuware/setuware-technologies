@@ -6,8 +6,9 @@ import { cn } from "@/lib/utils";
 /**
  * Wordmark, as drawn in the Figma header (nodes 24:2620 and 24:2618).
  *
- * "S" tile mark + two-line wordmark: "Setuware" in Sora SemiBold (brand face),
- * "Technologies" in Manrope SemiBold, muted, sized so the two lines balance. (The Figma ® is omitted at the
+ * "ST" monogram tile + two-line wordmark: "Setuware" in Sora SemiBold (brand
+ * face), "TECHNOLOGIES" in widely tracked Manrope Bold caps spanning the
+ * same width. (The Figma ® is omitted at the
  * owner's request.)
  *
  * The design only shows "Setuware"; the company name is "Setuware
@@ -45,8 +46,8 @@ export function Logo({
         {second ? (
           <span
             className={cn(
-              "mt-[0.22rem] text-[0.84rem] font-semibold tracking-[0.02em] lg:mt-[calc(var(--s)*5)] lg:text-[calc(var(--s)*15.5)]",
-              inverted ? "text-white/65" : "text-foreground/55",
+              "mt-[0.32rem] text-[0.6rem] font-bold uppercase tracking-[0.31em] lg:mt-[calc(var(--s)*6)] lg:text-[calc(var(--s)*10.6)]",
+              inverted ? "text-white/65" : "text-foreground/60",
             )}
           >
             {second}
@@ -58,27 +59,29 @@ export function Logo({
 }
 
 /**
- * Brand mark: a geometric "S" in white on a cyan-to-blue tile, with a small
- * spark at the top right. Decorative — the link carries the name.
+ * Brand mark: "ST" monogram on an ink tile — the S in the brand cyan
+ * gradient, the T in white — with a hairline edge so the tile still reads on
+ * dark backgrounds. Decorative — the link carries the name.
  */
 export function LogoMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 40 40" aria-hidden className={className}>
       <defs>
-        <linearGradient id="setu-mark" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#1fc6ea" />
-          <stop offset="1" stopColor="#0061a8" />
+        <linearGradient id="setu-mark" x1="6" y1="8" x2="34" y2="32" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#5fe0f7" />
+          <stop offset="1" stopColor="#00a1c6" />
         </linearGradient>
       </defs>
-      <rect width="40" height="40" rx="12" fill="url(#setu-mark)" />
+      <rect width="40" height="40" rx="12" fill="#0b1020" />
+      <rect x=".5" y=".5" width="39" height="39" rx="11.5" fill="none" stroke="#fff" strokeOpacity=".12" />
       <path
-        d="M27.6 12.2C25.9 9.4 23.2 8 20.1 8 15.9 8 13 10.5 13 13.8c0 7.6 14.6 5 14.6 12.9 0 3.4-3 6-7.4 6-3.3 0-6.1-1.5-7.8-4.3"
+        d="M18.6 13.4C17.4 11.4 15.5 10.4 13.3 10.4 10.3 10.4 8.3 12.2 8.3 14.5c0 5.3 10.6 3.5 10.6 9.3 0 2.4-2.2 4.3-5.4 4.3-2.4 0-4.4-1.1-5.6-3.1"
         fill="none"
-        stroke="#fff"
-        strokeWidth="4.4"
+        stroke="url(#setu-mark)"
+        strokeWidth="3.6"
         strokeLinecap="round"
       />
-      <circle cx="31" cy="9" r="2.2" fill="#fff" fillOpacity=".85" />
+      <path d="M22 11.2h10.6M27.3 11.2v16.9" fill="none" stroke="#fff" strokeWidth="3.6" strokeLinecap="round" />
     </svg>
   );
 }
