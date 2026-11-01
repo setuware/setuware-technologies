@@ -402,3 +402,262 @@ function SupportVisual() {
     </div>
   );
 }
+
+/** Business websites: a company site on desktop and phone, an enquiry landing. */
+function WebsiteVisual() {
+  return (
+    <div className="absolute inset-0 p-6">
+      <div className="absolute inset-y-6 left-6 right-[30%] flex flex-col overflow-hidden rounded-xl border border-border bg-background/80">
+        <div className="flex items-center gap-1.5 border-b border-border px-3 py-2">
+          <span className="size-1.5 rounded-full bg-red-400/70" />
+          <span className="size-1.5 rounded-full bg-amber-400/70" />
+          <span className="size-1.5 rounded-full bg-emerald-400/70" />
+          <span className="ml-2 h-2.5 flex-1 rounded-full bg-foreground/8 px-2 font-mono text-[7px] leading-[10px] text-muted-foreground">
+            yourbusiness.in
+          </span>
+        </div>
+        <div className="flex items-center justify-between px-3 py-2">
+          <span className="h-2 w-10 rounded-full" style={{ backgroundImage: gradient }} />
+          <span className="flex gap-1.5">
+            {[0, 1, 2].map((item) => (
+              <span key={item} className="h-1.5 w-5 rounded-full bg-foreground/15" />
+            ))}
+          </span>
+        </div>
+        <div className="flex flex-1 flex-col justify-center gap-2 px-3">
+          <span className="h-3 w-4/5 rounded-full bg-foreground/70" />
+          <span className="h-3 w-3/5 rounded-full bg-foreground/70" />
+          <span className="mt-1 h-1.5 w-11/12 rounded-full bg-foreground/15" />
+          <span className="h-1.5 w-3/4 rounded-full bg-foreground/15" />
+          <span className="relative mt-2 inline-flex h-6 w-20 items-center justify-center rounded-full text-[8px] font-semibold text-white" style={{ backgroundImage: gradient }}>
+            Get a quote
+            <span
+              className="absolute inset-0 rounded-full motion-safe:animate-pulse-ring"
+              style={{ boxShadow: "0 0 0 2px var(--accent-to)" }}
+            />
+          </span>
+        </div>
+        <div className="grid grid-cols-3 gap-1.5 p-3">
+          {[0, 1, 2].map((card) => (
+            <span key={card} className="h-6 rounded-md border border-border bg-surface" />
+          ))}
+        </div>
+      </div>
+
+      <div className="absolute bottom-6 right-6 top-10 flex w-[24%] flex-col gap-1.5 overflow-hidden rounded-[1rem] border-[3px] border-foreground/75 bg-background p-2 pt-3 motion-safe:animate-float">
+        <span className="h-1.5 w-8 rounded-full" style={{ backgroundImage: gradient }} />
+        <span className="mt-1 h-2 w-full rounded-full bg-foreground/70" />
+        <span className="h-2 w-3/4 rounded-full bg-foreground/70" />
+        <span className="h-1 w-full rounded-full bg-foreground/15" />
+        <span className="h-1 w-2/3 rounded-full bg-foreground/15" />
+        <span className="mt-auto h-4 rounded-md" style={{ backgroundImage: gradient }} />
+      </div>
+
+      <div className="absolute bottom-[14%] right-[33%] flex items-center gap-2 rounded-lg border border-border bg-surface px-2.5 py-1.5 shadow-ambient motion-safe:animate-float">
+        <span className="size-2 rounded-full bg-emerald-500" />
+        <span className="text-[9px] font-semibold text-foreground">New enquiry</span>
+        <span className="font-mono text-[8px] text-muted-foreground">via WhatsApp</span>
+      </div>
+    </div>
+  );
+}
+
+/** E-commerce: a product grid feeding a cart, paid over UPI. */
+function StoreVisual() {
+  const products = [0, 1, 2, 3];
+
+  return (
+    <div className="absolute inset-0 flex gap-4 p-6">
+      <div className="grid flex-1 grid-cols-2 gap-2.5">
+        {products.map((product) => (
+          <div
+            key={product}
+            className="flex flex-col gap-1.5 rounded-xl border border-border bg-background/80 p-2"
+          >
+            <span
+              className="flex-1 rounded-lg motion-safe:animate-shimmer"
+              style={{
+                backgroundImage: gradient,
+                opacity: 0.3 + product * 0.1,
+                animationDelay: `${product * 0.5}s`,
+              }}
+            />
+            <span className="h-1.5 w-3/4 rounded-full bg-foreground/20" />
+            <span className="flex items-center justify-between">
+              <span className="font-mono text-[8px] font-semibold text-foreground">
+                ₹{[1499, 899, 2199, 649][product]}
+              </span>
+              <span
+                className="inline-flex size-3.5 items-center justify-center rounded-full text-[9px] leading-none text-white"
+                style={{ backgroundImage: gradient }}
+              >
+                +
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex w-[38%] shrink-0 flex-col gap-2 rounded-xl border border-border bg-background/80 p-3">
+        <span className="flex items-center justify-between text-[9px] font-semibold text-foreground">
+          Cart
+          <span
+            className="inline-flex size-4 items-center justify-center rounded-full text-[8px] text-white motion-safe:animate-[swatch-pop_2.4s_ease-in-out_infinite]"
+            style={{ backgroundImage: gradient }}
+          >
+            3
+          </span>
+        </span>
+        {[70, 55, 62].map((width, index) => (
+          <span key={index} className="flex items-center gap-1.5">
+            <span className="size-4 shrink-0 rounded bg-foreground/10" />
+            <span className="h-1.5 rounded-full bg-foreground/20" style={{ width: `${width}%` }} />
+          </span>
+        ))}
+        <span className="mt-auto flex items-center justify-between border-t border-border pt-2 font-mono text-[8px] text-muted-foreground">
+          GST incl.
+          <span className="font-semibold text-foreground">₹4,597</span>
+        </span>
+        <span className="rounded-lg py-1.5 text-center text-[8px] font-semibold text-white" style={{ backgroundImage: gradient }}>
+          Pay with UPI
+        </span>
+        <span className="flex items-center justify-center gap-1 rounded-md border border-emerald-500/30 bg-emerald-500/10 py-1 text-[8px] font-medium text-emerald-700 motion-safe:animate-shimmer dark:text-emerald-400">
+          Paid · courier booked
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/** SEO and marketing: a result climbing the search page, leads rising. */
+function MarketingVisual() {
+  const bars = [22, 30, 28, 40, 48, 58, 72, 86];
+
+  return (
+    <div className="absolute inset-0 flex gap-4 p-6">
+      <div className="flex flex-1 flex-col gap-2">
+        <div className="flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-1.5">
+          <span className="size-2 rounded-full border border-muted-foreground" />
+          <span className="font-mono text-[9px] text-foreground">dental clinic near me</span>
+          <span className="h-3 w-px bg-foreground motion-safe:animate-[caret_1s_steps(1)_infinite]" />
+        </div>
+
+        <div className="relative flex flex-1 flex-col justify-center gap-2">
+          {[0, 1, 2].map((row) => (
+            <div key={row} className="flex flex-col gap-1 rounded-lg border border-border bg-background/60 px-2.5 py-1.5 opacity-60">
+              <span className="h-1.5 w-1/2 rounded-full bg-foreground/25" />
+              <span className="h-1 w-5/6 rounded-full bg-foreground/12" />
+            </div>
+          ))}
+          <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 flex-col gap-1 rounded-lg border bg-surface px-2.5 py-1.5 shadow-ambient motion-safe:animate-float"
+            style={{ borderColor: "var(--accent-to)" }}
+          >
+            <span className="flex items-center justify-between">
+              <span className="h-1.5 w-1/2 rounded-full" style={{ backgroundImage: gradient }} />
+              <span className="rounded-full bg-emerald-500/15 px-1.5 font-mono text-[8px] font-semibold text-emerald-700 dark:text-emerald-400">
+                ▲ 5 places
+              </span>
+            </span>
+            <span className="h-1 w-5/6 rounded-full bg-foreground/20" />
+            <span className="flex gap-0.5">
+              {[0, 1, 2, 3, 4].map((star) => (
+                <span key={star} className="text-[8px] leading-none text-amber-500">★</span>
+              ))}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex w-[34%] shrink-0 flex-col gap-2 rounded-xl border border-border bg-background/80 p-3">
+        <span className="text-[9px] uppercase tracking-wider text-muted-foreground">
+          Enquiries
+        </span>
+        <span className="font-mono text-[8px] text-muted-foreground">by week, tracked in GA4</span>
+        <div className="flex flex-1 items-end gap-1">
+          {bars.map((height, index) => (
+            <span
+              key={index}
+              className="flex-1 origin-bottom rounded-sm motion-safe:animate-[bar-grow_3s_ease-in-out_infinite]"
+              style={{ height: `${height}%`, backgroundImage: gradient, animationDelay: `${index * 0.1}s` }}
+            />
+          ))}
+        </div>
+        <span className="font-mono text-[8px] text-muted-foreground">cost / lead ▼</span>
+      </div>
+    </div>
+  );
+}
+
+/** Custom software: separate modules feeding one system of record. */
+function SystemVisual() {
+  const modules = ["Orders", "Stock", "Billing", "Staff"];
+
+  return (
+    <div className="absolute inset-0 flex items-center justify-center p-6">
+      <svg
+        viewBox="0 0 220 160"
+        preserveAspectRatio="none"
+        className="absolute inset-0 h-full w-full"
+        aria-hidden
+      >
+        <defs>
+          <linearGradient id="erp-stroke" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="var(--accent-from)" />
+            <stop offset="100%" stopColor="var(--accent-to)" />
+          </linearGradient>
+        </defs>
+        {[
+          "M60 36 C 90 36, 90 80, 110 80",
+          "M160 36 C 130 36, 130 80, 110 80",
+          "M60 124 C 90 124, 90 80, 110 80",
+          "M160 124 C 130 124, 130 80, 110 80",
+        ].map((d, index) => (
+          <path
+            key={d}
+            d={d}
+            fill="none"
+            stroke="url(#erp-stroke)"
+            strokeWidth="1.6"
+            strokeDasharray="5 8"
+            className="motion-safe:animate-dash"
+            style={{ animationDelay: `${index * 0.4}s` }}
+          />
+        ))}
+      </svg>
+
+      <div className="relative grid h-full w-full grid-cols-2 grid-rows-2 gap-x-[38%] gap-y-[30%]">
+        {modules.map((module, index) => (
+          <div
+            key={module}
+            className="flex flex-col justify-center gap-1 rounded-lg border border-border bg-background/90 px-2.5 py-1.5"
+          >
+            <span className="flex items-center gap-1.5 text-[9px] font-semibold text-foreground">
+              <span
+                className="size-1.5 rounded-full bg-emerald-500 motion-safe:animate-[blink-led_2.4s_ease-in-out_infinite]"
+                style={{ animationDelay: `${index * 0.3}s` }}
+              />
+              {module}
+            </span>
+            <span className="h-1 w-3/4 rounded-full bg-foreground/15" />
+          </div>
+        ))}
+      </div>
+
+      <div className="absolute left-1/2 top-1/2 flex w-[30%] -translate-x-1/2 -translate-y-1/2 flex-col gap-1.5 rounded-xl border bg-surface p-2.5 shadow-ambient"
+        style={{ borderColor: "var(--accent-from)" }}
+      >
+        <span className="text-[8px] uppercase tracking-wider text-muted-foreground">Dashboard</span>
+        <div className="flex h-8 items-end gap-0.5">
+          {[45, 70, 55, 85, 65].map((height, index) => (
+            <span
+              key={index}
+              className="flex-1 origin-bottom rounded-sm motion-safe:animate-[bar-grow_2.8s_ease-in-out_infinite]"
+              style={{ height: `${height}%`, backgroundImage: gradient, animationDelay: `${index * 0.15}s` }}
+            />
+          ))}
+        </div>
+        <span className="font-mono text-[8px] text-foreground">1 source of truth</span>
+      </div>
+    </div>
+  );
+}

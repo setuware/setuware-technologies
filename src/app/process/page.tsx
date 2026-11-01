@@ -5,7 +5,6 @@ import { pageMetadata } from "@/lib/seo";
 import { services } from "@/lib/content";
 import { projectPackages } from "@/lib/plans";
 import { Faq } from "@/components/sections/faq";
-import { CtaBand } from "@/components/sections/cta-band";
 import { PageHero } from "@/components/layout/page-hero";
 import { ButtonLink } from "@/components/ui/button";
 import { DeferredSection } from "@/components/ui/deferred-section";
@@ -411,14 +410,6 @@ export default function ProcessPage() {
 
       <DeferredSection minHeight={720}>
         <Faq items={PROCESS_FAQS} />
-      </DeferredSection>
-
-      <DeferredSection minHeight={380}>
-        <CtaBand
-          title="Ready for stage one?"
-          description="Book a free 30-minute call. You leave with a written summary and a price range, whether or not we work together."
-          primaryLabel="Book a free call"
-        />
       </DeferredSection>
     </>
   );

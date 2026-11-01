@@ -6,8 +6,6 @@ import { pageMetadata } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 import { Reveal } from "@/components/ui/reveal";
 import { PageHero } from "@/components/layout/page-hero";
-import { CtaBand } from "@/components/sections/cta-band";
-import { DeferredSection } from "@/components/ui/deferred-section";
 
 export const metadata = pageMetadata({
   title: "Articles and insights",
@@ -103,13 +101,6 @@ export default function BlogPage() {
           ))}
         </div>
       </div>
-
-      <DeferredSection minHeight={380}>
-        <CtaBand
-          title="Have a question these do not answer?"
-          description="Tell us about your business and what you need. The first call is free, and you get a written summary either way."
-        />
-      </DeferredSection>
     </>
   );
 }

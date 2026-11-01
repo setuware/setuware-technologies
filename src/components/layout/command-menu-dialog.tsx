@@ -81,14 +81,6 @@ function buildIndex(): Command[] {
       href: `/services/${service.slug}`,
       keywords: `${service.name} ${service.summary} ${service.stack.join(" ")}`,
     })),
-    ...industries.map((industry) => ({
-      id: `industry-${industry.slug}`,
-      label: industry.name,
-      hint: industry.summary,
-      kind: "industry" as const,
-      href: `/industries/${industry.slug}`,
-      keywords: `${industry.name} ${industry.summary} ${industry.features.join(" ")}`,
-    })),
     ...caseStudies.map((study) => ({
       id: `work-${study.slug}`,
       label: study.title,
@@ -104,6 +96,16 @@ function buildIndex(): Command[] {
       kind: "post" as const,
       href: `/blog/${post.slug}`,
       keywords: `${post.title} ${post.excerpt} ${post.category}`,
+    })),
+    // After articles: the empty-query list is capped, and industries are
+    // found by typing.
+    ...industries.map((industry) => ({
+      id: `industry-${industry.slug}`,
+      label: industry.name,
+      hint: industry.summary,
+      kind: "industry" as const,
+      href: `/industries/${industry.slug}`,
+      keywords: `${industry.name} ${industry.summary} ${industry.features.join(" ")}`,
     })),
     ...mainNav.map((item) => ({
       id: `page-${item.href}`,

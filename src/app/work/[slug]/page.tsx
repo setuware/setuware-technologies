@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Quote } from "lucide-react";
@@ -8,8 +9,6 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Section } from "@/components/ui/section";
-import { CtaBand } from "@/components/sections/cta-band";
-import { DeferredSection } from "@/components/ui/deferred-section";
 
 export function generateStaticParams() {
   return caseStudies.map((study) => ({ slug: study.slug }));
@@ -34,11 +33,24 @@ export async function generateMetadata({
   });
 }
 
-export default async function CaseStudyPage({
+/**
+ * `params` is read inside a Suspense boundary so navigations render the shell
+ * instantly. Every known slug is prerendered by `generateStaticParams`, so the
+ * fallback only ever shows on the way to a 404.
+ */
+export default function CaseStudyPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  return (
+    <Suspense fallback={<div className="min-h-[70vh]" aria-busy="true" />}>
+      <CaseStudy params={params} />
+    </Suspense>
+  );
+}
+
+async function CaseStudy({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const study = getCaseStudy(slug);
   if (!study) notFound();
@@ -222,22 +234,20 @@ export default async function CaseStudyPage({
             ))}
           </div>
 
-          <ButtonLink href="/work" variant="secondary" className="mt-8 rounded-full">
-            All case studies
-          </ButtonLink>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <ButtonLink
+              href={primaryService ? `/contact?service=${primaryService.slug}` : "/contact"}
+              className="rounded-full bg-setu text-white shadow-none hover:bg-setu-dark"
+            >
+              Start a similar project
+              <ArrowRight className="size-4" aria-hidden />
+            </ButtonLink>
+            <ButtonLink href="/work" variant="secondary" className="rounded-full">
+              All case studies
+            </ButtonLink>
+          </div>
         </div>
       </Section>
-
-      <DeferredSection minHeight={380}>
-        <CtaBand
-          title="Need something similar?"
-          description="Tell us about your business and what you need. After a free 30-minute call you get a written scope and a fixed price."
-          primaryHref={
-            primaryService ? `/contact?service=${primaryService.slug}` : "/contact"
-          }
-          primaryLabel="Start a similar project"
-        />
-      </DeferredSection>
 
       <JsonLd
         data={breadcrumbJsonLd([

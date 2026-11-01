@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
@@ -49,7 +50,20 @@ const START_STEPS = [
   },
 ] as const;
 
-export default async function IndustryPage({ params }: { params: Promise<{ slug: string }> }) {
+/**
+ * `params` is read inside a Suspense boundary so navigations render the shell
+ * instantly. Every known slug is prerendered by `generateStaticParams`, so the
+ * fallback only ever shows on the way to a 404.
+ */
+export default function IndustryPage({ params }: { params: Promise<{ slug: string }> }) {
+  return (
+    <Suspense fallback={<div className="min-h-[70vh]" aria-busy="true" />}>
+      <IndustryContent params={params} />
+    </Suspense>
+  );
+}
+
+async function IndustryContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const industry = getIndustry(slug);
   if (!industry) notFound();

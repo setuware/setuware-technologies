@@ -2,7 +2,6 @@ import { Calculator, ShieldCheck, Sparkles } from "lucide-react";
 
 import { pageMetadata } from "@/lib/seo";
 import { Estimator } from "@/components/interactive/estimator";
-import { CtaBand } from "@/components/sections/cta-band";
 import { PageHero } from "@/components/layout/page-hero";
 
 export const metadata = pageMetadata({
@@ -51,12 +50,6 @@ export default function EstimatePage() {
       <div className="container-page py-12 md:py-16">
         <Estimator />
       </div>
-
-      <CtaBand
-        title="Prefer to talk it through?"
-        description="Some projects are easier to scope in a conversation. Book a free 30-minute call and we will work out the scope with you."
-        primaryLabel="Book a free call"
-      />
     </>
   );
 }

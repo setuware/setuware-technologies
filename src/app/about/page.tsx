@@ -16,9 +16,7 @@ import { heroVideoPoster, heroVideoSources } from "@/lib/media";
 import { HeroVideo } from "@/components/interactive/hero-video";
 import { PipelineAnimation } from "@/components/interactive/pipeline-animation";
 import { PageHero } from "@/components/layout/page-hero";
-import { CtaBand } from "@/components/sections/cta-band";
 import { ButtonLink } from "@/components/ui/button";
-import { DeferredSection } from "@/components/ui/deferred-section";
 import { Section } from "@/components/ui/section";
 import { ServiceIcon } from "@/components/ui/service-icon";
 import { TextReveal } from "@/components/motion/text-reveal";
@@ -393,14 +391,6 @@ export default function AboutPage() {
           </Stagger>
         </div>
       </Section>
-
-      <DeferredSection minHeight={380}>
-        <CtaBand
-          title="Tell us what your business needs next"
-          description="A website, a store, an app or help with the one you have. Book a free 30-minute call. You get a written summary and a price range, whether or not we work together."
-          primaryLabel="Book a free call"
-        />
-      </DeferredSection>
     </>
   );
 }

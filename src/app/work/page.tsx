@@ -4,8 +4,6 @@ import { ArrowRight } from "lucide-react";
 import { caseStudies, getService } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/layout/page-hero";
-import { CtaBand } from "@/components/sections/cta-band";
-import { DeferredSection } from "@/components/ui/deferred-section";
 import { FadeUp } from "@/components/motion/primitives";
 import { CaseStudyGrid, type CaseStudyCard } from "./case-study-grid";
 
@@ -67,14 +65,6 @@ export default function WorkPage() {
           </Link>
         </FadeUp>
       </div>
-
-      <DeferredSection minHeight={380}>
-        <CtaBand
-          title="Want results like these for your business?"
-          description="Tell us what you need. After a free 30-minute call you get a written scope and a fixed price."
-          primaryLabel="Start a project"
-        />
-      </DeferredSection>
     </>
   );
 }

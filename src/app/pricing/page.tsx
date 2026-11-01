@@ -21,7 +21,6 @@ import { SERVICE_RATES } from "@/lib/pricing";
 import { formatINR, formatINRCompact } from "@/lib/utils";
 import { PricingPlans } from "@/components/sections/pricing-plans";
 import { Faq } from "@/components/sections/faq";
-import { CtaBand } from "@/components/sections/cta-band";
 import { DeferredSection } from "@/components/ui/deferred-section";
 import { PageHero } from "@/components/layout/page-hero";
 import { ButtonLink } from "@/components/ui/button";
@@ -414,14 +413,6 @@ export default function PricingPage() {
 
       <DeferredSection minHeight={720}>
         <Faq items={PRICING_FAQS} />
-      </DeferredSection>
-
-      <DeferredSection minHeight={380}>
-        <CtaBand
-          title="Get a fixed price for your project"
-          description="Tell us what you need. After a free 30-minute call you get a written scope and one fixed price, usually within three to five working days."
-          primaryLabel="Get my quote"
-        />
       </DeferredSection>
     </>
   );
