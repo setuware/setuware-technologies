@@ -1,5 +1,6 @@
 import { processSteps } from "@/lib/content";
 import { Reveal } from "@/components/ui/reveal";
+import { DarkSectionBackdrop } from "@/components/sections/services-dark";
 
 /**
  * "A refined process built on clarity".
@@ -13,12 +14,10 @@ export function ProcessDark() {
   return (
     <section
       id="process"
-      className="relative overflow-hidden bg-[#05070d] pb-24 pt-4 md:pb-32"
+      className="relative overflow-hidden bg-black pb-24 pt-4 md:pb-32"
     >
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-72 bg-[radial-gradient(60%_100%_at_50%_100%,rgba(37,99,235,0.2),transparent)]"
-        aria-hidden
-      />
+      {/* Lower end of Figma 24:2647, continuing the services backdrop. */}
+      <DarkSectionBackdrop position="bottom" />
 
       <div className="container-page relative">
         <div className="mx-auto max-w-2xl text-center">

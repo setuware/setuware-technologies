@@ -32,18 +32,11 @@ export function ServicesDark() {
   return (
     <section
       id="services"
-      className="relative overflow-hidden bg-[#05070d] py-20 md:py-28"
+      className="relative overflow-hidden bg-black py-20 md:py-28"
     >
-      <div
-        className="pointer-events-none absolute inset-0 opacity-40"
-        style={{
-          backgroundImage: "radial-gradient(rgba(125,211,252,0.2) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-          maskImage:
-            "radial-gradient(ellipse 75% 65% at 50% 45%, #000 30%, transparent 100%)",
-        }}
-        aria-hidden
-      />
+      {/* Figma 24:2647: black with a 13% halftone texture. The node spans this
+          section and the process timeline below; this section shows its top. */}
+      <DarkSectionBackdrop position="top" />
 
       <div className="container-page relative">
         <div className="flex flex-wrap items-end justify-between gap-6">
@@ -139,5 +132,38 @@ export function ServicesDark() {
         </ul>
       </div>
     </section>
+  );
+}
+
+/**
+ * The dark halftone backdrop shared by "All services" and the process
+ * timeline (Figma 24:2647, one 1920×1980 node behind both). Each section shows
+ * its own end of the image, and the seam between them is feathered with a mask
+ * so the two read as one surface without depending on either's height.
+ */
+export function DarkSectionBackdrop({ position }: { position: "top" | "bottom" }) {
+  const backdrop = images.servicesDarkBackdrop;
+  return (
+    <div
+      className="pointer-events-none absolute inset-0"
+      style={{
+        maskImage:
+          position === "top"
+            ? "linear-gradient(to bottom, #000 80%, transparent)"
+            : "linear-gradient(to top, #000 80%, transparent)",
+      }}
+      aria-hidden
+    >
+      <Image
+        src={backdrop.src}
+        alt={backdrop.alt}
+        fill
+        sizes="100vw"
+        className={cn(
+          "object-cover",
+          position === "top" ? "object-top" : "object-bottom",
+        )}
+      />
+    </div>
   );
 }

@@ -14,13 +14,15 @@ import type { IconName } from "@/lib/content";
 export interface NavLink {
   label: string;
   href: string;
+  /** Shows the small chevron the Figma header draws after this label. */
+  chevron?: boolean;
 }
 
 export const navLinks: readonly NavLink[] = [
   { label: "Projects", href: "/work" },
-  { label: "Services", href: "/services" },
+  { label: "Services", href: "/services", chevron: true },
   { label: "How It Works", href: "/process" },
-  { label: "About", href: "/about" },
+  { label: "About", href: "/about", chevron: true },
   { label: "Pricing", href: "/pricing" },
   { label: "Contact", href: "/contact" },
 ];

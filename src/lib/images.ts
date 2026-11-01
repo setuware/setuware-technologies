@@ -79,6 +79,17 @@ export const images = {
     height: 700,
     alt: "A team reviewing growth metrics together on a shared screen",
   },
+  /**
+   * Figma 24:2647 — the dark halftone backdrop behind "All services" and the
+   * process timeline. A render of the composited node (black + 13% texture),
+   * 1920×1980 in the design; decorative.
+   */
+  servicesDarkBackdrop: {
+    src: "/images/services-dark-bg.png",
+    width: 993,
+    height: 1024,
+    alt: "",
+  },
 } as const satisfies Record<string, ImageSlot>;
 
 export type ImageKey = keyof typeof images;
