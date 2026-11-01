@@ -1,6 +1,7 @@
-import { Plus } from "lucide-react";
-
 import { faqGroups, faqs, type Faq as FaqItem } from "@/lib/content";
+import { AccordionRoot, AccordionRow } from "@/components/ui/accordion";
+import { TextReveal } from "@/components/motion/text-reveal";
+import { FadeUp, Stagger, StaggerItem } from "@/components/motion/primitives";
 
 export interface FaqProps {
   items?: readonly FaqItem[];
@@ -10,8 +11,9 @@ export interface FaqProps {
  * Frequently asked questions.
  *
  * Heading on the left, questions on the right under their group headings.
- * Built on `<details>`/`<summary>`: keyboard and screen-reader behaviour come
- * from the platform, it works before hydration, and it ships zero JavaScript.
+ * Rows are `<details>`/`<summary>` underneath (see `AccordionRow`), so they
+ * work before hydration and every answer is in the HTML. One row is open at a
+ * time across all groups.
  */
 export function Faq({ items = faqs }: FaqProps) {
   const grouped = faqGroups
@@ -21,47 +23,51 @@ export function Faq({ items = faqs }: FaqProps) {
   return (
     <section
       id="faq"
+      aria-labelledby="faq-title"
       className="bg-[linear-gradient(180deg,color-mix(in_oklab,var(--color-brand-100)_35%,var(--background)),var(--background))] py-20 md:py-28"
     >
       <div className="container-page grid gap-10 lg:grid-cols-[0.8fr_1.4fr] lg:gap-16">
         <div className="lg:sticky lg:top-24 lg:self-start">
-          <h2 className="font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.2rem]">
-            Frequently Asked
-            <br />
-            Questions
-          </h2>
-          <p className="mt-4 max-w-xs text-[0.85rem] leading-relaxed text-muted-foreground">
-            Common questions on timelines, billing, and who you will partner
-            with here.
-          </p>
+          <TextReveal
+            id="faq-title"
+            className="font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.2rem]"
+          >
+            {"Frequently Asked\nQuestions"}
+          </TextReveal>
+          <FadeUp delay={0.25} y={20}>
+            <p className="mt-4 max-w-xs text-[0.85rem] leading-relaxed text-muted-foreground">
+              Pricing, timelines, who owns the code and what happens after
+              launch. Question not here? Ask us directly.
+            </p>
+          </FadeUp>
         </div>
 
-        <div className="flex flex-col gap-8">
-          {grouped.map(({ group, questions }) => (
-            <div key={group}>
-              <h3 className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-                {group}
-              </h3>
+        <AccordionRoot singleOpen name="faq">
+          <Stagger className="flex flex-col gap-8" stagger={0.12}>
+            {grouped.map(({ group, questions }) => (
+              <StaggerItem key={group} y={28}>
+                <h3 className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+                  {group}
+                </h3>
 
-              <div className="mt-3 divide-y divide-border border-y border-border">
-                {questions.map((item) => (
-                  <details key={item.question} name="faq" className="group py-1">
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-3.5 text-left text-[0.88rem] font-medium text-foreground marker:content-none [&::-webkit-details-marker]:hidden">
-                      {item.question}
-                      <Plus
-                        className="size-4 shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-45"
-                        aria-hidden
-                      />
-                    </summary>
-                    <p className="pb-4 pr-8 text-[0.85rem] leading-relaxed text-muted-foreground">
-                      {item.answer}
-                    </p>
-                  </details>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+                <div className="mt-3 divide-y divide-border border-y border-border">
+                  {questions.map((item) => (
+                    <AccordionRow
+                      key={item.question}
+                      id={item.question}
+                      question={item.question}
+                      answer={item.answer}
+                      className="py-1"
+                      summaryClassName="py-3.5 text-[0.88rem] font-medium text-foreground"
+                      iconClassName="size-4 text-muted-foreground transition-colors duration-300 group-open:text-foreground"
+                      answerClassName="pb-4 pr-8 text-[0.85rem] leading-relaxed text-muted-foreground"
+                    />
+                  ))}
+                </div>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </AccordionRoot>
       </div>
     </section>
   );

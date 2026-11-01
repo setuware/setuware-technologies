@@ -1,17 +1,16 @@
 /**
  * The capability ticker under the hero.
  *
- * Separate from `services` because these are the eight things we say we do,
- * while `services` are the six we have dedicated pages and pricing for. The
- * ticker links each capability to the service page that covers it.
+ * A shorter, punchier cut of `services` for the ticker: eight labels, each
+ * linking to the service page that covers it.
  */
 export const capabilities: readonly { label: string; href: string }[] = [
-  { label: "Website development", href: "/services/web-development" },
-  { label: "Web application development", href: "/services/web-development" },
-  { label: "SaaS product development", href: "/services/web-development" },
-  { label: "API & backend development", href: "/services/web-development" },
-  { label: "Cloud & DevOps", href: "/services/managed-hosting" },
-  { label: "Automation", href: "/services/ai-integration" },
-  { label: "MVP development", href: "/services/app-development" },
-  { label: "Maintenance and tech support", href: "/services/support-maintenance" },
+  { label: "Business websites", href: "/services/business-websites" },
+  { label: "Shopify and WooCommerce stores", href: "/services/ecommerce-stores" },
+  { label: "Web apps and SaaS", href: "/services/web-development" },
+  { label: "iOS and Android apps", href: "/services/app-development" },
+  { label: "Logos and brand identity", href: "/services/product-design" },
+  { label: "SEO and Google Ads", href: "/services/seo-marketing" },
+  { label: "ERP, CRM and automation", href: "/services/custom-software" },
+  { label: "Hosting and maintenance", href: "/services/managed-hosting" },
 ];

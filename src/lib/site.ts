@@ -3,9 +3,9 @@
 export const site = {
   name: "Setuware Technologies",
   shortName: "Setuware Technologies",
-  tagline: "Ship software that scales",
+  tagline: "Business websites, and every digital service after",
   description:
-    "Setuware Technologies builds and runs production software — web apps, mobile apps, managed hosting and 24/7 support — for startups and growing businesses.",
+    "Setuware Technologies builds business websites and online stores from Gurugram, then handles what comes next: web and mobile apps, branding, SEO and marketing, custom software, hosting and support. Fixed prices, and you own what we build.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://setuwaresoftware.in",
   locale: "en_IN",
   email: "sales@setuware.in",

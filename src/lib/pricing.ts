@@ -7,11 +7,15 @@
  */
 
 export type ServiceKey =
+  | "business-websites"
+  | "ecommerce-stores"
   | "web-development"
   | "app-development"
-  | "managed-hosting"
-  | "ai-integration"
   | "product-design"
+  | "seo-marketing"
+  | "custom-software"
+  | "ai-integration"
+  | "managed-hosting"
   | "support-maintenance";
 
 export type DesignTier = "starter" | "custom" | "premium";
@@ -84,9 +88,31 @@ interface ServiceRate {
   supportsPlatforms: boolean;
 }
 
+// TODO(owner): confirm the base and per-unit rates for business-websites,
+// ecommerce-stores, seo-marketing and custom-software. Business websites is
+// anchored to the published Website Build package (from ₹20,000); the other
+// three are placeholders, not published prices.
 export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
+  "business-websites": {
+    label: "Business websites",
+    base: 20_000,
+    perScope: 3_000,
+    scopeNoun: "pages",
+    baseWeeks: 2,
+    throughput: 4,
+    supportsPlatforms: false,
+  },
+  "ecommerce-stores": {
+    label: "E-commerce stores",
+    base: 60_000,
+    perScope: 5_000,
+    scopeNoun: "product categories",
+    baseWeeks: 3,
+    throughput: 3,
+    supportsPlatforms: false,
+  },
   "web-development": {
-    label: "Web development",
+    label: "Web application development",
     base: 120_000,
     perScope: 18_000,
     scopeNoun: "pages",
@@ -95,7 +121,7 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
     supportsPlatforms: false,
   },
   "app-development": {
-    label: "App development",
+    label: "Mobile app development",
     base: 220_000,
     perScope: 26_000,
     scopeNoun: "screens",
@@ -104,7 +130,7 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
     supportsPlatforms: true,
   },
   "managed-hosting": {
-    label: "Managed hosting",
+    label: "Hosting & domains",
     base: 25_000,
     perScope: 2_000,
     scopeNoun: "environments",
@@ -112,8 +138,26 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
     throughput: 6,
     supportsPlatforms: false,
   },
+  "seo-marketing": {
+    label: "SEO & digital marketing",
+    base: 15_000,
+    perScope: 1_500,
+    scopeNoun: "pages",
+    baseWeeks: 1,
+    throughput: 8,
+    supportsPlatforms: false,
+  },
+  "custom-software": {
+    label: "Custom software, ERP & CRM",
+    base: 150_000,
+    perScope: 25_000,
+    scopeNoun: "modules",
+    baseWeeks: 4,
+    throughput: 1,
+    supportsPlatforms: false,
+  },
   "ai-integration": {
-    label: "AI integration",
+    label: "AI & automation",
     base: 180_000,
     perScope: 24_000,
     scopeNoun: "workflows",
@@ -122,7 +166,7 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
     supportsPlatforms: false,
   },
   "product-design": {
-    label: "Product design",
+    label: "UI/UX & branding",
     base: 90_000,
     perScope: 12_000,
     scopeNoun: "screens",
@@ -131,7 +175,7 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
     supportsPlatforms: false,
   },
   "support-maintenance": {
-    label: "Support & maintenance",
+    label: "Maintenance & support",
     base: 40_000,
     perScope: 4_000,
     scopeNoun: "applications",
@@ -149,61 +193,61 @@ export const FEATURE_RATES: Record<
     label: "Accounts & authentication",
     cost: 35_000,
     weeks: 0.8,
-    hint: "Email, OTP and social sign-in with roles",
+    hint: "Email, OTP and social sign-in, with roles",
   },
   payments: {
     label: "Payments & billing",
     cost: 55_000,
     weeks: 1.2,
-    hint: "Razorpay / Stripe, invoices, refunds",
+    hint: "Razorpay or Stripe, invoices and refunds",
   },
   cms: {
     label: "Content management",
     cost: 40_000,
     weeks: 0.8,
-    hint: "Your team edits content without us",
+    hint: "Your team edits content without a developer",
   },
   dashboard: {
     label: "Admin dashboard",
     cost: 70_000,
     weeks: 1.5,
-    hint: "Reporting, exports, user management",
+    hint: "Reports, CSV exports and user management",
   },
   chat: {
     label: "Realtime chat / notifications",
     cost: 45_000,
     weeks: 1,
-    hint: "Sockets, push and email events",
+    hint: "WebSockets, push and email notifications",
   },
   ai: {
     label: "AI assistant / automation",
     cost: 90_000,
     weeks: 1.8,
-    hint: "RAG search, copilots, document parsing",
+    hint: "Search over your documents, assistants, parsing",
   },
   i18n: {
     label: "Multi-language",
     cost: 30_000,
     weeks: 0.6,
-    hint: "Localised routes, currency and dates",
+    hint: "Translated pages, local currency and dates",
   },
   integrations: {
     label: "Third-party integrations",
     cost: 50_000,
     weeks: 1,
-    hint: "CRM, ERP, logistics, WhatsApp",
+    hint: "CRM, ERP, logistics APIs, WhatsApp Business",
   },
   seo: {
     label: "Technical SEO & analytics",
     cost: 25_000,
     weeks: 0.5,
-    hint: "Schema, sitemaps, dashboards",
+    hint: "Schema markup, sitemaps, analytics dashboards",
   },
   pwa: {
     label: "Offline / installable PWA",
     cost: 35_000,
     weeks: 0.7,
-    hint: "Works on patchy networks",
+    hint: "Installable, and works on patchy networks",
   },
 };
 
@@ -214,12 +258,12 @@ export const DESIGN_TIERS: Record<
   starter: {
     label: "Clean & conventional",
     multiplier: 1,
-    hint: "Proven layouts, our component library",
+    hint: "Proven layouts built on our component library",
   },
   custom: {
     label: "Custom branded",
     multiplier: 1.25,
-    hint: "Bespoke design system and illustrations",
+    hint: "Your own design system and illustrations",
   },
   premium: {
     label: "Signature & animated",
@@ -236,19 +280,19 @@ export const TIMELINES: Record<
     label: "Flexible",
     multiplier: 0.92,
     speed: 0.8,
-    hint: "We slot it between sprints — best value",
+    hint: "Fits between other sprints. Lowest price.",
   },
   standard: {
     label: "Standard",
     multiplier: 1,
     speed: 1,
-    hint: "Dedicated squad, normal cadence",
+    hint: "Dedicated squad, two-week sprints",
   },
   accelerated: {
     label: "Accelerated",
     multiplier: 1.35,
     speed: 1.45,
-    hint: "Parallel tracks, larger squad",
+    hint: "Larger squad working in parallel tracks",
   },
 };
 
@@ -349,13 +393,13 @@ export function estimateProject(input: EstimateInput): EstimateResult {
 
   const notes: string[] = [];
   if (timeline.multiplier > 1) {
-    notes.push("Accelerated delivery adds a larger squad and weekend QA cover.");
+    notes.push("Accelerated delivery adds engineers and weekend QA cover.");
   }
   if (features.includes("payments")) {
-    notes.push("Payment gateway onboarding needs your business KYC documents.");
+    notes.push("Payment gateway activation needs your business KYC documents.");
   }
   if (features.includes("ai")) {
-    notes.push("AI usage is billed at cost on top of the build price.");
+    notes.push("AI model usage is billed to you at cost, on top of the build price.");
   }
   if (platforms.length > 1) {
     notes.push(
@@ -366,7 +410,7 @@ export function estimateProject(input: EstimateInput): EstimateResult {
   }
   if (input.service === "managed-hosting") {
     notes.push(
-      "Hosting includes 99.95% uptime monitoring, WAF and nightly backups.",
+      "Hosting covers monitoring, WAF and nightly backups. The uptime SLA depends on your care plan.",
     );
   }
 

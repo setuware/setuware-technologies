@@ -19,8 +19,19 @@ export interface ServiceVisualProps {
   className?: string;
 }
 
+const CODE_LABEL =
+  "Animated illustration of a web page being built line by line, with a live performance score.";
+
+/**
+ * Services without a dedicated visual (websites, stores, marketing, custom
+ * software) reuse the page-building one, so their labels describe that.
+ */
 const LABELS: Record<IconName, string> = {
-  code: "Animated illustration of a web page being built line by line, with a live performance score.",
+  globe: CODE_LABEL,
+  cart: CODE_LABEL,
+  megaphone: CODE_LABEL,
+  boxes: CODE_LABEL,
+  code: CODE_LABEL,
   smartphone: "Animated illustration of app screens moving through a phone frame.",
   server: "Animated illustration of server racks with health indicators and traffic throughput.",
   sparkles: "Animated illustration of a retrieval graph answering a question from source documents.",
@@ -58,6 +69,10 @@ export function ServiceVisual({ variant, accent, className }: ServiceVisualProps
 
 function Variant({ variant }: { variant: IconName }) {
   switch (variant) {
+    case "globe":
+    case "cart":
+    case "megaphone":
+    case "boxes":
     case "code":
       return <CodeVisual />;
     case "smartphone":
