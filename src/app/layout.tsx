@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Manrope } from "next/font/google";
 
 import { organizationJsonLd } from "@/lib/seo";
 import { site } from "@/lib/site";
@@ -9,6 +9,8 @@ import { Navbar } from "@/components/layout/navbar";
 import { mobileServices, navLinks } from "@/components/layout/nav-menu-data";
 import { ThemeProvider } from "@/components/layout/theme";
 import { DeferredWidgets } from "@/components/layout/deferred-widgets";
+import { SmoothScroll } from "@/components/motion/smooth-scroll";
+import { MotionProvider } from "@/components/motion/motion-provider";
 
 import "./globals.css";
 
@@ -16,18 +18,21 @@ import "./globals.css";
  * `display: swap` plus a preconnect-free self-hosted subset: text is readable
  * on the first paint instead of waiting on a font download.
  */
-const inter = Inter({
+/** Manrope is the only typeface in the Figma design (weights 400–800). */
+const inter = Manrope({
   variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
   preload: true,
+  weight: ["400", "500", "600", "700", "800"],
 });
 
-const display = Space_Grotesk({
+const display = Manrope({
   variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
-  weight: ["500", "600", "700"],
+  preload: false,
+  weight: ["500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -96,12 +101,15 @@ export default function RootLayout({
     >
       <body className="flex min-h-dvh flex-col bg-background font-sans text-foreground antialiased">
         <ThemeProvider>
-<Navbar links={navLinks} services={mobileServices} />
-          <main id="main" className="flex-1">
-            {children}
-          </main>
-          <Footer />
-          <DeferredWidgets />
+          <MotionProvider>
+            <Navbar links={navLinks} services={mobileServices} />
+            <main id="main" className="flex-1">
+              {children}
+            </main>
+            <Footer />
+            <DeferredWidgets />
+            <SmoothScroll />
+          </MotionProvider>
         </ThemeProvider>
         <JsonLd data={organizationJsonLd()} />
       </body>

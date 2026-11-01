@@ -255,7 +255,7 @@ export function ContactForm() {
           required
         />
         <span>
-          I agree to Setuware contacting me about this enquiry, per the{" "}
+          I agree to Setuware Technologies contacting me about this enquiry, per the{" "}
           <a href="/privacy" className="text-primary underline underline-offset-2">
             privacy policy
           </a>

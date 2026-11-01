@@ -35,7 +35,7 @@ export function HeroVideo({
   poster,
   fallback,
   className,
-  label = "Setuware delivery pipeline in motion",
+  label = "Setuware Technologies delivery pipeline in motion",
 }: HeroVideoProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);

@@ -30,7 +30,7 @@ export default function GlobalError({
       >
         <div style={{ maxWidth: "32rem", textAlign: "center" }}>
           <h1 style={{ fontSize: "1.6rem", margin: "0 0 0.75rem" }}>
-            Setuware is temporarily unavailable
+            Setuware Technologies is temporarily unavailable
           </h1>
           <p style={{ color: "#9aa3b8", lineHeight: 1.6, margin: "0 0 1.5rem" }}>
             We hit an unexpected error loading the site. Reloading usually fixes

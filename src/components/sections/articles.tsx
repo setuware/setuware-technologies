@@ -1,11 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 
 import { images } from "@/lib/images";
-import { postsByDate } from "@/lib/posts";
+import { postsByDate, type Post } from "@/lib/posts";
 import { formatDate } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/button";
-import { Reveal } from "@/components/ui/reveal";
+import { TextReveal } from "@/components/motion/text-reveal";
+import { FadeUp, ImageReveal, Magnetic } from "@/components/motion/primitives";
 
 /** Article slug to its image slot; the data layer stays free of asset paths. */
 const ARTICLE_IMAGES = [
@@ -14,85 +16,119 @@ const ARTICLE_IMAGES = [
   images.articleGrowth,
 ] as const;
 
+/** Slow expo-out zoom shared by every card image on hover. */
+const IMAGE_HOVER =
+  "object-cover transition-transform duration-[1100ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.06] group-focus-visible:scale-[1.06] motion-reduce:transition-none motion-reduce:group-hover:scale-100";
+
+/**
+ * Zero-width slot after the title, so the arrow can slide in on hover without
+ * reflowing the line it sits on.
+ */
+function TitleArrow() {
+  return (
+    <span aria-hidden className="relative inline-block w-0 align-middle">
+      <ArrowUpRight className="absolute left-1.5 top-1/2 size-[1.05em] -translate-x-2 -translate-y-1/2 opacity-0 transition-[translate,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100" />
+    </span>
+  );
+}
+
+function ArticleCard({
+  post,
+  image,
+  lead = false,
+  delay = 0,
+}: {
+  post: Post;
+  image: (typeof ARTICLE_IMAGES)[number];
+  lead?: boolean;
+  delay?: number;
+}) {
+  return (
+    <Link
+      href={`/blog/${post.slug}`}
+      className="group flex h-full flex-col gap-4 rounded-[1rem] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+    >
+      <ImageReveal
+        delay={delay}
+        className={
+          lead
+            ? "relative aspect-[16/10] rounded-[1rem]"
+            : "relative aspect-[4/3] rounded-[1rem]"
+        }
+      >
+        {/* ImageReveal's inner layer is unpositioned; `fill` needs a relative parent. */}
+        <div className="relative size-full">
+          <Image
+            src={image.src}
+            alt={image.alt}
+            fill
+            sizes={lead ? "(min-width: 768px) 32rem, 90vw" : "(min-width: 768px) 20rem, 90vw"}
+            className={IMAGE_HOVER}
+          />
+        </div>
+      </ImageReveal>
+      <FadeUp delay={delay + 0.2} y={18}>
+        <h3
+          className={
+            lead
+              ? "text-[0.98rem] font-semibold leading-snug text-foreground transition-colors group-hover:text-primary"
+              : "text-[0.9rem] font-semibold leading-snug text-foreground transition-colors group-hover:text-primary"
+          }
+        >
+          {post.title}
+          <TitleArrow />
+        </h3>
+        <time dateTime={post.date} className="mt-2 block text-[11px] text-muted-foreground">
+          {formatDate(post.date)}
+        </time>
+      </FadeUp>
+    </Link>
+  );
+}
+
 /**
  * "Articles & insights".
  *
  * One lead article at double width with two beside it, mirroring the design.
  * Only the lead image is sized large; the rest are served at card width so a
- * phone never downloads a desktop-sized asset.
+ * phone never downloads a desktop-sized asset. Images wipe up into place one
+ * after another; titles follow them.
  */
 export function Articles() {
   const [lead, ...rest] = postsByDate.slice(0, 3);
 
   return (
-    <section id="blog" className="bg-background py-20 md:py-24">
+    <section id="blog" aria-labelledby="articles-title" className="bg-background py-20 md:py-24">
       <div className="container-page">
-        <h2 className="text-center font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]">
-          Articles &amp; insights
-        </h2>
+        <TextReveal
+          id="articles-title"
+          className="text-center font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
+        >
+          Articles & insights
+        </TextReveal>
 
         <div className="mt-12 grid gap-6 md:grid-cols-[1.25fr_1fr_1fr]">
-          <Reveal>
-            <Link href={`/blog/${lead.slug}`} className="group flex h-full flex-col gap-4">
-              <div className="relative aspect-[16/10] overflow-hidden rounded-[1rem]">
-                <Image
-                  src={ARTICLE_IMAGES[0].src}
-                  alt={ARTICLE_IMAGES[0].alt}
-                  fill
-                  sizes="(min-width: 768px) 32rem, 90vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                />
-              </div>
-              <div>
-                <h3 className="text-[0.98rem] font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
-                  {lead.title}
-                </h3>
-                <time
-                  dateTime={lead.date}
-                  className="mt-2 block text-[11px] text-muted-foreground"
-                >
-                  {formatDate(lead.date)}
-                </time>
-              </div>
-            </Link>
-          </Reveal>
-
+          <ArticleCard post={lead} image={ARTICLE_IMAGES[0]} lead />
           {rest.map((post, index) => (
-            <Reveal key={post.slug} delay={(index + 1) * 80}>
-              <Link href={`/blog/${post.slug}`} className="group flex h-full flex-col gap-4">
-                <div className="relative aspect-[4/3] overflow-hidden rounded-[1rem]">
-                  <Image
-                    src={ARTICLE_IMAGES[index + 1].src}
-                    alt={ARTICLE_IMAGES[index + 1].alt}
-                    fill
-                    sizes="(min-width: 768px) 20rem, 90vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-[0.9rem] font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
-                    {post.title}
-                  </h3>
-                  <time
-                    dateTime={post.date}
-                    className="mt-2 block text-[11px] text-muted-foreground"
-                  >
-                    {formatDate(post.date)}
-                  </time>
-                </div>
-              </Link>
-            </Reveal>
+            <ArticleCard
+              key={post.slug}
+              post={post}
+              image={ARTICLE_IMAGES[index + 1]}
+              delay={(index + 1) * 0.12}
+            />
           ))}
         </div>
 
-        <div className="mt-12 flex justify-center">
-          <ButtonLink
-            href="/blog"
-            className="rounded-full bg-foreground text-background shadow-none hover:bg-foreground/85"
-          >
-            Explore All Articles
-          </ButtonLink>
-        </div>
+        <FadeUp delay={0.3} className="mt-12 flex justify-center">
+          <Magnetic strength={0.25}>
+            <ButtonLink
+              href="/blog"
+              className="rounded-full bg-foreground text-background shadow-none hover:bg-foreground/85"
+            >
+              Explore All Articles
+            </ButtonLink>
+          </Magnetic>
+        </FadeUp>
       </div>
     </section>
   );

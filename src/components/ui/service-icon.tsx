@@ -1,8 +1,12 @@
 import {
+  Boxes,
   Code2,
+  Globe,
+  Megaphone,
   Palette,
   Server,
   Shield,
+  ShoppingCart,
   Smartphone,
   Sparkles,
   type LucideIcon,
@@ -16,6 +20,10 @@ import { cn } from "@/lib/utils";
  * `lucide-react` set out of the bundle.
  */
 const ICONS: Record<IconName, LucideIcon> = {
+  globe: Globe,
+  cart: ShoppingCart,
+  megaphone: Megaphone,
+  boxes: Boxes,
   code: Code2,
   smartphone: Smartphone,
   server: Server,

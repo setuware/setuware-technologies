@@ -11,6 +11,11 @@
 
   --radius-card: 1rem;
 
+  /* Figma palette */
+  --color-setu: #00a1c6;
+  --color-setu-dark: #0089a9;
+  --color-ink: #0a0a0a;
+
   --color-brand-50: #eff6ff;
   --color-brand-100: #dbeafe;
   --color-brand-200: #bfdbfe;
@@ -46,9 +51,9 @@
   --foreground: #0b1020;
   --muted-foreground: #5b6478;
   --border: #e4e8f0;
-  --primary: #2563eb;
+  --primary: #00a1c6;
   --primary-foreground: #ffffff;
-  --ring: #3b82f6;
+  --ring: #00a1c6;
   --shadow-color: 15 23 42;
 }
 
@@ -77,6 +82,26 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-ring: var(--ring);
+}
+
+/*
+ * Figma scale.
+ * The design ships a 1920 frame (1400px content column, 260px gutters) and a
+ * 1440 frame that is the same layout scaled to a 1250px column (95px gutters).
+ * `--s` is "one Figma pixel": 1px at 1920 and above, shrinking linearly with
+ * the column below that, so `calc(var(--s) * 84)` reproduces both frames.
+ * Below the desktop breakpoint components use their own mobile values.
+ */
+:root {
+  --s: 1px;
+  --figma-col: 1400px;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --s: min(1px, calc((100vw - 190px) / 1400));
+    --figma-col: calc(var(--s) * 1400);
+  }
 }
 
 @layer base {
@@ -114,7 +139,7 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
     text-wrap: balance;
   }
 
@@ -135,6 +160,20 @@
 }
 
 @layer utilities {
+  /* The design's 1400px (1920 frame) / 1250px (1440 frame) content column. */
+  .container-figma {
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  @media (min-width: 1024px) {
+    .container-figma {
+      width: var(--figma-col);
+      padding-inline: 0;
+    }
+  }
+
   .container-page {
     width: 100%;
     margin-inline: auto;

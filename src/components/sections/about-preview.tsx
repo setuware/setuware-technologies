@@ -4,61 +4,91 @@ import { images } from "@/lib/images";
 import { testimonials } from "@/lib/content";
 import { ButtonLink } from "@/components/ui/button";
 import { Counter } from "@/components/ui/counter";
-import { Reveal } from "@/components/ui/reveal";
+import {
+  FadeUp,
+  ImageReveal,
+  Parallax,
+  Stagger,
+  StaggerItem,
+} from "@/components/motion/primitives";
+import { TextReveal } from "@/components/motion/text-reveal";
 
 /**
  * "About us" band.
  *
  * Three columns — story, photograph, headline figure — on a soft gradient
  * field, collapsing to a single column on narrow screens.
+ *
+ * Motion: the heading rises word by word and the story lines stagger in under
+ * it; the photograph wipes up from behind a curtain, settles from a zoom and
+ * then drifts gently against the scroll inside its frame; the figure counts
+ * up once it is on screen.
  */
 export function AboutPreview() {
   return (
     <section className="bg-[linear-gradient(115deg,color-mix(in_oklab,var(--color-brand-100)_55%,var(--background)),var(--background)_55%,color-mix(in_oklab,var(--color-brand-100)_35%,var(--background)))] py-20 md:py-28">
       <div className="container-page grid items-center gap-10 lg:grid-cols-[1fr_0.9fr_0.7fr] lg:gap-14">
-        <Reveal className="flex flex-col gap-4">
-          <h2 className="font-display text-[2.4rem] font-semibold leading-tight text-foreground">
-            About us
-          </h2>
-          <p className="text-[1.02rem] font-semibold text-foreground">
-            Purpose-built software. Real-world impact.
-          </p>
-          <p className="text-[0.92rem] leading-relaxed text-muted-foreground">
-            Setuware is a software company building industry-specific platforms
-            that simplify complex operations, connect fragmented workflows, and
-            help businesses operate with greater clarity and confidence.
-          </p>
-          <p className="text-[0.92rem] leading-relaxed text-muted-foreground">
-            We believe software should adapt to the way businesses work — not
-            force businesses to adapt to the software. That is why we create
-            purpose-built solutions designed around the unique challenges,
-            processes and needs of each industry.
-          </p>
-          <ButtonLink
-            href="/about"
-            variant="secondary"
-            className="mt-3 w-fit rounded-full"
+        <div className="flex flex-col gap-4">
+          <TextReveal
+            as="h2"
+            className="font-display text-[2.4rem] font-semibold leading-tight text-foreground"
           >
-            More About Us
-          </ButtonLink>
-        </Reveal>
+            About us
+          </TextReveal>
+          <Stagger className="flex flex-col gap-4" delay={0.15}>
+            <StaggerItem y={24}>
+              <p className="text-[1.02rem] font-semibold text-foreground">
+                Purpose-built software. Real-world impact.
+              </p>
+            </StaggerItem>
+            <StaggerItem y={24}>
+              <p className="text-[0.92rem] leading-relaxed text-muted-foreground">
+                Setuware Technologies is a senior engineering team in Gurugram.
+                We design, build and run web apps, mobile apps and the cloud
+                they live on, for businesses whose software has to work on
+                Monday morning.
+              </p>
+            </StaggerItem>
+            <StaggerItem y={24}>
+              <p className="text-[0.92rem] leading-relaxed text-muted-foreground">
+                We start with how your team works today: the spreadsheets, the
+                hand-offs, the steps someone still does by hand. Then we build
+                around that. A fixed-price scope before any code, a staging URL
+                from the first sprint, and the repo in your name from day one.
+              </p>
+            </StaggerItem>
+            <StaggerItem y={24}>
+              <ButtonLink
+                href="/about"
+                variant="secondary"
+                className="mt-3 w-fit rounded-full"
+              >
+                More About Us
+              </ButtonLink>
+            </StaggerItem>
+          </Stagger>
+        </div>
 
-        <Reveal delay={90}>
-          <div className="relative aspect-[9/10] overflow-hidden rounded-[1.5rem] shadow-ambient">
-            <Image
-              src={images.aboutOffice.src}
-              alt={images.aboutOffice.alt}
-              fill
-              sizes="(min-width: 1024px) 28rem, 90vw"
-              className="object-cover"
-            />
-          </div>
-        </Reveal>
+        {/* The shadow lives outside the clip so the wipe does not cut it off. */}
+        <FadeUp y={0} blur={false} className="rounded-[1.5rem] shadow-ambient">
+          <ImageReveal delay={0.1} className="relative aspect-[9/10] rounded-[1.5rem]">
+            {/* Overscanned so the scroll drift never shows an edge. */}
+            <Parallax speed={24} className="absolute inset-x-0 -inset-y-[6%]">
+              <Image
+                src={images.aboutOffice.src}
+                alt={images.aboutOffice.alt}
+                fill
+                sizes="(min-width: 1024px) 28rem, 90vw"
+                className="object-cover"
+              />
+            </Parallax>
+          </ImageReveal>
+        </FadeUp>
 
-        <Reveal delay={160} className="flex flex-col gap-5">
+        <FadeUp delay={0.2} className="flex flex-col gap-5">
           <div>
             <span className="font-display text-[5.5rem] font-semibold leading-[0.85] tracking-tight text-foreground">
-              <Counter to={5} suffix="+" />
+              <Counter to={5} suffix="+" durationMs={1800} />
             </span>
             <p className="mt-3 font-display text-xl font-semibold leading-tight text-foreground">
               Years of
@@ -81,10 +111,10 @@ export function AboutPreview() {
               ))}
             </div>
             <p className="mt-3 text-sm text-muted-foreground">
-              Trusted by industry leaders
+              Teams who have shipped with us
             </p>
           </div>
-        </Reveal>
+        </FadeUp>
       </div>
     </section>
   );
