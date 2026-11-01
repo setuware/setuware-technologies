@@ -416,7 +416,7 @@ export interface Testimonial {
 export const testimonials: readonly Testimonial[] = [
   {
     quote:
-      "Setuware transformed our field operations completely. We reduced dispatch time by 75% and our technicians love the mobile app. The automated invoicing alone saved us $80K annually in admin costs.",
+      "Setuware Technologies transformed our field operations completely. We reduced dispatch time by 75% and our technicians love the mobile app. The automated invoicing alone saved us $80K annually in admin costs.",
     author: "Michael Chen",
     role: "COO",
     company: "ProClean Services",
@@ -425,7 +425,7 @@ export const testimonials: readonly Testimonial[] = [
   },
   {
     quote:
-      "We evaluated Chargebee, Stripe, and Zuora before choosing Setuware. The difference? Setuware gave us subscription billing plus operations management in one platform. Our churn dropped 35% and we eliminated $40K a year in integration costs.",
+      "We evaluated Chargebee, Stripe, and Zuora before choosing Setuware Technologies. The difference? Setuware Technologies gave us subscription billing plus operations management in one platform. Our churn dropped 35% and we eliminated $40K a year in integration costs.",
     author: "Sarah Thompson",
     role: "CTO",
     company: "Wellness Bev",
@@ -513,7 +513,7 @@ export interface Faq {
 export const faqs: readonly Faq[] = [
   {
     group: "Before you start",
-    question: "What makes Setuware different?",
+    question: "What makes Setuware Technologies different?",
     answer:
       "We stay after launch. Hosting and support are quoted alongside the build, the documentation is written before handover, and our own on-call rota sits behind everything we run — which makes us far more careful during the build, because we are the ones who get paged.",
   },

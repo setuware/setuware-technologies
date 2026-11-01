@@ -24,7 +24,7 @@ export function AboutPreview() {
             Purpose-built software. Real-world impact.
           </p>
           <p className="text-[0.92rem] leading-relaxed text-muted-foreground">
-            Setuware is a software company building industry-specific platforms
+            Setuware Technologies is a software company building industry-specific platforms
             that simplify complex operations, connect fragmented workflows, and
             help businesses operate with greater clarity and confidence.
           </p>

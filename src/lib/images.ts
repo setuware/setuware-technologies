@@ -23,13 +23,13 @@ export const images = {
     src: "/images/hero-team.svg",
     width: 1920,
     height: 1080,
-    alt: "Two Setuware engineers reviewing a build together at a desk",
+    alt: "Two Setuware Technologies engineers reviewing a build together at a desk",
   },
   aboutOffice: {
     src: "/images/about-office.svg",
     width: 1080,
     height: 1200,
-    alt: "The Setuware studio, with the team working in an open-plan space",
+    alt: "The Setuware Technologies studio, with the team working in an open-plan space",
   },
   serviceWeb: {
     src: "/images/service-web.svg",

@@ -141,7 +141,7 @@ export function IndustryBento() {
           <Reveal delay={280} className="md:col-span-2">
             <div className="grid h-full gap-6 rounded-[1.25rem] bg-surface p-6 shadow-ambient sm:grid-cols-[9rem_1fr] md:p-7">
               <h3 className="font-display text-[1.15rem] font-semibold text-foreground">
-                Why Setuware?
+                Why Setuware Technologies?
               </h3>
 
               <dl className="flex flex-col">

@@ -23,7 +23,7 @@ export function PipelineAnimation({ className }: { className?: string }) {
         className,
       )}
       role="img"
-      aria-label="Animated illustration of a build moving through Setuware's commit, build, test and deploy pipeline, with live performance metrics."
+      aria-label="Animated illustration of a build moving through Setuware Technologies's commit, build, test and deploy pipeline, with live performance metrics."
     >
       {/* Window chrome */}
       <div className="flex items-center gap-2 border-b border-border bg-surface-2/60 px-4 py-3">
