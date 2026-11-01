@@ -11,7 +11,7 @@ import {
 } from "framer-motion";
 
 import { images } from "@/lib/images";
-import { heroVideoPoster, heroVideoSources } from "@/lib/media";
+import { committedVideo, heroVideoPoster, heroVideoSources } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import { EASE_OUT } from "@/components/motion/ease";
 import { TextReveal } from "@/components/motion/text-reveal";
@@ -43,13 +43,16 @@ const HEADING = "This is how we jetpack over the skills gap.";
  * The env vars are read as literal `process.env.NEXT_PUBLIC_*` members because
  * that is the only form Next inlines into a client bundle.
  */
-const videoSources = heroVideoSources({
+const committed = committedVideo("skills-gap");
+const envSources = heroVideoSources({
   NEXT_PUBLIC_HERO_VIDEO_WEBM: process.env.NEXT_PUBLIC_HERO_VIDEO_WEBM,
   NEXT_PUBLIC_HERO_VIDEO_MP4: process.env.NEXT_PUBLIC_HERO_VIDEO_MP4,
 });
-const videoPoster = heroVideoPoster({
-  NEXT_PUBLIC_HERO_VIDEO_POSTER: process.env.NEXT_PUBLIC_HERO_VIDEO_POSTER,
-});
+const videoSources = envSources.length > 0 ? envSources : committed.sources;
+const videoPoster =
+  heroVideoPoster({
+    NEXT_PUBLIC_HERO_VIDEO_POSTER: process.env.NEXT_PUBLIC_HERO_VIDEO_POSTER,
+  }) ?? committed.poster;
 
 export function SkillsGap() {
   const reduce = useReducedMotionSafe();

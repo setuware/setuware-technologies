@@ -2,7 +2,7 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 import { images } from "@/lib/images";
-import { heroBackdropPoster, heroBackdropSources } from "@/lib/media";
+import { committedVideo, heroBackdropPoster, heroBackdropSources } from "@/lib/media";
 import { ButtonLink } from "@/components/ui/button";
 import { FadeUp, Magnetic } from "@/components/motion/primitives";
 import { TextReveal } from "@/components/motion/text-reveal";
@@ -34,7 +34,9 @@ import {
  * Layout and type sizes are the Figma values — only transforms animate.
  */
 export function Hero() {
-  const videoSources = heroBackdropSources();
+  const committed = committedVideo("hero-bg");
+  const envSources = heroBackdropSources();
+  const videoSources = envSources.length > 0 ? envSources : committed.sources;
 
   return (
     // The header is fixed and solid, so the hero starts below it.
@@ -44,7 +46,7 @@ export function Hero() {
           <HeroMedia>
             <HeroBackdrop
               sources={videoSources}
-              poster={heroBackdropPoster() ?? images.heroBackdrop.src}
+              poster={heroBackdropPoster() ?? committed.poster ?? images.heroBackdrop.src}
               tone="dark"
             />
           </HeroMedia>

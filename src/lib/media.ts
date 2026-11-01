@@ -1,3 +1,5 @@
+import manifest from "./media-manifest.json";
+
 /**
  * Hero media configuration.
  *
@@ -83,4 +85,34 @@ export function heroBackdropPoster(
 ): string | undefined {
   const poster = env.NEXT_PUBLIC_HERO_BG_POSTER?.trim();
   return poster ? poster : undefined;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Committed media (scripts/fetch-media.mjs)                                    */
+/* -------------------------------------------------------------------------- */
+
+
+interface ManifestEntry {
+  mp4: string;
+  webm: string;
+  poster: string;
+}
+
+/**
+ * Videos downloaded by `npm run media:fetch` and committed under
+ * public/media. Empty until that script has run, so nothing ever points at a
+ * file that is not there. Environment variables still take precedence.
+ */
+export function committedVideo(
+  name: "hero-bg" | "skills-gap",
+): { sources: VideoSource[]; poster?: string } {
+  const entry = (manifest as Record<string, ManifestEntry | undefined>)[name];
+  if (!entry) return { sources: [] };
+  return {
+    sources: [
+      { src: entry.webm, type: "video/webm" },
+      { src: entry.mp4, type: "video/mp4" },
+    ],
+    poster: entry.poster,
+  };
 }

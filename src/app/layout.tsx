@@ -99,7 +99,12 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${display.variable}`}
     >
-      <body className="flex min-h-dvh flex-col bg-background font-sans text-foreground antialiased">
+      <body
+        className="flex min-h-dvh flex-col bg-background font-sans text-foreground antialiased"
+        // Browser extensions (password managers, Bitdefender, Grammarly) add
+        // attributes to <body> before React hydrates; ignore those diffs here.
+        suppressHydrationWarning
+      >
         <ThemeProvider>
           <MotionProvider>
             <Navbar links={navLinks} services={mobileServices} />

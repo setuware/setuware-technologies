@@ -16,7 +16,8 @@
     "test:all": "npm run typecheck && npm run lint && npm run test && npm run build && npm run test:e2e",
     "loadtest": "node scripts/loadtest.mjs",
     "images:placeholders": "node scripts/generate-placeholders.mjs",
-    "start:cluster": "node scripts/server.mjs"
+    "start:cluster": "node scripts/server.mjs",
+    "media:fetch": "node scripts/fetch-media.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.2",
