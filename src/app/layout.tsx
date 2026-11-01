@@ -9,6 +9,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { mobileServices, navLinks } from "@/components/layout/nav-menu-data";
 import { ThemeProvider } from "@/components/layout/theme";
 import { DeferredWidgets } from "@/components/layout/deferred-widgets";
+import { SmoothScroll } from "@/components/motion/smooth-scroll";
 
 import "./globals.css";
 
@@ -105,6 +106,7 @@ export default function RootLayout({
           </main>
           <Footer />
           <DeferredWidgets />
+          <SmoothScroll />
         </ThemeProvider>
         <JsonLd data={organizationJsonLd()} />
       </body>
