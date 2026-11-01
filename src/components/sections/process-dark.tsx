@@ -67,10 +67,11 @@ export function ProcessDark() {
           </TextReveal>
           <FadeUp delay={0.25} y={20}>
             <p className="mx-auto mt-5 max-w-xl text-[0.92rem] leading-relaxed text-white/60">
-              {STAGE_WORDS[processSteps.length] ?? processSteps.length} stages,
-              each with a written deliverable and a date. You see
-              working software on a staging URL every week, and you can stop
-              after any stage with everything built so far in hand.
+              {STAGE_WORDS[processSteps.length] ?? processSteps.length} steps
+              from first call to launch, each with a clear output. The price is
+              fixed before design starts, and you see your site on a preview
+              link every week. Timings are for a typical business website;
+              apps take longer, and your quote says exactly how long.
             </p>
           </FadeUp>
         </div>

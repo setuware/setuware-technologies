@@ -136,7 +136,7 @@ export function SkillsGap() {
             <div className="relative bg-[linear-gradient(200deg,#253c97_0%,#114d93_35%,#0e5895_100%)] px-6 pb-20 pt-14 sm:px-10 md:mr-[31.4%] lg:absolute lg:top-0 lg:left-[20.36%] lg:right-[31.4%] lg:mr-0 lg:bottom-[calc(var(--s)*24)] lg:rounded-bl-[calc(var(--s)*16)] lg:px-[calc(var(--s)*47)] lg:pb-0 lg:pt-[calc(var(--s)*40)]">
               <FadeUp y={16} blur={false}>
                 <p className="text-[16px] font-medium leading-[24px] text-white/70 lg:text-[calc(var(--s)*20)] lg:leading-[calc(var(--s)*30)]">
-                  Enterprise Suite
+                  No in-house tech team needed
                 </p>
               </FadeUp>
               {/* Two colours in one heading, so the reveal is split into spans;
@@ -162,10 +162,11 @@ export function SkillsGap() {
               </h2>
               <FadeUp delay={0.45} y={24}>
                 <p className="mt-6 max-w-[760px] text-[16px] font-medium leading-[26px] text-white/80 lg:mt-[calc(var(--s)*40)] lg:max-w-[calc(var(--s)*760)] lg:text-[calc(var(--s)*18)] lg:leading-[calc(var(--s)*30)]">
-                  Senior engineers inside your repo, your standups, your
-                  releases. <br className="hidden lg:block" />
-                  Grow the team with the roadmap and keep the people who built
-                  it.
+                  Designers, developers, SEO and marketing people on one team,
+                  so you never hire for a skill you need once.{" "}
+                  <br className="hidden lg:block" />
+                  Your website, store, app and ads are handled by people who
+                  already know your business.
                 </p>
               </FadeUp>
               <FadeUp delay={0.6} y={20} blur={false}>

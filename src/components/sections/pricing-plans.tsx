@@ -4,9 +4,16 @@ import { carePlans, projectPackages, type Plan } from "@/lib/plans";
 import { formatINR, formatINRCompact } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
-import { Reveal } from "@/components/ui/reveal";
 import { Section, SectionHeading } from "@/components/ui/section";
+import { Stagger, StaggerItem } from "@/components/motion/primitives";
 import { cn } from "@/lib/utils";
+
+/** Where each build package's button goes, so the next step matches the package. */
+const PACKAGE_CTA: Record<string, { href: string; label: string }> = {
+  "website-build": { href: "/contact?service=business-websites", label: "Get a website quote" },
+  "full-application-build": { href: "/estimate", label: "Estimate my app" },
+  "enterprise-engagement": { href: "/contact?service=custom-software", label: "Talk to us" },
+};
 
 export function PricingPlans() {
   return (
@@ -14,23 +21,27 @@ export function PricingPlans() {
       <Section id="packages">
         <div className="container-page">
           <SectionHeading
-            eyebrow="Build pricing"
-            title="Three starting points, one fixed price"
-            description="Packages are a starting shape, not a cage. The estimator prices your actual scope, and the proposal after discovery is the number you pay."
+            eyebrow="Build packages"
+            title="Three ways to start a project"
+            description="Pick the package closest to what you need. After a free call we send a written scope and one fixed price. That is the number you pay."
           />
 
-          <div className="mt-14 grid items-start gap-5 lg:grid-cols-3">
-            {projectPackages.map((plan, index) => (
-              <Reveal key={plan.id} delay={index * 80}>
-                <PlanCard plan={plan} ctaHref="/estimate" ctaLabel="Price this scope" />
-              </Reveal>
-            ))}
-          </div>
+          <Stagger className="mt-14 grid items-start gap-5 lg:grid-cols-3" stagger={0.08}>
+            {projectPackages.map((plan) => {
+              const cta = PACKAGE_CTA[plan.id] ?? { href: "/contact", label: "Talk to us" };
+              return (
+                <StaggerItem key={plan.id} y={28} className="h-full">
+                  <PlanCard plan={plan} ctaHref={cta.href} ctaLabel={cta.label} />
+                </StaggerItem>
+              );
+            })}
+          </Stagger>
 
-          <p className="mx-auto mt-8 flex max-w-xl items-start gap-2 text-center text-xs leading-relaxed text-muted-foreground">
+          <p className="mx-auto mt-8 flex max-w-xl items-start justify-center gap-2 text-center text-xs leading-relaxed text-muted-foreground">
             <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-            Prices exclude GST and third-party costs (gateways, cloud, licences),
-            which you pay the vendor directly at cost — we never mark them up.
+            Prices exclude GST. Third-party costs such as domains, payment
+            gateways, cloud and licences are billed to your own accounts at cost.
+            We never mark them up.
           </p>
         </div>
       </Section>
@@ -38,18 +49,22 @@ export function PricingPlans() {
       <Section surface="subtle" id="care">
         <div className="container-page">
           <SectionHeading
-            eyebrow="Hosting & support"
-            title="Monthly plans for software that is already live"
-            description="Whether we built it or not. Each plan is a published SLA, not a best-effort promise."
+            eyebrow="Hosting and care plans"
+            title="Monthly plans that keep your site or app running"
+            description="Hosting, updates, backups, monitoring and fixes for one monthly fee. Works for anything we built, and for sites and apps built by someone else."
           />
 
-          <div className="mt-14 grid items-start gap-5 lg:grid-cols-3">
-            {carePlans.map((plan, index) => (
-              <Reveal key={plan.id} delay={index * 80}>
-                <PlanCard plan={plan} ctaHref="/contact?service=managed-hosting" ctaLabel="Talk to us" />
-              </Reveal>
+          <Stagger className="mt-14 grid items-start gap-5 lg:grid-cols-3" stagger={0.08}>
+            {carePlans.map((plan) => (
+              <StaggerItem key={plan.id} y={28} className="h-full">
+                <PlanCard
+                  plan={plan}
+                  ctaHref="/contact?service=managed-hosting"
+                  ctaLabel={`Choose ${plan.name}`}
+                />
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </Section>
     </>
@@ -65,17 +80,19 @@ export function PlanCard({
   ctaHref: string;
   ctaLabel: string;
 }) {
+  const quoted = plan.monthly === null && !plan.setupFrom;
+
   return (
     <article
       className={cn(
         "relative flex h-full flex-col rounded-card border bg-surface p-6 shadow-ambient md:p-7",
-        plan.highlight
-          ? "border-primary/50 ring-1 ring-primary/20 lg:-translate-y-2"
-          : "border-border",
+        plan.highlight ? "border-setu/60 ring-1 ring-setu/25" : "border-border",
       )}
     >
       {plan.highlight ? (
-        <Badge className="absolute -top-3 left-6">Most chosen</Badge>
+        <Badge className="absolute -top-3 left-6 border-setu/30 bg-setu text-white">
+          Most chosen
+        </Badge>
       ) : null}
 
       <h3 className="font-display text-xl font-semibold text-foreground">{plan.name}</h3>
@@ -89,6 +106,10 @@ export function PlanCard({
             </span>
             <span className="text-sm text-muted-foreground">/ month</span>
           </>
+        ) : quoted ? (
+          <span className="font-display text-3xl font-semibold text-foreground">
+            Custom quote
+          </span>
         ) : (
           <>
             <span className="text-sm text-muted-foreground">from</span>
@@ -106,7 +127,7 @@ export function PlanCard({
       <ul className="mt-5 flex flex-col gap-2.5">
         {plan.features.map((feature) => (
           <li key={feature} className="flex gap-2.5 text-[0.9rem] text-muted-foreground">
-            <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+            <Check className="mt-0.5 size-4 shrink-0 text-setu" aria-hidden />
             <span className="text-foreground/85">{feature}</span>
           </li>
         ))}
@@ -122,11 +143,16 @@ export function PlanCard({
         </ul>
       ) : null}
 
+      <div className="min-h-6 flex-1" aria-hidden />
+
       <ButtonLink
         href={ctaHref}
-        variant={plan.highlight ? "gradient" : "secondary"}
+        variant={plan.highlight ? "primary" : "secondary"}
         block
-        className="mt-6"
+        className={cn(
+          "rounded-full",
+          plan.highlight && "bg-setu text-white shadow-none hover:bg-setu-dark",
+        )}
       >
         {ctaLabel}
       </ButtonLink>

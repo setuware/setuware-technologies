@@ -5,7 +5,7 @@ import { Check, Loader2, Send } from "lucide-react";
 
 import { postJson } from "@/lib/client-api";
 import { usePersistentState } from "@/lib/hooks";
-import { services } from "@/lib/content";
+import type { ServiceKey } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 import { Field, Honeypot, Input, Select, Textarea } from "@/components/ui/field";
 
@@ -18,6 +18,27 @@ const BUDGETS = [
   { value: "5l-15l", label: "₹5–15 lakh" },
   { value: "15l-plus", label: "₹15 lakh+" },
 ] as const;
+
+/**
+ * Every service we sell, in the order a visitor scans for them. Values are the
+ * service slugs so `?service=<slug>` links from service pages prefill the field
+ * and the lead record matches the services catalogue.
+ */
+const SERVICE_OPTIONS: readonly { value: ServiceKey; label: string }[] = [
+  { value: "business-websites", label: "Business website" },
+  { value: "ecommerce-stores", label: "E-commerce store" },
+  { value: "web-development", label: "Web app" },
+  { value: "app-development", label: "Mobile app" },
+  { value: "product-design", label: "UI/UX & branding" },
+  { value: "seo-marketing", label: "SEO & marketing" },
+  { value: "custom-software", label: "Custom software / ERP / CRM" },
+  { value: "ai-integration", label: "AI & automation" },
+  { value: "managed-hosting", label: "Hosting & domains" },
+  { value: "support-maintenance", label: "Maintenance & support" },
+];
+
+const isServiceOption = (value: string | null): value is ServiceKey =>
+  SERVICE_OPTIONS.some((option) => option.value === value);
 
 interface Draft {
   name: string;
@@ -71,7 +92,7 @@ export function ContactForm() {
 
     setDraft((previous) => ({
       ...previous,
-      service: service && !previous.service ? service : previous.service,
+      service: isServiceOption(service) && !previous.service ? service : previous.service,
       message:
         intent === "audit" && previous.message === ""
           ? "I'd like the free performance audit of our current site. Our URL is: "
@@ -127,8 +148,8 @@ export function ContactForm() {
         <p className="mt-2 text-sm text-muted-foreground">
           Reference{" "}
           <span className="font-mono font-semibold text-foreground">{reference}</span>.
-          An engineer — not an account manager — reads this and replies within one
-          working day.
+          The people who would build it read this and reply within one working
+          day. Keep the reference handy if you call or WhatsApp us.
         </p>
       </div>
     );
@@ -201,12 +222,13 @@ export function ContactForm() {
             value={draft.service}
             onChange={(event) => set({ service: event.target.value })}
           >
-            <option value="">Not sure / something else</option>
-            {services.map((service) => (
-              <option key={service.slug} value={service.slug}>
-                {service.name}
+            <option value="">Choose a service</option>
+            {SERVICE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
               </option>
             ))}
+            <option value="not-sure">Not sure yet</option>
           </Select>
         </Field>
 
@@ -231,14 +253,14 @@ export function ContactForm() {
         htmlFor="contact-message"
         required
         error={errors.message}
-        hint="What are you building, who is it for, and when does it need to be live?"
+        hint="What does your business do, what do you need, and when should it be live?"
       >
         <Textarea
           id="contact-message"
           name="message"
           required
           rows={6}
-          placeholder="We run 14 retail stores and take orders over WhatsApp…"
+          placeholder="We run a chain of clinics and need a new website with online booking…"
           value={draft.message}
           onChange={(event) => set({ message: event.target.value })}
           aria-invalid={Boolean(errors.message)}

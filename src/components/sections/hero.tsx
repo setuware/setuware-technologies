@@ -85,9 +85,10 @@ export function Hero() {
 
               <FadeUp immediate delay={0.75} y={24}>
                 <p className="text-base font-medium leading-relaxed opacity-78 sm:text-lg lg:ml-[calc(var(--s)*5)] lg:w-[calc(var(--s)*672)] lg:text-[calc(var(--s)*18)] lg:leading-[calc(var(--s)*32)]">
-                  One senior team from first sketch to monitored production.
-                  Fixed scope before code, a demo every week, and the repo is
-                  yours from day one.
+                  We build websites for businesses, then the online store,
+                  app, branding, SEO and software that come next. Fixed
+                  price from ₹20,000, live in 3 to 6 weeks, and you own
+                  everything we make.
                 </p>
               </FadeUp>
             </div>

@@ -3,9 +3,9 @@
 export const site = {
   name: "Setuware Technologies",
   shortName: "Setuware Technologies",
-  tagline: "Business websites, and every digital service after",
+  tagline: "Websites for businesses, and everything digital after",
   description:
-    "Setuware Technologies builds business websites and online stores from Gurugram, then handles what comes next: web and mobile apps, branding, SEO and marketing, custom software, hosting and support. Fixed prices, and you own what we build.",
+    "Setuware Technologies builds business websites and online stores in Gurugram, then the rest of what a growing business needs: web and mobile apps, branding, SEO and marketing, custom software, AI automation, hosting and support. Fixed prices from ₹20,000, and you own everything we build.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://setuwaresoftware.in",
   locale: "en_IN",
   email: "sales@setuware.in",
@@ -35,11 +35,18 @@ export const site = {
   },
 } as const;
 
+/**
+ * Top-level pages, as listed by the command menu. The header's menus are built
+ * from `components/layout/nav-menu-data.ts`.
+ */
 export const mainNav = [
   { label: "Projects", href: "/work" },
   { label: "Services", href: "/services" },
+  { label: "Industries", href: "/industries" },
   { label: "How It Works", href: "/process" },
   { label: "About", href: "/about" },
+  { label: "Careers", href: "/careers" },
+  { label: "Blog & insights", href: "/blog" },
   { label: "Pricing", href: "/pricing" },
   { label: "Contact", href: "/contact" },
 ] as const;
@@ -50,6 +57,7 @@ export const footerNav = [
     links: [
       { label: "Home", href: "/" },
       { label: "All Services", href: "/services" },
+      { label: "Industries", href: "/industries" },
       { label: "Projects", href: "/work" },
       { label: "How It Works", href: "/process" },
       { label: "Pricing", href: "/pricing" },
@@ -60,6 +68,7 @@ export const footerNav = [
     title: "Company",
     links: [
       { label: "About", href: "/about" },
+      { label: "Careers", href: "/careers" },
       { label: "Articles & insights", href: "/blog" },
       { label: "Testimonials", href: "/#testimonials" },
       { label: "FAQs", href: "/#faq" },

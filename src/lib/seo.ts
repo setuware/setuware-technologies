@@ -79,13 +79,18 @@ export function organizationJsonLd() {
       addressCountry: site.address.country,
     },
     sameAs: Object.values(site.social),
-    areaServed: "Worldwide",
+    areaServed: ["IN", "Worldwide"],
     knowsAbout: [
-      "Web development",
+      "Business website design and development",
+      "E-commerce store development",
+      "Web application development",
       "Mobile app development",
-      "Managed hosting",
-      "AI integration",
-      "Product design",
+      "UI/UX design and branding",
+      "SEO and digital marketing",
+      "Custom software, ERP and CRM",
+      "AI and automation",
+      "Website hosting and domains",
+      "Website maintenance and support",
     ],
   };
 }

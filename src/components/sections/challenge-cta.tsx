@@ -29,9 +29,10 @@ export function ChallengeCta() {
           </TextReveal>
           <FadeUp delay={0.35} y={18}>
             <p className="mt-4 max-w-[1067px] text-[16px] font-medium leading-[28px] text-black/70 lg:mt-[calc(var(--s)*19)] lg:max-w-none lg:text-[calc(var(--s)*17)] lg:leading-[calc(var(--s)*32)] dark:text-white/70">
-              Book a free call with a senior engineer. You leave with a rough
-              scope, a realistic timeline and a straight answer on whether
-              it&rsquo;s worth building at all.
+              Tell us about your business and what you need: a new website, a
+              redesign, a store or an app. In one free 30-minute call you get a
+              rough scope, a realistic timeline and a price range. Or price it
+              yourself in a minute with the instant estimator.
             </p>
           </FadeUp>
 
@@ -65,10 +66,10 @@ export function ChallengeCta() {
             </Magnetic>
             <Magnetic className="w-full max-w-[280px] sm:w-auto sm:max-w-none">
               <Link
-                href="/contact?intent=consultation"
+                href="/estimate"
                 className="inline-flex h-10 w-full max-w-[280px] items-center justify-center rounded-[50px] border-[1.5px] border-setu text-[15px] font-semibold leading-5 text-black transition-[background-color,color] duration-200 hover:bg-setu hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu sm:w-[246px] lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*246)] lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*20)] dark:text-white"
               >
-                Book a Free Consultation
+                Get an Instant Estimate
               </Link>
             </Magnetic>
           </FadeUp>

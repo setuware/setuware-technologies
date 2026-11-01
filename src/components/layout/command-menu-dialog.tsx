@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   Briefcase,
+  Building2,
   Calculator,
   FileText,
   Mail,
@@ -14,12 +15,13 @@ import {
 } from "lucide-react";
 
 import { caseStudies, services } from "@/lib/content";
+import { industries } from "@/lib/industries";
 import { postsByDate } from "@/lib/posts";
 import { useScrollLock } from "@/lib/hooks";
 import { mainNav, site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
-type Kind = "action" | "service" | "work" | "post" | "page";
+type Kind = "action" | "service" | "industry" | "work" | "post" | "page";
 
 interface Command {
   id: string;
@@ -33,6 +35,7 @@ interface Command {
 const KIND_META: Record<Kind, { label: string; Icon: typeof Search }> = {
   action: { label: "Actions", Icon: ArrowRight },
   service: { label: "Services", Icon: Wrench },
+  industry: { label: "Industries", Icon: Building2 },
   work: { label: "Case studies", Icon: Briefcase },
   post: { label: "Articles", Icon: FileText },
   page: { label: "Pages", Icon: Search },
@@ -77,6 +80,14 @@ function buildIndex(): Command[] {
       kind: "service" as const,
       href: `/services/${service.slug}`,
       keywords: `${service.name} ${service.summary} ${service.stack.join(" ")}`,
+    })),
+    ...industries.map((industry) => ({
+      id: `industry-${industry.slug}`,
+      label: industry.name,
+      hint: industry.summary,
+      kind: "industry" as const,
+      href: `/industries/${industry.slug}`,
+      keywords: `${industry.name} ${industry.summary} ${industry.features.join(" ")}`,
     })),
     ...caseStudies.map((study) => ({
       id: `work-${study.slug}`,

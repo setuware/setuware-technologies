@@ -10,9 +10,9 @@ import { CtaBand } from "@/components/sections/cta-band";
 import { DeferredSection } from "@/components/ui/deferred-section";
 
 export const metadata = pageMetadata({
-  title: "Field notes",
+  title: "Articles and insights",
   description:
-    "Practical writing on shipping and running production software: traffic spikes, fixed-price scoping, managed hosting and animation performance budgets.",
+    "Practical guides from Setuware Technologies on websites, online stores, apps, SEO, hosting and pricing a project, written for business owners.",
   path: "/blog",
 });
 
@@ -22,9 +22,9 @@ export default function BlogPage() {
   return (
     <>
       <PageHero
-        eyebrow="Field notes"
-        title="What we have learned the hard way"
-        description="No thought-leadership. Just what we have had to work out on real projects, written up so you do not have to."
+        eyebrow="Articles and insights"
+        title="Plain answers for business owners"
+        description="What a website should cost, how to keep it fast, when you need an app, and what to ask before you hire anyone. Written from real projects, in plain language."
       />
 
       <div className="container-page py-16">
@@ -106,8 +106,8 @@ export default function BlogPage() {
 
       <DeferredSection minHeight={380}>
         <CtaBand
-          title="Have a problem one of these describes?"
-          description="If something here sounds like your situation, tell us about it. The first conversation is free and usually useful either way."
+          title="Have a question these do not answer?"
+          description="Tell us about your business and what you need. The first call is free, and you get a written summary either way."
         />
       </DeferredSection>
     </>

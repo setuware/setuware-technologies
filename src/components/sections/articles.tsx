@@ -106,6 +106,12 @@ export function Articles() {
         >
           Articles & insights
         </TextReveal>
+        <FadeUp delay={0.2} y={18}>
+          <p className="mx-auto mt-4 max-w-xl text-center text-[0.92rem] leading-relaxed text-muted-foreground">
+            Plain-English notes on pricing, hosting, speed and keeping a
+            business website running, from the team that builds them.
+          </p>
+        </FadeUp>
 
         <div className="mt-12 grid gap-6 md:grid-cols-[1.25fr_1fr_1fr]">
           <ArticleCard post={lead} image={ARTICLE_IMAGES[0]} lead />

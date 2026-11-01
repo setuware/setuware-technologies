@@ -4,16 +4,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import {
-  motion,
-} from "framer-motion";
+import { motion } from "framer-motion";
 
 import { services } from "@/lib/content";
 import { images } from "@/lib/images";
 import { useMediaQuery } from "@/lib/hooks";
-import { cn } from "@/lib/utils";
+import { cn, formatINR } from "@/lib/utils";
 import { ServiceIcon } from "@/components/ui/service-icon";
-import { Magnetic, SpotlightCard, useReducedMotionSafe } from "@/components/motion/primitives";
+import { FadeUp, Magnetic, SpotlightCard, useReducedMotionSafe } from "@/components/motion/primitives";
 import { TextReveal } from "@/components/motion/text-reveal";
 import { DURATION, EASE_OUT, VIEWPORT } from "@/components/motion/ease";
 
@@ -106,14 +104,29 @@ export function ServicesDark() {
 
       <div className="container-page relative">
         <div className="flex flex-wrap items-end justify-between gap-6">
-          <TextReveal
-            as="h2"
-            className="font-display text-3xl font-semibold leading-tight text-white sm:text-[2.6rem]"
-          >
-            {"All services\nunder one roof"}
-          </TextReveal>
+          <div className="max-w-xl">
+            <TextReveal
+              as="h2"
+              className="font-display text-3xl font-semibold leading-tight text-white sm:text-[2.6rem]"
+            >
+              {"All services\nunder one roof"}
+            </TextReveal>
+            <FadeUp delay={0.25} y={20}>
+              <p className="mt-4 text-[0.92rem] leading-relaxed text-white/60">
+                Start with a website. Add an online store, an app, branding,
+                marketing or custom software when you need it, from the same
+                team. Every service has a published starting price.
+              </p>
+            </FadeUp>
+          </div>
 
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <Link
+              href="/services"
+              className="mr-2 inline-flex h-10 items-center rounded-full border border-white/20 px-5 text-xs font-medium text-white transition-colors hover:bg-white/10"
+            >
+              All {services.length} services
+            </Link>
             <Magnetic strength={0.4}>
               <button
                 type="button"
@@ -209,10 +222,20 @@ export function ServicesDark() {
                       <h3 className="relative mt-5 font-display text-[1.6rem] font-semibold leading-tight">
                         {service.name}
                       </h3>
-                      {/* Clamped: descriptions vary in length and the cards are a
+                      {/* Clamped: summaries vary in length and the cards are a
                           fixed height in the carousel. */}
-                      <p className="relative mt-3 line-clamp-4 max-w-sm text-[0.88rem] leading-relaxed text-[#0a0d16]/70">
-                        {service.description}
+                      <p className="relative mt-3 line-clamp-3 max-w-sm text-[0.88rem] leading-relaxed text-[#0a0d16]/70">
+                        {service.summary}
+                      </p>
+                      {/* Price and timeline up front: the two things a buyer
+                          asks first. */}
+                      <p className="relative mt-4 text-[0.8rem] font-medium text-[#0a0d16]/80">
+                        From {formatINR(service.priceFrom)}
+                        <span className="px-2 text-[#0a0d16]/30" aria-hidden>
+                          |
+                        </span>
+                        <span className="sr-only">, </span>
+                        {service.typicalTimeline}
                       </p>
 
                       <span

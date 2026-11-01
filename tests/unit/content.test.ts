@@ -16,6 +16,8 @@ import { getPost, posts, postsByDate, relatedPosts } from "@/lib/posts";
 import { getPostBody, postBodies } from "@/lib/post-bodies";
 import { SERVICE_RATES } from "@/lib/pricing";
 import { footerNav, mainNav } from "@/lib/site";
+import { industries } from "@/lib/industries";
+import { allNavHrefs } from "@/components/layout/nav-menu-data";
 
 /**
  * Content integrity.
@@ -38,6 +40,9 @@ const routes = new Set<string>([
   "/status",
   "/privacy",
   "/terms",
+  "/industries",
+  "/careers",
+  ...industries.map((industry) => `/industries/${industry.slug}`),
   ...services.map((service) => `/services/${service.slug}`),
   ...caseStudies.map((study) => `/work/${study.slug}`),
   ...posts.map((post) => `/blog/${post.slug}`),
@@ -171,6 +176,12 @@ describe("navigation", () => {
       for (const link of group.links) {
         expect(routes.has(pathOf(link.href)), `${link.href} should resolve`).toBe(true);
       }
+    }
+  });
+
+  it("only links to routes that exist from the header menus", () => {
+    for (const href of allNavHrefs()) {
+      expect(routes.has(href.split("?")[0]), `${href} should resolve`).toBe(true);
     }
   });
 

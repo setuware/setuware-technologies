@@ -1,16 +1,32 @@
+import type { ServiceKey } from "./pricing";
+
 /**
  * The capability ticker under the hero.
  *
- * A shorter, punchier cut of `services` for the ticker: eight labels, each
- * linking to the service page that covers it.
+ * Every service we sell, plus the platforms people search for by name
+ * (WordPress, Shopify), each linking to the service page that covers it.
+ * Targets are typed as service slugs, so a renamed or removed service fails
+ * the type check instead of leaving a dead link in the band.
  */
-export const capabilities: readonly { label: string; href: string }[] = [
-  { label: "Business websites", href: "/services/business-websites" },
-  { label: "Shopify and WooCommerce stores", href: "/services/ecommerce-stores" },
-  { label: "Web apps and SaaS", href: "/services/web-development" },
-  { label: "iOS and Android apps", href: "/services/app-development" },
-  { label: "Logos and brand identity", href: "/services/product-design" },
-  { label: "SEO and Google Ads", href: "/services/seo-marketing" },
-  { label: "ERP, CRM and automation", href: "/services/custom-software" },
-  { label: "Hosting and maintenance", href: "/services/managed-hosting" },
+const items: readonly { label: string; service: ServiceKey }[] = [
+  { label: "Business websites", service: "business-websites" },
+  { label: "E-commerce stores", service: "ecommerce-stores" },
+  { label: "Web apps", service: "web-development" },
+  { label: "Mobile apps", service: "app-development" },
+  { label: "UI/UX & branding", service: "product-design" },
+  { label: "SEO & marketing", service: "seo-marketing" },
+  { label: "Custom software & ERP", service: "custom-software" },
+  { label: "AI & automation", service: "ai-integration" },
+  { label: "Hosting & domains", service: "managed-hosting" },
+  { label: "Maintenance & support", service: "support-maintenance" },
+  { label: "WordPress", service: "business-websites" },
+  { label: "Shopify", service: "ecommerce-stores" },
+  { label: "WooCommerce", service: "ecommerce-stores" },
+  { label: "Landing pages", service: "business-websites" },
+  { label: "Google Ads", service: "seo-marketing" },
+  { label: "CRM", service: "custom-software" },
 ];
+
+export const capabilities: readonly { label: string; href: string }[] = items.map(
+  ({ label, service }) => ({ label, href: `/services/${service}` }),
+);

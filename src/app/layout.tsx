@@ -6,7 +6,7 @@ import { site } from "@/lib/site";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
-import { mobileServices, navLinks } from "@/components/layout/nav-menu-data";
+import { navLinks } from "@/components/layout/nav-menu-data";
 import { ThemeProvider } from "@/components/layout/theme";
 import { DeferredWidgets } from "@/components/layout/deferred-widgets";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
@@ -44,12 +44,13 @@ export const metadata: Metadata = {
   description: site.description,
   applicationName: site.name,
   keywords: [
-    "web development company",
-    "app development India",
-    "managed hosting",
-    "Next.js development agency",
-    "software maintenance support",
-    "AI integration services",
+    "website development company Gurugram",
+    "business website design India",
+    "e-commerce website development",
+    "web and mobile app development",
+    "SEO and digital marketing",
+    "custom software ERP CRM",
+    "website hosting and maintenance",
     "Setuware Technologies",
   ],
   authors: [{ name: site.name, url: site.url }],
@@ -107,7 +108,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <MotionProvider>
-            <Navbar links={navLinks} services={mobileServices} />
+            <Navbar links={navLinks} />
             <main id="main" className="flex-1">
               {children}
             </main>
