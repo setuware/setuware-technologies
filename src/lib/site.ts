@@ -2,7 +2,7 @@
 
 export const site = {
   name: "Setuware Technologies",
-  shortName: "Setuware",
+  shortName: "Setuware Technologies",
   tagline: "Ship software that scales",
   description:
     "Setuware Technologies builds and runs production software — web apps, mobile apps, managed hosting and 24/7 support — for startups and growing businesses.",

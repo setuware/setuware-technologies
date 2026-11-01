@@ -63,7 +63,7 @@ export default function AboutPage() {
             sources={heroVideoSources()}
             poster={heroVideoPoster()}
             fallback={<PipelineAnimation />}
-            label="Setuware delivery pipeline in motion"
+            label="Setuware Technologies delivery pipeline in motion"
           />
         </div>
 
