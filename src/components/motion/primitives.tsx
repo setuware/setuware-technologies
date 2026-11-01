@@ -16,6 +16,19 @@ import {
 import { cn } from "@/lib/utils";
 import { DURATION, EASE_OUT, VIEWPORT } from "./ease";
 
+/**
+ * Reduced-motion preference that is `false` during SSR and hydration, so the
+ * server and first client render agree; it only takes effect after mount.
+ * `MotionConfig reducedMotion="user"` (see MotionProvider) additionally
+ * strips transform animation for those visitors from the very first frame.
+ */
+const noopSubscribe = () => () => {};
+export function useReducedMotionSafe(): boolean {
+  const mounted = React.useSyncExternalStore(noopSubscribe, () => true, () => false);
+  const reduce = useReducedMotion();
+  return mounted && Boolean(reduce);
+}
+
 /* -------------------------------------------------------------------------- */
 /* FadeUp — the default entrance: rise + un-blur.                              */
 /* -------------------------------------------------------------------------- */
@@ -37,13 +50,12 @@ export function FadeUp({
   children,
   ...props
 }: FadeUpProps) {
-  const reduce = useReducedMotion();
   const hidden = { opacity: 0, y, filter: blur ? "blur(10px)" : "blur(0px)" };
   const shown = { opacity: 1, y: 0, filter: "blur(0px)" };
   return (
     <motion.div
       className={className}
-      initial={reduce ? false : hidden}
+      initial={hidden}
       {...(immediate ? { animate: shown } : { whileInView: shown, viewport: VIEWPORT })}
       transition={{ duration: DURATION.base, ease: EASE_OUT, delay }}
       {...props}
@@ -70,12 +82,11 @@ export function Stagger({
   delay?: number;
   as?: "div" | "ul" | "ol";
 }) {
-  const reduce = useReducedMotion();
   const Component = motion[as] as React.ElementType;
   return (
     <Component
       className={className}
-      initial={reduce ? false : "hidden"}
+      initial={"hidden"}
       whileInView="shown"
       viewport={VIEWPORT}
       variants={{ hidden: {}, shown: { transition: { staggerChildren: stagger, delayChildren: delay } } }}
@@ -133,7 +144,7 @@ export function ImageReveal({
 }) {
   const ref = React.useRef<HTMLDivElement>(null);
   const inView = useInView(ref, VIEWPORT);
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const from = {
     up: "inset(100% 0% 0% 0%)",
     left: "inset(0% 100% 0% 0%)",
@@ -144,13 +155,13 @@ export function ImageReveal({
     <motion.div
       ref={ref}
       className={cn("overflow-hidden", className)}
-      initial={reduce ? false : { clipPath: from }}
+      initial={{ clipPath: from }}
       animate={inView ? { clipPath: "inset(0% 0% 0% 0%)" } : undefined}
-      transition={{ duration: DURATION.slow, ease: EASE_OUT, delay }}
+      transition={{ duration: reduce ? 0 : DURATION.slow, ease: EASE_OUT, delay }}
     >
       <motion.div
         className="h-full w-full"
-        initial={reduce ? false : { scale: 1.25 }}
+        initial={{ scale: 1.25 }}
         animate={inView ? { scale: 1 } : undefined}
         transition={{ duration: DURATION.slow + 0.6, ease: EASE_OUT, delay }}
       >
@@ -177,7 +188,7 @@ export function Parallax({
   scale?: boolean;
 }) {
   const ref = React.useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [speed, -speed]);
   const s = useTransform(scrollYProgress, [0, 1], [1.12, 1]);
@@ -206,7 +217,7 @@ export function Magnetic({
   strength?: number;
 }) {
   const ref = React.useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const x = useSpring(0, { stiffness: 220, damping: 18, mass: 0.4 });
   const y = useSpring(0, { stiffness: 220, damping: 18, mass: 0.4 });
 
@@ -252,7 +263,7 @@ export function SpotlightCard({
   tilt?: number;
   as?: "div" | "article" | "li";
 }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const mx = useMotionValue(-400);
   const my = useMotionValue(-400);
   const rx = useSpring(0, { stiffness: 160, damping: 18 });
@@ -313,7 +324,7 @@ export function ScrollScale({
   radius?: number;
 }) {
   const ref = React.useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "start 0.25"] });
   const scale = useTransform(scrollYProgress, [0, 1], [from, 1]);
   const borderRadius = useTransform(scrollYProgress, [0, 1], [radius, 0]);
@@ -335,14 +346,13 @@ export function ScrollScale({
 export function LetterRise({ text, className }: { text: string; className?: string }) {
   const ref = React.useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "0px 0px -5% 0px" });
-  const reduce = useReducedMotion();
   return (
     <div ref={ref} className={className} aria-label={text} role="text">
       {text.split("").map((ch, i) => (
         <span key={i} aria-hidden className="inline-block overflow-hidden align-bottom">
           <motion.span
             className="inline-block"
-            initial={reduce ? false : { y: "105%" }}
+            initial={{ y: "105%" }}
             animate={inView ? { y: "0%" } : undefined}
             transition={{ duration: DURATION.slow, ease: EASE_OUT, delay: i * 0.035 }}
           >

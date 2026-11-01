@@ -10,6 +10,7 @@ import { mobileServices, navLinks } from "@/components/layout/nav-menu-data";
 import { ThemeProvider } from "@/components/layout/theme";
 import { DeferredWidgets } from "@/components/layout/deferred-widgets";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
+import { MotionProvider } from "@/components/motion/motion-provider";
 
 import "./globals.css";
 
@@ -100,13 +101,15 @@ export default function RootLayout({
     >
       <body className="flex min-h-dvh flex-col bg-background font-sans text-foreground antialiased">
         <ThemeProvider>
-<Navbar links={navLinks} services={mobileServices} />
-          <main id="main" className="flex-1">
-            {children}
-          </main>
-          <Footer />
-          <DeferredWidgets />
-          <SmoothScroll />
+          <MotionProvider>
+            <Navbar links={navLinks} services={mobileServices} />
+            <main id="main" className="flex-1">
+              {children}
+            </main>
+            <Footer />
+            <DeferredWidgets />
+            <SmoothScroll />
+          </MotionProvider>
         </ThemeProvider>
         <JsonLd data={organizationJsonLd()} />
       </body>

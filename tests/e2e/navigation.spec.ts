@@ -52,13 +52,17 @@ test.describe("navigation and rendering", () => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   });
 
-  test("renders all six service pages", async ({ page }) => {
+  test("renders every service page", async ({ page }) => {
     const slugs = [
+      "business-websites",
+      "ecommerce-stores",
       "web-development",
       "app-development",
-      "managed-hosting",
-      "ai-integration",
       "product-design",
+      "seo-marketing",
+      "custom-software",
+      "ai-integration",
+      "managed-hosting",
       "support-maintenance",
     ];
 

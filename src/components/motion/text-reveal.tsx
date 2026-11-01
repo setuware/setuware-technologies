@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, useInView, useReducedMotion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 import { DURATION, EASE_OUT } from "./ease";
@@ -38,7 +38,6 @@ export function TextReveal({
 }: TextRevealProps) {
   const ref = React.useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
-  const reduce = useReducedMotion();
   const show = immediate || inView;
 
   const lines = children.split("\n");
@@ -60,7 +59,7 @@ export function TextReveal({
               >
                 <motion.span
                   className="inline-block will-change-transform"
-                  initial={reduce ? false : { y: "110%", rotate: 4, opacity: 0 }}
+                  initial={{ y: "110%", rotate: 4, opacity: 0 }}
                   animate={show ? { y: "0%", rotate: 0, opacity: 1 } : undefined}
                   transition={{ duration: DURATION.slow, ease: EASE_OUT, delay: delay + i * stagger }}
                 >

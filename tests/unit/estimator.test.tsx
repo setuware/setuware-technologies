@@ -152,7 +152,7 @@ describe("Estimator", () => {
     await user.click(screen.getByRole("button", { name: /start over/i }));
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /^Web\s*from/ })).toHaveAttribute(
+      expect(screen.getByRole("button", { name: /^Web app\s*from/ })).toHaveAttribute(
         "aria-pressed",
         "true",
       );

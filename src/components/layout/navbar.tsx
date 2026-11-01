@@ -1,7 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import {
+  motion,
+  useMotionValueEvent,
+  useScroll,
+} from "framer-motion";
 import { usePathname } from "next/navigation";
 import { ArrowRight, ChevronDown, Command, Menu, Phone, X } from "lucide-react";
 
@@ -13,6 +18,8 @@ import { ServiceIcon } from "@/components/ui/service-icon";
 import { Logo } from "@/components/layout/logo";
 import { ThemeToggle } from "@/components/layout/theme";
 import { OPEN_COMMAND_EVENT } from "@/components/layout/command-menu-events";
+import { Magnetic, useReducedMotionSafe } from "@/components/motion/primitives";
+import { DURATION, EASE_OUT } from "@/components/motion/ease";
 import type { MobileService, NavLink } from "@/components/layout/nav-menu-data";
 
 /**
@@ -25,7 +32,43 @@ import type { MobileService, NavLink } from "@/components/layout/nav-menu-data";
  * The scroll listener lives in a shared rAF-throttled hook — an `onScroll`
  * prop on the header element would never fire, because the document scrolls,
  * not the header.
+ *
+ * Motion: the bar slides away while you read down the page and comes back the
+ * moment you scroll up (`useAutoHide`). It never hides near the top, while the
+ * drawer is open, while focus is inside it, or for reduced-motion visitors.
  */
+
+/** Pixels of scroll travel in one direction before the bar reacts. */
+const HIDE_THRESHOLD = 8;
+/** The bar always shows above this scroll position. */
+const HIDE_AFTER = 160;
+
+function useAutoHide(pinned: boolean): boolean {
+  const { scrollY } = useScroll();
+  const [hidden, setHidden] = useState(false);
+  // Where the current scroll direction started, and which way it is going.
+  const anchor = useRef(0);
+  const goingDown = useRef(true);
+
+  useMotionValueEvent(scrollY, "change", (y) => {
+    if (y < HIDE_AFTER) {
+      anchor.current = y;
+      setHidden(false);
+      return;
+    }
+    const previous = scrollY.getPrevious() ?? y;
+    const down = y > previous;
+    if (y !== previous && down !== goingDown.current) {
+      goingDown.current = down;
+      anchor.current = previous;
+    }
+    const travel = y - anchor.current;
+    if (travel > HIDE_THRESHOLD) setHidden(true);
+    else if (travel < -HIDE_THRESHOLD) setHidden(false);
+  });
+
+  return hidden && !pinned;
+}
 export interface NavbarProps {
   links: readonly NavLink[];
   /** Service shortcuts shown in the mobile drawer. */
@@ -36,6 +79,9 @@ export function Navbar({ links, services }: NavbarProps) {
   const pathname = usePathname();
   const scrolled = useScrolled(12);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [focusWithin, setFocusWithin] = useState(false);
+  const reduceMotion = useReducedMotionSafe();
+  const hidden = useAutoHide(mobileOpen || focusWithin || Boolean(reduceMotion));
 
   useScrollLock(mobileOpen);
 
@@ -74,13 +120,23 @@ export function Navbar({ links, services }: NavbarProps) {
         the bar is solid from the first paint and only gains the glass
         treatment and a hairline once the page scrolls under it.
       */}
-      <header
+      <motion.header
         className={cn(
           "fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,box-shadow] duration-300",
           scrolled
             ? "glass border-b border-border shadow-ambient"
             : "border-b border-transparent bg-background",
         )}
+        initial={false}
+        animate={{ y: hidden ? "-100%" : "0%" }}
+        transition={{ duration: hidden ? DURATION.fast : DURATION.base * 0.7, ease: EASE_OUT }}
+        // Keyboard users tabbing through the bar must never lose it.
+        onFocus={() => setFocusWithin(true)}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+            setFocusWithin(false);
+          }
+        }}
       >
         <nav
           className="container-figma flex h-16 items-center justify-between gap-4 md:h-18 lg:h-auto lg:justify-start lg:gap-0 lg:pb-[calc(var(--s)*18)] lg:pt-[calc(var(--s)*14)]"
@@ -129,19 +185,21 @@ export function Navbar({ links, services }: NavbarProps) {
 
             <ThemeToggle className="hidden sm:inline-flex lg:hidden" />
 
-            <ButtonLink
-              href="/contact"
-              size="sm"
-              variant="ghost"
-              className="hidden rounded-full bg-setu font-semibold text-white hover:bg-setu-dark sm:inline-flex lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*202)] lg:justify-start lg:gap-[calc(var(--s)*10)] lg:pl-[calc(var(--s)*39)] lg:pr-0 lg:text-[calc(var(--s)*15)] lg:leading-[normal] dark:hover:bg-setu-dark"
-            >
-              Start A Project
-              <ArrowRight
-                className="size-3.5 lg:h-[calc(var(--s)*12.5)] lg:w-[calc(var(--s)*13)]"
-                strokeWidth={2.4}
-                aria-hidden
-              />
-            </ButtonLink>
+            <Magnetic strength={0.25} className="hidden sm:block">
+              <ButtonLink
+                href="/contact"
+                size="sm"
+                variant="ghost"
+                className="hidden rounded-full bg-setu font-semibold text-white hover:bg-setu-dark sm:inline-flex lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*202)] lg:justify-start lg:gap-[calc(var(--s)*10)] lg:pl-[calc(var(--s)*39)] lg:pr-0 lg:text-[calc(var(--s)*15)] lg:leading-[normal] dark:hover:bg-setu-dark"
+              >
+                Start A Project
+                <ArrowRight
+                  className="size-3.5 lg:h-[calc(var(--s)*12.5)] lg:w-[calc(var(--s)*13)]"
+                  strokeWidth={2.4}
+                  aria-hidden
+                />
+              </ButtonLink>
+            </Magnetic>
 
             <button
               type="button"
@@ -155,7 +213,7 @@ export function Navbar({ links, services }: NavbarProps) {
             </button>
           </div>
         </nav>
-      </header>
+      </motion.header>
 
       {/* Mobile drawer */}
       <div

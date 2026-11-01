@@ -28,165 +28,273 @@ export interface Service {
 }
 
 export type IconName =
+  | "globe"
+  | "cart"
   | "code"
   | "smartphone"
-  | "server"
-  | "sparkles"
   | "palette"
+  | "megaphone"
+  | "boxes"
+  | "sparkles"
+  | "server"
   | "shield";
 
 export const services: readonly Service[] = [
   {
-    slug: "web-development",
-    name: "Web development",
-    shortName: "Web",
-    summary: "Fast, SEO-ready web apps and marketing sites that convert.",
+    slug: "business-websites",
+    name: "Business websites",
+    shortName: "Website",
+    summary: "Company sites and landing pages that load fast, rank and bring in enquiries.",
     description:
-      "We build web products on Next.js and TypeScript — commerce, dashboards, portals and marketing sites. Every build ships with performance budgets, analytics and a CI pipeline, so the site you launch stays fast a year later.",
-    icon: "code",
+      "Most of our work starts here: a website that explains what your business does and turns visitors into calls, WhatsApp messages and enquiry forms. We build on WordPress or Next.js, set up a CMS your team can edit, and launch with SEO basics, analytics and contact tracking already in place.",
+    icon: "globe",
     accent: ["#6366f1", "#22d3ee"],
-    priceFrom: 120_000,
-    typicalTimeline: "4–10 weeks",
+    priceFrom: 20_000,
+    typicalTimeline: "3–6 weeks",
     outcomes: [
-      "Core Web Vitals in the green on real mobile networks",
-      "Content your team can edit without a developer",
-      "Conversion tracking wired from day one",
+      "A site that loads in under 2 seconds on a mid-range phone",
+      "Your team updates pages, photos and blog posts without a developer",
+      "Every form fill, call click and WhatsApp tap tracked from launch",
     ],
     deliverables: [
-      "Technical discovery and architecture note",
-      "Design system and responsive UI",
-      "Headless CMS integration",
-      "CI/CD, staging and production environments",
-      "Analytics, error tracking and uptime alerts",
+      "Sitemap, page copy structure and wireframes",
+      "Custom design for mobile and desktop",
+      "WordPress or Next.js build with an editable CMS",
+      "On-page SEO, Google Search Console and Analytics setup",
+      "Domain, hosting and business email connected",
     ],
-    stack: ["Next.js", "TypeScript", "Tailwind", "PostgreSQL", "Vercel", "Sanity"],
+    stack: ["WordPress", "Next.js", "Tailwind", "Sanity", "Google Analytics", "Cloudflare"],
+    featured: true,
+  },
+  {
+    slug: "ecommerce-stores",
+    name: "E-commerce stores",
+    shortName: "Store",
+    summary: "Online stores on Shopify, WooCommerce or a custom build, with payments and shipping wired in.",
+    description:
+      "We set up stores that take orders from day one: product catalogue, cart, checkout, Razorpay or Stripe payments, GST invoices and shipping integration. Shopify or WooCommerce when they fit, a custom Next.js store when your catalogue, pricing or fulfilment needs more than a plugin can give.",
+    icon: "cart",
+    accent: ["#f97316", "#ec4899"],
+    priceFrom: 60_000,
+    typicalTimeline: "4–10 weeks",
+    outcomes: [
+      "Checkout that works on UPI, cards and wallets",
+      "Inventory that stays in sync across store and warehouse",
+      "Order, shipping and refund flows your team can run without us",
+    ],
+    deliverables: [
+      "Store setup on Shopify, WooCommerce or Next.js",
+      "Product catalogue, variants and bulk import",
+      "Payment gateway, GST invoices and refunds",
+      "Shipping and courier integration",
+      "Sales, abandoned-cart and conversion reporting",
+    ],
+    stack: ["Shopify", "WooCommerce", "Next.js", "Razorpay", "Stripe", "Shiprocket"],
+    featured: true,
+  },
+  {
+    slug: "web-development",
+    name: "Web application development",
+    shortName: "Web app",
+    summary: "Customer portals, dashboards and SaaS products built on Next.js and PostgreSQL.",
+    description:
+      "When a website needs logins, payments, an admin side or real business logic, it becomes a web application. We build those on Next.js, TypeScript and PostgreSQL, with a performance budget enforced in CI, error tracking and separate staging and production environments. Most MVPs ship in 8–12 weeks.",
+    icon: "code",
+    accent: ["#8b5cf6", "#6366f1"],
+    priceFrom: 120_000,
+    typicalTimeline: "8–12 weeks",
+    outcomes: [
+      "A working staging link from the first sprint",
+      "Core Web Vitals in the green on mid-range Android over 4G",
+      "Code, repository and cloud account in your name from day one",
+    ],
+    deliverables: [
+      "Architecture note and fixed-price scope",
+      "Design system and responsive UI",
+      "Accounts, roles, payments and admin dashboard",
+      "CI/CD pipeline with staging and production",
+      "Analytics, Sentry error tracking and uptime alerts",
+    ],
+    stack: ["Next.js", "TypeScript", "Node.js", "PostgreSQL", "Vercel", "AWS"],
     featured: true,
   },
   {
     slug: "app-development",
-    name: "App development",
+    name: "Mobile app development",
     shortName: "Apps",
-    summary: "Cross-platform iOS and Android apps from one codebase.",
+    summary: "iOS and Android apps from one React Native or Flutter codebase.",
     description:
-      "One React Native codebase, two stores, one release pipeline. We handle the parts teams underestimate — offline state, push notifications, store review, crash triage — and hand over an app your own developers can keep shipping.",
+      "One codebase, both stores, one release pipeline. We build in React Native or Flutter and handle the parts teams underestimate: offline state, push notifications, store review and crash triage. You get an app your own developers can keep shipping, with the store accounts in your name.",
     icon: "smartphone",
     accent: ["#8b5cf6", "#ec4899"],
     priceFrom: 220_000,
     typicalTimeline: "8–16 weeks",
     outcomes: [
-      "Single codebase for iOS and Android",
-      "Offline-first behaviour on weak networks",
-      "Store submission handled end to end",
+      "One codebase for iOS and Android, one team to maintain it",
+      "Keeps working offline and syncs when the signal returns",
+      "App Store and Play Store submission handled end to end",
     ],
     deliverables: [
-      "Native-feel UI for both platforms",
+      "Native-feel UI for iOS and Android",
       "Push notifications and deep links",
-      "Offline sync and conflict handling",
-      "Over-the-air update channel",
-      "App Store and Play Store listings",
+      "Offline sync with conflict handling",
+      "Over-the-air updates for quick fixes",
+      "App Store and Play Store listings and submission",
     ],
-    stack: ["React Native", "Expo", "TypeScript", "Firebase", "Fastlane"],
+    stack: ["React Native", "Flutter", "Expo", "TypeScript", "Firebase", "Fastlane"],
     featured: true,
   },
   {
-    slug: "managed-hosting",
-    name: "Managed hosting",
-    shortName: "Hosting",
-    summary: "We run your infrastructure, so an outage is our pager, not yours.",
+    slug: "product-design",
+    name: "UI/UX & branding",
+    shortName: "Design",
+    summary: "Logos, brand identity and product interfaces designed to be built.",
     description:
-      "Deployment, scaling, backups, certificates, WAF and monitoring on a single monthly invoice. We size infrastructure to your traffic, load-test it before launch, and keep a restore-tested backup of everything that matters.",
-    icon: "server",
-    accent: ["#06b6d4", "#10b981"],
-    priceFrom: 25_000,
-    typicalTimeline: "3–7 days to migrate",
+      "A logo and brand identity for a new business, or the screens and flows for your website and app. Our designers work in Figma alongside the engineers who will build it, so the brand guide and the screens you approve are exactly what ships.",
+    icon: "palette",
+    accent: ["#ec4899", "#6366f1"],
+    priceFrom: 90_000,
+    typicalTimeline: "2–6 weeks",
     outcomes: [
-      "99.95% uptime backed by an SLA",
-      "Nightly backups, restore-tested monthly",
-      "Autoscaling verified by load test, not hope",
+      "A brand that looks the same on your site, app, invoices and social posts",
+      "A clickable prototype before any code is written",
+      "Contrast, focus states and touch targets checked at design time",
     ],
     deliverables: [
-      "Zero-downtime migration plan",
-      "CDN, caching and WAF configuration",
-      "Autoscaling and health checks",
-      "Backup, restore and disaster-recovery runbook",
-      "On-call rotation and incident reports",
+      "Logo, colour palette and typography",
+      "Brand guidelines and social media templates",
+      "User flows and wireframes",
+      "High-fidelity UI for every screen and state",
+      "Design system and clickable prototype",
     ],
-    stack: ["Vercel", "AWS", "Cloudflare", "Docker", "Terraform", "Grafana"],
-    featured: true,
+    stack: ["Figma", "Illustrator", "Storybook", "Tailwind"],
+    featured: false,
+  },
+  {
+    slug: "seo-marketing",
+    name: "SEO & digital marketing",
+    shortName: "Marketing",
+    summary: "On-page SEO, Google Ads and social campaigns, measured in leads, not likes.",
+    description:
+      "A good website still needs traffic. We fix technical and on-page SEO, set up Google Business Profile, run Google Ads and Meta campaigns, and report every month on what each rupee brought in. Tracking goes in first, so you can see which channel produces enquiries.",
+    icon: "megaphone",
+    accent: ["#f59e0b", "#10b981"],
+    priceFrom: 15_000,
+    typicalTimeline: "Monthly, first report in 30 days",
+    outcomes: [
+      "Search rankings tracked for the keywords that bring you customers",
+      "Ad spend tied to leads and cost per enquiry",
+      "A monthly report in plain language, not a screenshot dump",
+    ],
+    deliverables: [
+      "Technical and on-page SEO audit with fixes",
+      "Google Business Profile and local SEO",
+      "Google Ads and Meta ad campaigns",
+      "Social media content calendar",
+      "GA4 and conversion tracking with a monthly report",
+    ],
+    stack: ["Google Search Console", "GA4", "Google Ads", "Meta Ads", "Semrush"],
+    featured: false,
+  },
+  {
+    slug: "custom-software",
+    name: "Custom software, ERP & CRM",
+    shortName: "Software",
+    summary: "Internal tools, ERP and CRM systems built around how your business actually runs.",
+    description:
+      "Spreadsheets, WhatsApp groups and three tools that do not talk to each other. We replace them with one system for orders, inventory, customers, staff and billing, built around your process rather than a template, and connected to the accounting and payment tools you already use.",
+    icon: "boxes",
+    accent: ["#0ea5e9", "#6366f1"],
+    priceFrom: 150_000,
+    typicalTimeline: "10–20 weeks",
+    outcomes: [
+      "One system of record instead of spreadsheets and chat threads",
+      "Role-based access for owners, managers and staff",
+      "Reports you can pull yourself, without waiting on IT",
+    ],
+    deliverables: [
+      "Process mapping with the people who do the work",
+      "Modules for orders, inventory, customers or HR",
+      "Role-based access and audit log",
+      "Integrations with accounting, payments and WhatsApp",
+      "Data migration from your current spreadsheets or tools",
+    ],
+    stack: ["Node.js", "PostgreSQL", "React", "Redis", "REST APIs"],
+    featured: false,
   },
   {
     slug: "ai-integration",
-    name: "AI integration",
+    name: "AI & automation",
     shortName: "AI",
-    summary: "Assistants, search and automation wired into your real data.",
+    summary: "Chatbots, workflow automation and integrations that take repetitive work off your team.",
     description:
-      "AI that does a specific job: answer customer questions from your own documents, extract fields from invoices, draft replies, score leads. We start from the workflow and the cost per request, not the demo.",
+      "AI and automation that do one specific job: a chatbot that answers customers from your own documents, invoices read into your system automatically, leads routed from your website to the right salesperson. We measure accuracy and cost per request before launch, and hand low-confidence cases to a person.",
     icon: "sparkles",
     accent: ["#f59e0b", "#ef4444"],
     priceFrom: 180_000,
     typicalTimeline: "3–8 weeks",
     outcomes: [
       "Answers grounded in your documents, with citations",
-      "Measured accuracy before launch, not after",
-      "Per-request cost you can forecast",
+      "Hours of manual data entry removed each week",
+      "A per-request cost you can forecast and cap",
     ],
     deliverables: [
-      "Use-case and feasibility assessment",
-      "Retrieval pipeline over your content",
-      "Evaluation suite with accuracy thresholds",
-      "Guardrails, logging and cost caps",
-      "Human-handoff path for low confidence",
+      "Workflow review and feasibility assessment",
+      "Website or WhatsApp chatbot on your own content",
+      "Workflow automation between your existing tools",
+      "Evaluation suite with agreed accuracy thresholds",
+      "Guardrails, logging, spend caps and human handoff",
     ],
-    stack: ["Claude", "OpenAI", "pgvector", "LangGraph", "Python"],
+    stack: ["Claude", "OpenAI", "n8n", "pgvector", "Python"],
     featured: false,
   },
   {
-    slug: "product-design",
-    name: "Product design",
-    shortName: "Design",
-    summary: "Interfaces designed to be built, not just presented.",
+    slug: "managed-hosting",
+    name: "Hosting & domains",
+    shortName: "Hosting",
+    summary: "Domains, hosting, SSL, business email and backups, set up and watched for you.",
     description:
-      "Research, flows, UI and a component library handed over as production-ready tokens. Our designers sit with the engineers building it, so what gets approved is what ships.",
-    icon: "palette",
-    accent: ["#ec4899", "#6366f1"],
-    priceFrom: 90_000,
-    typicalTimeline: "2–6 weeks",
+      "We register or move your domain, host your site or app, set up SSL and business email, and keep nightly backups. Monitoring runs around the clock, and if something goes down, our engineer gets the alert, not you. It runs in an account in your name, billed at cost.",
+    icon: "server",
+    accent: ["#06b6d4", "#10b981"],
+    priceFrom: 25_000,
+    typicalTimeline: "3–7 days to migrate",
     outcomes: [
-      "Clickable prototype before a line of code",
-      "Design system your developers can consume",
-      "Accessibility checked at design time",
+      "99.95% uptime SLA in writing on Business and Critical plans",
+      "Nightly backups, restore-tested every month",
+      "Domain, SSL and email renewals that never lapse quietly",
     ],
     deliverables: [
-      "User research synthesis",
-      "Information architecture and flows",
-      "High-fidelity UI for every state",
-      "Design tokens and component library",
-      "Interactive prototype for testing",
+      "Domain registration or transfer",
+      "Hosting setup or zero-downtime migration",
+      "SSL, CDN and firewall on Cloudflare",
+      "Business email and DNS records",
+      "Backups, uptime monitoring and incident reports",
     ],
-    stack: ["Figma", "Framer Motion", "Storybook", "Tailwind"],
+    stack: ["AWS", "Vercel", "Cloudflare", "Docker", "Grafana"],
     featured: false,
   },
   {
     slug: "support-maintenance",
-    name: "Support & maintenance",
+    name: "Maintenance & support",
     shortName: "Support",
-    summary: "A named team on call for the software you already own.",
+    summary: "Updates, fixes and security patches for your site or app, on a fixed monthly fee.",
     description:
-      "Inherited a codebase nobody maintains? We audit it, stabilise it, patch the dependencies and stay on call. Fixed monthly fee, published response times, no surprise invoices.",
+      "Plugin and dependency updates, security patches, bug fixes and small content changes, handled by a named team with published response times. Inherited a site or app nobody maintains? We audit it first, fix what is fragile, then keep it current. Fixed monthly fee, no surprise invoices.",
     icon: "shield",
     accent: ["#10b981", "#6366f1"],
     priceFrom: 40_000,
     typicalTimeline: "Onboard in 1 week",
     outcomes: [
       "First response in under 30 minutes",
-      "Dependencies and certificates never expire quietly",
-      "A monthly report you can forward to your board",
+      "Plugins, dependencies and certificates updated before they expire",
+      "A monthly health report you can forward to your board",
     ],
     deliverables: [
-      "Codebase and security audit",
-      "Prioritised stabilisation backlog",
-      "Patch and dependency cadence",
-      "Monitoring and alert routing",
+      "Site or codebase and security audit",
+      "Monthly updates and security patches",
+      "Bug fixes and small content changes",
+      "Monitoring with alerts routed to our on-call",
       "Monthly health report",
     ],
     stack: ["Sentry", "GitHub Actions", "Dependabot", "Grafana", "PagerDuty"],
@@ -413,10 +521,11 @@ export interface Testimonial {
   outcomes: readonly string[];
 }
 
+// TODO(owner): replace with a real, approved client quote
 export const testimonials: readonly Testimonial[] = [
   {
     quote:
-      "Setuware Technologies transformed our field operations completely. We reduced dispatch time by 75% and our technicians love the mobile app. The automated invoicing alone saved us $80K annually in admin costs.",
+      "Setuware Technologies changed how our field operations run. Dispatch time is down 75%, and our technicians actually like using the mobile app. Automated invoicing alone saves us $80K a year in admin costs.",
     author: "Michael Chen",
     role: "COO",
     company: "ProClean Services",
@@ -425,7 +534,7 @@ export const testimonials: readonly Testimonial[] = [
   },
   {
     quote:
-      "We evaluated Chargebee, Stripe, and Zuora before choosing Setuware Technologies. The difference? Setuware Technologies gave us subscription billing plus operations management in one platform. Our churn dropped 35% and we eliminated $40K a year in integration costs.",
+      "We evaluated Chargebee, Stripe and Zuora before choosing Setuware Technologies. The difference was getting subscription billing and operations management in one platform. Churn dropped 35%, and we cut $40K a year in integration costs.",
     author: "Sarah Thompson",
     role: "CTO",
     company: "Wellness Bev",
@@ -434,7 +543,7 @@ export const testimonials: readonly Testimonial[] = [
   },
   {
     quote:
-      "The automated invoicing alone paid for the build. Our events team went from three spreadsheets and a shared inbox to one system that everybody actually uses, and nobody has asked to go back.",
+      "Automated invoicing paid for the build on its own. Our events team went from three spreadsheets and a shared inbox to one system everyone uses, and nobody has asked to go back.",
     author: "David Rodriguez",
     role: "Founder & CEO",
     company: "TechHub Events",
@@ -457,16 +566,16 @@ export const processSteps: readonly ProcessStep[] = [
     title: "Discovery",
     duration: "1-2 weeks",
     description:
-      "We dig into the problem, the constraints and the deadline before proposing anything. If we are not the right team for it, we say so on this call.",
+      "We learn how your business wins customers, what the website or app has to do, and the deadline, before proposing anything. If we are not the right team for it, we tell you on the first call.",
     deliverable:
-      "30-minute consultation | Stakeholder interviews & briefing | User & market research",
+      "30-minute consultation | Goals and competitor review | Sitemap or feature list",
   },
   {
     step: "002",
     title: "Proposal and Scope",
     duration: "1 week",
     description:
-      "A fixed-price proposal with the architecture, the risks we can see, and what we will deliberately leave out of phase one.",
+      "A fixed-price proposal covering the architecture, the risks we can see and what we are deliberately leaving out of phase one. You know the cost before you commit.",
     deliverable: "Written scope | Timeline and fixed quote",
   },
   {
@@ -474,32 +583,32 @@ export const processSteps: readonly ProcessStep[] = [
     title: "Design",
     duration: "2-3 weeks",
     description:
-      "Clickable prototype of the real flows. You approve something you can use, not a static picture.",
-    deliverable: "Creative & strategic exploration | Wireframes & Approved UI designs",
+      "Brand, layout and every key page or screen as a clickable Figma prototype. You approve something you can tap through, not a static picture.",
+    deliverable: "Wireframes | Clickable prototype | Approved UI designs",
   },
   {
     step: "004",
     title: "Development",
     duration: "2-4 weeks",
     description:
-      "A working staging URL from sprint one, a demo every fortnight, and a changelog you can read without us in the room.",
-    deliverable: "Weekly demos | Direct team access",
+      "Your website or app on a live staging link from the first week, with a demo every week, so there are no surprises at the end. Each sprint closes with a changelog you can read without us in the room.",
+    deliverable: "Weekly demos | Live staging link | Direct access to the engineers",
   },
   {
     step: "005",
     title: "Testing and Launch",
     duration: "1 week",
     description:
-      "Load testing, accessibility audit, security review and a rehearsed rollback plan before we touch production.",
-    deliverable: "Real-device QA | Production release | Rollout & support",
+      "Real-device testing, SEO and speed checks, an accessibility audit, a security review and a rehearsed rollback plan, all before we go live.",
+    deliverable: "Real-device QA | Production release | Rollback plan",
   },
   {
     step: "006",
     title: "Support",
     duration: "As needed",
     description:
-      "Monitoring, patches and a monthly health report. Your team gets the keys and the documentation on day one.",
-    deliverable: "Monitoring | Ongoing improvements | Post-launch optimisations",
+      "Hosting, updates, fixes and a monthly report, plus SEO, marketing or new features when you are ready for them. You hold the domain, the code and the hosting account from day one.",
+    deliverable: "Monitoring | Bug fixes and patches | Post-launch improvements",
   },
 ];
 
@@ -513,63 +622,69 @@ export interface Faq {
 export const faqs: readonly Faq[] = [
   {
     group: "Before you start",
-    question: "What makes Setuware Technologies different?",
+    question: "Do you only build websites?",
     answer:
-      "We stay after launch. Hosting and support are quoted alongside the build, the documentation is written before handover, and our own on-call rota sits behind everything we run — which makes us far more careful during the build, because we are the ones who get paged.",
+      "Websites are where most clients start, and they are still the bulk of our work. After launch we handle what usually comes next: online stores, web and mobile apps, logos and branding, SEO and Google Ads, custom ERP or CRM software, AI chatbots and automation, and hosting and maintenance. One team, one point of contact, and nothing to re-explain to a new agency.",
   },
   {
     group: "Before you start",
-    question: "Do you handle cloud and deployment?",
+    question: "How do you price a project?",
     answer:
-      "Yes. We size the infrastructure to your traffic, set up CDN, caching, WAF and monitoring, and load-test it before launch. It runs in your own cloud accounts, billed to you at cost — we never mark up infrastructure.",
+      "Fixed price, agreed before we write any code. We scope the work during discovery, send a written quote with the timeline and payment milestones, and bill against those milestones. A business website starts at ₹20,000 on the Website Build package, and Full Application Build starts at ₹50,000. Anything new you ask for mid-project is quoted separately before we start it, so the number never moves without your sign-off.",
   },
   {
     group: "Before you start",
-    question: "What is a typical timeline?",
+    question: "How long does a typical build take?",
     answer:
-      "A website is usually 4 to 6 weeks, a full web application 8 to 12, and a mobile app 8 to 16. Discovery takes 1 to 2 weeks before that. The instant estimator gives you a timeline for your actual scope in about a minute.",
+      "A business website takes 3 to 6 weeks. An online store takes 4 to 10. A web application takes 8 to 12, and most MVPs ship in that window. A mobile app takes 8 to 16. Discovery and scoping add 1 to 2 weeks up front. The timeline is written into your quote, and the instant estimator gives you a figure for your scope in about a minute.",
   },
   {
     group: "Before you start",
-    question: "Do you provide post-launch support?",
+    question: "Who owns the code and the IP?",
     answer:
-      "Every build includes a support window — one month on Website Build, three on Full Application Build, twelve on Enterprise. After that, monthly care plans start at ₹8,000 and carry a published SLA rather than a best-effort promise.",
+      "You do, from day one. The domain is registered in your name, the code sits in your own repository and the hosting runs in your own account. Handover documentation is written for a developer who has never met us. If you stop working with us, there is nothing to transfer and nothing held back.",
   },
   {
     group: "Before you start",
-    question: "Can you customize software for our business?",
+    question: "Will you sign an NDA?",
     answer:
-      "That is the whole premise. We map how your business actually runs before designing anything, then build around your processes instead of asking your team to work around a template.",
+      "Yes. We sign your NDA before the first detailed conversation, or send our mutual NDA if you do not have one. Share as much as you need to once it is signed; it does not slow anything down.",
+  },
+  {
+    group: "Before you start",
+    question: "What do you need from us?",
+    answer:
+      "One person who can make decisions and join a 30-minute demo each week. Access to any existing systems, APIs and accounts we need to integrate with. Your content and brand assets, or a decision to have us produce them. If the build takes payments, your business KYC documents so the gateway can be activated. Feedback on each demo within a few working days keeps the timeline on track.",
   },
   {
     group: "Help & support",
     question: "How do we get started?",
     answer:
-      "Book a free consultation. We spend 45 minutes on the problem, the constraints and the deadline, then send a written summary and a ballpark range — no obligation and no sales sequence.",
+      "Book a free 30-minute call. You speak to the engineers who would build it, not a salesperson, about the problem, the constraints and the deadline. Afterwards we send a written summary and a ballpark range. You keep the summary either way, and there is no follow-up sales sequence.",
   },
   {
     group: "Help & support",
-    question: "Can you upgrade or modernize existing software?",
+    question: "Do you provide post-launch support?",
     answer:
-      "Often, yes. We start with a paid audit of the codebase and infrastructure, then tell you honestly whether stabilising it or rebuilding it is cheaper over twelve months.",
+      "Yes. Every build includes a support window: three months on Website Build, six to eight months on Full Application Build, and an agreed term on Enterprise Engagement. After that, care plans start at ₹8,000 a month with published response times. Business and Critical plans add 24×7 on-call cover and a written uptime SLA.",
   },
   {
     group: "Help & support",
-    question: "What happens after the project is delivered?",
+    question: "Can you take over or modernise existing software?",
     answer:
-      "You get the repository, the infrastructure and documentation written for a developer who has never met us. Most clients then move onto a care plan, but leaving should be painless — that is deliberate.",
+      "Usually, yes. We start with a paid audit of the codebase and infrastructure, then tell you in writing whether stabilising it or rebuilding it is cheaper over the next twelve months. If stabilising wins, we move it onto a support plan and work through the fixes in priority order.",
   },
   {
     group: "Performance & quality",
-    question: "Do you offer a free consultation?",
+    question: "What tech stack do you use?",
     answer:
-      "Yes, and it is a real technical conversation rather than a sales call. You speak to the engineers who would build it, and you keep the written summary either way.",
+      "WordPress or Next.js for business websites, Shopify or WooCommerce for stores, and a custom Next.js build when a store outgrows plugins. React Native or Flutter for mobile apps. Node.js and PostgreSQL behind web apps and custom software. Hosting runs on AWS, Vercel or Cloudflare in your own account, billed to you at cost; we never mark up infrastructure. If your existing stack is sound, we work in it.",
   },
   {
     group: "Performance & quality",
-    question: "How do you ensure software quality?",
+    question: "How do you keep quality up?",
     answer:
-      "Performance budgets enforced in CI, automated test suites, real-device QA, an accessibility audit and a security review before launch. A regression fails the build rather than quietly shipping.",
+      "Every pull request runs automated tests and a performance budget in CI, so a regression fails the build instead of shipping. Before launch we do real-device QA, an accessibility audit, a security review and a load test. You see progress on a live staging link every week, so nothing about the finished product is a surprise.",
   },
 ];
 
@@ -588,6 +703,7 @@ export interface Stat {
 }
 
 export const stats: readonly Stat[] = [
+  // TODO(owner): this says 2018 but site.founded is 2020; confirm which is right.
   { value: 120, suffix: "+", label: "Products shipped", hint: "Since 2018" },
   { value: 99.95, suffix: "%", label: "Hosting uptime", hint: "Last 12 months" },
   { value: 30, suffix: " min", label: "First response", hint: "Support SLA" },

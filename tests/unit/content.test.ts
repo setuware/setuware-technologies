@@ -72,7 +72,7 @@ describe("services", () => {
   });
 
   it("looks a service up by slug and returns undefined otherwise", () => {
-    expect(getService("web-development")?.name).toBe("Web development");
+    expect(getService("web-development")?.name).toBe("Web application development");
     expect(getService("nope")).toBeUndefined();
   });
 });

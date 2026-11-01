@@ -42,7 +42,7 @@ describe("CommandMenuDialog", () => {
     expect(screen.getAllByText("Services").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("Case studies")).toBeInTheDocument();
     expect(screen.getByText("Articles")).toBeInTheDocument();
-    expect(screen.getByText("Managed hosting")).toBeInTheDocument();
+    expect(screen.getByText("Hosting & domains")).toBeInTheDocument();
   });
 
   it("filters as you type", async () => {
@@ -51,8 +51,8 @@ describe("CommandMenuDialog", () => {
 
     await user.type(screen.getByRole("textbox", { name: /search/i }), "hosting");
 
-    expect(screen.getByText("Managed hosting")).toBeInTheDocument();
-    expect(screen.queryByText("Product design")).not.toBeInTheDocument();
+    expect(screen.getByText("Hosting & domains")).toBeInTheDocument();
+    expect(screen.queryByText("UI/UX & branding")).not.toBeInTheDocument();
   });
 
   it("matches a subsequence so 'webdev' finds web development", async () => {
@@ -61,7 +61,7 @@ describe("CommandMenuDialog", () => {
 
     await user.type(screen.getByRole("textbox", { name: /search/i }), "webdev");
 
-    expect(screen.getByText("Web development")).toBeInTheDocument();
+    expect(screen.getByText("Web application development")).toBeInTheDocument();
   });
 
   it("offers a way forward when nothing matches", async () => {
