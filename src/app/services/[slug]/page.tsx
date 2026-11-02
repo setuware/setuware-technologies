@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -14,6 +15,7 @@ import {
 
 import { caseStudies, getService, serviceGroups, services, type Service } from "@/lib/content";
 import { breadcrumbJsonLd, faqJsonLd, pageMetadata, serviceJsonLd } from "@/lib/seo";
+import { servicePhotos } from "@/lib/service-photos";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -436,7 +438,10 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
             <Stagger className="mt-10 grid gap-5 md:grid-cols-3">
               {related.map((item) => (
                 <StaggerItem key={item.slug} className="h-full">
-                  <ServiceCard service={item} />
+                  <ServiceCard
+                    service={item}
+                    sizes="(min-width: 1280px) 24rem, (min-width: 768px) 33vw, 100vw"
+                  />
                 </StaggerItem>
               ))}
             </Stagger>
@@ -520,6 +525,12 @@ function SectionIntro({ id, eyebrow, title }: { id: string; eyebrow: string; tit
   );
 }
 
+/** Bottom-weighted navy so the inset card sits on a calm edge, plus a cyan wash. */
+const HERO_PHOTO_OVERLAY = [
+  "linear-gradient(to top, rgba(11,16,32,0.55) 0%, rgba(11,16,32,0.1) 45%, rgba(11,16,32,0) 100%)",
+  "linear-gradient(135deg, rgba(0,161,198,0.2) 0%, rgba(0,161,198,0) 55%)",
+].join(", ");
+
 function Hero({
   service,
   groupLabel,
@@ -531,6 +542,7 @@ function Hero({
   contactHref: string;
   estimateHref: string;
 }) {
+  const photo = servicePhotos[service.slug];
   return (
     <section className="relative overflow-hidden border-b border-border pb-16 pt-28 md:pb-24 md:pt-36">
       <div className="pointer-events-none absolute inset-0 bg-mesh opacity-60" aria-hidden />
@@ -613,8 +625,35 @@ function Hero({
           </div>
 
           <FadeUp immediate delay={0.2} className="min-w-0">
-            <ServiceVisual variant={service.icon} accent={service.accent} className="shadow-xl" />
-            <ul className="mt-4 flex flex-wrap gap-2" aria-label="Key outcomes">
+            {/* A large photo panel, with the service's motion graphic as an
+                inset card overlapping its lower-left corner. */}
+            <div className="relative">
+              <figure className="relative aspect-[4/3] overflow-hidden rounded-[1.6rem] bg-[#0b1020] shadow-2xl ring-1 ring-black/5 lg:aspect-[5/4]">
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  fill
+                  loading="eager"
+                  fetchPriority="high"
+                  sizes="(min-width: 1280px) 34rem, (min-width: 1024px) 44vw, 100vw"
+                  className="object-cover"
+                />
+                <span
+                  className="pointer-events-none absolute inset-0"
+                  style={{ backgroundImage: HERO_PHOTO_OVERLAY }}
+                  aria-hidden
+                />
+                <figcaption className="absolute right-3 top-3 rounded-full bg-[#0b1020]/55 px-2.5 py-1 text-[10px] font-medium text-white/90 backdrop-blur-md">
+                  {photo.credit}
+                </figcaption>
+              </figure>
+              <ServiceVisual
+                variant={service.icon}
+                accent={service.accent}
+                className="relative z-10 mx-4 -mt-16 w-auto shadow-2xl sm:mx-10 sm:-mt-24 lg:absolute lg:-bottom-10 lg:-left-8 lg:mx-0 lg:mt-0 lg:w-[60%]"
+              />
+            </div>
+            <ul className="mt-5 flex flex-wrap gap-2 lg:mt-16" aria-label="Key outcomes">
               {service.outcomes.map((outcome) => (
                 <li
                   key={outcome}

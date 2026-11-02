@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 
 import { services } from "@/lib/content";
 import { images } from "@/lib/images";
+import { servicePhotos } from "@/lib/service-photos";
 import { useMediaQuery } from "@/lib/hooks";
 import { cn, formatINR } from "@/lib/utils";
 import { ServiceIcon } from "@/components/ui/service-icon";
@@ -17,6 +18,15 @@ import { DURATION, EASE_OUT, VIEWPORT } from "@/components/motion/ease";
 
 /** One spring for every card state change, so the row moves as one object. */
 const CARD_SPRING = { type: "spring", stiffness: 210, damping: 26, mass: 0.9 } as const;
+
+/**
+ * Overlay over each card's photo: navy (#0b1020) at 92% under the text,
+ * thinning to 35% at the top, plus a faint brand-cyan wash from the top-left.
+ */
+const CARD_OVERLAY = [
+  "linear-gradient(to top, rgba(11,16,32,0.94) 0%, rgba(11,16,32,0.8) 38%, rgba(11,16,32,0.48) 68%, rgba(11,16,32,0.3) 100%)",
+  "linear-gradient(135deg, rgba(0,161,198,0.28) 0%, rgba(0,161,198,0) 55%)",
+].join(", ");
 
 /**
  * "All services under one roof".
@@ -187,7 +197,7 @@ export function ServicesDark() {
                   <SpotlightCard
                     tilt={5}
                     glow="rgba(0,161,198,0.22)"
-                    className="h-full overflow-hidden rounded-[1.4rem] border border-white/10 bg-[linear-gradient(160deg,#ffffff,#eef4fb_55%,#dce9f7)] text-[#0a0d16] shadow-2xl"
+                    className="h-full overflow-hidden rounded-[1.4rem] border border-white/10 bg-[#0b1020] text-white shadow-2xl"
                   >
                     <Link
                       href={`/services/${service.slug}`}
@@ -197,59 +207,70 @@ export function ServicesDark() {
                       }}
                       className="group relative flex h-full min-h-[21rem] flex-col rounded-[inherit] p-7 outline-offset-[-3px]"
                     >
-                      {/* Photograph bleeds in from the bottom-right of the card. */}
-                      <Image
-                        src={
-                          service.slug === "managed-hosting"
-                            ? images.serviceCloud.src
-                            : images.serviceWeb.src
-                        }
-                        alt=""
-                        fill
-                        sizes="26rem"
-                        className="pointer-events-none object-cover opacity-25 mix-blend-multiply transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.06]"
-                      />
+                      {/* Full-bleed photograph. `-z-10` puts it under the
+                          spotlight glow (the card is its own stacking
+                          context), so the cursor glow still reads on top. */}
+                      <span className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[inherit]" aria-hidden>
+                        <Image
+                          src={servicePhotos[service.slug].src}
+                          alt=""
+                          fill
+                          sizes="(min-width: 768px) 26rem, 82vw"
+                          className={cn(
+                            "object-cover transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.06] group-focus-visible:scale-[1.06] motion-reduce:transition-none",
+                            isActive && wide && "scale-[1.06]",
+                          )}
+                        />
+                        {/* Brand overlay: near-opaque navy under the text,
+                            thinning toward the top so the photo shows. */}
+                        <span
+                          className="absolute inset-0 transition-opacity duration-700 group-hover:opacity-[0.88]"
+                          style={{ backgroundImage: CARD_OVERLAY }}
+                        />
+                      </span>
 
                       <span className="relative">
                         <ServiceIcon
                           name={service.icon}
                           accent={service.accent}
-                          className="size-11"
+                          className="size-11 shadow-lg ring-1 ring-white/20"
                           size={22}
                         />
                       </span>
 
-                      <h3 className="relative mt-5 font-display text-[1.6rem] font-semibold leading-tight">
-                        {service.name}
-                      </h3>
-                      {/* Clamped: summaries vary in length and the cards are a
-                          fixed height in the carousel. */}
-                      <p className="relative mt-3 line-clamp-3 max-w-sm text-[0.88rem] leading-relaxed text-[#0a0d16]/70">
-                        {service.summary}
-                      </p>
-                      {/* Price and timeline up front: the two things a buyer
-                          asks first. */}
-                      <p className="relative mt-4 text-[0.8rem] font-medium text-[#0a0d16]/80">
-                        From {formatINR(service.priceFrom)}
-                        <span className="px-2 text-[#0a0d16]/30" aria-hidden>
-                          |
-                        </span>
-                        <span className="sr-only">, </span>
-                        {service.typicalTimeline}
-                      </p>
+                      <div className="relative mt-auto pt-10">
+                        <h3 className="font-display text-[1.6rem] font-semibold leading-tight [text-shadow:0_1px_12px_rgba(11,16,32,0.6)]">
+                          {service.name}
+                        </h3>
+                        {/* Clamped: summaries vary in length and the cards are a
+                            fixed height in the carousel. */}
+                        <p className="mt-3 line-clamp-3 max-w-sm text-[0.88rem] leading-relaxed text-white/80">
+                          {service.summary}
+                        </p>
+                        {/* Price and timeline up front: the two things a buyer
+                            asks first. */}
+                        <p className="mt-4 text-[0.8rem] font-medium text-white/90">
+                          From {formatINR(service.priceFrom)}
+                          <span className="px-2 text-white/40" aria-hidden>
+                            |
+                          </span>
+                          <span className="sr-only">, </span>
+                          {service.typicalTimeline}
+                        </p>
 
-                      <span
-                        className={cn(
-                          "relative mt-auto inline-flex w-fit items-center gap-2 rounded-full border border-[#0a0d16]/25 px-5 py-2 text-xs font-medium transition-colors",
-                          "group-hover:border-primary group-hover:text-primary",
-                        )}
-                      >
-                        View Details
-                        <ArrowRight
-                          className="size-3.5 transition-transform duration-300 group-hover:translate-x-1"
-                          aria-hidden
-                        />
-                      </span>
+                        <span
+                          className={cn(
+                            "mt-5 inline-flex w-fit items-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 py-2 text-xs font-medium backdrop-blur-sm transition-colors",
+                            "group-hover:border-setu group-hover:bg-setu-dark",
+                          )}
+                        >
+                          View Details
+                          <ArrowRight
+                            className="size-3.5 transition-transform duration-300 group-hover:translate-x-1"
+                            aria-hidden
+                          />
+                        </span>
+                      </div>
                     </Link>
                   </SpotlightCard>
                 </motion.div>
