@@ -14,6 +14,8 @@ import type { ServiceKey } from "@/lib/pricing";
 import { site } from "@/lib/site";
 import { formatINR } from "@/lib/utils";
 
+import { ASSISTANT_NAME, WHATSAPP_MESSAGE, isWithinHours, whatsappHref } from "./constants";
+
 /* -------------------------------------------------------------------------- */
 /* Types                                                                       */
 /* -------------------------------------------------------------------------- */
@@ -37,6 +39,7 @@ export type ChipAction =
   | { kind: "service"; slug: ServiceKey }
   | { kind: "lead-service"; slug: ServiceKey | "other"; label: string }
   | { kind: "lead-skip" }
+  | { kind: "lead-retry" }
   | { kind: "lead-cancel" };
 
 export interface Chip {
@@ -70,10 +73,7 @@ export type Match =
 /* Constants                                                                   */
 /* -------------------------------------------------------------------------- */
 
-export const ASSISTANT_NAME = "Setuware Assistant";
-export const WHATSAPP_MESSAGE =
-  "Hello Setuware Technologies, I'd like to discuss a project.";
-export const whatsappHref = `${site.whatsapp}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+export { ASSISTANT_NAME, WHATSAPP_MESSAGE, whatsappHref, isWithinHours };
 
 const whatsappLink: ChatLink = {
   label: "Chat on WhatsApp",
@@ -738,16 +738,4 @@ export function confirmationReply(draft: LeadDraft): BotReply {
     links: [whatsappLink],
     chips: [{ label: "Main menu", action: { kind: "intent", intent: "menu" } }],
   };
-}
-
-/* -------------------------------------------------------------------------- */
-/* Availability                                                                */
-/* -------------------------------------------------------------------------- */
-
-/** Mon–Sat, 10:00–19:00 IST, matching `site.hours`. */
-export function isWithinHours(now: Date = new Date()): boolean {
-  const ist = new Date(now.getTime() + (now.getTimezoneOffset() + 330) * 60_000);
-  const day = ist.getDay();
-  const hour = ist.getHours();
-  return day !== 0 && hour >= 10 && hour < 19;
 }
