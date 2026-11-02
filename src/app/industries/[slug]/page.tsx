@@ -37,16 +37,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 const START_STEPS = [
   {
-    title: "A 30-minute call",
-    body: "Free, and with the people who would build it. You walk us through how the work runs today, and we ask about volumes, tools and who uses what.",
+    title: "Consultation",
+    body: "A free 30-minute call to understand your operations, current tools and objectives.",
   },
   {
-    title: "A fixed quote in writing",
-    body: "Features, timeline and one price, agreed before any work starts. The price moves only if you approve a change.",
+    title: "Proposal",
+    body: "A written proposal setting out the scope, timeline and fixed price before work begins.",
   },
   {
-    title: "Weekly progress you can click",
-    body: "A live preview link, updated every week, so your staff try it on real work before launch.",
+    title: "Delivery",
+    body: "Regular progress reviews on a live preview, so your team can test the system before launch.",
   },
 ] as const;
 
@@ -99,7 +99,7 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
             variant="ghost"
             className="rounded-full bg-setu font-semibold text-white hover:bg-setu-dark dark:hover:bg-setu-dark"
           >
-            Book a free 30-min call
+            Book a consultation
             <ArrowRight className="size-4" aria-hidden />
           </ButtonLink>
           <ButtonLink href="/estimate" size="lg" variant="secondary" className="rounded-full">
@@ -112,8 +112,8 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
         <div className="container-page">
           <SectionHeading
             align="left"
-            eyebrow="What we hear on first calls"
-            title="The problems we are asked to fix"
+            eyebrow="Challenges we solve"
+            title="Common challenges in your sector"
           />
           <div className="mt-10 grid gap-5 sm:grid-cols-2">
             {industry.problems.map((problem, index) => (
@@ -139,9 +139,9 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
         <div className="container-page">
           <SectionHeading
             align="left"
-            eyebrow="What we build"
-            title={`What we build for ${industry.name.toLowerCase()}`}
-            description="Each card links to the service behind it, with starting prices and timelines."
+            eyebrow="What we deliver"
+            title={`Services for ${industry.name.toLowerCase()}`}
+            description="Each capability is delivered through one of our core services."
           />
           <div className="mt-10 grid gap-5 md:grid-cols-2">
             {industry.builds.map((build, index) => {
@@ -181,9 +181,9 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
       <Section>
         <div className="container-page grid gap-12 lg:grid-cols-[1.3fr_1fr] lg:gap-16">
           <div>
-            <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">Features we often include</h2>
+            <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">Typical features</h2>
             <p className="mt-3 max-w-xl text-[0.98rem] leading-relaxed text-muted-foreground">
-              A starting list, not a package. Your scope keeps what you need and drops the rest.
+              Every project is scoped to your requirements. These features are commonly included.
             </p>
             <ul className="mt-8 grid gap-3 sm:grid-cols-2">
               {industry.features.map((feature) => (
@@ -199,7 +199,7 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
           </div>
 
           <div className="rounded-card border border-border bg-surface p-7 lg:self-start">
-            <h2 className="text-lg font-semibold text-foreground">How a project starts</h2>
+            <h2 className="text-lg font-semibold text-foreground">How we begin</h2>
             <ol className="mt-6 flex flex-col gap-5">
               {START_STEPS.map((step, index) => (
                 <li key={step.title} className="flex gap-4">
@@ -217,7 +217,7 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
               href="/process"
               className="mt-7 inline-flex items-center gap-1.5 text-sm font-semibold text-setu"
             >
-              See the full process
+              View our process
               <ArrowRight className="size-3.5" aria-hidden />
             </Link>
           </div>
@@ -243,7 +243,7 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
       </Section>
 
       <DeferredSection minHeight={380}>
-        <CtaBand title={industry.cta.title} description={industry.cta.body} primaryLabel="Book a free 30-min call" />
+        <CtaBand title={industry.cta.title} description={industry.cta.body} primaryLabel="Book a consultation" />
       </DeferredSection>
 
       <JsonLd

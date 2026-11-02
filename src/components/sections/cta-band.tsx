@@ -11,10 +11,10 @@ export interface CtaBandProps {
 }
 
 export function CtaBand({
-  title = "Bring us the problem, not a spec",
-  description = "Book a free 30-minute call. You get a written summary and a price range afterwards. If we are not the right team, we will say so on the call.",
+  title = "Discuss your project with our team",
+  description = "Book a free 30-minute consultation. We will review your requirements and follow up with a recommended approach and an indicative budget.",
   primaryHref = "/contact",
-  primaryLabel = "Book a free 30-min call",
+  primaryLabel = "Book a consultation",
 }: CtaBandProps) {
   return (
     <section className="relative overflow-hidden border-y border-border">

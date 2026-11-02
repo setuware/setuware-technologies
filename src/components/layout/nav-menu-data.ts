@@ -85,37 +85,37 @@ const SERVICE_LABELS: Partial<Record<string, string>> = {
 
 /** One-liners sized for a menu column; falls back to the service summary. */
 const SERVICE_BLURBS: Partial<Record<string, string>> = {
-  "business-websites": "Company sites that load fast and bring in enquiries",
-  "ecommerce-stores": "Shopify, WooCommerce or custom, with UPI and shipping",
-  "web-development": "Customer portals, dashboards and SaaS products",
-  "app-development": "iOS and Android apps from one codebase",
-  "product-design": "Logos, brand identity and product interfaces",
-  "seo-marketing": "SEO, Google Ads and social, measured in leads",
-  "custom-software": "Internal tools built around how you work",
-  "ai-integration": "Chatbots and workflows that cut manual work",
-  "managed-hosting": "Domains, hosting, SSL, email and backups",
-  "support-maintenance": "Updates, fixes and patches for a monthly fee",
+  "business-websites": "Responsive company websites",
+  "ecommerce-stores": "Online stores and marketplaces",
+  "web-development": "Portals, dashboards and SaaS platforms",
+  "app-development": "Cross-platform iOS and Android apps",
+  "product-design": "Brand identity and interface design",
+  "seo-marketing": "Search, paid media and content",
+  "custom-software": "Bespoke business systems",
+  "ai-integration": "Intelligent assistants and automation",
+  "managed-hosting": "Managed hosting and business email",
+  "support-maintenance": "Updates, security and technical support",
 };
 
 const SERVICE_GROUPS: readonly { title: string; caption: string; slugs: readonly string[] }[] = [
   {
     title: "Build",
-    caption: "Get your business online",
+    caption: "Digital platforms",
     slugs: ["business-websites", "ecommerce-stores", "web-development", "app-development"],
   },
   {
     title: "Grow",
-    caption: "Get found and get chosen",
+    caption: "Brand and visibility",
     slugs: ["product-design", "seo-marketing"],
   },
   {
     title: "Scale",
-    caption: "Run more of the business on software",
+    caption: "Systems and automation",
     slugs: ["custom-software", "ai-integration"],
   },
   {
     title: "Run",
-    caption: "Keep it fast, secure and up",
+    caption: "Hosting and support",
     slugs: ["managed-hosting", "support-maintenance"],
   },
 ];
@@ -159,16 +159,16 @@ export const servicesMenu: NavMenu = {
   layout: "mega",
   columns: [{ groups: [build] }, { groups: [grow, scale] }, { groups: [runWithExtras] }],
   feature: {
-    eyebrow: "Free website audit",
-    title: "Not sure what you need yet?",
-    body: "Send us your current site or idea. On a 30-minute call we go through speed, search and enquiries, then email you a short list of fixes.",
-    primary: { label: "Book a free 30-min call", href: "/contact" },
+    eyebrow: "Free consultation",
+    title: "Find the right service for your goals",
+    body: "Book a 30-minute consultation and our team will recommend the most effective approach for your business.",
+    primary: { label: "Book a consultation", href: "/contact" },
     secondary: { label: "Get an instant estimate", href: "/estimate" },
   },
   footer: {
     label: "All services",
     href: "/services",
-    hint: "Fixed-price quotes. You own the code and the accounts.",
+    hint: "End-to-end digital services from one team",
   },
 };
 
@@ -226,16 +226,16 @@ export const industriesMenu: NavMenu = {
     ],
   })),
   feature: {
-    eyebrow: "Not listed?",
-    title: "Most of what we build is workflow software",
-    body: "If your business runs on phone calls, spreadsheets and WhatsApp groups, we can usually help. Tell us how a normal day works.",
-    primary: { label: "Tell us about your business", href: "/contact" },
-    secondary: { label: "See recent projects", href: "/work" },
+    eyebrow: "Other sectors",
+    title: "Expertise that extends across industries",
+    body: "Our team builds websites and business software for organisations in many other sectors.",
+    primary: { label: "Discuss your project", href: "/contact" },
+    secondary: { label: "View our work", href: "/work" },
   },
   footer: {
     label: "All industries",
     href: "/industries",
-    hint: "Built for Indian SMBs, from single shops to multi-branch teams.",
+    hint: "Websites and software for growing businesses across India",
   },
 };
 
@@ -258,19 +258,19 @@ export const companyMenu: NavMenu = {
             {
               label: "About us",
               href: "/about",
-              description: "Who we are and why we stay after launch",
+              description: "Our studio, mission and values",
               icon: { kind: "page", name: "info" },
             },
             {
               label: "How we work",
               href: "/process",
-              description: "From the first call to launch and after",
+              description: "Our delivery process",
               icon: { kind: "page", name: "workflow" },
             },
             {
               label: "Careers",
               href: "/careers",
-              description: "Open applications for developers and designers",
+              description: "Open roles and applications",
               icon: { kind: "page", name: "users" },
             },
           ],
@@ -285,19 +285,19 @@ export const companyMenu: NavMenu = {
             {
               label: "Projects",
               href: "/work",
-              description: "Case studies from recent builds",
+              description: "Selected case studies",
               icon: { kind: "page", name: "folder" },
             },
             {
               label: "Blog & insights",
               href: "/blog",
-              description: "Notes from building and running software",
+              description: "Articles and insights",
               icon: { kind: "page", name: "newspaper" },
             },
             {
               label: "Contact",
               href: "/contact",
-              description: "Call, email or visit us in Gurugram",
+              description: "Contact our team in Gurugram",
               icon: { kind: "page", name: "mail" },
             },
           ],
