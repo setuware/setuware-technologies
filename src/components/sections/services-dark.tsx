@@ -312,7 +312,7 @@ export function ServicesDark() {
                         </h3>
                         {/* Clamped as a safeguard: the cards are a fixed
                             height in the carousel. */}
-                        <p className="mt-2.5 line-clamp-3 max-w-sm text-[0.9rem] leading-relaxed text-muted-foreground">
+                        <p className="mb-6 mt-2.5 line-clamp-3 max-w-sm text-[0.9rem] leading-relaxed text-muted-foreground">
                           {copy.description}
                         </p>
 

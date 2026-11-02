@@ -208,7 +208,7 @@ export default function CareersPage() {
                   <Mail className="size-5" aria-hidden />
                 </span>
                 <div>
-                  <h3 className="text-lg font-semibold text-foreground">Don&apos;t see your role?</h3>
+                  <h3 className="text-lg font-semibold text-foreground">Open applications</h3>
                   <p className="mt-1 max-w-xl text-[0.94rem] leading-relaxed text-muted-foreground">
                     Send your CV to{" "}
                     <a

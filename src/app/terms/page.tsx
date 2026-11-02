@@ -64,7 +64,7 @@ export default function TermsPage() {
     <LegalPage
       title="Terms of service"
       updated="2026-10-01"
-      intro="These terms cover the website. If we are working together, your signed proposal governs the engagement."
+      intro="These terms govern the use of this website. Client engagements are governed by the signed proposal for each project."
       sections={SECTIONS}
     />
   );

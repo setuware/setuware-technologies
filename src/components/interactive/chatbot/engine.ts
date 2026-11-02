@@ -112,7 +112,10 @@ const STOPWORDS = new Set(
     "will would should i me my we our us you your it its this that what which " +
     "who whom how much many any some with from about have has had get there " +
     "their them they please tell know want need like just also if so as up"
-  ).split(" "),
+  )
+    .split(" ")
+    // Stemmed like the visitor's words, so "does" and "this" still match.
+    .map(stem),
 );
 
 /** Lowercases, strips punctuation (keeping ₹) and collapses whitespace. */
@@ -347,6 +350,8 @@ export function matchIntent(input: string): Match {
   if (s("services") > 0) return { type: "intent", intent: "services" };
   if (s("greeting") > 0) return { type: "intent", intent: "greeting" };
   if (s("thanks") > 0) return { type: "intent", intent: "thanks" };
+  // Last resort: a single distinctive word from an FAQ ("payment", "launch").
+  if (faq && faq.overlap >= 1) return { type: "faq", index: faq.index };
   return { type: "none" };
 }
 
@@ -360,6 +365,14 @@ function getServiceBySlug(slug: ServiceKey): Service | undefined {
 
 function startingPrice(service: Service): number {
   return service.entryPriceFrom ?? service.priceFrom;
+}
+
+/** Services sold under the Full Application Build package. */
+const APPLICATION_SERVICES = new Set<ServiceKey>(["web-development", "app-development", "custom-software"]);
+
+function listJoin(items: readonly string[]): string {
+  if (items.length <= 1) return items.join("");
+  return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
 }
 
 function serviceLink(service: Service): ChatLink {
@@ -413,18 +426,22 @@ export function serviceReply(slug: ServiceKey, focus: "summary" | "price" | "tim
   const service = getServiceBySlug(slug);
   if (!service) return servicesReply();
 
+  const fullApplication = projectPackages.find((plan) => plan.id === "full-application-build")?.setupFrom;
   const price =
     service.slug === "business-websites" && service.entryPriceFrom
       ? `Landing pages start at ${formatINR(service.entryPriceFrom)} and complete business websites at ${formatINR(service.priceFrom)}.`
-      : `${service.priceLabel ?? `Projects start from ${formatINR(startingPrice(service))}`}.`;
+      : APPLICATION_SERVICES.has(service.slug) && fullApplication
+        ? `Full application builds start from ${formatINR(fullApplication)}, and a typical ${service.name.toLowerCase()} project is estimated from ${formatINR(startingPrice(service))}.`
+        : `${service.priceLabel ?? `Projects start from ${formatINR(startingPrice(service))}`}.`;
   const timeline = `Typical timeline: ${service.typicalTimeline}.`;
+  const stack = service.stack.length > 0 ? ` We commonly work with ${listJoin(service.stack.slice(0, 3))}.` : "";
 
   const opening =
     focus === "price"
       ? `${service.name}: ${price} ${timeline}`
       : focus === "timeline"
         ? `${service.name}. ${timeline} ${price}`
-        : `${service.name}. ${service.summary} ${price} ${timeline}`;
+        : `${service.name}. ${service.summary}${stack} ${price} ${timeline}`;
 
   return {
     text: `${opening} The final figure is confirmed in a fixed written quote.`,
@@ -507,7 +524,7 @@ export function intentReply(intent: IntentId): BotReply {
       };
     case "support":
       return {
-        text: `Existing clients can raise support requests by email at ${site.supportEmail}. Please include your project name and a short description of the issue. Clients on a care plan receive a first response ${site.sla.firstResponse}.`,
+        text: `Existing clients can raise support requests by email at ${site.supportEmail}. Please include your project name and a short description of the issue. Clients on a care plan receive a first response in ${site.sla.firstResponse.replace(/\bmin\b/, "minutes")}.`,
         links: [
           { label: `Email ${site.supportEmail}`, href: `mailto:${site.supportEmail}`, external: true },
           { label: "Service status", href: "/status" },
