@@ -20,6 +20,7 @@ export default function BlogPage() {
   return (
     <>
       <PageHero
+        video="blog"
         eyebrow="Blog"
         title="Articles and insights"
         description="Perspectives on technology, design and digital growth, drawn from our project experience."

@@ -190,6 +190,7 @@ export default function PricingPage() {
   return (
     <>
       <PageHero
+        video="pricing"
         eyebrow="Plans and packages"
         title="Pricing"
         description="Transparent, fixed-price packages for every stage of your business."

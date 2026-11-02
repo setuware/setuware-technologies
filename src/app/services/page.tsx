@@ -29,6 +29,7 @@ export default function ServicesPage() {
   return (
     <>
       <PageHero
+        video="services"
         eyebrow="Services"
         title="Our services"
         description="End-to-end digital services, from your first website to enterprise-grade software. Strategy, design, engineering and support are delivered by one accountable team."

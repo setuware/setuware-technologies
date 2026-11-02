@@ -33,6 +33,7 @@ export default function WorkPage() {
   return (
     <>
       <PageHero
+        video="work"
         eyebrow="Our work"
         title="Selected work"
         description="Each case study outlines the business challenge, our approach and the results achieved. Filter by service or industry."

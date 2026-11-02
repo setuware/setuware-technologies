@@ -35,6 +35,7 @@ export default function IndustriesPage() {
   return (
     <>
       <PageHero
+        video="industries"
         eyebrow="Industries"
         title="Industries we serve"
         description="We bring domain understanding to every engagement, delivering websites and software tailored to the way each sector operates."

@@ -101,6 +101,7 @@ export default function AboutPage() {
   return (
     <>
       <PageHero
+        video="about"
         align="left"
         eyebrow={`About ${site.name}`}
         title="Strategy, design and engineering under one roof"
