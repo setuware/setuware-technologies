@@ -376,7 +376,7 @@ function listJoin(items: readonly string[]): string {
 }
 
 function serviceLink(service: Service): ChatLink {
-  return { label: `Learn more about ${service.name.toLowerCase()}`, href: `/services/${service.slug}` };
+  return { label: "Learn more about this service", href: `/services/${service.slug}` };
 }
 
 function packageLine(id: string, fallback: string): string {

@@ -166,11 +166,16 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
     return () => window.cancelAnimationFrame(frame);
   }, [open]);
 
-  // Keep the newest message in view.
+  // Keep the newest message in view. A long answer is scrolled to its first
+  // line rather than its last, so the visitor reads it from the top.
   useEffect(() => {
     const list = scrollRef.current;
     if (!list) return;
-    list.scrollTo({ top: list.scrollHeight, behavior: reduce || !open ? "auto" : "smooth" });
+    const maxScroll = list.scrollHeight - list.clientHeight;
+    const latest = list.querySelector<HTMLElement>("[data-message]:last-child");
+    const top =
+      !typing && latest?.dataset.message === "bot" ? Math.min(latest.offsetTop - 12, maxScroll) : maxScroll;
+    list.scrollTo({ top, behavior: reduce || !open ? "auto" : "smooth" });
   }, [messages, typing, open, reduce]);
 
   const append = useCallback((message: ChatMessage) => {
@@ -422,7 +427,7 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
       {/* Messages */}
       <div
         ref={scrollRef}
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-background-subtle px-4 py-4"
+        className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain bg-background-subtle px-4 py-4"
       >
         <div role="log" aria-live="polite" aria-relevant="additions" aria-label="Conversation" className="flex flex-col gap-3">
           {messages.map((message, index) => (
@@ -514,7 +519,7 @@ function Bubble({
 
   if (!isBot) {
     return (
-      <div className="flex flex-col items-end">
+      <div data-message="user" className="flex flex-col items-end">
         <span className="sr-only">You said:</span>
         <p className="max-w-[85%] whitespace-pre-line break-words rounded-2xl rounded-br-md bg-setu px-3.5 py-2.5 text-sm leading-relaxed text-white">
           {message.text}
@@ -527,7 +532,7 @@ function Bubble({
   }
 
   return (
-    <div className="flex items-end gap-2">
+    <div data-message="bot" className="flex items-end gap-2">
       <span className="w-7 shrink-0 self-start" aria-hidden>
         {showAvatar ? <LogoMark className="size-7" /> : null}
       </span>
