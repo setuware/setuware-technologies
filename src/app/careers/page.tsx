@@ -111,6 +111,7 @@ export default function CareersPage() {
   return (
     <>
       <PageHero
+        video="careers"
         eyebrow="Careers"
         title="Careers at Setuware Technologies"
         description={`Join a team of designers, developers, marketers and project managers building websites, e-commerce platforms, apps and business software from our office in ${site.address.city}.`}

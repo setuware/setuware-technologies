@@ -73,6 +73,7 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
   return (
     <>
       <PageHero
+        video="industries"
         align="left"
         eyebrow={industry.name}
         title={industry.headline}

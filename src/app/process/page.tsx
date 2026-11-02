@@ -180,6 +180,7 @@ export default function ProcessPage() {
   return (
     <>
       <PageHero
+        video="process"
         eyebrow="Our process"
         title="How we deliver every project"
         description="Six structured stages, each with defined outputs, timelines and responsibilities. You have full visibility of progress and costs throughout."

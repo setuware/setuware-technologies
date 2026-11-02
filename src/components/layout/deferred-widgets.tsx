@@ -16,7 +16,8 @@ import { CommandMenu } from "./command-menu";
  * The audit offer only mounts after a visitor has engaged with the page.
  *
  * Bottom-right stack, from the bottom: WhatsApp, the assistant launcher (its
- * panel is fetched on first open), then back-to-top.
+ * panel is fetched on first open), then back-to-top. `CustomCursor` renders
+ * nothing on touch devices or for visitors who prefer reduced motion.
  */
 const ExitIntentOffer = dynamic(
   () =>
@@ -41,6 +42,11 @@ const ChatLauncher = dynamic(
   { ssr: false },
 );
 
+const CustomCursor = dynamic(
+  () => import("@/components/interactive/custom-cursor").then((mod) => mod.CustomCursor),
+  { ssr: false },
+);
+
 export function DeferredWidgets() {
   return (
     <>
@@ -49,6 +55,7 @@ export function DeferredWidgets() {
       <WhatsAppButton />
       <ChatLauncher />
       <ExitIntentOffer />
+      <CustomCursor />
     </>
   );
 }

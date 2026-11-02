@@ -1,14 +1,14 @@
 "use client";
 
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { ChevronDown, MessageCircle } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { MessageCircle, X } from "lucide-react";
 
 import { EASE_OUT } from "@/components/motion/ease";
 import { useReducedMotionSafe } from "@/components/motion/primitives";
 import { cn } from "@/lib/utils";
 
-import { ASSISTANT_NAME, isWithinHours } from "./constants";
+import { isWithinHours } from "./constants";
 import { setChatOpen } from "./state";
 
 const ENTRANCE_DELAY_MS = 2_150;
@@ -62,8 +62,6 @@ export function ChatLauncher() {
     setOpen((value) => !value);
   };
 
-  const status = `${online ? "Online" : "Away"} · replies in IST hours`;
-
   return (
     <>
       {visible ? (
@@ -76,34 +74,53 @@ export function ChatLauncher() {
           aria-expanded={open}
           aria-controls={requested ? "setuware-assistant" : undefined}
           aria-haspopup="dialog"
-          aria-label={open ? `Close ${ASSISTANT_NAME}` : `Open ${ASSISTANT_NAME}. ${status}`}
+          aria-label={open ? "Close chat assistant" : "Ask Setuware — chat assistant"}
           initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.7, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: reduce ? 0.2 : 0.6, ease: EASE_OUT }}
           className={cn(
-            "group fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-[35] inline-flex items-center rounded-full bg-setu text-white",
+            // Same footprint as the WhatsApp button below it (52px, 56px from
+            // `sm`), stacked 12px above it on the same centre line.
+            "group fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-[35] inline-flex size-[52px] items-center justify-center rounded-full bg-setu text-white sm:bottom-[92px] sm:right-5 sm:size-14",
             "shadow-[0_10px_28px_-8px_rgba(0,161,198,0.7),0_2px_6px_rgba(15,23,42,0.18)] transition-[background-color,box-shadow,translate] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
-            "hover:bg-setu-dark focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-setu motion-safe:hover:-translate-y-0.5",
-            "size-[52px] justify-center sm:bottom-[92px] sm:right-5 sm:h-14 sm:w-auto sm:justify-start sm:gap-3 sm:py-0 sm:pl-2 sm:pr-5",
+            "hover:bg-setu-dark hover:shadow-[0_14px_34px_-8px_rgba(0,161,198,0.8),0_2px_6px_rgba(15,23,42,0.2)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-setu motion-safe:hover:-translate-y-0.5",
           )}
         >
-          <span className="relative inline-flex size-[52px] shrink-0 items-center justify-center sm:size-10 sm:rounded-full sm:bg-white/15">
-            {open ? (
-              <ChevronDown className="size-6 sm:size-5" aria-hidden />
-            ) : (
-              <MessageCircle className="size-6 sm:size-5" aria-hidden />
-            )}
+          <span className="relative inline-flex size-7 items-center justify-center" aria-hidden>
+            <AnimatePresence initial={false} mode="popLayout">
+              <motion.span
+                key={open ? "close" : "chat"}
+                className="absolute inset-0 inline-flex items-center justify-center"
+                initial={reduce ? { opacity: 0 } : { opacity: 0, rotate: open ? -90 : 90, scale: 0.6 }}
+                animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                exit={reduce ? { opacity: 0 } : { opacity: 0, rotate: open ? 90 : -90, scale: 0.6 }}
+                transition={{ duration: reduce ? 0.15 : 0.35, ease: EASE_OUT }}
+              >
+                {open ? (
+                  <X className="size-6" strokeWidth={2.2} />
+                ) : (
+                  <MessageCircle className="size-[26px] sm:size-7" strokeWidth={2} />
+                )}
+              </motion.span>
+            </AnimatePresence>
+          </span>
+
+          {open ? null : (
             <span
               aria-hidden
               className={cn(
-                "absolute right-2.5 top-2.5 size-2.5 rounded-full ring-2 ring-setu sm:right-0 sm:top-0",
+                "absolute right-[9px] top-[9px] size-2.5 rounded-full ring-2 ring-setu sm:right-2.5 sm:top-2.5",
                 online ? "bg-[#4ade80]" : "bg-amber-300",
               )}
             />
-          </span>
-          <span className="hidden flex-col items-start text-left leading-tight sm:flex" aria-hidden>
-            <span className="text-sm font-semibold">{open ? "Close chat" : "Ask Setuware"}</span>
-            <span className="mt-0.5 text-[11px] font-medium text-white/85">{status}</span>
+          )}
+
+          <span
+            aria-hidden
+            className="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 translate-x-1 whitespace-nowrap rounded-lg bg-[#0b1020] px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-[opacity,translate] duration-200 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:translate-x-0"
+          >
+            {open ? "Close chat" : "Ask Setuware"}
+            <span className="absolute -right-1 top-1/2 size-2 -translate-y-1/2 rotate-45 bg-[#0b1020]" />
           </span>
         </motion.button>
       ) : null}

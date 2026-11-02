@@ -117,3 +117,32 @@ export function committedVideo(
     poster: entry.poster,
   };
 }
+
+/* -------------------------------------------------------------------------- */
+/* Inner-page header videos (public/media/pages, Pexels free licence)          */
+/* -------------------------------------------------------------------------- */
+
+export const PAGE_VIDEOS = [
+  "about",
+  "services",
+  "process",
+  "work",
+  "contact",
+  "pricing",
+  "industries",
+  "careers",
+  "blog",
+] as const;
+
+export type PageVideoKey = (typeof PAGE_VIDEOS)[number];
+
+/** Muted, looping 1080p header clip for an inner page. */
+export function pageVideo(key: PageVideoKey): { sources: VideoSource[]; poster: string } {
+  return {
+    sources: [
+      { src: `/media/pages/${key}.webm`, type: "video/webm" },
+      { src: `/media/pages/${key}.mp4`, type: "video/mp4" },
+    ],
+    poster: `/media/pages/${key}.jpg`,
+  };
+}

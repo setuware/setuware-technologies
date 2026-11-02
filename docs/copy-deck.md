@@ -24,7 +24,7 @@ Corporate-professional, like an established digital agency (think Infosys/TCS di
 
 **About**
 - Eyebrow: About us
-- H2: Strategy, design and engineering under one roof
+- H2: One partner from strategy to launch
 - Lead: A digital studio for growing businesses.
 - P1: We partner with startups, SMEs and established companies across India to plan, design and build digital products that perform.
 - P2: Product strategy, design, engineering and marketing work together in one accountable team, from your first website to enterprise software.
@@ -32,7 +32,7 @@ Corporate-professional, like an established digital agency (think Infosys/TCS di
 - Stat block: "10+" / "Digital services, delivered by one team" (no avatars line "Read client feedback")
 
 **Services**
-- H2: All services under one roof
+- H2: Services that grow with your business
 - Sub: End-to-end digital services, from your first website to enterprise-grade software.
 - Button: View all services
 - Card CTA: Learn more  (no price, no timeline on cards)
@@ -115,3 +115,26 @@ Corporate-professional, like an established digital agency (think Infosys/TCS di
 **Footer CTA:** H: Ready to start your project? Sub: Talk to our team about your goals and we will recommend the right approach with a clear proposal. CTAs: Start a project · Get an instant estimate. Trust row: Fixed-price proposals · Complete ownership · Dedicated support
 **Footer brand line:** A Gurugram-based digital studio building websites, e-commerce, mobile apps and custom software for growing businesses.
 **Newsletter:** Title: Insights, once a month · Line: Practical articles on technology, design and digital growth.
+
+## About page (/about)
+
+- Header (background video): Eyebrow: About Setuware Technologies · H1: Strategy, design and engineering for growing businesses · Sub: Setuware Technologies is a digital studio based in Gurugram. We design and engineer websites, e-commerce platforms, mobile apps and custom software for growing businesses. · CTAs: Book a consultation · View our work
+- Fact strip: Based in MG Road, Gurugram · Free 30-minute consultation · Fixed-price proposals · Three months of post-launch support
+- Who we are: H2: A digital studio for growing businesses
+  - We partner with startups, SMEs and established companies across India to plan, design and build digital products that perform.
+  - Our designers, developers, marketers and project managers work as one accountable team. Each engagement is led by a dedicated project manager from discovery to launch.
+  - After launch, we provide hosting, maintenance and continuous improvement, so your platforms remain secure and effective as your business grows.
+- Mission (pull-quote): To help growing businesses compete online with dependable, well-crafted technology.
+- Values: H2: The values behind every engagement · Sub: Four principles guide how we plan, deliver and support every project.
+  - Transparency — Every engagement begins with a clear scope and a fixed quote, followed by regular progress updates.
+  - Quality — We build fast, secure and accessible products that follow established engineering standards.
+  - Ownership — Your code, domains and accounts remain the property of your business at every stage.
+  - Partnership — We support and improve your platforms after launch, as a dependable extension of your team.
+- How we work: H2: A structured path from discovery to launch · CTA: View our process
+  1. Discovery — A free consultation to understand your business, customers and objectives.
+  2. Proposal — A written scope, timeline and fixed price, agreed before work begins.
+  3. Design and development — Interactive prototypes, followed by development with regular progress reviews.
+  4. Launch and support — Testing, go-live and handover, followed by ongoing maintenance and optimisation.
+- Services: H2: Comprehensive digital services · Sub: From a first company website to enterprise software, every service is delivered by the same team. · CTA: View all services
+- Industries: H2: Experience across key sectors · Sub: We work with startups and growing businesses across India, and bring an understanding of each sector to every engagement. · CTA: Industries we serve
+- Closing CTA: H2: Discuss your project with our team · Sub: Book a free 30-minute consultation. We will review your requirements and follow up with a recommended approach and an indicative budget. · CTAs: Book a consultation · phone number

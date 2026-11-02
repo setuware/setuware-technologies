@@ -82,6 +82,7 @@ export default function ContactPage() {
   return (
     <>
       <PageHero
+        video="contact"
         align="left"
         eyebrow="Contact"
         title="Contact us"
