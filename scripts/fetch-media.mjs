@@ -50,8 +50,8 @@ const CLIPS = [
   {
     // "A Group of People Looking at a Laptop in an Office"
     name: "skills-gap",
-    // Kindel Media — "Businesspeople Working in the Office"
-    pexelsId: 7652011,
+    // fauxels — "A Group Of People Busy Working With Their Computers"
+    pexelsId: 3249672,
     start: 0,
     seconds: 20,
     filter: "null",
