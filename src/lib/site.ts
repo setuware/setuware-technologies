@@ -8,8 +8,16 @@ export const site = {
     "Business websites, online stores, apps and custom software from a Gurugram team. A fixed quote in writing, weekly previews, and you own the code.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://setuwaresoftware.in",
   locale: "en_IN",
+  /** Primary address on CTAs: new projects and quotes. */
   email: "sales@setuware.in",
   salesEmail: "sales@setuware.in",
+  /** Existing clients: bugs, changes, hosting and care plans. */
+  supportEmail: "support@setuware.in",
+  /** Partnerships, press and anything that isn't sales or support. */
+  generalEmail: "satyam.raj@setuware.in",
+  /** Job applications. */
+  hrEmail: "hr@setuware.in",
+  hours: "Mon–Sat, 10:00–19:00 IST",
   phone: "+91 83027 83900",
   phoneHref: "tel:+918302783900",
   whatsapp: "https://wa.me/918302783900",
