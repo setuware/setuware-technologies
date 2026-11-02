@@ -11,9 +11,10 @@ import {
 } from "framer-motion";
 
 import { processSteps } from "@/lib/content";
+import { cn } from "@/lib/utils";
 import { FadeUp, useReducedMotionSafe } from "@/components/motion/primitives";
 import { TextReveal } from "@/components/motion/text-reveal";
-import { DarkSectionBackdrop } from "@/components/sections/services-dark";
+import { LIGHT_CARD_SHADOW, LightSectionBackdrop } from "@/components/sections/services-dark";
 
 /**
  * "A refined process built on clarity".
@@ -42,49 +43,57 @@ export function ProcessDark() {
   return (
     <section
       id="process"
-      className="relative overflow-hidden bg-black pb-24 pt-4 md:pb-32"
+      className="relative isolate overflow-hidden border-t border-border bg-background py-20 md:py-28"
     >
-      {/* Lower end of Figma 24:2647, continuing the services backdrop. */}
-      <DarkSectionBackdrop position="bottom" />
+      <LightSectionBackdrop variant="process" />
 
       <div className="container-page relative">
         <div className="mx-auto max-w-2xl text-center">
           <TextReveal
             as="h2"
-            className="font-display text-3xl font-semibold leading-tight text-white sm:text-[2.6rem]"
+            className="font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.6rem]"
           >
             A refined process built on clarity
           </TextReveal>
           <FadeUp delay={0.25} y={20}>
-            <p className="mx-auto mt-5 max-w-xl text-[0.92rem] leading-relaxed text-white/60">
+            <p className="mx-auto mt-5 max-w-xl text-[0.95rem] leading-relaxed text-muted-foreground">
               A structured delivery model that keeps every project on time, on
               budget and fully transparent.
             </p>
           </FadeUp>
         </div>
 
-        <dl ref={listRef} className="relative mx-auto mt-14 max-w-5xl">
+        <div className="relative mx-auto mt-14 max-w-5xl">
           {/* Progress rail, in the gutter left of the rows on wide screens. */}
           <div
-            className="pointer-events-none absolute inset-y-0 -left-12 hidden w-px bg-white/10 xl:block"
+            className="pointer-events-none absolute inset-y-6 -left-12 hidden w-0.5 rounded-full bg-border xl:block"
             aria-hidden
           >
             <motion.div
-              className="absolute inset-0 origin-top bg-[linear-gradient(to_bottom,var(--color-setu),color-mix(in_oklab,var(--color-setu)_40%,white))]"
+              className="absolute inset-0 origin-top rounded-full bg-[linear-gradient(to_bottom,var(--color-setu),#0061a8)] shadow-[0_0_12px_rgba(0,161,198,0.45)]"
               style={{ scaleY: progress }}
             />
           </div>
 
-          {processSteps.map((step, index) => (
-            <ProcessRow
-              key={step.step}
-              step={step}
-              index={index}
-              count={processSteps.length}
-              progress={progress}
-            />
-          ))}
-        </dl>
+          {/* The rows sit in one elevated white panel, divided by hairlines. */}
+          <dl
+            ref={listRef}
+            className={cn(
+              "overflow-hidden rounded-[1.4rem] border border-border bg-surface",
+              LIGHT_CARD_SHADOW,
+            )}
+          >
+            {processSteps.map((step, index) => (
+              <ProcessRow
+                key={step.step}
+                step={step}
+                index={index}
+                count={processSteps.length}
+                progress={progress}
+              />
+            ))}
+          </dl>
+        </div>
       </div>
     </section>
   );
@@ -111,36 +120,36 @@ function ProcessRow({
     <FadeUp
       delay={Math.min(index, 4) * 0.05}
       y={24}
-      className="relative grid items-center gap-2 border-t border-white/10 py-5 md:grid-cols-[16rem_1fr] md:gap-6"
+      className="relative grid items-center gap-2 border-t border-border px-5 py-5 first:border-t-0 sm:px-7 md:grid-cols-[17rem_1fr] md:gap-6 md:py-6"
     >
-      <dt className="flex items-center gap-4 text-[1rem] font-medium text-white">
+      <dt className="flex items-center gap-4 text-[1rem] font-semibold text-foreground">
         {/* Decorations live inside the <dt> (a <dl> group may only hold
             dt/dd) but are positioned against the whole row. */}
         <motion.span
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 -top-px h-px origin-left bg-[linear-gradient(90deg,var(--color-setu),transparent)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px origin-left bg-[linear-gradient(90deg,var(--color-setu),rgba(0,97,168,0.35)_60%,transparent)]"
           style={{ scaleX: lit }}
         />
         <motion.span
           aria-hidden
-          className="pointer-events-none absolute -left-12 top-1/2 -mt-[5px] -ml-[5px] hidden size-2.5 rounded-full bg-setu shadow-[0_0_14px_rgba(0,161,198,0.8)] xl:block"
+          className="pointer-events-none absolute -left-12 top-1/2 -mt-[6px] -ml-[5px] hidden size-3 rounded-full bg-setu shadow-[0_0_0_4px_var(--background),0_0_14px_rgba(0,161,198,0.7)] xl:block"
           style={{ scale: nodeScale, opacity: lit }}
         />
         {/* The lit copy is drawn with CSS generated content so the number
             exists once in the text and accessibility trees. */}
-        <span className="relative font-mono text-[0.7rem] text-white/55">
+        <span className="relative inline-flex h-7 min-w-10 items-center justify-center rounded-full border border-border bg-[#f6f9fc] px-2.5 font-mono text-[0.7rem] font-medium text-muted-foreground dark:bg-surface-2">
           {step.step}
           <motion.span
             aria-hidden
             data-step={step.step}
-            className="absolute inset-0 text-setu before:content-[attr(data-step)]"
+            className="absolute -inset-px flex items-center justify-center rounded-full border border-setu/40 bg-[#e8f7fb] text-[#007a96] before:content-[attr(data-step)] dark:bg-[#0b2a33] dark:text-setu"
             style={{ opacity: lit }}
           />
         </span>
         <motion.span style={{ x: titleX }}>{step.title}</motion.span>
       </dt>
 
-      <dd className="text-[0.88rem] leading-relaxed text-white/60">
+      <dd className="text-[0.9rem] leading-relaxed text-muted-foreground">
         {step.description}
       </dd>
     </FadeUp>

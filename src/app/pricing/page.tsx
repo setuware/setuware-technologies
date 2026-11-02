@@ -35,8 +35,8 @@ const carePlanFrom = Math.min(
 );
 
 export const metadata = pageMetadata({
-  title: "Website, App & Software Pricing",
-  description: `Landing pages from ${formatINR(LANDING_PAGE_FROM)}, business websites from ${formatINR(WEBSITE_FROM)}, plus stores, apps and custom software. Care plans from ${formatINR(carePlanFrom)} a month. Fixed quotes in writing.`,
+  title: "Pricing",
+  description: `Transparent, fixed-price packages: landing pages from ${formatINR(LANDING_PAGE_FROM)}, business websites from ${formatINR(WEBSITE_FROM)} and maintenance plans from ${formatINR(carePlanFrom)} a month.`,
   path: "/pricing",
 });
 
@@ -52,86 +52,86 @@ const BUILD_SERVICES = [
 ] as const;
 
 const INCLUDED = [
-  "A free discovery call and a written scope",
-  "One fixed price, agreed before work starts",
-  "Design you approve before we build",
-  "Mobile-friendly on every screen size",
-  "Basic on-page SEO, sitemap and analytics setup",
+  "Free consultation and written scope",
+  "Fixed price agreed before work begins",
+  "Design approval before development",
+  "Responsive design for every screen size",
+  "On-page SEO, sitemap and analytics set-up",
   "SSL certificate and launch on your domain",
-  "Weekly progress on a live preview link",
-  "Testing on real phones and browsers",
-  "Handover notes and a training session",
-  "Support after launch, 3 months on websites",
-  "Code, designs and accounts in your name",
+  "Weekly progress reviews on a live preview",
+  "Testing across devices and browsers",
+  "Handover documentation and training",
+  "Three months of post-launch support for websites",
+  "Full ownership of code, designs and accounts",
   "GST invoice for every payment",
 ] as const;
 
 const PAYMENT_TERMS = [
   {
-    title: "Milestones, not a lump sum",
-    body: "Project fees are split into milestones that follow the stages: discovery, design, build, and launch with handover. Your proposal lists each amount and date.",
+    title: "Milestone-based billing",
+    body: "Project fees are divided into milestones aligned with discovery, design, development and launch. Each amount and date is set out in your proposal.",
   },
   {
-    title: "Pay as each stage is delivered",
-    body: "The first milestone books the team. Each one after that is invoiced when the stage before it is delivered and signed off.",
+    title: "Payment on delivery",
+    body: "The first milestone secures your project schedule. Each subsequent milestone is invoiced once the preceding stage is delivered and approved.",
   },
   {
-    title: "Monthly plans, billed monthly",
-    body: "Hosting, care and marketing plans are billed each month. Change your plan as your needs change.",
+    title: "Monthly plans",
+    body: "Hosting, maintenance and marketing plans are billed monthly and can be adjusted as your requirements change.",
   },
   {
-    title: "Clear on tax and third parties",
-    body: "Prices exclude GST, which is added at the current rate. Domains, cloud, gateways and licences are billed to your accounts at cost.",
+    title: "Taxes and third-party costs",
+    body: "Prices exclude GST, which is added at the prevailing rate. Domains, cloud services, payment gateways and licences are billed to your accounts at cost.",
   },
 ] as const;
 
 const PRICING_FAQS = [
   {
     group: "Before you start" as const,
-    question: "Why does a website start at one price and an app at another?",
+    question: "Why do starting prices differ between services?",
     answer:
-      "The starting price reflects the smallest useful version of each. A landing page is one page with an enquiry form, from ₹5,000. A full business website is several pages and a CMS, from ₹25,000. An app adds accounts, data, an admin panel and more testing. Your proposal prices your actual scope, page by page or feature by feature.",
+      "Each starting price reflects the minimum viable scope of that service. Landing pages start at ₹5,000 and complete business websites at ₹25,000, while applications involve user accounts, data, administration and more extensive testing.",
   },
   {
     group: "Before you start" as const,
     question: "Will the price change during the project?",
     answer:
-      "No. The quote is fixed for the written scope. If you ask for something new, we quote it as a separate item and only start once you approve it.",
+      "No. The quote is fixed for the agreed scope, and any new requirements are quoted separately for your approval.",
   },
   {
     group: "Before you start" as const,
     question: "Is GST included in these prices?",
     answer:
-      "No. All prices exclude GST, which is added at the current rate on every invoice.",
+      "No. All prices exclude GST, which is added at the prevailing rate on every invoice.",
   },
   {
     group: "Before you start" as const,
     question: "Do you mark up hosting, domains or other third-party costs?",
     answer:
-      "No. Domains, cloud hosting, payment gateway fees and licences are billed to your own accounts at cost. You see exactly what the infrastructure costs.",
+      "No. Domains, cloud hosting, payment gateway fees and licences are billed to your own accounts at cost.",
   },
   {
     group: "Before you start" as const,
-    question: "Can I get a rough number before a call?",
+    question: "Can I get an estimate before a consultation?",
     answer:
-      "Yes. The instant estimator gives you a price range, a timeline and a payment schedule in about a minute, with no call and no email required.",
+      "Yes. The instant estimator provides an indicative price range, timeline and payment schedule without any sign-up.",
   },
   {
     group: "Help & support" as const,
     question: "What happens when the included support ends?",
     answer:
-      "You can move to a monthly care plan for hosting, updates, backups and fixes, or take everything in-house. The code, accounts and documentation are already yours, so there is nothing to transfer.",
+      "You can choose a monthly maintenance plan for hosting, updates, backups and fixes, or manage the platform in-house with our complete documentation.",
   },
   {
     group: "Help & support" as const,
     question: "Where do existing clients send support requests?",
-    answer: `Email ${site.supportEmail} for bugs, changes, hosting and care plan questions. It goes straight to the team that looks after your site or app. For anything urgent, call or WhatsApp ${site.phone} as well.`,
+    answer: `Existing clients can email ${site.supportEmail} for fixes, changes, hosting and maintenance plan queries. For urgent issues, please also call or WhatsApp ${site.phone}.`,
   },
   {
     group: "Help & support" as const,
     question: "Can you take over hosting for a site someone else built?",
     answer:
-      "Usually, yes. We review the site or app first, plan a move with no downtime and migrate it. Most moves take three to seven days from start to finish.",
+      "Yes. We review the site or application first, then plan and complete a migration without downtime, typically within three to seven days.",
   },
 ] as const;
 
@@ -147,42 +147,42 @@ export default function PricingPage() {
       Icon: Globe,
       title: "Domain name",
       price: "At cost",
-      body: "Registered or transferred in your name. We set up DNS and renewals.",
+      body: "Registration or transfer, with DNS configuration and renewal management.",
       href: "/services/managed-hosting",
     },
     {
       Icon: Server,
-      title: "Hosting and care plans",
+      title: "Hosting and maintenance plans",
       price: `From ${formatINR(carePlanFrom)} / month`,
-      body: "Managed hosting, SSL, backups and uptime checks. See the plans above.",
+      body: "Managed hosting, SSL, backups and uptime monitoring.",
       href: "#care",
     },
     {
       Icon: Wrench,
       title: "Maintenance and support",
-      price: "Included in care plans",
-      body: "Updates, security patches, bug fixes and small content changes.",
+      price: "Included in maintenance plans",
+      body: "Updates, security patches, bug fixes and minor content changes.",
       href: "/services/support-maintenance",
     },
     {
       Icon: Search,
       title: "SEO and marketing retainer",
       price: seo ? `From ${formatINR(seo.priceFrom)} / month` : "Monthly retainer",
-      body: "On-page and local SEO, Google Ads and a monthly report on leads.",
+      body: "On-page and local SEO, Google Ads and monthly performance reporting.",
       href: "/services/seo-marketing",
     },
     {
       Icon: LayoutTemplate,
       title: "Extra website pages",
       price: `${formatINR(extraPageRate)} / page`,
-      body: "Add service, location or product pages beyond your agreed scope.",
+      body: "Additional service, location or product pages beyond the agreed scope.",
       href: "/estimate",
     },
     {
       Icon: PenLine,
       title: "Content writing",
       price: "Quoted per page",
-      body: "Clear website copy written from a short call with you. Priced in your proposal.",
+      body: "Professional website copy developed from a short briefing session.",
       href: "/contact",
     },
   ] as const;
@@ -190,9 +190,9 @@ export default function PricingPage() {
   return (
     <>
       <PageHero
-        eyebrow="Pricing"
-        title="Clear prices before you pick up the phone"
-        description="Starting prices, what every project includes, and the monthly plans that keep it running. The estimator prices your exact scope in about a minute."
+        eyebrow="Plans and packages"
+        title="Pricing"
+        description="Transparent, fixed-price packages for every stage of your business."
       >
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <ButtonLink
@@ -200,11 +200,11 @@ export default function PricingPage() {
             size="lg"
             className="rounded-full bg-setu text-white shadow-none hover:bg-setu-dark"
           >
-            Price my exact project
+            Get an instant estimate
             <ArrowRight className="size-4" aria-hidden />
           </ButtonLink>
           <ButtonLink href="/contact" size="lg" variant="secondary" className="rounded-full">
-            Book a free call first
+            Book a consultation
           </ButtonLink>
         </div>
       </PageHero>
@@ -214,18 +214,18 @@ export default function PricingPage() {
         <div className="container-page">
           <div className="mx-auto max-w-2xl text-center">
             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
-              Starting prices
+              By service
             </span>
             <TextReveal
               as="h2"
               className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
             >
-              What each service starts at
+              Starting prices by service
             </TextReveal>
             <FadeUp delay={0.2} y={20}>
               <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
-                The smallest useful version of each, with a typical timeline. Your
-                quote depends on pages, features and integrations.
+                Indicative starting prices and typical timelines. Your quote
+                reflects the pages, features and integrations you require.
               </p>
             </FadeUp>
           </div>
@@ -260,7 +260,7 @@ export default function PricingPage() {
             <StaggerItem y={24}>
               <div className="flex h-full flex-col justify-between gap-5 rounded-card bg-setu p-5 text-white">
                 <span className="font-display text-lg font-semibold leading-snug">
-                  Need more than one service? We quote them together.
+                  Combined services are quoted together in a single proposal.
                 </span>
                 <ButtonLink
                   href="/estimate"
@@ -288,12 +288,12 @@ export default function PricingPage() {
               as="h2"
               className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
             >
-              No extras for the basics
+              Standard with every engagement
             </TextReveal>
             <FadeUp delay={0.2} y={20}>
               <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
-                Every website, store or app we build comes with these. They are
-                part of the price, not line items added later.
+                Every website, store and application includes the following as
+                standard, at no additional cost.
               </p>
             </FadeUp>
           </div>
@@ -327,7 +327,7 @@ export default function PricingPage() {
               as="h2"
               className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
             >
-              Add what you need, when you need it
+              Optional services and add-ons
             </TextReveal>
           </div>
 
@@ -371,12 +371,12 @@ export default function PricingPage() {
                 as="h2"
                 className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
               >
-                You pay as the work is delivered
+                Milestone-based payments
               </TextReveal>
               <FadeUp delay={0.2} y={20}>
                 <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
-                  The estimator shows the milestone split for your scope before
-                  you talk to us.
+                  Payments are linked to delivery milestones, and the estimator
+                  shows the schedule for your scope.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-2 text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">

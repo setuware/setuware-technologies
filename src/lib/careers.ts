@@ -40,15 +40,15 @@ export const JOBS_VALID_DAYS = 60;
 
 /** What every role gets. Kept modest on purpose: only what we can stand behind. */
 export const whatWeOffer = [
-  "Real ownership of client projects, from the first scoping call to launch and support.",
-  "Weekly demos where your work is shown to the client and the team.",
-  "Mentorship and code or design review from senior engineers and designers.",
-  "A modern stack: Next.js, TypeScript, Node.js, React Native, Figma and current tooling.",
-  "Time set aside for learning, and a team that shares what it picks up.",
-  "Direct access to clients, so you hear the problem first-hand rather than through a ticket.",
+  "Responsibility for client projects from initial scoping through launch and support.",
+  "Regular client demonstrations that give your work direct visibility.",
+  "Mentorship and structured reviews from senior engineers and designers.",
+  "A modern technology stack, including Next.js, TypeScript, Node.js, React Native and Figma.",
+  "Dedicated time for learning and a culture of knowledge sharing.",
+  "Direct collaboration with clients to understand their requirements first-hand.",
 ] as const;
 
-export const compensationNote = "Compensation: discussed at interview, based on experience.";
+export const compensationNote = "Compensation: competitive, based on experience and discussed at interview.";
 
 export const jobs: readonly Job[] = [
   {
@@ -60,22 +60,22 @@ export const jobs: readonly Job[] = [
     type: "Full-time",
     experience: "2–4 years",
     summary:
-      "Build business websites, customer portals and internal tools in Next.js and Node.js, from database schema to deployed page.",
+      "Develop business websites, customer portals and internal tools in Next.js and Node.js, from database design to production deployment.",
     skills: ["Next.js", "TypeScript", "Node.js", "PostgreSQL"],
     responsibilities: [
       "Build client websites and web apps in Next.js and TypeScript, from first commit to production.",
       "Design APIs and database schemas in Node.js and PostgreSQL for portals, dashboards and admin panels.",
-      "Integrate payment gateways, CRMs, WhatsApp and email providers that Indian businesses already use.",
+      "Integrate payment gateways, CRMs, WhatsApp and email providers used by Indian businesses.",
       "Join client calls to clarify scope, demo progress and agree on changes.",
       "Review pull requests from teammates and keep tests and documentation current.",
-      "Look after deployments, monitoring and fixes for projects after launch.",
+      "Manage deployments, monitoring and fixes for projects after launch.",
     ],
     requirements: [
       "2–4 years building and shipping production web applications.",
       "Strong TypeScript and React, with working knowledge of the Next.js App Router.",
       "Experience building REST or GraphQL APIs in Node.js.",
       "Comfort with SQL and relational data modelling, ideally PostgreSQL.",
-      "Git, pull requests and code review as part of your daily routine.",
+      "Daily use of Git, pull requests and code review.",
       "Clear written and spoken English for client communication.",
     ],
     niceToHaves: [
@@ -92,21 +92,21 @@ export const jobs: readonly Job[] = [
     type: "Full-time",
     experience: "1–3 years",
     summary:
-      "Build and maintain business websites on WordPress and online stores on Shopify, with custom themes, integrations and fast pages.",
+      "Develop and maintain business websites on WordPress and online stores on Shopify, with custom themes, integrations and high performance.",
     skills: ["WordPress", "Shopify", "PHP", "Liquid"],
     responsibilities: [
-      "Build custom WordPress themes and blocks from Figma designs, without page-builder bloat.",
-      "Set up and customise Shopify stores: themes in Liquid, apps, payments and shipping.",
+      "Build lightweight custom WordPress themes and blocks from Figma designs.",
+      "Configure and customise Shopify stores, including Liquid themes, apps, payments and shipping.",
       "Migrate content and products from older sites without losing URLs or search rankings.",
       "Improve page speed and Core Web Vitals on new and existing sites.",
-      "Handle updates, backups and security fixes for sites on our care plans.",
-      "Write short handover notes so clients can manage their own content.",
+      "Manage updates, backups and security fixes for sites on our maintenance plans.",
+      "Prepare handover documentation so clients can manage their own content.",
     ],
     requirements: [
       "1–3 years building WordPress or Shopify sites for clients.",
       "Good HTML, CSS and JavaScript, plus working PHP for WordPress.",
       "Experience with Shopify Liquid and the theme editor.",
-      "Understanding of on-page SEO basics: titles, redirects, schema and sitemaps.",
+      "Understanding of on-page SEO, including titles, redirects, schema and sitemaps.",
       "Comfort turning a Figma file into a pixel-accurate, responsive build.",
       "A portfolio of live sites you built or worked on.",
     ],
@@ -123,22 +123,22 @@ export const jobs: readonly Job[] = [
     type: "Full-time",
     experience: "2–4 years",
     summary:
-      "Build Android and iOS apps for businesses in React Native or Flutter, and take them from first build through store release.",
+      "Develop Android and iOS apps in React Native or Flutter, from initial build through to app store release.",
     skills: ["React Native", "Flutter", "TypeScript", "Firebase"],
     responsibilities: [
       "Build cross-platform apps in React Native or Flutter from Figma designs.",
       "Connect apps to REST APIs, authentication, push notifications and payments.",
-      "Handle builds, signing and releases on Google Play and the App Store.",
-      "Track crashes and performance after release and fix what the data shows.",
+      "Manage builds, signing and releases on Google Play and the App Store.",
+      "Monitor crashes and performance after release and resolve the issues identified.",
       "Work with the web team when an app shares a backend with a website or portal.",
-      "Demo progress to clients each week on test builds.",
+      "Present weekly progress to clients using test builds.",
     ],
     requirements: [
       "2–4 years building mobile apps, with at least one app live in a store.",
       "Strong React Native with TypeScript, or Flutter with Dart.",
       "Experience with state management, offline storage and API integration.",
       "Understanding of Android and iOS release processes and store guidelines.",
-      "Git, pull requests and code review as part of your daily routine.",
+      "Daily use of Git, pull requests and code review.",
       "Ability to explain technical trade-offs to non-technical clients.",
     ],
     niceToHaves: [
@@ -155,25 +155,25 @@ export const jobs: readonly Job[] = [
     type: "Full-time",
     experience: "2–4 years",
     summary:
-      "Design websites, app screens and brand identities for Indian businesses, in Figma files that developers can build without guessing.",
+      "Design websites, app interfaces and brand identities for Indian businesses, with Figma files that translate accurately into development.",
     skills: ["Figma", "Design systems", "Prototyping", "Branding"],
     responsibilities: [
       "Run short discovery sessions with clients to understand their customers and goals.",
       "Produce wireframes, high-fidelity screens and clickable prototypes in Figma.",
       "Build and maintain component libraries and design tokens for each project.",
       "Create logos, colour systems and brand guidelines for smaller businesses.",
-      "Work alongside developers during the build and review what ships.",
+      "Collaborate with developers during the build and review the final implementation.",
       "Present design decisions to clients and adjust based on their feedback.",
     ],
     requirements: [
-      "2–4 years designing websites or apps that went live.",
-      "Advanced Figma: auto layout, components, variables and prototyping.",
-      "A portfolio that shows the problem, the options you tried and why you chose one.",
+      "2–4 years designing websites or apps that have launched.",
+      "Advanced Figma skills, including auto layout, components, variables and prototyping.",
+      "A portfolio that demonstrates your design process and the reasoning behind your decisions.",
       "Solid grasp of typography, layout, accessibility and responsive design.",
       "Comfort presenting your work and taking feedback from clients.",
     ],
     niceToHaves: [
-      "Basic HTML and CSS, enough to talk constraints with developers.",
+      "Working knowledge of HTML and CSS to discuss constraints with developers.",
       "Motion or micro-interaction work in Figma, Framer or After Effects.",
       "Experience designing for Indian-language or multilingual audiences.",
     ],
@@ -187,7 +187,7 @@ export const jobs: readonly Job[] = [
     type: "Full-time",
     experience: "1–3 years",
     summary:
-      "Run SEO, Google Ads and Meta campaigns for client businesses, and report clearly on the leads and sales they bring in.",
+      "Manage SEO, Google Ads and Meta campaigns for clients and report on the leads and sales they generate.",
     skills: ["Google Ads", "Search Console", "GA4", "Meta Ads"],
     responsibilities: [
       "Plan and run Google Search, Performance Max and Meta campaigns within client budgets.",
@@ -201,7 +201,7 @@ export const jobs: readonly Job[] = [
       "1–3 years running paid campaigns or SEO for businesses or an agency.",
       "Hands-on Google Ads and Meta Ads Manager experience with real budgets.",
       "Working knowledge of Search Console, GA4 and Tag Manager.",
-      "Comfort with spreadsheets and turning data into clear recommendations.",
+      "Confidence with spreadsheets and translating data into clear recommendations.",
       "Good written English for ad copy, briefs and client reports.",
     ],
     niceToHaves: [
@@ -217,7 +217,7 @@ export const jobs: readonly Job[] = [
     type: "Full-time",
     experience: "1–3 years",
     summary:
-      "Sell websites, apps and custom software to Indian businesses: qualify enquiries, run discovery calls and turn scopes into signed proposals.",
+      "Grow our client base by qualifying enquiries, leading discovery calls and converting scopes into signed proposals for websites, apps and software.",
     skills: ["Website sales", "Software sales", "CRM", "Proposals"],
     responsibilities: [
       "Respond to inbound enquiries from the website, WhatsApp and referrals.",
@@ -230,8 +230,8 @@ export const jobs: readonly Job[] = [
     requirements: [
       "1–3 years in B2B sales, ideally selling websites, software or digital marketing services.",
       "Clear spoken and written English and Hindi.",
-      "Comfort explaining technical services in plain language.",
-      "Organised follow-up habits and experience using a CRM.",
+      "Ability to explain technical services clearly to non-technical audiences.",
+      "Organised follow-up and experience using a CRM.",
       "Willingness to meet clients in person around Gurugram and Delhi NCR.",
     ],
     niceToHaves: [
@@ -247,7 +247,7 @@ export const jobs: readonly Job[] = [
     type: "Full-time",
     experience: "1–3 years",
     summary:
-      "Keep client projects on schedule: plan sprints, run weekly demos, track feedback and make sure everyone knows what happens next.",
+      "Keep client projects on schedule by planning sprints, running weekly demonstrations, tracking feedback and coordinating next steps.",
     skills: ["Planning", "Client communication", "Jira or Linear", "Documentation"],
     responsibilities: [
       "Turn signed scopes into project plans with milestones and owners.",
@@ -259,10 +259,10 @@ export const jobs: readonly Job[] = [
     ],
     requirements: [
       "1–3 years coordinating projects at a digital agency, software company or similar.",
-      "Strong written English: clear updates, meeting notes and summaries.",
+      "Strong written English for updates, meeting notes and summaries.",
       "Experience with a project tool such as Jira, Linear, Trello or ClickUp.",
-      "Comfort with technical conversations, even if you do not write code.",
-      "Calm, organised follow-through when several projects run at once.",
+      "Confidence in technical discussions without needing to write code.",
+      "Calm, organised management of several concurrent projects.",
     ],
     niceToHaves: [
       "Familiarity with Agile or Scrum ceremonies.",
@@ -277,21 +277,21 @@ export const jobs: readonly Job[] = [
     type: "Internship",
     experience: "0–1 year",
     summary:
-      "Learn to build production websites alongside senior developers, with real tasks on client projects and review on every pull request.",
+      "Learn to build production websites alongside senior developers, contributing to client projects with review on every pull request.",
     skills: ["HTML & CSS", "JavaScript", "React", "Git"],
     responsibilities: [
       "Build pages and components for client websites under guidance from a senior developer.",
       "Fix bugs and small feature requests on live projects.",
       "Write tests and documentation for the code you change.",
       "Take part in code review, both receiving and giving feedback.",
-      "Sit in on client demos to see how projects are scoped and delivered.",
+      "Attend client demonstrations to learn how projects are scoped and delivered.",
     ],
     requirements: [
       "A degree or course in computer science or a related field, completed or in progress.",
       "Good fundamentals in HTML, CSS and JavaScript.",
       "Some experience with React, through coursework or personal projects.",
       "Basic Git: branches, commits and pull requests.",
-      "At least one project you built that you can walk us through.",
+      "At least one personal project you can present in detail.",
       "Availability to work from our Gurugram office during office hours.",
     ],
     niceToHaves: [

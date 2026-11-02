@@ -275,7 +275,7 @@ export function FlexiblePlans() {
     <section
       id="pricing"
       aria-labelledby="flexible-plans-title"
-      className="bg-background pt-20 md:pt-28 lg:pt-[calc(var(--s)*139)]"
+      className="border-t border-border bg-[linear-gradient(180deg,#f6f9fc,var(--background)_85%)] pt-20 md:pt-28 lg:pt-[calc(var(--s)*139)] dark:bg-[linear-gradient(180deg,var(--background-subtle),var(--background)_85%)]"
     >
       <div className="container-figma">
         <div className="mx-auto flex max-w-[807px] flex-col items-center gap-3.5 text-center lg:max-w-[calc(var(--s)*807)] lg:gap-[calc(var(--s)*14)]">

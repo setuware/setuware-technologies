@@ -111,7 +111,7 @@ async function CaseStudy({ params }: { params: Promise<{ slug: string }> }) {
           </p>
 
           <h2 className="mt-10 border-t border-border pt-8 text-xs font-semibold uppercase tracking-[0.16em] text-setu">
-            Results after launch
+            Results
           </h2>
           <dl className="mt-4 grid grid-cols-2 gap-6 sm:grid-cols-4">
             {study.results.map((metric) => (
@@ -130,7 +130,7 @@ async function CaseStudy({ params }: { params: Promise<{ slug: string }> }) {
         <div className="container-page grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
           <div className="lg:sticky lg:top-24 lg:self-start">
             <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">
-              The problem
+              The challenge
             </h2>
             <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
               {study.challenge}

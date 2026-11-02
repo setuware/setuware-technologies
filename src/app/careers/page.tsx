@@ -13,31 +13,31 @@ import { FadeUp, SpotlightCard, Stagger, StaggerItem } from "@/components/motion
 import { RoleBoard, type RoleCard } from "./role-board";
 
 export const metadata = pageMetadata({
-  title: "Careers: Developer & Designer Jobs",
-  description: `Open roles at ${site.name}, MG Road, Gurugram: developers, designers, marketers and sales. See responsibilities and apply by email.`,
+  title: "Careers",
+  description: `Careers at ${site.name}, Gurugram: open roles in engineering, design, marketing and sales, with full role descriptions and details on how to apply.`,
   path: "/careers",
 });
 
 const HOW_WE_WORK = [
   {
     Icon: Rocket,
-    title: "Your work goes live",
-    body: "Everything we build is for a paying client with a launch date. You see it used, and you hear when something breaks.",
+    title: "Meaningful client work",
+    body: "Every project is delivered for a client with a defined launch date, so your work reaches real users.",
   },
   {
     Icon: MessageSquare,
-    title: "You talk to the client",
-    body: "No account-manager layer. The people building the project join the calls and hear the problem first-hand.",
+    title: "Direct client collaboration",
+    body: "Project team members join client discussions and understand requirements first-hand.",
   },
   {
     Icon: Eye,
-    title: "Weekly demos",
-    body: "Clients see progress on a live preview every week, so feedback arrives early and nobody is surprised at launch.",
+    title: "Weekly demonstrations",
+    body: "Clients review progress on a live preview each week, which keeps feedback early and expectations aligned.",
   },
   {
     Icon: Wrench,
-    title: "Reviewed and documented",
-    body: "Every change goes through review before it ships, and we write down how things work for whoever maintains it next.",
+    title: "Quality and documentation",
+    body: "Every change is reviewed before release and documented for long-term maintainability.",
   },
 ] as const;
 
@@ -47,20 +47,20 @@ const PROCESS = [
     body: `Email ${site.hrEmail} with your CV, links to your work and your notice period.`,
   },
   {
-    title: "20-minute intro call",
-    body: "A short call about what you have built, what you want to do next and what the role involves.",
+    title: "Introductory call",
+    body: "A 20-minute conversation about your experience, your goals and the role.",
   },
   {
     title: "Practical task",
-    body: "A short take-home task close to the real work, or a small paid task if it needs more of your time.",
+    body: "A short task that reflects the work of the role. Longer assignments are paid.",
   },
   {
     title: "Final conversation",
-    body: "Meet the people you would work with day to day, walk through your task and ask us anything.",
+    body: "A discussion with your future colleagues to review your task and answer your questions.",
   },
   {
     title: "Offer",
-    body: "A written offer with role, compensation and start date, so you can decide with everything in front of you.",
+    body: "A written offer setting out the role, compensation and start date.",
   },
 ] as const;
 
@@ -68,31 +68,31 @@ const FAQS = [
   {
     question: "Do you hire freshers?",
     answer:
-      "Yes, through the Web Development Intern role. The other listings ask for the experience shown, but if you are close and your work is strong, apply anyway and tell us why.",
+      "Yes, through the Web Development Intern role. Candidates with strong work who are close to the experience listed for other roles are also encouraged to apply.",
   },
   {
     question: "Is the work remote?",
-    answer: `Each listing says whether it is on-site or hybrid. Both are based at our office on MG Road, Gurugram, which is open ${site.hours}. Hybrid office days are agreed with the team when you join.`,
+    answer: `Each listing states whether the role is on-site or hybrid. All roles are based at our MG Road office in Gurugram, open ${site.hours}, and hybrid office days are agreed on joining.`,
   },
   {
     question: "How is compensation decided?",
     answer:
-      "It is discussed at interview and based on your experience and the scope of the role. We would rather talk about expectations early than at the end of the process.",
+      "Compensation is based on your experience and the scope of the role, and is discussed early in the interview process.",
   },
   {
     question: "What is the practical task?",
     answer:
-      "Something close to the work you would do here, such as a small feature, a screen design or a campaign plan. Short tasks take a few hours at most. If a task needs more time than that, it is paid.",
+      "A task that reflects the role, such as a small feature, a screen design or a campaign plan. Tasks take a few hours at most, and longer assignments are paid.",
   },
   {
     question: "What should I send with my application?",
     answer:
-      "Your CV, links to work you can talk through (portfolio, GitHub, live sites or campaign results), your current location and your notice period. A few lines on why the role interests you help.",
+      "Please include your CV, links to your portfolio, GitHub, live sites or campaign results, your current location and your notice period, with a short note on why the role interests you.",
   },
   {
     question: "Can I apply for more than one role?",
     answer:
-      "Yes. Send one email, name the roles in the subject line and tell us which one you would prefer.",
+      "Yes. Please send a single email that names each role in the subject line and indicates your preference.",
   },
 ] as const;
 
@@ -112,8 +112,8 @@ export default function CareersPage() {
     <>
       <PageHero
         eyebrow="Careers"
-        title="Build websites and software that businesses rely on"
-        description={`${site.name} designs and builds websites, online stores, apps and business software for Indian companies, from our office on MG Road, Gurugram.`}
+        title="Careers at Setuware Technologies"
+        description={`Join a team of designers, developers, marketers and project managers building websites, e-commerce platforms, apps and business software from our office in ${site.address.city}.`}
       >
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <ButtonLink
@@ -122,7 +122,7 @@ export default function CareersPage() {
             variant="ghost"
             className="rounded-full bg-setu font-semibold text-white hover:bg-setu-dark dark:hover:bg-setu-dark"
           >
-            See {jobs.length} open roles
+            View {jobs.length} open roles
             <ArrowRight className="size-4" aria-hidden />
           </ButtonLink>
           <ButtonLink href={applyHref()} size="lg" variant="secondary" className="rounded-full">
@@ -156,13 +156,13 @@ export default function CareersPage() {
                 How we work
               </span>
               <TextReveal className="mt-4 font-display text-3xl font-semibold leading-[1.15] text-foreground sm:text-4xl">
-                {"Real clients, real launch dates"}
+                {"A collaborative, client-focused environment"}
               </TextReveal>
             </div>
             <FadeUp delay={0.15} y={20}>
               <p className="max-w-xl text-base leading-relaxed text-muted-foreground lg:justify-self-end">
-                None of this is unusual. We do it on every project, including the small ones, so you
-                see the whole of how a project is scoped, built and supported.
+                Every team member gains experience across the full project lifecycle, from scoping
+                and delivery to long-term support.
               </p>
             </FadeUp>
           </div>
@@ -193,8 +193,8 @@ export default function CareersPage() {
           <SectionHeading
             align="left"
             eyebrow="Open roles"
-            title="Where you could fit in"
-            description="Every role is based in Gurugram. Pick a team to narrow the list, then open a role for the full description."
+            title="Current openings"
+            description="All roles are based in Gurugram. Filter by team and select a role to view the full description."
           />
 
           <div className="mt-10">
@@ -217,8 +217,8 @@ export default function CareersPage() {
                     >
                       {site.hrEmail}
                     </a>{" "}
-                    with a few lines on what you do well. We keep open applications on file and get in
-                    touch when there is a fit.
+                    with a brief introduction. We keep open applications on file and will contact you when
+                    a suitable role becomes available.
                   </p>
                 </div>
               </div>
