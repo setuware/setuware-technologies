@@ -22,7 +22,7 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -40,7 +40,8 @@ const CLIPS = [
   {
     // fauxels — "A Group Of People Busy Working With Their Computers"
     name: "hero-bg",
-    pexelsId: 3249672,
+    // "A person working hard on a computer laptop" (owner's pick)
+    pexelsId: 5495781,
     start: 0,
     seconds: 14,
     // Background loop: darker and softer so the headline stays readable.
@@ -49,7 +50,8 @@ const CLIPS = [
   {
     // "A Group of People Looking at a Laptop in an Office"
     name: "skills-gap",
-    pexelsId: 8519377,
+    // Kindel Media — "Businesspeople Working in the Office"
+    pexelsId: 7652011,
     start: 0,
     seconds: 20,
     filter: "null",
@@ -75,19 +77,15 @@ const PHOTOS = [
 
 async function downloadPhoto(id, dest) {
   const urls = [
-    `https://www.pexels.com/photo/${id}/download/`,
     `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=2800`,
+    `https://www.pexels.com/photo/${id}/download/`,
   ];
   let lastError;
   for (const url of urls) {
     try {
-      const res = await fetch(url, { redirect: "follow", headers: { "User-Agent": "Mozilla/5.0 (setuware media fetch)" } });
-      const type = res.headers.get("content-type") ?? "";
-      if (res.ok && type.startsWith("image/")) {
-        writeFileSync(dest, Buffer.from(await res.arrayBuffer()));
-        return;
-      }
-      lastError = new Error(`HTTP ${res.status} ${type}`);
+      curl(url, dest);
+      if (isMedia(dest, "image")) return;
+      lastError = new Error("not an image");
     } catch (error) {
       lastError = error;
     }
@@ -112,16 +110,25 @@ function hasFfmpeg() {
   }
 }
 
-async function download(id, dest) {
-  const url = `https://www.pexels.com/download/video/${id}/`;
-  const res = await fetch(url, {
-    redirect: "follow",
-    headers: { "User-Agent": "Mozilla/5.0 (setuware media fetch)" },
+/**
+ * Downloads go through curl rather than fetch(): curl honours HTTPS_PROXY and
+ * system certificates everywhere (macOS, CI, sandboxed shells), Node's fetch
+ * does not.
+ */
+function curl(url, dest) {
+  execFileSync("curl", ["-fsSL", "--retry", "3", "-A", "Mozilla/5.0 (setuware media fetch)", "-o", dest, url], {
+    stdio: ["ignore", "ignore", "inherit"],
   });
-  if (!res.ok) throw new Error(`Pexels ${id}: HTTP ${res.status}`);
-  const type = res.headers.get("content-type") ?? "";
-  if (!type.startsWith("video/")) throw new Error(`Pexels ${id}: got ${type || "no content-type"}, not a video`);
-  writeFileSync(dest, Buffer.from(await res.arrayBuffer()));
+}
+
+function isMedia(file, kind) {
+  const type = execFileSync("file", ["-b", "--mime-type", file]).toString().trim();
+  return type.startsWith(`${kind}/`);
+}
+
+async function download(id, dest) {
+  curl(`https://www.pexels.com/download/video/${id}/`, dest);
+  if (!isMedia(dest, "video")) throw new Error(`Pexels ${id}: download was not a video`);
 }
 
 async function main() {
@@ -132,7 +139,10 @@ async function main() {
   mkdirSync(outDir, { recursive: true });
   mkdirSync(tmpDir, { recursive: true });
 
-  const manifest = {};
+  // Merge into the existing manifest so generated or previously fetched
+  // entries survive a partial run.
+  const manifest = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, "utf8")) : {};
+  const videosOnly = process.argv.includes("--videos-only");
   for (const clip of CLIPS) {
     const raw = join(tmpDir, `${clip.name}-source.mp4`);
     const base = join(outDir, clip.name);
@@ -164,14 +174,13 @@ async function main() {
     } catch (error) {
       console.log("FAILED");
       console.error(`  ${error instanceof Error ? error.message : error}`);
-      if (existsSync(`${base}.mp4`)) manifest[clip.name] = undefined;
     }
   }
 
   const photoDir = join(root, "public", "images", "photos");
   mkdirSync(photoDir, { recursive: true });
-  manifest.images = {};
-  for (const photo of PHOTOS) {
+  if (!videosOnly) manifest.images = {};
+  for (const photo of videosOnly ? [] : PHOTOS) {
     const raw = join(tmpDir, `${photo.key}-source`);
     const file = `${slugify(photo.key)}.jpg`;
     try {
@@ -192,7 +201,7 @@ async function main() {
   rmSync(tmpDir, { recursive: true, force: true });
   writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
   const clipCount = CLIPS.filter((c) => manifest[c.name]).length;
-  const photoCount = Object.keys(manifest.images).length;
+  const photoCount = Object.keys(manifest.images ?? {}).length;
   console.log(`\n${clipCount}/${CLIPS.length} videos and ${photoCount}/${PHOTOS.length} photos written; see src/lib/media-manifest.json`);
   console.log("Commit public/media, public/images/photos and src/lib/media-manifest.json, then restart `npm run dev`.");
 }

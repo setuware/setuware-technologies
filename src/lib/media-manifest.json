@@ -3,13 +3,13 @@
     "mp4": "/media/hero-bg.mp4",
     "webm": "/media/hero-bg.webm",
     "poster": "/media/hero-bg.jpg",
-    "source": "generated: scripts/render-backdrops.mjs"
+    "source": "https://www.pexels.com/video/5495781/"
   },
   "skills-gap": {
     "mp4": "/media/skills-gap.mp4",
     "webm": "/media/skills-gap.webm",
     "poster": "/media/skills-gap.jpg",
-    "source": "generated: scripts/render-backdrops.mjs"
+    "source": "https://www.pexels.com/video/7652011/"
   },
   "images": {
     "heroBackdrop": "/images/photos/hero-backdrop.jpg",
