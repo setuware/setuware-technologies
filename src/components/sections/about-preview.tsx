@@ -37,7 +37,7 @@ export function AboutPreview() {
             as="h2"
             className="font-display text-[2.4rem] font-semibold leading-tight text-foreground"
           >
-            Strategy, design and engineering under one roof
+            One partner from strategy to launch
           </TextReveal>
           <Stagger className="flex flex-col gap-4" delay={0.15}>
             <StaggerItem y={24}>

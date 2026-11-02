@@ -97,7 +97,7 @@ const CARD_COPY: Record<ServiceKey, { name: string; description: string }> = {
 };
 
 /**
- * "All services under one roof"
+ * "Services that grow with your business"
  *
  * A peek carousel: the active card is centred and full-size, its neighbours
  * sit behind it scaled down and dimmed. Built on native scroll snapping, so
@@ -185,7 +185,7 @@ export function ServicesDark() {
               as="h2"
               className="font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.6rem]"
             >
-              All services under one roof
+              Services that grow with your business
             </TextReveal>
             <FadeUp delay={0.25} y={20}>
               <p className="mt-4 text-[0.95rem] leading-relaxed text-muted-foreground">
