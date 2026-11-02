@@ -131,7 +131,7 @@ function PlanCard({ plan }: { plan: Plan }) {
       )}
     >
       {plan.highlight ? <BorderSweep /> : null}
-      <div className="flex flex-col gap-10 lg:gap-[calc(var(--s)*40)]">
+      <div className="flex flex-col gap-10 md:flex-1 lg:gap-[calc(var(--s)*40)]">
         <div className="flex flex-col gap-[5px] lg:gap-[calc(var(--s)*5)]">
           <h3 className="text-[22px] font-extrabold leading-[normal] tracking-[-0.02em] lg:text-[calc(var(--s)*24)]">
             {plan.name}
@@ -161,7 +161,7 @@ function PlanCard({ plan }: { plan: Plan }) {
         </div>
 
         {quoted ? null : (
-          <div className="flex flex-col">
+          <div className="flex flex-col md:mt-auto">
             <p className="text-[14px] font-normal leading-[29px] tracking-[0.02em] opacity-70 lg:text-[calc(var(--s)*14)] lg:leading-[calc(var(--s)*29)]">
               Starting from
             </p>
@@ -175,7 +175,7 @@ function PlanCard({ plan }: { plan: Plan }) {
       <Link
         href={quoted ? "/contact?intent=consultation" : "/estimate"}
         className={cn(
-          "mt-10 inline-flex h-10 w-full items-center justify-center rounded-[50px] border-[1.5px] border-setu text-[15px] font-semibold leading-[normal] transition-[background-color,border-color,color] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu md:mt-auto lg:h-[calc(var(--s)*40)] lg:text-[calc(var(--s)*15)]",
+          "mt-10 inline-flex h-10 w-full items-center justify-center rounded-[50px] border-[1.5px] border-setu text-[15px] font-semibold leading-[normal] transition-[background-color,border-color,color] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu lg:mt-[calc(var(--s)*24)] lg:h-[calc(var(--s)*40)] lg:text-[calc(var(--s)*15)]",
           plan.highlight
             ? "bg-setu text-white hover:border-setu-dark hover:bg-setu-dark"
             : "text-black hover:bg-setu hover:text-white dark:text-white",

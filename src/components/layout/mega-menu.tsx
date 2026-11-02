@@ -203,6 +203,7 @@ export function DesktopMenus({ entries, openId, onOpenChange, isActive }: Deskto
               key={entry.href}
               href={entry.href}
               aria-current={isActive(entry.href) ? "page" : undefined}
+              suppressHydrationWarning
               onPointerEnter={(event) => {
                 // Sweeping onto a plain link closes whichever menu was open.
                 if (event.pointerType === "mouse" && openId) hoverClose();
@@ -241,6 +242,9 @@ export function DesktopMenus({ entries, openId, onOpenChange, isActive }: Deskto
           >
             <button
               type="button"
+              // Active state depends on the pathname, which differs between
+              // server and client on the 404 page.
+              suppressHydrationWarning
               ref={(node) => {
                 if (node) triggers.current.set(entry.id, node);
                 else triggers.current.delete(entry.id);
@@ -472,6 +476,7 @@ function MenuLink({
       href={item.href}
       onClick={onNavigate}
       aria-current={active ? "page" : undefined}
+      suppressHydrationWarning
       className={cn(
         "group/item flex items-start gap-[calc(var(--s)*12)] rounded-xl p-[calc(var(--s)*10)] transition-colors hover:bg-foreground/[0.04] focus-visible:bg-foreground/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-setu/50",
         active && "bg-setu/[0.07]",

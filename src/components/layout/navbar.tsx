@@ -295,6 +295,7 @@ export function Navbar({ links }: NavbarProps) {
                                   <Link
                                     href={item.href}
                                     aria-current={isActive(item.href) ? "page" : undefined}
+                                    suppressHydrationWarning
                                     className={cn(
                                       "flex items-center gap-3 rounded-xl px-1 py-2 text-[0.93rem]",
                                       isActive(item.href) ? "text-setu" : "text-foreground",
@@ -332,6 +333,7 @@ export function Navbar({ links }: NavbarProps) {
               key={item.href}
               href={item.href}
               aria-current={isActive(item.href) ? "page" : undefined}
+              suppressHydrationWarning
               className={cn(
                 "rounded-xl px-1 py-2.5 text-[0.98rem] font-semibold",
                 isActive(item.href) ? "text-setu" : "text-foreground",
