@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-import { services } from "@/lib/content";
+import { serviceStartingPrice, services } from "@/lib/content";
 import { formatINRCompact } from "@/lib/utils";
 import { Card, CardBody, CardText, CardTitle } from "@/components/ui/card";
 import { Reveal } from "@/components/ui/reveal";
@@ -32,7 +32,7 @@ export function ServicesGrid({
                   <div className="flex items-start justify-between gap-3">
                     <ServiceIcon name={service.icon} accent={service.accent} />
                     <span className="rounded-full border border-border px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
-                      from {formatINRCompact(service.priceFrom)}
+                      from {formatINRCompact(serviceStartingPrice(service))}
                     </span>
                   </div>
 

@@ -12,9 +12,10 @@ import { TextReveal } from "@/components/motion/text-reveal";
 /**
  * "Flexible plans" (Figma 24:2682, 24:2733 and cards 24:3062 / 24:3000 / 24:3031).
  *
- * Enterprise is quoted rather than priced, which is why `setupFrom` of 0
- * drops the price block and swaps the call to action to a call booking — a
- * ₹0 price would read as free.
+ * The priced packages (landing page, website, application) keep the design's
+ * three-card row. Enterprise is quoted rather than priced, so it sits in a
+ * full-width strip under the row with a call booking instead of a price — a
+ * ₹0 price would read as free, and a fourth card would squeeze the row.
  *
  * Motion: cards rise in a stagger, then each card's checklist ticks itself
  * off line by line. Cards follow the cursor with a glow and a slight tilt,
@@ -27,8 +28,19 @@ import { TextReveal } from "@/components/motion/text-reveal";
  * rewriting that data.
  */
 const DESIGN_COPY: Record<string, { tagline?: string; features?: readonly string[] }> = {
+  "landing-page": {
+    tagline: "One page that brings in enquiries.",
+    features: [
+      "Hero, services and enquiry form",
+      "WhatsApp and call buttons",
+      "Designed mobile-first",
+      "Basic SEO setup",
+      "Live in about a week",
+      "3 months of support after launch",
+    ],
+  },
   "website-build": {
-    tagline: "A website that brings in enquiries.",
+    tagline: "A full website for your business.",
     features: [
       "Up to 8 pages, designed mobile-first",
       "Edit text and photos yourself",
@@ -203,6 +215,55 @@ function BorderSweep() {
   );
 }
 
+const PRICED_PLANS = projectPackages.filter((plan) => (plan.setupFrom ?? 0) > 0);
+const QUOTED_PLANS = projectPackages.filter((plan) => !plan.setupFrom);
+
+/** The quoted tier as a strip: what it covers on the left, the call to book on the right. */
+function QuotedPlanStrip({ plan }: { plan: Plan }) {
+  const copy = DESIGN_COPY[plan.id] ?? {};
+  const features = copy.features ?? plan.features;
+
+  return (
+    <article className="flex flex-col gap-6 rounded-[20px] border border-[rgba(0,161,198,0.15)] bg-[rgba(235,239,248,0.54)] px-7 py-8 text-black md:flex-row md:items-center md:justify-between md:gap-10 lg:rounded-[calc(var(--s)*20)] lg:px-[calc(var(--s)*54)] lg:py-[calc(var(--s)*36)] dark:bg-white/5 dark:text-white">
+      <div className="flex flex-col gap-3 lg:gap-[calc(var(--s)*12)]">
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <h3 className="text-[22px] font-extrabold leading-[normal] tracking-[-0.02em] lg:text-[calc(var(--s)*24)]">
+            {plan.name}
+          </h3>
+          <p className="text-[15px] font-normal tracking-[0.02em] opacity-70 lg:text-[calc(var(--s)*15)]">
+            {copy.tagline ?? plan.tagline}
+          </p>
+        </div>
+        <ul className="flex flex-wrap gap-x-6 gap-y-2 lg:gap-x-[calc(var(--s)*28)]">
+          {features.map((feature, index) => (
+            <motion.li
+              key={feature}
+              custom={index}
+              variants={FEATURE_VARIANTS}
+              className="flex items-center gap-3 text-[15px] font-medium leading-[26px] lg:gap-[calc(var(--s)*12)] lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*26)]"
+            >
+              <CheckGlyph index={index} />
+              <span>{feature}</span>
+            </motion.li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="flex shrink-0 flex-col gap-3 md:items-end lg:gap-[calc(var(--s)*12)]">
+        <p className="text-[22px] font-extrabold leading-[normal] tracking-[-0.02em] lg:text-[calc(var(--s)*26)]">
+          Custom quote
+        </p>
+        <Link
+          href="/contact?intent=consultation"
+          className="inline-flex h-10 w-full items-center justify-center rounded-[50px] border-[1.5px] border-setu px-8 text-[15px] font-semibold leading-[normal] text-black transition-[background-color,border-color,color] duration-200 hover:bg-setu hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu md:w-auto lg:h-[calc(var(--s)*40)] lg:px-[calc(var(--s)*34)] lg:text-[calc(var(--s)*15)] dark:text-white"
+        >
+          Book a 30-minute call
+        </Link>
+      </div>
+    </article>
+  );
+}
+
 export function FlexiblePlans() {
   return (
     <section
@@ -235,9 +296,14 @@ export function FlexiblePlans() {
           stagger={0.12}
           className="mx-auto mt-11 grid max-w-md items-stretch gap-6 md:max-w-none md:grid-cols-2 lg:mt-[calc(var(--s)*45)] lg:grid-cols-3 lg:gap-[calc(var(--s)*34)]"
         >
-          {projectPackages.map((plan) => (
+          {PRICED_PLANS.map((plan) => (
             <StaggerItem key={plan.id} className="h-full">
               <PlanCard plan={plan} />
+            </StaggerItem>
+          ))}
+          {QUOTED_PLANS.map((plan) => (
+            <StaggerItem key={plan.id} className="md:col-span-2 lg:col-span-3">
+              <QuotedPlanStrip plan={plan} />
             </StaggerItem>
           ))}
         </Stagger>

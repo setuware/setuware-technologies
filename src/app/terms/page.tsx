@@ -55,7 +55,7 @@ const SECTIONS: LegalSection[] = [
   },
   {
     heading: "Contact",
-    paragraphs: [`Questions about these terms: ${site.email}.`],
+    paragraphs: [`Questions about these terms: ${site.generalEmail}.`],
   },
 ];
 

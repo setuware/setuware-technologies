@@ -6,7 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { images } from "@/lib/images";
-import { carePlans, projectPackages } from "@/lib/plans";
+import { carePlans, LANDING_PAGE_FROM, WEBSITE_FROM } from "@/lib/plans";
 import { cn, formatINR } from "@/lib/utils";
 import { Counter } from "@/components/ui/counter";
 import { DURATION, EASE_OUT } from "@/components/motion/ease";
@@ -65,9 +65,7 @@ function BentoTile({ className, children }: { className?: string; children: Reac
 }
 
 /** Headline figures, read from the published plans so they never drift. */
-const WEBSITE_FROM_K = Math.round(
-  (projectPackages.find((plan) => plan.id === "website-build")?.setupFrom ?? 20_000) / 1000,
-);
+const WEBSITE_FROM_K = Math.round(WEBSITE_FROM / 1000);
 const CARE_FROM = carePlans[0]?.monthly ?? 8_000;
 
 /** Channel chips slide in one after another once their tile has landed. */
@@ -176,7 +174,10 @@ export function IndustryBento() {
               </span>
               <div className="relative mt-8 lg:mt-0">
                 <p className="max-w-[15rem] text-[1.45rem] leading-[1.32] font-semibold tracking-[-0.02em] text-foreground lg:max-w-[calc(var(--s)*300)] lg:text-[calc(var(--s)*28)] lg:leading-[calc(var(--s)*37)]">
-                  Starting price for a business website
+                  Starting price for a full business website
+                </p>
+                <p className="mt-2 text-[0.95rem] leading-relaxed text-foreground/70 lg:mt-[calc(var(--s)*8)] lg:text-[calc(var(--s)*16)] lg:leading-[calc(var(--s)*26)]">
+                  Single-page landing pages from {formatINR(LANDING_PAGE_FROM)}.
                 </p>
                 <Link
                   href="/pricing"

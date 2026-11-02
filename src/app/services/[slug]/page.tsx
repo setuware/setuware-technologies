@@ -13,7 +13,14 @@ import {
   X,
 } from "lucide-react";
 
-import { caseStudies, getService, serviceGroups, services, type Service } from "@/lib/content";
+import {
+  caseStudies,
+  getService,
+  serviceGroups,
+  serviceStartingPrice,
+  services,
+  type Service,
+} from "@/lib/content";
 import { breadcrumbJsonLd, faqJsonLd, pageMetadata, serviceJsonLd } from "@/lib/seo";
 import { servicePhotos } from "@/lib/service-photos";
 import { site } from "@/lib/site";
@@ -309,6 +316,18 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
               <p className="mt-6 text-sm leading-relaxed text-white/65">
                 The quote is fixed and in writing before any work starts.
               </p>
+              {service.group === "run" ? (
+                <p className="mt-3 text-sm leading-relaxed text-white/65">
+                  Already a client? Email{" "}
+                  <a
+                    href={`mailto:${site.supportEmail}`}
+                    className="font-medium text-white underline underline-offset-2 hover:text-setu"
+                  >
+                    {site.supportEmail}
+                  </a>{" "}
+                  for fixes, changes and hosting requests.
+                </p>
+              ) : null}
               <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row lg:flex-col">
                 <Link href={estimateHref} className={cn(primaryCta, "flex-1")}>
                   <Calculator className="size-4" aria-hidden />
@@ -497,7 +516,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
           name: service.name,
           description: service.seoDescription ?? service.description,
           path: `/services/${service.slug}`,
-          priceFrom: service.priceFrom,
+          priceFrom: serviceStartingPrice(service),
         })}
       />
       {faqs.length > 0 ? <JsonLd data={faqJsonLd(faqs)} /> : null}

@@ -58,6 +58,14 @@ export function pageMetadata({
   };
 }
 
+/** `site.hours` (Mon–Sat, 10:00–19:00 IST) as schema.org opening hours. */
+const OFFICE_HOURS_SPEC = {
+  "@type": "OpeningHoursSpecification",
+  dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+  opens: "10:00",
+  closes: "19:00",
+} as const;
+
 /** Organisation schema, emitted once in the root layout. */
 export function organizationJsonLd() {
   return {
@@ -78,6 +86,26 @@ export function organizationJsonLd() {
       postalCode: site.address.postalCode,
       addressCountry: site.address.country,
     },
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        contactType: "sales",
+        email: site.salesEmail,
+        telephone: site.phone,
+        areaServed: "IN",
+        availableLanguage: ["English", "Hindi"],
+        hoursAvailable: OFFICE_HOURS_SPEC,
+      },
+      {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: site.supportEmail,
+        telephone: site.phone,
+        areaServed: "IN",
+        availableLanguage: ["English", "Hindi"],
+        hoursAvailable: OFFICE_HOURS_SPEC,
+      },
+    ],
     sameAs: Object.values(site.social),
     areaServed: ["IN", "Worldwide"],
     knowsAbout: [

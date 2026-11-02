@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { jobs } from "@/lib/careers";
 import { caseStudies, services } from "@/lib/content";
 import { industries } from "@/lib/industries";
 import { posts } from "@/lib/posts";
@@ -57,6 +58,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified,
       priority: 0.6,
       changeFrequency: "yearly" as const,
+    })),
+    ...jobs.map((job) => ({
+      url: url(`/careers/${job.slug}`),
+      lastModified,
+      priority: 0.5,
+      changeFrequency: "monthly" as const,
     })),
     ...posts.map((post) => ({
       url: url(`/blog/${post.slug}`),

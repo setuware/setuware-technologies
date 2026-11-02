@@ -91,7 +91,7 @@ export default function StatusPage() {
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               Clients on a Business or Critical plan should use the shared incident
               channel — it pages the on-call engineer directly. Everyone else:
-              email {site.email} with “URGENT” in the subject, or call{" "}
+              email {site.supportEmail} with “URGENT” in the subject, or call{" "}
               {site.phone}.
             </p>
             <p className="mt-3 text-xs text-muted-foreground">

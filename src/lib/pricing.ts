@@ -6,6 +6,9 @@
  * can never disagree. All money is in paise-free whole INR.
  */
 
+import { LANDING_PAGE_FROM, WEBSITE_FROM } from "./plans";
+import { formatINR } from "./utils";
+
 export type ServiceKey =
   | "business-websites"
   | "ecommerce-stores"
@@ -88,14 +91,16 @@ interface ServiceRate {
   supportsPlatforms: boolean;
 }
 
-// TODO(owner): confirm the base and per-unit rates for business-websites,
-// ecommerce-stores, seo-marketing and custom-software. Business websites is
-// anchored to the published Website Build package (from ₹20,000); the other
-// three are placeholders, not published prices.
+// TODO(owner): confirm the per-page rate for business-websites and the base and
+// per-unit rates for ecommerce-stores, seo-marketing and custom-software.
+// Business websites is anchored to the published Website Build package (from
+// ₹25,000); the single-page Landing Page package (from ₹5,000) is a fixed
+// package outside the estimator. The other three are placeholders, not
+// published prices.
 export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   "business-websites": {
     label: "Business websites",
-    base: 20_000,
+    base: WEBSITE_FROM,
     perScope: 3_000,
     scopeNoun: "pages",
     baseWeeks: 2,
@@ -406,6 +411,13 @@ export function estimateProject(input: EstimateInput): EstimateResult {
       `Shared codebase across ${platforms.length} platforms keeps the uplift at ${Math.round(
         (platformMultiplier - 1) * 100,
       )}%.`,
+    );
+  }
+  if (input.service === "business-websites" && scope <= 1) {
+    notes.push(
+      `Only need a single page? The Landing Page package starts at ${formatINR(
+        LANDING_PAGE_FROM,
+      )} and goes live in about a week.`,
     );
   }
   if (input.service === "managed-hosting") {

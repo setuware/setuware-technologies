@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { services } from "@/lib/content";
+import { serviceStartingPrice, services } from "@/lib/content";
 import { images } from "@/lib/images";
 import { servicePhotos } from "@/lib/service-photos";
 import { useMediaQuery } from "@/lib/hooks";
@@ -250,7 +250,7 @@ export function ServicesDark() {
                         {/* Price and timeline up front: the two things a buyer
                             asks first. */}
                         <p className="mt-4 text-[0.8rem] font-medium text-white/90">
-                          From {formatINR(service.priceFrom)}
+                          From {formatINR(serviceStartingPrice(service))}
                           <span className="px-2 text-white/40" aria-hidden>
                             |
                           </span>

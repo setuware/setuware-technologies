@@ -2,6 +2,8 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 import { images } from "@/lib/images";
+import { LANDING_PAGE_FROM, WEBSITE_FROM } from "@/lib/plans";
+import { formatINR } from "@/lib/utils";
 import { committedVideo, heroBackdropPoster, heroBackdropSources } from "@/lib/media";
 import { ButtonLink } from "@/components/ui/button";
 import { FadeUp, Magnetic } from "@/components/motion/primitives";
@@ -86,8 +88,9 @@ export function Hero() {
               <FadeUp immediate delay={0.75} y={24}>
                 <p className="text-base font-medium leading-relaxed opacity-78 sm:text-lg lg:ml-[calc(var(--s)*5)] lg:w-[calc(var(--s)*672)] lg:text-[calc(var(--s)*18)] lg:leading-[calc(var(--s)*32)]">
                   We design and build business websites, then the store,
-                  app and software your business needs next.
-                  Fixed quotes from ₹20,000, weekly progress on a live
+                  app and software your business needs next. Landing pages
+                  from {formatINR(LANDING_PAGE_FROM)}, full websites from{" "}
+                  {formatINR(WEBSITE_FROM)}, weekly progress on a live
                   preview, and the domain, code and hosting in your name.
                 </p>
               </FadeUp>

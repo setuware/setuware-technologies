@@ -2,16 +2,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Clock } from "lucide-react";
 
-import type { Service } from "@/lib/content";
+import { serviceStartingPrice, type Service } from "@/lib/content";
 import { servicePhotos } from "@/lib/service-photos";
 import { cn, formatINR } from "@/lib/utils";
 import { SpotlightCard } from "@/components/motion/primitives";
 import { ServiceIcon } from "@/components/ui/service-icon";
 
-/** "From ₹20,000", or the service's own label when the price needs a unit. */
-export function servicePriceLabel(service: Pick<Service, "priceFrom" | "priceLabel">): string {
+/** "From ₹5,000", or the service's own label when the price needs a unit. */
+export function servicePriceLabel(
+  service: Pick<Service, "priceFrom" | "entryPriceFrom" | "priceLabel">,
+): string {
   if (service.priceLabel) return service.priceLabel;
-  return service.priceFrom > 0 ? `From ${formatINR(service.priceFrom)}` : "Custom quote";
+  const from = serviceStartingPrice(service);
+  return from > 0 ? `From ${formatINR(from)}` : "Custom quote";
 }
 
 export interface ServiceCardProps {
