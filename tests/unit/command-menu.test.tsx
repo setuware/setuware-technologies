@@ -138,7 +138,7 @@ describe("ExitIntentOffer", () => {
     vi.useRealTimers();
 
     expect(await screen.findByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(/free website audit/i);
+    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(/planning a new project/i);
   });
 
   it("records a dismissal so it does not reappear for a fortnight", async () => {
@@ -197,7 +197,7 @@ describe("ExitIntentOffer", () => {
     });
   });
 
-  it("validates, then sends the audit request to the contact API", async () => {
+  it("validates, then sends the enquiry to the contact API", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ ok: true, data: { reference: "STW-1" } }), {
         status: 201,
@@ -213,21 +213,23 @@ describe("ExitIntentOffer", () => {
     vi.useRealTimers();
 
     const user = userEvent.setup();
-    const submit = await screen.findByRole("button", { name: /request my free audit/i });
+    const submit = await screen.findByRole("button", { name: /send enquiry/i });
     await user.click(submit);
-    expect(await screen.findByText(/enter your website address/i)).toBeInTheDocument();
+    expect(await screen.findByText(/tell us your name/i)).toBeInTheDocument();
     expect(fetchMock).not.toHaveBeenCalled();
 
-    await user.type(screen.getByLabelText(/name/i), "Priya Sharma");
+    await user.type(screen.getByLabelText(/^name/i), "Priya Sharma");
     await user.type(screen.getByLabelText(/email/i), "priya@example.com");
-    await user.type(screen.getByLabelText(/website url/i), "example.com");
+    await user.click(screen.getByRole("button", { name: "Website" }));
+    await user.type(screen.getByLabelText(/project details/i), "A new company website with five pages.");
     await user.click(submit);
 
-    expect(await screen.findByText(/your audit request is with our team/i)).toBeInTheDocument();
+    expect(await screen.findByText(/your enquiry has been received/i)).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith("/api/contact", expect.objectContaining({ method: "POST" }));
     const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
     expect(body).toMatchObject({ name: "Priya Sharma", email: "priya@example.com", consent: true });
-    expect(body.message).toContain("example.com");
+    expect(body.service).toBe("Website");
+    expect(body.message).toContain("five pages");
     expect(window.localStorage.getItem("setuware.audit-offer.v1")).toContain("takenAt");
   });
 });

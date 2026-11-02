@@ -12,6 +12,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 
+import { caseStudyPhoto } from "@/lib/case-study-photos";
 import { featuredCaseStudies } from "@/lib/content";
 import { images } from "@/lib/images";
 import { ImageReveal, Magnetic, SpotlightCard, useReducedMotionSafe } from "@/components/motion/primitives";
@@ -151,7 +152,7 @@ export function SelectedProjects() {
               <ImageReveal delay={0.15} className="absolute inset-0">
                 <div className="relative h-full w-full">
                   <Image
-                    src={images.caseStudyFeature.src}
+                    src={(lead && caseStudyPhoto(lead.slug)?.src) ?? images.caseStudyFeature.src}
                     // Decorative: the title beside it names the project, and
                     // the slot's own alt describes a different placeholder.
                     alt=""
