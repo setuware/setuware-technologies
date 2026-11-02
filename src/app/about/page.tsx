@@ -2,11 +2,10 @@ import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpRight,
-  BadgeIndianRupee,
-  CalendarCheck,
+  Handshake,
   KeyRound,
-  LifeBuoy,
   MessageSquareText,
+  ShieldCheck,
 } from "lucide-react";
 
 import { pageMetadata } from "@/lib/seo";
@@ -28,75 +27,70 @@ import {
 } from "@/components/motion/primitives";
 
 export const metadata = pageMetadata({
-  title: "About Our Gurugram Team",
-  description: `${site.name} is a ${site.address.city} team that designs, builds and runs business websites, apps and software. Fixed quotes, weekly previews, your code.`,
+  title: "About us",
+  description: `${site.name} is a ${site.address.city}-based digital studio that designs and engineers websites, e-commerce platforms, mobile apps and custom software.`,
   path: "/about",
 });
 
 /** Plain facts, all drawn from site data, shown under the hero. */
 const FACTS = [
   { label: "Based in", value: `${site.address.street}, ${site.address.city}` },
-  { label: "First call", value: "Free, 30 minutes" },
-  { label: "Quotes", value: "Fixed, in writing" },
-  { label: "After launch", value: "3 months' support" },
+  { label: "Consultation", value: "Free, 30 minutes" },
+  { label: "Proposals", value: "Fixed price" },
+  { label: "Post-launch support", value: "Three months" },
 ] as const;
 
-const BELIEFS = [
+const VALUES = [
   {
-    Icon: BadgeIndianRupee,
-    title: "Fixed scope, fixed price",
-    body: "You get a written scope and one fixed price before work starts. Anything new mid-project is quoted first. The number moves only with your sign-off.",
+    Icon: MessageSquareText,
+    title: "Transparency",
+    body: "Every engagement begins with a clear scope and a fixed quote, followed by regular progress updates.",
+  },
+  {
+    Icon: ShieldCheck,
+    title: "Quality",
+    body: "We build fast, secure and accessible products that follow established engineering standards.",
   },
   {
     Icon: KeyRound,
-    title: "You own everything",
-    body: "The domain, the code, the hosting account and the designs are in your name from day one. Our handover notes are written for a developer who has never met us.",
+    title: "Ownership",
+    body: "Your code, domains and accounts remain the property of your business at every stage.",
   },
   {
-    Icon: CalendarCheck,
-    title: "Progress you can open",
-    body: "Your website or app is on a live preview link from the first week of the build. You check it on your own phone, whenever you like.",
-  },
-  {
-    Icon: MessageSquareText,
-    title: "Updates in plain language",
-    body: "Every week you hear what is done, what is blocked and what we need from you. No jargon, and no reports that need translating.",
-  },
-  {
-    Icon: LifeBuoy,
-    title: "We stay after launch",
-    body: "Support is included for three months after a website goes live. After that, a monthly care plan covers hosting, updates, backups and fixes.",
+    Icon: Handshake,
+    title: "Partnership",
+    body: "We support and improve your platforms long after launch, as a dependable extension of your team.",
   },
 ] as const;
 
 const HOW_WE_WORK = [
   {
     step: "01",
-    title: "Talk",
-    body: "A free 30-minute call about your business, your customers and your deadline.",
+    title: "Discovery",
+    body: "A free consultation to understand your business, customers and objectives.",
   },
   {
     step: "02",
-    title: "Quote",
-    body: "A written scope, a timeline and a fixed price. You decide with the full picture.",
+    title: "Proposal",
+    body: "A written scope, timeline and fixed price, agreed before work begins.",
   },
   {
     step: "03",
-    title: "Design and build",
-    body: "Designs you can click through, then weekly progress on a live preview link.",
+    title: "Design and development",
+    body: "Interactive prototypes, followed by development with regular progress reviews.",
   },
   {
     step: "04",
-    title: "Launch and run",
-    body: "Testing, go-live and handover, then hosting, fixes and improvements for as long as you need.",
+    title: "Launch and support",
+    body: "Testing, go-live and handover, followed by ongoing maintenance and optimisation.",
   },
 ] as const;
 
 const INDUSTRIES = [
   "Retail and D2C brands",
-  "Clinics and healthcare",
+  "Healthcare and clinics",
   "Schools and coaching institutes",
-  "Logistics and field services",
+  "Logistics and transport",
   "Finance and SaaS",
   "Real estate",
   "Manufacturing and distribution",
@@ -109,8 +103,8 @@ export default function AboutPage() {
       <PageHero
         align="left"
         eyebrow={`About ${site.name}`}
-        title="Websites and software, built to keep running"
-        description={`${site.name} is a team in ${site.address.city}. Most clients come to us for a website. Many stay for what follows: an online store, an app, marketing, custom software, and someone to keep it all running.`}
+        title="Strategy, design and engineering under one roof"
+        description={`${site.name} is a digital studio based in ${site.address.city}. We design and engineer websites, e-commerce platforms, mobile apps and custom software for growing businesses.`}
       >
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <ButtonLink
@@ -118,11 +112,11 @@ export default function AboutPage() {
             size="lg"
             className="rounded-full bg-setu text-white shadow-none hover:bg-setu-dark"
           >
-            Book a discovery call
+            Book a consultation
             <ArrowRight className="size-4" aria-hidden />
           </ButtonLink>
           <ButtonLink href="/work" size="lg" variant="secondary" className="rounded-full">
-            See recent projects
+            View our work
           </ButtonLink>
         </div>
 
@@ -160,40 +154,41 @@ export default function AboutPage() {
               as="h2"
               className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
             >
-              {"One team, from the website\nto everything after"}
+              {"A digital studio for\ngrowing businesses"}
             </TextReveal>
           </div>
 
           <Stagger className="flex flex-col gap-5 text-[1.02rem] leading-relaxed text-muted-foreground" delay={0.1}>
             <StaggerItem y={24}>
               <p>
-                We are designers and engineers who build for shops, clinics,
-                schools, manufacturers, service firms and startups. Most need a
-                website that brings in enquiries. Some need an online store, a
-                customer app or software that replaces their spreadsheets.
+                We partner with startups, SMEs and established companies across
+                India to plan, design and build digital products that perform.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
               <p>
-                We started {site.name} because launch day is where many projects
-                are abandoned. The site goes live, the invoice goes out, and six
-                months later nobody can update the homepage or explain why the
-                SSL certificate expired.
+                Our designers, developers, marketers and project managers work
+                as one accountable team. Each engagement is led by a dedicated
+                project manager from discovery to launch.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
               <p>
-                So we built the company around the part that usually gets
-                dropped. Hosting and support are quoted alongside the build,
-                documentation is written before handover, and the team that
-                built your site stays on call for it.
-              </p>
-            </StaggerItem>
-            <StaggerItem y={24}>
-              <p className="font-medium text-foreground">
-                One team, one point of contact, and nothing to re-explain when
+                Beyond launch, we provide hosting, maintenance and continuous
+                improvement, so your platforms remain secure and effective as
                 your business grows.
               </p>
+            </StaggerItem>
+            <StaggerItem y={24}>
+              <div className="rounded-card border border-setu/30 bg-setu/[0.06] p-6">
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
+                  Our mission
+                </span>
+                <p className="mt-2 font-display text-xl font-semibold leading-snug text-foreground">
+                  To help growing businesses compete online with dependable, well-crafted
+                  technology.
+                </p>
+              </div>
             </StaggerItem>
           </Stagger>
         </div>
@@ -204,23 +199,23 @@ export default function AboutPage() {
         <div className="container-page">
           <div className="max-w-2xl">
             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
-              What we believe
+              Our approach
             </span>
             <TextReveal
               as="h2"
               className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
             >
-              Five promises we put in writing
+              The values behind every engagement
             </TextReveal>
             <FadeUp delay={0.2} y={20}>
               <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
-                Each one appears in every proposal we send. Hold us to them.
+                Four principles guide how we plan, deliver and support every project.
               </p>
             </FadeUp>
           </div>
 
-          <Stagger className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" stagger={0.08}>
-            {BELIEFS.map(({ Icon, title, body }) => (
+          <Stagger className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
+            {VALUES.map(({ Icon, title, body }) => (
               <StaggerItem key={title} y={28}>
                 <SpotlightCard
                   tilt={3}
@@ -240,20 +235,6 @@ export default function AboutPage() {
                 </SpotlightCard>
               </StaggerItem>
             ))}
-            <StaggerItem y={28}>
-              <div className="flex h-full flex-col justify-between gap-6 rounded-card bg-setu p-6 text-white md:p-7">
-                <p className="font-display text-lg font-semibold leading-snug">
-                  See these terms in a real proposal.
-                </p>
-                <ButtonLink
-                  href="/contact"
-                  className="w-fit bg-white text-foreground shadow-none hover:bg-white/90"
-                >
-                  Request a proposal
-                  <ArrowRight className="size-4" aria-hidden />
-                </ButtonLink>
-              </div>
-            </StaggerItem>
           </Stagger>
         </div>
       </Section>
@@ -270,12 +251,12 @@ export default function AboutPage() {
                 as="h2"
                 className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
               >
-                Four steps from first call to launch
+                A structured path from discovery to launch
               </TextReveal>
             </div>
             <FadeUp delay={0.2} y={16}>
               <ButtonLink href="/process" variant="secondary">
-                See the full process
+                View our process
                 <ArrowRight className="size-4" aria-hidden />
               </ButtonLink>
             </FadeUp>
@@ -307,18 +288,18 @@ export default function AboutPage() {
         <div className="container-page">
           <div className="max-w-2xl">
             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
-              What we do
+              Our services
             </span>
             <TextReveal
               as="h2"
               className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
             >
-              {`${services.length} services, one team`}
+              {"Comprehensive digital services"}
             </TextReveal>
             <FadeUp delay={0.2} y={20}>
               <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
-                Most clients start with a website. The store, app or CRM that
-                follows connects to what is already there.
+                From a first company website to enterprise software, every
+                service is delivered by the same team.
               </p>
             </FadeUp>
           </div>
@@ -355,19 +336,18 @@ export default function AboutPage() {
         <div className="container-page grid gap-10 lg:grid-cols-[1fr_1.3fr] lg:items-center lg:gap-16">
           <div>
             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
-              Who we build for
+              Industries
             </span>
             <TextReveal
               as="h2"
               className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
             >
-              {"Built for businesses\nthat measure results"}
+              {"Experience across\nkey sectors"}
             </TextReveal>
             <FadeUp delay={0.2} y={20}>
               <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
-                Small and growing businesses across India, and startups shipping
-                their first product. We learn how your sector sells before we
-                design a single page.
+                We work with growing businesses and startups across India,
+                bringing an understanding of each sector to every engagement.
               </p>
               <ButtonLink href="/industries" variant="secondary" className="mt-6">
                 Industries we serve

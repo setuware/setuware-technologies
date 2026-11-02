@@ -106,7 +106,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
             <SectionIntro
               id="audience-heading"
               eyebrow="Who it's for"
-              title="Built for businesses like these"
+              title="Designed for organisations like yours"
             />
             <Stagger className="mt-10 grid gap-5 md:grid-cols-3">
               {service.audience.map((item, index) => (
@@ -132,13 +132,13 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
           <div className="container-page">
             <SectionIntro
               id="problems-heading"
-              eyebrow="Problems we fix"
-              title="What goes wrong, and how we fix it"
+              eyebrow="Challenges we solve"
+              title="Common challenges and our approach"
             />
             <div className="mt-10 hidden grid-cols-[1fr_2.5rem_1.3fr] gap-4 px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground md:grid">
-              <span>The problem</span>
+              <span>The challenge</span>
               <span aria-hidden />
-              <span>Our fix</span>
+              <span>Our approach</span>
             </div>
             <Stagger className="mt-4 flex flex-col gap-4">
               {service.problems.map((item) => (
@@ -149,7 +149,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                         <X className="size-3.5" aria-hidden />
                       </span>
                       <p className="font-medium text-foreground">
-                        <span className="sr-only">Problem: </span>
+                        <span className="sr-only">Challenge: </span>
                         {item.problem}
                       </p>
                     </div>
@@ -161,7 +161,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                         <Check className="size-3.5" aria-hidden />
                       </span>
                       <p className="text-[0.97rem] leading-relaxed text-foreground/85">
-                        <span className="sr-only">Our fix: </span>
+                        <span className="sr-only">Our approach: </span>
                         {item.solution}
                       </p>
                     </div>
@@ -214,10 +214,10 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
             <div className="flex flex-col gap-6 lg:flex-row lg:gap-12">
               <div className="lg:w-64 lg:shrink-0">
                 <h3 className="font-display text-[1.15rem] font-semibold text-foreground">
-                  What you get at handover
+                  Deliverables
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  Delivered, documented and in your name.
+                  Provided at handover, with full documentation.
                 </p>
               </div>
               <ul className="grid flex-1 gap-x-8 gap-y-3 sm:grid-cols-2">
@@ -242,13 +242,13 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
           <FadeUp className="flex flex-col gap-8 rounded-[1.4rem] border border-border bg-surface p-6 md:p-8">
             <div>
               <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
-                Tools we use
+                Technologies
               </span>
               <h2 className="mt-3 font-display text-2xl font-semibold text-foreground">
-                Proven, well-supported tech
+                Proven, well-supported technologies
               </h2>
               <p className="mt-2 max-w-lg text-[0.95rem] leading-relaxed text-muted-foreground">
-                Tools any good developer can pick up after us. No proprietary builders, no lock-in.
+                Established tools selected for performance, security and long-term maintainability.
               </p>
               <ul className="mt-5 flex flex-wrap gap-2" aria-label="Technology and tools">
                 {service.stack.map((tool) => (
@@ -266,7 +266,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
               <div className="border-t border-border pt-6">
                 <h3 className="flex items-center gap-2 font-display text-lg font-semibold text-foreground">
                   <KeyRound className="size-5 text-setu" aria-hidden />
-                  What we put in writing
+                  Our commitments
                 </h3>
                 <ul className="mt-4 grid gap-3 sm:grid-cols-2">
                   {service.commitments.map((item) => (
@@ -314,18 +314,18 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                 </div>
               </dl>
               <p className="mt-6 text-sm leading-relaxed text-white/65">
-                The quote is fixed and in writing before any work starts.
+                Every engagement begins with a fixed quote, agreed in writing before work starts.
               </p>
               {service.group === "run" ? (
                 <p className="mt-3 text-sm leading-relaxed text-white/65">
-                  Already a client? Email{" "}
+                  Existing clients can email{" "}
                   <a
                     href={`mailto:${site.supportEmail}`}
                     className="font-medium text-white underline underline-offset-2 hover:text-setu"
                   >
                     {site.supportEmail}
                   </a>{" "}
-                  for fixes, changes and hosting requests.
+                  for changes, fixes and hosting requests.
                 </p>
               ) : null}
               <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row lg:flex-col">
@@ -337,7 +337,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                   href={contactHref}
                   className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border-[1.5px] border-white/30 px-6 text-[15px] font-semibold text-white transition-colors hover:border-white hover:bg-white/10"
                 >
-                  Request a fixed quote
+                  Request a quote
                 </Link>
               </div>
             </div>
@@ -419,16 +419,16 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                 id="faq-heading"
                 className="mt-3 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.2rem]"
               >
-                Common questions
+                Frequently asked questions
               </h2>
               <p className="mt-4 max-w-sm text-[0.98rem] leading-relaxed text-muted-foreground">
-                Something not covered here? Ask the engineer who would build it, by email, phone or WhatsApp.
+                Our team is available to answer any further questions about this service.
               </p>
               <Link
                 href={contactHref}
                 className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-setu hover:text-setu-dark"
               >
-                Ask your question
+                Ask a question
                 <ArrowRight className="size-4" aria-hidden />
               </Link>
             </FadeUp>
@@ -443,7 +443,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
             <div className="flex flex-wrap items-end justify-between gap-4">
               <SectionIntro
                 id="related-heading"
-                eyebrow="Often paired with"
+                eyebrow="Explore more"
                 title="Related services"
               />
               <Link
@@ -482,11 +482,11 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                   id="final-cta-heading"
                   className="mt-3 font-display text-3xl font-semibold leading-tight sm:text-[2.6rem]"
                 >
-                  {"Get a fixed quote in writing"}
+                  {"Request a fixed-price proposal"}
                 </TextReveal>
                 <p className="mt-4 text-[1.02rem] leading-relaxed text-white/85">
-                  Send what you have: a brief, a site you like, or just the problem. An engineer
-                  replies within one working day with questions, options and a next step.
+                  Share your requirements and our team will respond within one business day
+                  with a recommended approach.
                 </p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row lg:shrink-0">
@@ -495,7 +495,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                     href={contactHref}
                     className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-white px-7 text-[15px] font-semibold text-black transition-colors hover:bg-black hover:text-white"
                   >
-                    Send your brief
+                    Start a project
                     <ArrowRight className="size-4" aria-hidden />
                   </Link>
                 </Magnetic>
@@ -615,28 +615,22 @@ function Hero({
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Magnetic strength={0.2}>
                   <Link href={estimateHref} className={cn(primaryCta, "w-full")}>
-                    Price this service
+                    Get an estimate
                     <ArrowRight className="size-4" aria-hidden />
                   </Link>
                 </Magnetic>
                 <Link href={contactHref} className={secondaryCta}>
-                  Talk to an engineer
+                  Book a consultation
                 </Link>
               </div>
 
-              <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border pt-6 sm:grid-cols-3">
-                <div>
-                  <dt className="text-xs text-muted-foreground">Starting from</dt>
-                  <dd className="mt-1 font-semibold text-foreground">
-                    {servicePriceLabel(service).replace(/^From /, "")}
-                  </dd>
-                </div>
+              <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border pt-6">
                 <div>
                   <dt className="text-xs text-muted-foreground">Typical timeline</dt>
                   <dd className="mt-1 font-semibold text-foreground">{service.typicalTimeline}</dd>
                 </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <dt className="text-xs text-muted-foreground">First call</dt>
+                <div>
+                  <dt className="text-xs text-muted-foreground">Consultation</dt>
                   <dd className="mt-1 font-semibold text-foreground">Free, 30 minutes</dd>
                 </div>
               </dl>
@@ -662,9 +656,6 @@ function Hero({
                   style={{ backgroundImage: HERO_PHOTO_OVERLAY }}
                   aria-hidden
                 />
-                <figcaption className="absolute right-3 top-3 rounded-full bg-[#0b1020]/55 px-2.5 py-1 text-[10px] font-medium text-white/90 backdrop-blur-md">
-                  {photo.credit}
-                </figcaption>
               </figure>
               <ServiceVisual
                 variant={service.icon}
@@ -690,6 +681,9 @@ function Hero({
   );
 }
 
+/** Sentence-initial numbers are written as words. */
+const STAGE_COUNT: Record<number, string> = { 3: "Three", 4: "Four", 5: "Five", 6: "Six", 7: "Seven" };
+
 function ProcessTimeline({ service }: { service: Service }) {
   const steps = service.process ?? [];
   return (
@@ -701,24 +695,24 @@ function ProcessTimeline({ service }: { service: Service }) {
       <div className="container-page relative grid gap-12 lg:grid-cols-[1fr_1.7fr] lg:gap-16">
         <div className="lg:sticky lg:top-28 lg:self-start">
           <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
-            How it runs
+            Our process
           </span>
           <TextReveal
             as="h2"
             id="process-heading"
             className="mt-3 font-display text-3xl font-semibold leading-tight sm:text-[2.4rem]"
           >
-            {"Step by step, with dates"}
+            {"A structured delivery plan"}
           </TextReveal>
           <p className="mt-4 max-w-sm text-[0.98rem] leading-relaxed text-white/65">
-            {steps.length} stages. Typical timeline: {service.typicalTimeline.toLowerCase()}. You
-            sign off each stage before the next one starts.
+            {STAGE_COUNT[steps.length] ?? steps.length} stages, each reviewed and approved before
+            the next begins. Typical timeline: {service.typicalTimeline.toLowerCase()}.
           </p>
           <Link
             href="/process"
             className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-setu hover:text-white"
           >
-            How we work on every project
+            View our delivery process
             <ArrowUpRight className="size-4" aria-hidden />
           </Link>
         </div>

@@ -13,9 +13,9 @@ import { TextReveal } from "@/components/motion/text-reveal";
 import { FadeUp, Stagger, StaggerItem } from "@/components/motion/primitives";
 
 export const metadata = pageMetadata({
-  title: "How We Work: Call to Launch",
+  title: "Our delivery process",
   description:
-    "How a website or app project runs with Setuware Technologies: discovery, fixed quote, design, build, testing, launch and support, with timings.",
+    "Our six-stage delivery process: discovery, proposal, design, development, launch and support, with clear outputs and timelines at every stage.",
   path: "/process",
 });
 
@@ -34,98 +34,98 @@ const STAGES: readonly Stage[] = [
     step: "01",
     title: "Discovery",
     summary:
-      "We learn how your business wins customers, who the site or app is for, and when it has to be live. If we are not the right team, we tell you on the first call.",
+      "We develop a clear understanding of your business, audience and objectives, and confirm the timeline your project must meet.",
     website: "2–5 days",
     app: "1–2 weeks",
     youGet: [
-      "A free 30-minute call with the people who would build it",
+      "A free 30-minute consultation with our team",
       "A written summary of goals, audience and constraints",
-      "A sitemap for a website, or a feature list for an app",
+      "A sitemap for a website or a feature list for an app",
     ],
     weNeed: [
-      "One person who can make decisions",
-      "Your current website or tools, if you have them",
-      "Two or three competitors or sites you like",
+      "A designated decision-maker",
+      "Access to your current website or tools, where available",
+      "Two or three reference websites or competitors",
     ],
   },
   {
     step: "02",
-    title: "Proposal and fixed quote",
+    title: "Strategy and proposal",
     summary:
-      "A written scope that lists what is included and what is not. One fixed price, a timeline and payment milestones tied to each stage.",
+      "A written proposal that defines the scope, exclusions, timeline and fixed price, with payment milestones linked to each stage.",
     website: "3–5 working days",
     app: "3–5 working days",
     youGet: [
-      "Written scope with every page, screen or feature listed",
-      "Fixed price and a dated timeline",
-      "Payment milestones you can budget against",
+      "A written scope listing every page, screen or feature",
+      "A fixed price and a dated timeline",
+      "Milestone-based payment schedule",
     ],
-    weNeed: ["Your sign-off on the scope", "The first milestone payment to book the team"],
+    weNeed: ["Approval of the scope", "The first milestone payment to schedule the team"],
   },
   {
     step: "03",
     title: "Design",
     summary:
-      "Layouts and key pages or screens as a clickable prototype. You approve something you can tap through, not a flat picture.",
+      "Wireframes, visual designs and an interactive prototype of key pages or screens, reviewed and approved before development.",
     website: "1–2 weeks",
     app: "2–3 weeks",
     youGet: [
       "Wireframes for the main pages or screens",
-      "A clickable prototype on desktop and mobile",
-      "Final designs, approved before we build",
+      "An interactive prototype for desktop and mobile",
+      "Final designs approved before development",
     ],
     weNeed: [
-      "Logo, brand colours and photos, or a go-ahead for us to create them",
-      "Feedback within two to three working days",
+      "Logo, brand colours and imagery, or approval for us to create them",
+      "Feedback within two to three business days",
     ],
   },
   {
     step: "04",
-    title: "Build",
+    title: "Development",
     summary:
-      "Your website or app on a live preview link from the first week of the build. A short demo every week covers what changed and what is next.",
+      "Engineering, integrations and quality assurance, with progress available on a live preview from the first week of development and reviewed in a weekly demonstration.",
     website: "1–3 weeks",
     app: "4–10 weeks",
     youGet: [
-      "A live preview link you can open on any device",
-      "A weekly demo and a plain-language changelog",
-      "Direct access to the people building it",
+      "A live preview available on any device",
+      "A weekly demonstration and written progress summary",
+      "Direct access to your project team",
     ],
     weNeed: [
-      "Final page content, or a brief if we write it for you",
-      "Access to any systems we connect to",
-      "Business KYC documents if the build takes payments",
+      "Final page content or a brief for our copywriters",
+      "Access to any systems we integrate with",
+      "Business KYC documents for payment integrations",
     ],
   },
   {
     step: "05",
-    title: "Testing and launch",
+    title: "Launch",
     summary:
-      "We test on real phones and browsers, check speed and SEO, review security and plan the rollback before anything goes live.",
+      "Comprehensive testing across devices and browsers, performance, SEO and security reviews, and a planned go-live with rollback procedures in place.",
     website: "2–4 days",
     app: "1–2 weeks",
     youGet: [
-      "Real-device testing on Android, iPhone and desktop",
-      "Speed, SEO and accessibility checks",
-      "Go-live, plus app store submission for mobile apps",
-      "Handover notes and a training session for your team",
+      "Device testing on Android, iPhone and desktop",
+      "Performance, SEO and accessibility checks",
+      "Go-live and app store submission for mobile apps",
+      "Handover documentation and team training",
     ],
-    weNeed: ["A final review and your go-ahead to launch", "Domain and app store account access"],
+    weNeed: ["Final review and approval to launch", "Access to domain and app store accounts"],
   },
   {
     step: "06",
     title: "Support and growth",
     summary:
-      "Every build includes a support window. After that, a monthly care plan covers hosting, updates, backups and fixes, and we can add SEO, marketing or new features.",
+      "Every project includes a post-launch support period, followed by optional maintenance plans for hosting, updates, backups and continuous improvement.",
     website: "Ongoing",
     app: "Ongoing",
     youGet: [
       "Bug fixes and security updates",
       "Uptime monitoring and backups",
-      "A monthly report in plain language",
-      "Quotes for new features before any work starts",
+      "A clear monthly performance report",
+      "Quotations for new features before work begins",
     ],
-    weNeed: ["A heads-up before big launches or campaigns"],
+    weNeed: ["Advance notice of major launches or campaigns"],
   },
 ];
 
@@ -134,37 +134,37 @@ const PROCESS_FAQS = [
     group: "Before you start" as const,
     question: "How long will my project take?",
     answer:
-      "It depends on what you need. A business website usually takes 3 to 6 weeks from approved scope to launch. An online store takes 4 to 10 weeks, a web app 8 to 12, and a mobile app 8 to 16. Discovery adds 1 to 2 weeks up front. Your exact dates are written into the proposal.",
+      "A business website typically takes 3–6 weeks from approved scope to launch, an online store 4–10 weeks, a web application 8–12 weeks and a mobile app 8–16 weeks. Exact dates are confirmed in your proposal.",
   },
   {
     group: "Before you start" as const,
     question: "What do you need from us to start?",
     answer:
-      "One decision-maker who can join a short weekly demo. Your logo, brand assets and content, or a decision to have us create them. Access to any systems we need to connect to. If the build takes payments, your business KYC documents for the payment gateway.",
+      "We need a decision-maker for weekly reviews, your brand assets and content, and access to any systems we integrate with. Payment integrations also require business KYC documents.",
   },
   {
     group: "Before you start" as const,
-    question: "What happens if I want to change something mid-project?",
+    question: "Can the scope change during the project?",
     answer:
-      "Small changes inside the agreed scope are part of the work. Anything new is quoted as a separate item before we start it, so the price never moves without your sign-off.",
+      "Minor adjustments within the agreed scope are included. New requirements are quoted separately and begin only after your approval.",
   },
   {
     group: "Help & support" as const,
-    question: "How will I know how the project is going?",
+    question: "How will we track progress?",
     answer:
-      "You get a live preview link from the first week of the build and a short demo every week. Each demo comes with a written note of what is done, what is next and anything we need from you.",
+      "You will have access to a live preview from the first week of development and a weekly demonstration, each accompanied by a written progress summary.",
   },
   {
     group: "Help & support" as const,
     question: "What happens after launch?",
     answer:
-      "Your build includes a support window for fixes. After that you can move to a monthly care plan for hosting, updates, backups, monitoring and small changes. If you prefer to run it yourself, we hand over everything with documentation.",
+      "Every project includes a post-launch support period. You can then choose a monthly maintenance plan or manage the platform in-house with our full documentation.",
   },
   {
     group: "Help & support" as const,
-    question: "Can we stop after a stage?",
+    question: "Can we pause the project after a stage?",
     answer:
-      "Yes. You pay for each stage as it is delivered. If you stop, you keep everything built so far: the designs, the code and the documentation.",
+      "Yes. Each stage is billed on delivery, and all designs, code and documentation completed to that point are handed over to you.",
   },
 ] as const;
 
@@ -180,9 +180,9 @@ export default function ProcessPage() {
   return (
     <>
       <PageHero
-        eyebrow="How it works"
-        title="From first call to launch, and after"
-        description="Six stages, each with a clear output, a time frame and a short list of what we need from you. You always know what is being built this week and what it costs."
+        eyebrow="Our process"
+        title="How we deliver every project"
+        description="Six structured stages, each with defined outputs, timelines and responsibilities. You have full visibility of progress and costs throughout."
       >
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <ButtonLink
@@ -190,7 +190,7 @@ export default function ProcessPage() {
             size="lg"
             className="rounded-full bg-setu text-white shadow-none hover:bg-setu-dark"
           >
-            Book a free 30-min call
+            Book a consultation
             <ArrowRight className="size-4" aria-hidden />
           </ButtonLink>
           <ButtonLink href="/estimate" size="lg" variant="secondary" className="rounded-full">
@@ -210,7 +210,7 @@ export default function ProcessPage() {
               as="h2"
               className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
             >
-              What happens, what you get, what we need
+              Activities, deliverables and requirements
             </TextReveal>
           </div>
 
@@ -258,7 +258,7 @@ export default function ProcessPage() {
                     <div>
                       <h4 className="flex items-center gap-2 text-sm font-semibold text-foreground">
                         <PackageCheck className="size-4 text-setu" aria-hidden />
-                        You get
+                        Deliverables
                       </h4>
                       <ul className="mt-3 flex flex-col gap-2.5">
                         {stage.youGet.map((item) => (
@@ -272,7 +272,7 @@ export default function ProcessPage() {
                     <div>
                       <h4 className="flex items-center gap-2 text-sm font-semibold text-foreground">
                         <Hand className="size-4 text-setu" aria-hidden />
-                        We need from you
+                        Client requirements
                       </h4>
                       <ul className="mt-3 flex flex-col gap-2.5">
                         {stage.weNeed.map((item) => (
@@ -302,16 +302,16 @@ export default function ProcessPage() {
               as="h2"
               className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
             >
-              How long it usually takes
+              Typical project durations
             </TextReveal>
             <FadeUp delay={0.2} y={20}>
               <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
-                Build time from approved scope to launch. Your proposal gives
-                exact dates. The instant estimator gives you a figure for your
-                scope in about a minute.
+                Durations are measured from approved scope to launch. Exact dates
+                are confirmed in your proposal, and the instant estimator provides
+                an indicative figure for your scope.
               </p>
               <ButtonLink href="/estimate" variant="secondary" className="mt-6 rounded-full">
-                Estimate my project
+                Get an estimate
                 <ArrowRight className="size-4" aria-hidden />
               </ButtonLink>
             </FadeUp>
@@ -354,12 +354,12 @@ export default function ProcessPage() {
                   as="h2"
                   className="mt-4 font-display text-3xl font-semibold leading-tight text-white sm:text-[2.4rem]"
                 >
-                  Support continues after handover
+                  Ongoing support after handover
                 </TextReveal>
                 <FadeUp delay={0.2} y={20}>
                   <p className="mt-4 max-w-lg text-[1.02rem] leading-relaxed text-white/70">
-                    Every build comes with a support window for fixes. After that,
-                    a monthly care plan keeps your site or app fast, secure and
+                    Every project includes a post-launch support period. Monthly
+                    maintenance plans then keep your platform fast, secure and
                     backed up, with published response times.
                   </p>
                   <div className="mt-7 flex flex-col gap-3 sm:flex-row">
@@ -367,7 +367,7 @@ export default function ProcessPage() {
                       href="/pricing#care"
                       className="rounded-full bg-setu text-white shadow-none hover:bg-setu-dark"
                     >
-                      See care plans
+                      View maintenance plans
                     </ButtonLink>
                     <ButtonLink
                       href="/services/support-maintenance"
@@ -386,11 +386,11 @@ export default function ProcessPage() {
                     title: "Included support",
                     body: websitePackage && appPackage
                       ? `${supportTerm(websitePackage.features)} on Landing Page and Website Build, ${supportTerm(appPackage.features)} on Full Application Build.`
-                      : "Every build includes a support window after launch.",
+                      : "Every project includes a post-launch support period.",
                   },
                   { title: "Updates and fixes", body: "Security patches, plugin and framework updates, and bug fixes." },
                   { title: "Hosting and backups", body: "Managed hosting, SSL, nightly backups and uptime checks." },
-                  { title: "Room to grow", body: "SEO, marketing and new features, each quoted before we start." },
+                  { title: "Continuous improvement", body: "SEO, marketing and new features, each quoted before work begins." },
                 ].map((item) => (
                   <StaggerItem
                     key={item.title}

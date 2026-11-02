@@ -58,7 +58,7 @@ test.describe("contact and newsletter", () => {
     await page.getByRole("link", { name: /talk to an engineer/i }).click();
 
     await expect(page).toHaveURL(/service=managed-hosting/);
-    await expect(page.getByLabel(/what do you need/i)).toHaveValue("managed-hosting");
+    await expect(page.getByLabel(/service required/i)).toHaveValue("managed-hosting");
   });
 
   test("subscribes to the newsletter from the footer", async ({ page }) => {

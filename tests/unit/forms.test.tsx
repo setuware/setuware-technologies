@@ -205,7 +205,7 @@ describe("ContactForm", () => {
     render(<ContactForm />);
 
     await waitFor(() => {
-      expect(screen.getByLabelText(/what do you need/i)).toHaveValue("managed-hosting");
+      expect(screen.getByLabelText(/service required/i)).toHaveValue("managed-hosting");
     });
   });
 

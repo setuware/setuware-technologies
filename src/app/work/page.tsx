@@ -8,9 +8,9 @@ import { FadeUp } from "@/components/motion/primitives";
 import { CaseStudyGrid, type CaseStudyCard } from "./case-study-grid";
 
 export const metadata = pageMetadata({
-  title: "Case Studies & Recent Projects",
+  title: "Our work and case studies",
   description:
-    "Case studies from Setuware Technologies: online stores, mobile apps, AI assistants, dashboards and hosting. Filter by service or industry.",
+    "Selected case studies from Setuware Technologies across e-commerce, mobile apps, AI assistants, dashboards and hosting, filterable by service or industry.",
   path: "/work",
 });
 
@@ -34,8 +34,8 @@ export default function WorkPage() {
     <>
       <PageHero
         eyebrow="Our work"
-        title="Projects that are live and doing their job"
-        description="Each case study sets out the problem, what we built and what changed after launch. Filter by the service you need or by industry."
+        title="Selected work"
+        description="Each case study outlines the business challenge, our approach and the results achieved. Filter by service or industry."
       />
 
       <div className="container-page py-14 md:py-16">
@@ -49,18 +49,18 @@ export default function WorkPage() {
         >
           <div>
             <h2 className="font-display text-lg font-semibold text-foreground">
-              Looking for your sector?
+              Explore by sector
             </h2>
             <p className="mt-1 text-[0.92rem] leading-relaxed text-muted-foreground">
-              Retail, healthcare, education, manufacturing, logistics and more.
-              See the problems we fix and what we build for each.
+              Discover how we support retail, healthcare, education,
+              manufacturing, logistics and other industries.
             </p>
           </div>
           <Link
             href="/industries"
             className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-setu px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-setu hover:text-white"
           >
-            Browse industries
+            View industries
             <ArrowRight className="size-4" aria-hidden />
           </Link>
         </FadeUp>

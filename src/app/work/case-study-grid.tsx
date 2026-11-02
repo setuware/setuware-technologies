@@ -196,7 +196,7 @@ function StudyCard({ study }: { study: CaseStudyCard }) {
         </dl>
 
         <span className="inline-flex items-center gap-1 text-sm font-medium text-setu">
-          Read the case study
+          View case study
           <ArrowUpRight
             className="size-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
             aria-hidden

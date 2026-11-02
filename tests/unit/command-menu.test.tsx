@@ -3,6 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { CommandMenuDialog } from "@/components/layout/command-menu-dialog";
+import { setChatOpen } from "@/components/interactive/chatbot/state";
 import { ExitIntentOffer } from "@/components/interactive/exit-intent-offer";
 
 const push = vi.fn();
@@ -137,7 +138,7 @@ describe("ExitIntentOffer", () => {
     vi.useRealTimers();
 
     expect(await screen.findByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(/audited/i);
+    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(/free website audit/i);
   });
 
   it("records a dismissal so it does not reappear for a fortnight", async () => {
@@ -182,14 +183,51 @@ describe("ExitIntentOffer", () => {
     });
   });
 
-  it("links through to the prefilled audit enquiry", async () => {
+  it("is not shown while the assistant is open", async () => {
+    setChatOpen(true);
+    vi.useFakeTimers();
+    render(<ExitIntentOffer />);
+    vi.advanceTimersByTime(13_000);
+    triggerExitIntent();
+    vi.useRealTimers();
+    setChatOpen(false);
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+  });
+
+  it("validates, then sends the audit request to the contact API", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ ok: true, data: { reference: "STW-1" } }), {
+        status: 201,
+        headers: { "content-type": "application/json" },
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
     vi.useFakeTimers();
     render(<ExitIntentOffer />);
     vi.advanceTimersByTime(13_000);
     triggerExitIntent();
     vi.useRealTimers();
 
-    const cta = await screen.findByRole("link", { name: /claim my free audit/i });
-    expect(cta).toHaveAttribute("href", "/contact?intent=audit");
+    const user = userEvent.setup();
+    const submit = await screen.findByRole("button", { name: /request my free audit/i });
+    await user.click(submit);
+    expect(await screen.findByText(/enter your website address/i)).toBeInTheDocument();
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    await user.type(screen.getByLabelText(/name/i), "Priya Sharma");
+    await user.type(screen.getByLabelText(/email/i), "priya@example.com");
+    await user.type(screen.getByLabelText(/website url/i), "example.com");
+    await user.click(submit);
+
+    expect(await screen.findByText(/your audit request is with our team/i)).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith("/api/contact", expect.objectContaining({ method: "POST" }));
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(body).toMatchObject({ name: "Priya Sharma", email: "priya@example.com", consent: true });
+    expect(body.message).toContain("example.com");
+    expect(window.localStorage.getItem("setuware.audit-offer.v1")).toContain("takenAt");
   });
 });

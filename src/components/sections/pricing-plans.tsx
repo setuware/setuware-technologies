@@ -11,10 +11,10 @@ import { cn } from "@/lib/utils";
 
 /** Where each build package's button goes, so the next step matches the package. */
 const PACKAGE_CTA: Record<string, { href: string; label: string }> = {
-  "landing-page": { href: "/contact?service=business-websites", label: "Get a landing page quote" },
-  "website-build": { href: "/contact?service=business-websites", label: "Get a website quote" },
-  "full-application-build": { href: "/estimate", label: "Estimate my app" },
-  "enterprise-engagement": { href: "/contact?service=custom-software", label: "Discuss a large project" },
+  "landing-page": { href: "/contact?service=business-websites", label: "Get started" },
+  "website-build": { href: "/contact?service=business-websites", label: "Get started" },
+  "full-application-build": { href: "/estimate", label: "Get an estimate" },
+  "enterprise-engagement": { href: "/contact?service=custom-software", label: "Talk to us" },
 };
 
 export function PricingPlans() {
@@ -24,8 +24,8 @@ export function PricingPlans() {
         <div className="container-page">
           <SectionHeading
             eyebrow="Build packages"
-            title="Four ways to start a project"
-            description="Pick the package closest to your project. After a free 30-minute call, you get a written scope and one fixed price. That is the number you pay."
+            title="Project packages"
+            description="Select the package that best matches your requirements. Following a free consultation, you will receive a written scope and a fixed price."
           />
 
           <Stagger
@@ -44,8 +44,8 @@ export function PricingPlans() {
 
           <p className="mx-auto mt-8 flex max-w-xl items-start justify-center gap-2 text-center text-xs leading-relaxed text-muted-foreground">
             <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-            Prices exclude GST. Domains, payment gateways, cloud and licences are
-            billed to your own accounts at cost, with no markup.
+            All prices exclude GST. Domains, payment gateways, cloud services and
+            licences are billed to your accounts at cost.
           </p>
         </div>
       </Section>
@@ -53,9 +53,9 @@ export function PricingPlans() {
       <Section surface="subtle" id="care">
         <div className="container-page">
           <SectionHeading
-            eyebrow="Hosting and care plans"
-            title="Monthly plans that keep you online"
-            description="Hosting, updates, backups, monitoring and fixes for one monthly fee. Available for anything we built, and for sites and apps built elsewhere."
+            eyebrow="Hosting and maintenance"
+            title="Monthly maintenance plans"
+            description="Hosting, updates, backups, monitoring and fixes for a single monthly fee, available for platforms we build and those built elsewhere."
           />
 
           <Stagger className="mt-14 grid items-start gap-5 lg:grid-cols-3" stagger={0.08}>
@@ -73,14 +73,14 @@ export function PricingPlans() {
           <p className="mx-auto mt-8 flex max-w-xl items-start justify-center gap-2 text-center text-xs leading-relaxed text-muted-foreground">
             <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
             <span>
-              Already on a plan? Email{" "}
+              Existing plan clients can email{" "}
               <a
                 href={`mailto:${site.supportEmail}`}
                 className="font-medium text-setu underline-offset-2 hover:underline"
               >
                 {site.supportEmail}
               </a>{" "}
-              for fixes, changes and hosting requests.
+              for changes, fixes and hosting requests.
             </span>
           </p>
         </div>

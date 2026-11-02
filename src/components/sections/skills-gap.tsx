@@ -16,7 +16,7 @@ import {
   useReducedMotionSafe,
 } from "@/components/motion/primitives";
 
-const HEADING = "A full digital team, without hiring one.";
+const HEADING = "One team. Every skill you need.";
 
 /**
  * Skills-gap band: a full-bleed, muted background video of a team working
@@ -127,9 +127,9 @@ export function SkillsGap() {
           <div className="container-figma relative flex min-h-[560px] flex-col justify-center py-16 lg:min-h-[calc(var(--s)*760)] lg:py-[calc(var(--s)*96)]">
             <div className="max-w-[640px] lg:max-w-[calc(var(--s)*760)]">
               <FadeUp y={16}>
-                <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-white/80 backdrop-blur-sm lg:text-[calc(var(--s)*13)]">
-                  <span className="size-1.5 rounded-full bg-setu" />
-                  One team
+                <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-[13px] font-semibold tracking-[0.06em] text-white/80 backdrop-blur-sm lg:text-[calc(var(--s)*13)]">
+                  <span className="size-1.5 rounded-full bg-setu" aria-hidden />
+                  Our team
                 </p>
               </FadeUp>
 
@@ -141,21 +141,20 @@ export function SkillsGap() {
                 className="mt-6 text-[36px] font-bold leading-[1.1] tracking-[-0.03em] text-white sm:text-[52px] lg:mt-[calc(var(--s)*24)] lg:text-[calc(var(--s)*72)] lg:leading-[calc(var(--s)*80)]"
               >
                 <TextReveal as="span" delay={0.1}>
-                  A full digital team,
+                  One team.
                 </TextReveal>
                 <br />
                 <span className="text-[#3fd0ee]">
                   <TextReveal as="span" delay={0.32}>
-                    without hiring one.
+                    Every skill you need.
                   </TextReveal>
                 </span>
               </h2>
 
               <FadeUp delay={0.45} y={24}>
                 <p className="mt-6 max-w-[620px] text-[16px] font-medium leading-[27px] text-white/80 lg:mt-[calc(var(--s)*32)] lg:max-w-[calc(var(--s)*680)] lg:text-[calc(var(--s)*19)] lg:leading-[calc(var(--s)*31)]">
-                  Designers, developers and marketing specialists on one team, so
-                  you never hire for a skill you need once. Your website, store,
-                  app and campaigns are run by people who already know your business.
+                  Designers, developers, marketers and project managers working
+                  together as an extension of your business.
                 </p>
               </FadeUp>
 
@@ -166,7 +165,7 @@ export function SkillsGap() {
                       href="/contact"
                       className="group inline-flex h-12 items-center gap-2 rounded-full bg-setu px-7 text-[15px] font-semibold text-white shadow-[0_12px_40px_-12px_rgba(0,161,198,0.8)] transition-colors hover:bg-[#0089a9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:h-[calc(var(--s)*56)] lg:px-[calc(var(--s)*32)] lg:text-[calc(var(--s)*16)]"
                     >
-                      Book a 30-minute call
+                      Work with us
                       <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
                     </Link>
                   </Magnetic>

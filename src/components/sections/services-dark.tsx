@@ -6,11 +6,11 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { serviceStartingPrice, services } from "@/lib/content";
-import { images } from "@/lib/images";
+import type { ServiceKey } from "@/lib/pricing";
+import { services } from "@/lib/content";
 import { servicePhotos } from "@/lib/service-photos";
 import { useMediaQuery } from "@/lib/hooks";
-import { cn, formatINR } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { ServiceIcon } from "@/components/ui/service-icon";
 import { FadeUp, Magnetic, SpotlightCard, useReducedMotionSafe } from "@/components/motion/primitives";
 import { TextReveal } from "@/components/motion/text-reveal";
@@ -20,16 +20,84 @@ import { DURATION, EASE_OUT, VIEWPORT } from "@/components/motion/ease";
 const CARD_SPRING = { type: "spring", stiffness: 210, damping: 26, mass: 0.9 } as const;
 
 /**
- * Overlay over each card's photo: navy (#0b1020) at 92% under the text,
- * thinning to 35% at the top, plus a faint brand-cyan wash from the top-left.
+ * Layered elevation for white cards on the light sections: a crisp contact
+ * shadow plus a long, soft ambient one. Uses `--shadow-color` so dark mode
+ * gets a neutral black shadow instead of slate.
  */
-const CARD_OVERLAY = [
-  "linear-gradient(to top, rgba(11,16,32,0.94) 0%, rgba(11,16,32,0.8) 38%, rgba(11,16,32,0.48) 68%, rgba(11,16,32,0.3) 100%)",
-  "linear-gradient(135deg, rgba(0,161,198,0.28) 0%, rgba(0,161,198,0) 55%)",
+export const LIGHT_CARD_SHADOW =
+  "shadow-[0_1px_2px_rgb(var(--shadow-color)/0.06),0_24px_48px_-24px_rgb(var(--shadow-color)/0.18)]";
+
+/**
+ * Over each card's photo: a faint brand-cyan wash from the top-left and a
+ * light navy (#0b1020) shade along the bottom edge, so the photo meets the
+ * white card body with some depth instead of a hard seam.
+ */
+const MEDIA_OVERLAY = [
+  "linear-gradient(to top, rgba(11,16,32,0.42) 0%, rgba(11,16,32,0.08) 45%, rgba(11,16,32,0) 70%)",
+  "linear-gradient(135deg, rgba(0,161,198,0.22) 0%, rgba(0,161,198,0) 50%)",
 ].join(", ");
 
 /**
- * "Start with a website. Add what comes next."
+ * Homepage card copy, from the approved copy deck. Kept here rather than in
+ * `services[]` because the cards carry a shorter name and a single-line
+ * description; the service pages keep their own fuller wording. Keyed by slug
+ * so a renamed or removed service fails the type check.
+ */
+const CARD_COPY: Record<ServiceKey, { name: string; description: string }> = {
+  "business-websites": {
+    name: "Business websites",
+    description:
+      "Fast, responsive company websites that build credibility and generate qualified leads.",
+  },
+  "ecommerce-stores": {
+    name: "E-commerce stores",
+    description:
+      "Scalable online stores with secure payments, inventory and order management.",
+  },
+  "web-development": {
+    name: "Web applications",
+    description:
+      "Custom portals, dashboards and SaaS platforms engineered for scale.",
+  },
+  "app-development": {
+    name: "Mobile apps",
+    description:
+      "High-performance iOS and Android apps built on modern cross-platform frameworks.",
+  },
+  "product-design": {
+    name: "UI/UX & branding",
+    description:
+      "Brand identities and user experiences that are clear, consistent and memorable.",
+  },
+  "seo-marketing": {
+    name: "SEO & digital marketing",
+    description:
+      "Search, paid media and content strategies focused on measurable growth.",
+  },
+  "custom-software": {
+    name: "Custom software, ERP & CRM",
+    description:
+      "Bespoke business systems that streamline operations and reporting.",
+  },
+  "ai-integration": {
+    name: "AI & automation",
+    description:
+      "Intelligent assistants and workflow automation that improve efficiency.",
+  },
+  "managed-hosting": {
+    name: "Hosting & domains",
+    description:
+      "Secure managed hosting, domains and business email with proactive monitoring.",
+  },
+  "support-maintenance": {
+    name: "Maintenance & support",
+    description:
+      "Ongoing updates, security patches and technical support for your platforms.",
+  },
+};
+
+/**
+ * "All services under one roof"
  *
  * A peek carousel: the active card is centred and full-size, its neighbours
  * sit behind it scaled down and dimmed. Built on native scroll snapping, so
@@ -106,26 +174,23 @@ export function ServicesDark() {
   return (
     <section
       id="services"
-      className="relative overflow-hidden bg-black py-20 md:py-28"
+      className="relative isolate overflow-hidden border-t border-border bg-[linear-gradient(180deg,#f6f9fc,var(--background))] py-20 md:py-28 dark:bg-[linear-gradient(180deg,var(--background-subtle),var(--background))]"
     >
-      {/* Figma 24:2647: black with a 13% halftone texture. The node spans this
-          section and the process timeline below; this section shows its top. */}
-      <DarkSectionBackdrop position="top" />
+      <LightSectionBackdrop variant="services" />
 
       <div className="container-page relative">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-xl">
             <TextReveal
               as="h2"
-              className="font-display text-3xl font-semibold leading-tight text-white sm:text-[2.6rem]"
+              className="font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.6rem]"
             >
-              {"Start with a website.\nAdd what comes next."}
+              All services under one roof
             </TextReveal>
             <FadeUp delay={0.25} y={20}>
-              <p className="mt-4 text-[0.92rem] leading-relaxed text-white/60">
-                Stores, apps, branding, marketing and custom software come from
-                the team that built your site. Every service lists its starting
-                price and typical timeline.
+              <p className="mt-4 text-[0.95rem] leading-relaxed text-muted-foreground">
+                End-to-end digital services, from your first website to
+                enterprise-grade software.
               </p>
             </FadeUp>
           </div>
@@ -133,9 +198,9 @@ export function ServicesDark() {
           <div className="flex items-center gap-2">
             <Link
               href="/services"
-              className="mr-2 inline-flex h-10 items-center rounded-full border border-white/20 px-5 text-xs font-medium text-white transition-colors hover:bg-white/10"
+              className="mr-2 inline-flex h-10 items-center rounded-full border border-border bg-surface px-5 text-xs font-medium text-foreground shadow-[0_1px_2px_rgb(var(--shadow-color)/0.06)] transition-colors hover:border-setu/50 hover:bg-surface-2"
             >
-              Explore all {services.length} services
+              View all services
             </Link>
             <Magnetic strength={0.4}>
               <button
@@ -143,7 +208,7 @@ export function ServicesDark() {
                 onClick={() => go(-1)}
                 disabled={active === 0}
                 aria-label="Previous service"
-                className="inline-flex size-10 items-center justify-center rounded-full border border-white/20 text-white transition-[background-color,opacity] hover:bg-white/10 disabled:opacity-35"
+                className="inline-flex size-10 items-center justify-center rounded-full border border-border bg-surface text-foreground shadow-[0_1px_2px_rgb(var(--shadow-color)/0.06)] transition-[background-color,border-color,opacity] hover:border-setu/50 hover:bg-surface-2 disabled:opacity-40"
               >
                 <ArrowLeft className="size-4" aria-hidden />
               </button>
@@ -154,7 +219,7 @@ export function ServicesDark() {
                 onClick={() => go(1)}
                 disabled={active === services.length - 1}
                 aria-label="Next service"
-                className="inline-flex size-10 items-center justify-center rounded-full border border-white/20 text-white transition-[background-color,opacity] hover:bg-white/10 disabled:opacity-35"
+                className="inline-flex size-10 items-center justify-center rounded-full border border-border bg-surface text-foreground shadow-[0_1px_2px_rgb(var(--shadow-color)/0.06)] transition-[background-color,border-color,opacity] hover:border-setu/50 hover:bg-surface-2 disabled:opacity-40"
               >
                 <ArrowRight className="size-4" aria-hidden />
               </button>
@@ -162,9 +227,11 @@ export function ServicesDark() {
           </div>
         </div>
 
+        {/* Vertical padding (offset by negative margins) leaves room for the
+            cards' soft shadows, which the scroll container would clip. */}
         <motion.ul
           ref={trackRef}
-          className="scrollbar-hide mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4"
+          className="scrollbar-hide -mb-8 mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-12 pt-4"
           initial={reduce ? false : "hidden"}
           whileInView="shown"
           viewport={VIEWPORT}
@@ -172,6 +239,7 @@ export function ServicesDark() {
         >
           {services.map((service, index) => {
             const isActive = index === active;
+            const copy = CARD_COPY[service.slug];
             return (
               <motion.li
                 key={service.slug}
@@ -196,8 +264,11 @@ export function ServicesDark() {
                 >
                   <SpotlightCard
                     tilt={5}
-                    glow="rgba(0,161,198,0.22)"
-                    className="h-full overflow-hidden rounded-[1.4rem] border border-white/10 bg-[#0b1020] text-white shadow-2xl"
+                    glow="rgba(0,161,198,0.12)"
+                    className={cn(
+                      "h-full overflow-hidden rounded-[1.4rem] border border-border bg-surface text-foreground",
+                      LIGHT_CARD_SHADOW,
+                    )}
                   >
                     <Link
                       href={`/services/${service.slug}`}
@@ -205,12 +276,13 @@ export function ServicesDark() {
                         setActive(index);
                         scrollToCard(index);
                       }}
-                      className="group relative flex h-full min-h-[21rem] flex-col rounded-[inherit] p-7 outline-offset-[-3px]"
+                      className="group relative flex h-full flex-col rounded-[inherit] p-2 outline-offset-[-3px]"
                     >
-                      {/* Full-bleed photograph. `-z-10` puts it under the
-                          spotlight glow (the card is its own stacking
-                          context), so the cursor glow still reads on top. */}
-                      <span className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[inherit]" aria-hidden>
+                      {/* Photo, inset in the card like a framed print. */}
+                      <span
+                        className="relative block aspect-[16/10] shrink-0 overflow-hidden rounded-[1rem] bg-surface-2"
+                        aria-hidden
+                      >
                         <Image
                           src={servicePhotos[service.slug].src}
                           alt=""
@@ -221,52 +293,38 @@ export function ServicesDark() {
                             isActive && wide && "scale-[1.06]",
                           )}
                         />
-                        {/* Brand overlay: near-opaque navy under the text,
-                            thinning toward the top so the photo shows. */}
                         <span
-                          className="absolute inset-0 transition-opacity duration-700 group-hover:opacity-[0.88]"
-                          style={{ backgroundImage: CARD_OVERLAY }}
+                          className="absolute inset-0 transition-opacity duration-700 group-hover:opacity-70"
+                          style={{ backgroundImage: MEDIA_OVERLAY }}
                         />
+                        <span className="absolute inset-0 rounded-[inherit] ring-1 ring-inset ring-black/5" />
                       </span>
 
-                      <span className="relative">
+                      <div className="relative flex flex-1 flex-col px-5 pb-5">
                         <ServiceIcon
                           name={service.icon}
                           accent={service.accent}
-                          className="size-11 shadow-lg ring-1 ring-white/20"
+                          className="-mt-[1.375rem] size-11 shadow-[0_8px_20px_-6px_rgb(var(--shadow-color)/0.35)] ring-4 ring-surface"
                           size={22}
                         />
-                      </span>
-
-                      <div className="relative mt-auto pt-10">
-                        <h3 className="font-display text-[1.6rem] font-semibold leading-tight [text-shadow:0_1px_12px_rgba(11,16,32,0.6)]">
-                          {service.name}
+                        <h3 className="mt-4 font-display text-[1.45rem] font-semibold leading-tight text-foreground">
+                          {copy.name}
                         </h3>
-                        {/* Clamped: summaries vary in length and the cards are a
-                            fixed height in the carousel. */}
-                        <p className="mt-3 line-clamp-3 max-w-sm text-[0.88rem] leading-relaxed text-white/80">
-                          {service.summary}
-                        </p>
-                        {/* Price and timeline up front: the two things a buyer
-                            asks first. */}
-                        <p className="mt-4 text-[0.8rem] font-medium text-white/90">
-                          From {formatINR(serviceStartingPrice(service))}
-                          <span className="px-2 text-white/40" aria-hidden>
-                            |
-                          </span>
-                          <span className="sr-only">, </span>
-                          {service.typicalTimeline}
+                        {/* Clamped as a safeguard: the cards are a fixed
+                            height in the carousel. */}
+                        <p className="mb-6 mt-2.5 line-clamp-3 max-w-sm text-[0.9rem] leading-relaxed text-muted-foreground">
+                          {copy.description}
                         </p>
 
                         <span
                           className={cn(
-                            "mt-5 inline-flex w-fit items-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 py-2 text-xs font-medium backdrop-blur-sm transition-colors",
-                            "group-hover:border-setu group-hover:bg-setu-dark",
+                            "mt-auto inline-flex w-fit items-center gap-2 rounded-full border border-border bg-surface px-5 py-2 text-xs font-medium text-foreground transition-colors",
+                            "group-hover:border-foreground group-hover:bg-foreground group-hover:text-background",
                           )}
                         >
-                          See scope and pricing
+                          Learn more
                           <ArrowRight
-                            className="size-3.5 transition-transform duration-300 group-hover:translate-x-1"
+                            className="size-3.5 text-setu transition-transform duration-300 group-hover:translate-x-1"
                             aria-hidden
                           />
                         </span>
@@ -284,33 +342,36 @@ export function ServicesDark() {
 }
 
 /**
- * The dark halftone backdrop shared by "All services" and the process
- * timeline (Figma 24:2647, one 1920×1980 node behind both). Each section shows
- * its own end of the image, and the seam between them is feathered with a mask
- * so the two read as one surface without depending on either's height.
+ * The light backdrop shared by "All services" and the process timeline: soft
+ * brand-cyan (#00a1c6) and blue (#0061a8) glows at low opacity over a fine
+ * pattern (dots for services, a grid for the process) that fades out toward
+ * the edges, so the surface has texture without any visible tiling.
+ * Purely decorative.
  */
-export function DarkSectionBackdrop({ position }: { position: "top" | "bottom" }) {
-  const backdrop = images.servicesDarkBackdrop;
+export function LightSectionBackdrop({ variant }: { variant: "services" | "process" }) {
+  const services = variant === "services";
   return (
-    <div
-      className="pointer-events-none absolute inset-0"
-      style={{
-        maskImage:
-          position === "top"
-            ? "linear-gradient(to bottom, #000 80%, transparent)"
-            : "linear-gradient(to top, #000 80%, transparent)",
-      }}
-      aria-hidden
-    >
-      <Image
-        src={backdrop.src}
-        alt={backdrop.alt}
-        fill
-        sizes="100vw"
+    <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
+      <div
+        className="absolute inset-0 dark:opacity-60"
+        style={{
+          backgroundImage: services
+            ? "radial-gradient(42rem 30rem at 8% -4%, rgba(0,161,198,0.16), transparent 70%), radial-gradient(38rem 32rem at 96% 38%, rgba(0,97,168,0.11), transparent 70%)"
+            : "radial-gradient(46rem 26rem at 50% 0%, rgba(0,161,198,0.10), transparent 70%), radial-gradient(34rem 30rem at 0% 90%, rgba(0,97,168,0.07), transparent 70%)",
+        }}
+      />
+      <div
         className={cn(
-          "object-cover",
-          position === "top" ? "object-top" : "object-bottom",
+          "absolute inset-0 text-[#0b1020]/[0.07] dark:text-white/[0.06]",
+          services
+            ? "bg-[radial-gradient(currentColor_1px,transparent_1.2px)] bg-[size:22px_22px]"
+            : "bg-[linear-gradient(currentColor_1px,transparent_1px),linear-gradient(90deg,currentColor_1px,transparent_1px)] bg-[size:56px_56px]",
         )}
+        style={{
+          maskImage: services
+            ? "radial-gradient(ellipse 75% 65% at 50% 0%, #000 25%, transparent 75%)"
+            : "radial-gradient(ellipse 60% 55% at 50% 12%, #000 20%, transparent 75%)",
+        }}
       />
     </div>
   );

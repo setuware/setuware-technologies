@@ -19,8 +19,8 @@ import { PageHero } from "@/components/layout/page-hero";
 import { FadeUp, Stagger, StaggerItem } from "@/components/motion/primitives";
 
 export const metadata = pageMetadata({
-  title: "Contact Us: Book a Free Call",
-  description: `Tell ${site.name} what you need built: a website, store, app or software. Reply within one working day. Call or WhatsApp ${site.phone}.`,
+  title: "Contact us",
+  description: `Contact ${site.name} about your website, e-commerce, app or software project. Our team responds within one business day. Call ${site.phone}.`,
   path: "/contact",
 });
 
@@ -28,28 +28,28 @@ export const metadata = pageMetadata({
 const EMAIL_ROUTES = [
   {
     Icon: Sparkles,
-    label: "New project",
+    label: "New projects and proposals",
     email: site.salesEmail,
-    body: "Quotes, proposals and new websites, stores, apps or software. The form on this page goes here too.",
+    body: "Enquiries about new websites, e-commerce stores, applications and software. Messages sent through this form are directed here.",
   },
   {
     Icon: LifeBuoy,
-    label: "Existing client support",
+    label: "Client support",
     email: site.supportEmail,
-    body: "Bugs, changes, hosting and care plans for a site or app we already look after.",
+    body: "Technical support, change requests, hosting and maintenance plans for existing clients.",
   },
   {
     Icon: Mail,
-    label: "Everything else",
+    label: "General enquiries",
     email: site.generalEmail,
-    body: "Partnerships, press and any other question that is not about a project.",
+    body: "Partnerships, media and all other enquiries.",
   },
 ] as const;
 
 const CHANNELS = [
   {
     Icon: Phone,
-    label: "Call us",
+    label: "Telephone",
     value: site.phone,
     href: site.phoneHref,
     hint: site.hours,
@@ -59,22 +59,22 @@ const CHANNELS = [
     label: "WhatsApp",
     value: site.phone,
     href: site.whatsapp,
-    hint: "Fastest for quick questions",
+    hint: "Recommended for quick questions",
   },
 ] as const;
 
 const NEXT_STEPS = [
   {
-    title: "A reply within one working day",
-    body: "The people who would build it read your brief and reply by email or phone.",
+    title: "Response within one business day",
+    body: "Our team reviews your enquiry and responds by email or telephone.",
   },
   {
-    title: "A free 30-minute call",
-    body: "We talk through your goals, budget and deadline. You get a written summary afterwards.",
+    title: "Free consultation",
+    body: "A 30-minute call to discuss your goals, budget and timeline, followed by a written summary.",
   },
   {
-    title: "A fixed-price proposal",
-    body: "Written scope, timeline and one price, usually within three to five working days.",
+    title: "Fixed-price proposal",
+    body: "A written scope, timeline and fixed price, typically within three to five business days.",
   },
 ] as const;
 
@@ -84,8 +84,8 @@ export default function ContactPage() {
       <PageHero
         align="left"
         eyebrow="Contact"
-        title="Tell us what you need built"
-        description="A new website, an online store, an app, marketing, or help with something already live. Share a few details and we will reply within one working day with next steps and a price range."
+        title="Contact us"
+        description="Tell us about your project and our team will respond within one business day."
       />
 
       <section aria-labelledby="email-routes-title" className="container-page pt-10 md:pt-14">
@@ -93,7 +93,7 @@ export default function ContactPage() {
           id="email-routes-title"
           className="text-xs font-semibold uppercase tracking-[0.18em] text-setu"
         >
-          Email the right team
+          Email our team
         </h2>
         <Stagger as="ul" className="mt-4 grid gap-3 md:grid-cols-3" stagger={0.07}>
           {EMAIL_ROUTES.map(({ Icon, label, email, body }) => (
@@ -164,7 +164,7 @@ export default function ContactPage() {
                   </span>
                   <span className="block text-sm font-medium text-foreground">{site.hours}</span>
                   <span className="mt-0.5 block text-xs text-muted-foreground">
-                    Emails answered within one working day
+                    Emails answered within one business day
                   </span>
                 </span>
               </div>
@@ -174,7 +174,7 @@ export default function ContactPage() {
           <FadeUp y={20} className="rounded-card border border-border bg-background-subtle p-5">
             <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
               <Clock className="size-4 text-setu" aria-hidden />
-              What happens after you submit
+              Next steps
             </h2>
             <ol className="mt-4 flex flex-col gap-4">
               {NEXT_STEPS.map((step, index) => (
@@ -215,11 +215,11 @@ export default function ContactPage() {
             <p className="flex gap-2.5">
               <Calculator className="mt-0.5 size-4 shrink-0 text-setu" aria-hidden />
               <span>
-                Want a number first?{" "}
+                For an indicative budget, use our{" "}
                 <Link href="/estimate" className="font-medium text-setu underline underline-offset-2">
-                  Get an instant estimate
+                  instant estimator
                 </Link>{" "}
-                in about a minute, or see our{" "}
+                or view our{" "}
                 <Link href="/pricing" className="font-medium text-setu underline underline-offset-2">
                   pricing
                 </Link>
@@ -229,8 +229,9 @@ export default function ContactPage() {
             <p className="flex gap-2.5">
               <ShieldCheck className="mt-0.5 size-4 shrink-0 text-setu" aria-hidden />
               <span>
-                Need an NDA first? Mention it in your message, or email yours to{" "}
-                {site.salesEmail}. We sign before the call.
+                We are happy to sign a non-disclosure agreement before detailed
+                discussions. Please mention this in your message or email{" "}
+                {site.salesEmail}.
               </span>
             </p>
           </FadeUp>

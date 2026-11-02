@@ -67,14 +67,14 @@ export default function RolePage({ params }: { params: Promise<{ slug: string }>
 }
 
 const APPLICATION_CHECKLIST = [
-  { Icon: FileText, label: "Your CV", detail: "PDF preferred, two pages is plenty." },
+  { Icon: FileText, label: "Your CV", detail: "PDF format preferred, up to two pages." },
   {
     Icon: FolderGit2,
     label: "Portfolio, GitHub or live work",
-    detail: "Links to things you built or ran, and what your part was.",
+    detail: "Links to your work, with a note on your contribution.",
   },
-  { Icon: Timer, label: "Notice period", detail: "And your earliest possible start date." },
-  { Icon: MapPin, label: "Current location", detail: "Tell us if you would relocate to Gurugram." },
+  { Icon: Timer, label: "Notice period", detail: "Including your earliest available start date." },
+  { Icon: MapPin, label: "Current location", detail: "Please indicate whether you would relocate to Gurugram." },
 ] as const;
 
 async function Role({ params }: { params: Promise<{ slug: string }> }) {
@@ -157,9 +157,9 @@ async function Role({ params }: { params: Promise<{ slug: string }> }) {
       <Section className="py-16 md:py-24">
         <div className="container-page grid gap-12 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
           <div className="flex min-w-0 flex-col gap-14">
-            <RoleList title="What you will do" items={job.responsibilities} marker="number" />
-            <RoleList title="What we are looking for" items={job.requirements} marker="check" />
-            <RoleList title="Nice to have" items={job.niceToHaves} marker="plus" />
+            <RoleList title="Responsibilities" items={job.responsibilities} marker="number" />
+            <RoleList title="Requirements" items={job.requirements} marker="check" />
+            <RoleList title="Preferred qualifications" items={job.niceToHaves} marker="plus" />
 
             <FadeUp y={24}>
               <div className="rounded-card border border-border bg-background-subtle p-6 md:p-8">
@@ -227,9 +227,9 @@ async function Role({ params }: { params: Promise<{ slug: string }> }) {
             </div>
 
             <p className="mt-4 px-1 text-[0.85rem] leading-relaxed text-muted-foreground">
-              Next: a 20-minute intro call, a short task, then a final conversation.{" "}
+              The process includes an introductory call, a short task and a final conversation.{" "}
               <Link href="/careers#hiring-process" className="font-medium text-setu underline-offset-4 hover:underline">
-                See the hiring process
+                View the hiring process
               </Link>
               .
             </p>

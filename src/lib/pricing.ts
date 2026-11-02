@@ -210,7 +210,7 @@ export const FEATURE_RATES: Record<
     label: "Content management",
     cost: 40_000,
     weeks: 0.8,
-    hint: "Your team edits content without a developer",
+    hint: "Content editing for your team without a developer",
   },
   dashboard: {
     label: "Admin dashboard",
@@ -228,7 +228,7 @@ export const FEATURE_RATES: Record<
     label: "AI assistant / automation",
     cost: 90_000,
     weeks: 1.8,
-    hint: "Chat over your documents, data extraction, workflows",
+    hint: "Document assistants, data extraction and workflows",
   },
   i18n: {
     label: "Multi-language",
@@ -240,7 +240,7 @@ export const FEATURE_RATES: Record<
     label: "Third-party integrations",
     cost: 50_000,
     weeks: 1,
-    hint: "CRM, ERP, logistics APIs, WhatsApp Business",
+    hint: "CRM, ERP, logistics APIs and WhatsApp Business",
   },
   seo: {
     label: "Technical SEO & analytics",
@@ -252,7 +252,7 @@ export const FEATURE_RATES: Record<
     label: "Offline / installable PWA",
     cost: 35_000,
     weeks: 0.7,
-    hint: "Installable, and works on patchy networks",
+    hint: "Installable and reliable on unstable networks",
   },
 };
 
@@ -285,7 +285,7 @@ export const TIMELINES: Record<
     label: "Flexible",
     multiplier: 0.92,
     speed: 0.8,
-    hint: "Scheduled around other work. Lowest price.",
+    hint: "Flexible scheduling at the lowest price",
   },
   standard: {
     label: "Standard",
@@ -398,31 +398,31 @@ export function estimateProject(input: EstimateInput): EstimateResult {
 
   const notes: string[] = [];
   if (timeline.multiplier > 1) {
-    notes.push("Accelerated delivery adds engineers and extra testing capacity.");
+    notes.push("Accelerated delivery adds engineering and testing capacity.");
   }
   if (features.includes("payments")) {
-    notes.push("Payment gateway activation needs your business KYC documents.");
+    notes.push("Payment gateway activation requires your business KYC documents.");
   }
   if (features.includes("ai")) {
-    notes.push("AI model usage is billed to you at cost, on top of the build price.");
+    notes.push("AI model usage is billed at cost, in addition to the build price.");
   }
   if (platforms.length > 1) {
     notes.push(
-      `Shared codebase across ${platforms.length} platforms keeps the uplift at ${Math.round(
+      `A shared codebase across ${platforms.length} platforms limits the uplift to ${Math.round(
         (platformMultiplier - 1) * 100,
       )}%.`,
     );
   }
   if (input.service === "business-websites" && scope <= 1) {
     notes.push(
-      `Only need a single page? The Landing Page package starts at ${formatINR(
+      `For a single page, the Landing Page package starts at ${formatINR(
         LANDING_PAGE_FROM,
-      )} and goes live in about a week.`,
+      )} and is typically live within a week.`,
     );
   }
   if (input.service === "managed-hosting") {
     notes.push(
-      "Hosting covers monitoring, WAF and nightly backups. The uptime SLA depends on your care plan.",
+      "Hosting includes monitoring, a web application firewall and nightly backups. The uptime SLA depends on your maintenance plan.",
     );
   }
 

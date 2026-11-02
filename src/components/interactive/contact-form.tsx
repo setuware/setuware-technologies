@@ -12,11 +12,11 @@ import { Field, Honeypot, Input, Select, Textarea } from "@/components/ui/field"
 const STORAGE_KEY = "setuware.contact-draft.v1";
 
 const BUDGETS = [
-  { value: "", label: "Not sure yet" },
-  { value: "under-1l", label: "Under ₹1 lakh" },
-  { value: "1l-5l", label: "₹1–5 lakh" },
-  { value: "5l-15l", label: "₹5–15 lakh" },
-  { value: "15l-plus", label: "Above ₹15 lakh" },
+  { value: "", label: "To be confirmed" },
+  { value: "under-1l", label: "Under ₹1,00,000" },
+  { value: "1l-5l", label: "₹1,00,000–₹5,00,000" },
+  { value: "5l-15l", label: "₹5,00,000–₹15,00,000" },
+  { value: "15l-plus", label: "Above ₹15,00,000" },
 ] as const;
 
 /**
@@ -95,7 +95,7 @@ export function ContactForm() {
       service: isServiceOption(service) && !previous.service ? service : previous.service,
       message:
         intent === "audit" && previous.message === ""
-          ? "I'd like the free performance audit of our current site. Our URL is: "
+          ? "I would like a free performance audit of our current website. Our URL is: "
           : previous.message,
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -148,8 +148,8 @@ export function ContactForm() {
         <p className="mt-2 text-sm text-muted-foreground">
           Reference{" "}
           <span className="font-mono font-semibold text-foreground">{reference}</span>.
-          The people who would build it read this and reply within one working
-          day. Quote this reference if you call or WhatsApp us.
+          Our team will respond within one business day. Please quote this
+          reference if you contact us by telephone or WhatsApp.
         </p>
       </div>
     );
@@ -215,7 +215,7 @@ export function ContactForm() {
           />
         </Field>
 
-        <Field label="What do you need?" htmlFor="contact-service" error={errors.service}>
+        <Field label="Service required" htmlFor="contact-service" error={errors.service}>
           <Select
             id="contact-service"
             name="service"
@@ -253,7 +253,7 @@ export function ContactForm() {
         htmlFor="contact-message"
         required
         error={errors.message}
-        hint="What your business does, what you need built, and when it should be live."
+        hint="Briefly describe your business, your requirements and your preferred timeline."
       >
         <Textarea
           id="contact-message"
@@ -277,7 +277,7 @@ export function ContactForm() {
           required
         />
         <span>
-          I agree to Setuware Technologies contacting me about this enquiry, per the{" "}
+          I agree to Setuware Technologies contacting me about this enquiry, in accordance with the{" "}
           <a href="/privacy" className="text-primary underline underline-offset-2">
             privacy policy
           </a>
@@ -311,8 +311,7 @@ export function ContactForm() {
           <span className="text-sm font-medium text-red-500">{message}</span>
         ) : (
           <span className="text-xs text-muted-foreground">
-            Your draft is saved in this browser as you type, so a refresh will not
-            lose it.
+            Your draft is saved automatically in this browser.
           </span>
         )}
       </p>

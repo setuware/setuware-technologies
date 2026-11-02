@@ -104,7 +104,7 @@ export function NewsletterForm({ source = "site" }: { source?: string }) {
             {message}
           </span>
         ) : (
-          <span className="text-xs text-muted-foreground">Unsubscribe in one click.</span>
+          <span className="text-xs text-muted-foreground">You can unsubscribe at any time.</span>
         )}
       </p>
     </form>

@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-import { serviceStartingPrice, services } from "@/lib/content";
-import { formatINRCompact } from "@/lib/utils";
+import { services } from "@/lib/content";
 import { Card, CardBody, CardText, CardTitle } from "@/components/ui/card";
 import { Reveal } from "@/components/ui/reveal";
 import { Section, SectionHeading } from "@/components/ui/section";
@@ -18,9 +17,9 @@ export function ServicesGrid({
       <div className="container-page">
         {heading ? (
           <SectionHeading
-            eyebrow="What we do"
-            title={`${services.length} services, one accountable team`}
-            description="Most clients start with a website and add the next service when they need it. The same team stays with you throughout."
+            eyebrow="Our services"
+            title="End-to-end digital services"
+            description="From your first website to enterprise-grade software, delivered by one accountable team."
           />
         ) : null}
 
@@ -29,12 +28,7 @@ export function ServicesGrid({
             <Reveal key={service.slug} delay={index * 70} as="div">
               <Card interactive as="article" className="h-full">
                 <CardBody className="flex h-full flex-col gap-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <ServiceIcon name={service.icon} accent={service.accent} />
-                    <span className="rounded-full border border-border px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
-                      from {formatINRCompact(serviceStartingPrice(service))}
-                    </span>
-                  </div>
+                  <ServiceIcon name={service.icon} accent={service.accent} />
 
                   <div>
                     <CardTitle>{service.name}</CardTitle>
@@ -60,7 +54,7 @@ export function ServicesGrid({
                     href={`/services/${service.slug}`}
                     className="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-primary"
                   >
-                    {service.typicalTimeline}
+                    Learn more
                     <ArrowRight
                       className="size-3.5 transition-transform duration-200 group-hover:translate-x-1"
                       aria-hidden

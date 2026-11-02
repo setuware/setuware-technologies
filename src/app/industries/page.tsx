@@ -12,23 +12,23 @@ import { PageHero } from "@/components/layout/page-hero";
 import { CtaBand } from "@/components/sections/cta-band";
 
 export const metadata = pageMetadata({
-  title: "Industries We Build For",
+  title: "Industries we serve",
   description:
-    "Websites, apps and business software for retail, clinics, schools, real estate, manufacturing, logistics, hospitality, CA firms and startups in India.",
+    "Websites, apps and business software for retail, healthcare, education, real estate, manufacturing, logistics, hospitality and professional services.",
   path: "/industries",
 });
 
 const ADAPT = [
-  "The features: GST invoices for a distributor, slot booking for a clinic, batch timetables for an institute.",
-  "The integrations: Tally, Shiprocket, Razorpay, WhatsApp, Google Business Profile, or the tools you already run.",
-  "The copy on every page, written for the buyers in your sector.",
+  "Features specific to your sector, from GST invoicing to appointment scheduling.",
+  "Integrations with Tally, Razorpay, Shiprocket, WhatsApp and the tools you already use.",
+  "Content written for the customers and buyers in your market.",
 ] as const;
 
 const SAME = [
-  "A free 30-minute discovery call, then a written fixed quote.",
-  "Weekly progress on a live preview link, not a status email.",
-  "The domain, code and hosting accounts in your name.",
-  "Three months of support after launch, from the team that built it.",
+  "A free consultation followed by a fixed-price proposal.",
+  "A dedicated project manager and regular progress updates.",
+  "Performance, security and accessibility best practices.",
+  "Three months of post-launch support.",
 ] as const;
 
 export default function IndustriesPage() {
@@ -36,8 +36,8 @@ export default function IndustriesPage() {
     <>
       <PageHero
         eyebrow="Industries"
-        title="Software shaped around your trade"
-        description="A clinic, a coaching institute and a transporter need different software. We start from how your work runs today, then build the website, app or system around it."
+        title="Industries we serve"
+        description="We bring domain understanding to every engagement, delivering websites and software tailored to the way each sector operates."
       />
 
       <Section>
@@ -63,7 +63,7 @@ export default function IndustriesPage() {
                     ))}
                   </ul>
                   <span className="mt-auto inline-flex items-center gap-1.5 pt-6 text-sm font-semibold text-setu">
-                    See what we build
+                    Learn more
                     <ArrowRight
                       className="size-3.5 transition-transform group-hover:translate-x-1"
                       aria-hidden
@@ -79,13 +79,13 @@ export default function IndustriesPage() {
       <Section surface="subtle">
         <div className="container-page">
           <SectionHeading
-            eyebrow="Across every industry"
-            title="What changes, and what stays fixed"
-            description="The features change with your sector. The way we run the project does not."
+            eyebrow="Our approach"
+            title="Adapted to your sector, delivered consistently"
+            description="Every engagement is adapted to your sector and delivered through the same proven process."
           />
           <div className="mx-auto mt-12 grid max-w-5xl gap-5 md:grid-cols-2">
             <Reveal className="rounded-card border border-border bg-surface p-7">
-              <h3 className="text-lg font-semibold text-foreground">What we adapt to you</h3>
+              <h3 className="text-lg font-semibold text-foreground">Tailored to your sector</h3>
               <ul className="mt-5 flex flex-col gap-3.5">
                 {ADAPT.map((line) => (
                   <li key={line} className="flex gap-3 text-[0.95rem] leading-relaxed text-muted-foreground">
@@ -96,7 +96,7 @@ export default function IndustriesPage() {
               </ul>
             </Reveal>
             <Reveal delay={80} className="rounded-card border border-border bg-surface p-7">
-              <h3 className="text-lg font-semibold text-foreground">What stays the same</h3>
+              <h3 className="text-lg font-semibold text-foreground">Consistent on every project</h3>
               <ul className="mt-5 flex flex-col gap-3.5">
                 {SAME.map((line) => (
                   <li key={line} className="flex gap-3 text-[0.95rem] leading-relaxed text-muted-foreground">
@@ -112,9 +112,9 @@ export default function IndustriesPage() {
 
       <DeferredSection minHeight={380}>
         <CtaBand
-          title="Your industry not listed?"
-          description="Most of what we build is workflow software. If your business runs on phone calls, spreadsheets and WhatsApp groups, one 30-minute call will show whether we can help."
-          primaryLabel="Tell us about your business"
+          title="Working in another sector?"
+          description="Our team builds websites and business software for organisations across many industries. Book a consultation to discuss your requirements."
+          primaryLabel="Discuss your project"
         />
       </DeferredSection>
 

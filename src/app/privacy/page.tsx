@@ -72,7 +72,7 @@ export default function PrivacyPage() {
     <LegalPage
       title="Privacy policy"
       updated="2026-10-01"
-      intro="Plain-language summary: we collect what you send us, use it to reply to you, keep it no longer than we need, and never sell it."
+      intro="This policy explains how we collect, use and protect the personal information you share with us. We retain data only as long as necessary and never sell it."
       sections={SECTIONS}
     />
   );

@@ -102,10 +102,10 @@ export default async function PostPage({
 
           <div className="mt-14 rounded-card border border-border bg-background-subtle p-6 md:p-7">
             <h2 className="text-lg font-semibold text-foreground">
-              Get the next one by email
+              Subscribe to our newsletter
             </h2>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              One article a month, written by the engineers doing the work.
+              One article each month on technology, design and digital growth.
             </p>
             <div className="mt-4">
               <NewsletterForm source={`post:${post.slug}`} />

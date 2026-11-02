@@ -26,25 +26,25 @@ export const serviceGroups: readonly ServiceGroupInfo[] = [
     id: "build",
     label: "Build",
     title: "Websites, stores and apps",
-    description: "The things your customers see, use and pay through.",
+    description: "Digital platforms that represent your business and serve your customers.",
   },
   {
     id: "grow",
     label: "Grow",
     title: "Brand, design and marketing",
-    description: "How people find you, and why they trust you once they do.",
+    description: "Visual identity, user experience and marketing that build recognition and trust.",
   },
   {
     id: "scale",
     label: "Scale",
     title: "Systems and automation",
-    description: "Software that runs the business behind the website.",
+    description: "Software that streamlines operations, reporting and repetitive tasks.",
   },
   {
     id: "run",
     label: "Run",
     title: "Hosting and support",
-    description: "Keeping it all online, secure and up to date after launch.",
+    description: "Ongoing care that keeps your platforms secure, current and available.",
   },
 ];
 
@@ -143,26 +143,26 @@ export const services: readonly Service[] = [
     slug: "business-websites",
     name: "Business websites",
     shortName: "Website",
-    summary: "Company sites and landing pages that load fast, rank and bring in enquiries.",
+    summary: "Fast, responsive company websites that build credibility and generate qualified leads.",
     description:
-      "Most of our work starts here: a website that explains what your business does and turns visitors into calls, WhatsApp messages and enquiry forms. We build on WordPress or Next.js, set up a CMS your team can edit, and launch with SEO basics, analytics and contact tracking already in place.",
+      "Professionally designed company websites that present your business clearly and convert visitors into enquiries. Each site is built on WordPress or Next.js, with a content management system, technical SEO and analytics configured before launch.",
     icon: "globe",
     accent: ["#6366f1", "#22d3ee"],
     priceFrom: WEBSITE_FROM,
     entryPriceFrom: LANDING_PAGE_FROM,
     typicalTimeline: "1–6 weeks",
     outcomes: [
-      "A site that loads in under 2 seconds on a mid-range phone",
-      "Your team updates pages, photos and blog posts without a developer",
-      "Every form fill, call click and WhatsApp tap tracked from launch",
+      "Fast loading on every device",
+      "Content your team can update",
+      "Enquiries tracked from launch",
     ],
     deliverables: [
-      "Sitemap and wireframes for every page",
-      "Figma designs for mobile and desktop",
-      "Live website on your domain, with SSL",
-      "CMS login and a recorded walkthrough",
-      "GA4, Search Console and enquiry tracking",
-      "3 months of support after launch",
+      "Sitemap and wireframes",
+      "Responsive designs for mobile and desktop",
+      "Live website with SSL",
+      "Content management system and training",
+      "Analytics and enquiry tracking",
+      "Three months of post-launch support",
     ],
     stack: [
       "WordPress",
@@ -176,144 +176,143 @@ export const services: readonly Service[] = [
     ],
     featured: true,
     group: "build",
-    headline: "A website that brings in enquiries",
+    headline: "Business websites that build credibility and generate leads",
     subheadline:
-      "Fast company websites on WordPress or Next.js, designed around the one action each page should drive. Calls, WhatsApp taps and form fills are tracked from launch, and your team edits every page without us.",
-    seoTitle: "Business Website Development",
+      "We design and develop fast, responsive company websites on WordPress or Next.js. Each site is structured to convert visitors into enquiries and is simple for your team to manage.",
+    seoTitle: "Business website development",
     seoDescription:
-      "Landing pages from ₹5,000 and full business websites on WordPress or Next.js from ₹25,000. Mobile-first design, on-page SEO and enquiry tracking. Gurugram team.",
+      "Responsive business websites and landing pages on WordPress or Next.js, with technical SEO, analytics and an easy-to-use CMS. Based in Gurugram.",
     audience: [
       {
-        title: "Businesses with a dated site",
-        body: "It was built years ago, looks broken on phones, and nobody on the team can change a line of it.",
+        title: "Established businesses",
+        body: "Companies whose current website is outdated, difficult to update or not optimised for mobile.",
       },
       {
-        title: "New companies and startups",
-        body: "You need a credible site live before the first pitch, trade show or ad campaign.",
+        title: "Startups and new ventures",
+        body: "Founders who need a credible online presence ahead of a launch, pitch or campaign.",
       },
       {
-        title: "Firms that sell on trust",
-        body: "Clinics, consultants, manufacturers, schools and agencies whose buyers check the website before they call.",
+        title: "Professional firms",
+        body: "Clinics, consultancies, manufacturers and schools whose clients research them online before making contact.",
       },
     ],
     problems: [
       {
-        problem: "Visitors leave before the page loads.",
-        solution:
-          "We build to a performance budget: under 2 seconds on a mid-range Android phone over 4G, checked with Lighthouse before launch.",
+        problem: "Slow page loads",
+        solution: "Performance-optimised builds, tested with Lighthouse on mobile before launch.",
       },
       {
-        problem: "You can't tell where enquiries come from.",
+        problem: "Limited insight into lead sources",
         solution:
-          "GA4, Search Console and event tracking go in before launch. Every call click, WhatsApp tap and form submit is counted.",
+          "Analytics and conversion tracking configured for every form, call and WhatsApp enquiry.",
       },
       {
-        problem: "Changing one sentence needs a developer.",
+        problem: "Reliance on developers for updates",
         solution:
-          "A CMS set up around your pages. Your team edits text, photos, team profiles and blog posts on their own.",
+          "A content management system that lets your team edit pages, images and articles independently.",
       },
       {
-        problem: "The site doesn't show up on Google.",
+        problem: "Low visibility in search",
         solution:
-          "Each page gets a target search phrase, clean headings, meta tags and schema markup, and the sitemap goes to Search Console on launch day.",
+          "Technical and on-page SEO, structured data and Search Console configuration as standard.",
       },
     ],
     features: [
       {
-        title: "Custom design, not a stock theme",
-        body: "Layouts designed in Figma around your content and brand. You approve them before we build.",
+        title: "Custom design",
+        body: "Bespoke layouts designed in Figma around your brand and content, approved before development.",
       },
       {
-        title: "Mobile-first build",
-        body: "Most of your visitors are on phones, so we design, build and test there first.",
+        title: "Mobile-first development",
+        body: "Responsive builds that are designed and tested on mobile devices first.",
       },
       {
-        title: "A CMS your team can use",
-        body: "WordPress or Sanity, with fields named in plain English and a recorded walkthrough.",
+        title: "Content management",
+        body: "A WordPress or Sanity CMS with clearly labelled fields and a recorded training session.",
       },
       {
-        title: "On-page SEO from day one",
-        body: "Titles, meta descriptions, schema, an XML sitemap and 301 redirects from your old URLs.",
+        title: "Technical SEO",
+        body: "Optimised titles, meta descriptions, schema markup, XML sitemaps and redirects.",
       },
       {
-        title: "Lead capture that reaches you",
-        body: "Forms to email and WhatsApp, click-to-call buttons, and optional sync to Zoho CRM or HubSpot.",
+        title: "Lead capture",
+        body: "Enquiry forms, click-to-call and WhatsApp buttons, with optional CRM integration.",
       },
       {
-        title: "Domain, SSL and business email",
-        body: "We connect your domain, switch on SSL and set up Google Workspace or Zoho Mail, all in your name.",
+        title: "Domain, SSL and email",
+        body: "Domain connection, SSL certificates and business email on Google Workspace or Zoho Mail.",
       },
     ],
     process: [
       {
         title: "Discovery and sitemap",
-        body: "We learn what you sell and who buys it, then agree the pages and the one action each page should drive.",
+        body: "We review your business, audience and goals, then agree the site structure and the primary action for each page.",
         duration: "Week 1",
       },
       {
         title: "Content and wireframes",
-        body: "We structure the copy for each page and sketch the layouts. We can write the copy too.",
+        body: "We structure the content for each page and prepare wireframes. Copywriting is available as an option.",
         duration: "Week 1–2",
       },
       {
         title: "Design",
-        body: "Home page first, then inner pages, for mobile and desktop. Two rounds of revisions included.",
+        body: "Visual designs for the home page and inner pages on mobile and desktop, with two rounds of revisions.",
         duration: "Week 2–3",
       },
       {
-        title: "Build and CMS",
-        body: "We build the site, connect the CMS and load your content. You review it on a staging link.",
+        title: "Development and CMS",
+        body: "We build the site, configure the CMS and load your content for review on a staging link.",
         duration: "Week 3–5",
       },
       {
-        title: "Launch and tracking",
-        body: "Speed and SEO checks, redirects from the old site, analytics live, then we switch the domain.",
+        title: "Launch",
+        body: "Performance and SEO checks, redirects, analytics configuration and domain go-live.",
         duration: "Week 5–6",
       },
       {
-        title: "Aftercare",
-        body: "Fixes and small changes for three months after launch, then an optional care plan.",
+        title: "Post-launch support",
+        body: "Fixes and minor changes for three months after launch, followed by an optional maintenance plan.",
         duration: "3 months",
       },
     ],
     priceNote:
-      "Landing pages from ₹5,000, live in about a week. Full business websites from ₹25,000, live in 3–6 weeks. Page count, copywriting and features such as booking or multiple languages set the final price.",
+      "Landing pages start at ₹5,000 and are typically live within a week. Complete business websites start at ₹25,000 and take three to six weeks, with the final price set by page count, copywriting and additional features.",
     commitments: [
-      "Lighthouse 90+ on mobile at launch",
-      "You own the domain, hosting account and code",
-      "Every enquiry source tracked from day one",
-      "3 months of support included",
+      "Lighthouse score of 90+ on mobile at launch",
+      "Enquiry tracking from day one",
+      "Two rounds of design revisions",
+      "Three months of support included",
     ],
     faqs: [
       {
         question: "How much does a business website cost?",
         answer:
-          "Landing pages from ₹5,000; full business websites from ₹25,000. A landing page is one page with your services, an enquiry form, WhatsApp and call buttons and basic SEO, live in about a week. It suits one main service or an ad campaign, and can grow into a full site later. A full website adds the pages you need, a CMS and analytics, and the price rises with page count, copywriting and features like booking or multiple languages. The instant estimator gives you a range in about a minute.",
+          "Landing pages start at ₹5,000 and complete business websites at ₹25,000. The final price depends on page count, copywriting and features such as online booking or multilingual content.",
       },
       {
         question: "Should I choose WordPress or Next.js?",
         answer:
-          "WordPress if your team wants to edit everything and add plugins later. Next.js if speed, security and custom features matter more. We recommend one on the first call and explain why.",
+          "WordPress suits teams that want to manage content and add plugins themselves. Next.js is recommended where performance, security and custom functionality are the priority.",
       },
       {
-        question: "Do you write the content?",
+        question: "Do you provide copywriting?",
         answer:
-          "We can. We structure every page and write the copy from a short interview, or polish what you already have. You approve every word before launch.",
+          "Yes. We can write the copy for every page from a short briefing session or refine your existing content.",
       },
       {
         question: "Can I update the website myself?",
         answer:
-          "Yes. You get a CMS login and a recorded walkthrough. Text, images, team profiles, blog posts and job openings are all editable without code.",
+          "Yes. Every website includes a content management system and a recorded training session for your team.",
       },
       {
-        question: "Will I lose my Google rankings when the new site goes live?",
+        question: "Will a new website affect my search rankings?",
         answer:
-          "We map every old URL to its new page with 301 redirects, keep the pages that already rank, and resubmit the sitemap in Search Console on launch day.",
+          "We map existing URLs to the new pages with permanent redirects and resubmit the sitemap at launch to protect your rankings.",
       },
       {
         question: "Who owns the website?",
         answer:
-          "You do. The domain, hosting account and code are in your name. If you move on from us, nothing is held back.",
+          "You do. The domain, hosting account and source code are registered to your business.",
       },
     ],
     related: ["seo-marketing", "product-design", "managed-hosting"],
@@ -322,25 +321,25 @@ export const services: readonly Service[] = [
     slug: "ecommerce-stores",
     name: "E-commerce stores",
     shortName: "Store",
-    summary: "Online stores on Shopify, WooCommerce or a custom build, with payments and shipping wired in.",
+    summary: "Scalable online stores with secure payments, inventory and order management.",
     description:
-      "We set up stores that take orders from day one: product catalogue, cart, checkout, Razorpay or Stripe payments, GST invoices and shipping integration. Shopify or WooCommerce when they fit, a custom Next.js store when your catalogue, pricing or fulfilment needs more than a plugin can give.",
+      "Online stores on Shopify, WooCommerce or a custom Next.js build, with secure payments, GST invoicing and shipping integration. Each store is configured to take orders from launch and to scale with your catalogue.",
     icon: "cart",
     accent: ["#f97316", "#ec4899"],
     priceFrom: 60_000,
     typicalTimeline: "4–10 weeks",
     outcomes: [
-      "Checkout that works on UPI, cards and wallets",
-      "Inventory that stays in sync across store and warehouse",
-      "Order, shipping and refund flows your team can run without us",
+      "Secure UPI, card and wallet payments",
+      "Inventory synchronised across channels",
+      "Streamlined order and returns management",
     ],
     deliverables: [
       "Store design for mobile and desktop",
-      "Products, categories and variants loaded",
-      "Payment gateway live and tested",
-      "GST invoices and courier integration",
-      "Analytics, ad pixels and a sales dashboard",
-      "Admin training for your order team",
+      "Product catalogue and variants",
+      "Payment gateway integration",
+      "GST invoicing and courier integration",
+      "Analytics, ad pixels and sales reporting",
+      "Admin training for your team",
     ],
     stack: [
       "Shopify",
@@ -354,78 +353,77 @@ export const services: readonly Service[] = [
     ],
     featured: true,
     group: "build",
-    headline: "A store that takes orders from day one",
+    headline: "E-commerce stores built to sell and scale",
     subheadline:
-      "Shopify, WooCommerce or a custom Next.js store, with UPI and card payments, GST invoices and courier pickups wired in before launch.",
-    seoTitle: "E-commerce Store Development",
+      "We build online stores on Shopify, WooCommerce or Next.js. Secure payments, GST invoicing and courier integration are configured and tested before launch.",
+    seoTitle: "E-commerce store development",
     seoDescription:
-      "Shopify, WooCommerce and custom stores from ₹60,000. UPI and card payments, GST invoices, Shiprocket shipping and stock sync, live in 4–10 weeks.",
+      "Shopify, WooCommerce and custom e-commerce stores with secure payments, GST invoicing, shipping integration and inventory management.",
     audience: [
       {
-        title: "Brands moving off marketplaces",
-        body: "You sell on Amazon, Flipkart or Instagram and want your own store, your own customer data and better margins.",
+        title: "Marketplace sellers",
+        body: "Brands selling on Amazon, Flipkart or Instagram that want their own store, customer data and margins.",
       },
       {
-        title: "Retailers going online",
-        body: "You already have shops and stock. You need a catalogue, online payments and delivery your staff can run.",
+        title: "Retailers moving online",
+        body: "Businesses with physical stores and stock that need online ordering, payments and delivery.",
       },
       {
-        title: "D2C startups",
-        body: "You need a store that converts on mobile, carries ad landing pages and grows with the catalogue.",
+        title: "Direct-to-consumer brands",
+        body: "Growing brands that need a mobile-optimised store capable of scaling with their catalogue.",
       },
     ],
     problems: [
       {
-        problem: "Customers drop off at checkout.",
+        problem: "Checkout abandonment",
         solution:
-          "A short checkout with UPI, cards, wallets and cash on delivery through Razorpay or Cashfree, tested on real phones.",
+          "A streamlined checkout with UPI, cards, wallets and cash on delivery, tested across devices.",
       },
       {
-        problem: "Online stock doesn't match the shelf.",
-        solution:
-          "Inventory syncs with your POS, Tally or warehouse sheet, so what sells online is what you have.",
+        problem: "Inaccurate stock levels",
+        solution: "Inventory synchronised with your POS, Tally or warehouse system.",
       },
       {
-        problem: "Packing and shipping is all manual.",
+        problem: "Manual order fulfilment",
         solution:
-          "Orders flow to Shiprocket or Delhivery, labels print in one click, and customers get tracking on WhatsApp and email.",
+          "Courier integration with Shiprocket or Delhivery, automated shipping labels and order notifications.",
       },
       {
-        problem: "You can't see which products or ads make money.",
+        problem: "Limited sales insight",
         solution:
-          "GA4 e-commerce tracking, Google and Meta pixels, and a sales dashboard by product, channel and campaign.",
+          "E-commerce analytics, advertising pixels and reporting by product, channel and campaign.",
       },
     ],
     features: [
       {
-        title: "The right platform for you",
-        body: "Shopify for speed to launch, WooCommerce for full control, Next.js for B2B pricing, custom flows or heavy traffic.",
+        title: "Platform selection",
+        body: "Shopify, WooCommerce or Next.js, recommended according to your catalogue, budget and growth plans.",
       },
       {
-        title: "Catalogue and variants",
-        body: "Sizes, colours, bundles and bulk CSV import, with filters customers actually use.",
+        title: "Catalogue management",
+        body: "Product variants, bundles, bulk import and intuitive filters.",
       },
       {
-        title: "Indian payments",
-        body: "UPI, cards, netbanking, wallets and COD via Razorpay, Cashfree or PayU, with refunds from the admin.",
+        title: "Payment integration",
+        body: "UPI, cards, net banking, wallets and cash on delivery through Razorpay, Cashfree or PayU.",
       },
       {
-        title: "GST-ready invoices",
-        body: "Tax invoices generated per order with your GSTIN and HSN codes, ready for your accountant.",
+        title: "GST invoicing",
+        body: "Tax invoices generated for every order with your GSTIN and HSN codes.",
       },
       {
         title: "Shipping and returns",
-        body: "Courier integration, pin-code checks, return requests and order-status messages.",
+        body: "Courier integration, pin-code serviceability checks and returns management.",
       },
       {
-        title: "Selling tools built in",
-        body: "Discount codes, abandoned-cart reminders, reviews, and product feeds for Google Shopping and Meta.",
+        title: "Marketing tools",
+        body: "Discount codes, abandoned-cart recovery, product reviews and feeds for Google and Meta.",
       },
     ],
     process: [
       {
         title: "Store planning",
-        body: "Catalogue size, payment and courier partners, and the platform choice, agreed in writing.",
+        body: "We confirm the catalogue, payment and courier partners, and the recommended platform.",
         duration: "Week 1",
       },
       {
@@ -434,59 +432,59 @@ export const services: readonly Service[] = [
         duration: "Week 1–3",
       },
       {
-        title: "Build and integrations",
-        body: "Store build, payment gateway, courier, invoicing and inventory sync.",
+        title: "Development and integrations",
+        body: "Store development with payment, courier, invoicing and inventory integrations.",
         duration: "Week 3–7",
       },
       {
-        title: "Catalogue and test orders",
-        body: "Products imported, then real test orders through every payment method and courier.",
+        title: "Catalogue and testing",
+        body: "Product import, followed by test orders across every payment method and courier.",
         duration: "Week 7–9",
       },
       {
-        title: "Launch and tuning",
-        body: "Go live, watch the first orders, and remove checkout friction over the first two weeks.",
+        title: "Launch and optimisation",
+        body: "Go-live, monitoring of the first orders and checkout optimisation over the following two weeks.",
         duration: "Week 9–10",
       },
     ],
     priceNote:
-      "Shopify subscription, gateway fees and courier charges are paid by you directly to those providers.",
+      "Platform subscriptions, payment gateway fees and courier charges are billed directly by the respective providers.",
     commitments: [
-      "Test orders on every payment method before launch",
-      "Store, gateway and courier accounts in your name",
-      "Checkout tested on budget Android phones",
-      "Your team trained to run orders without us",
+      "Test orders on every payment method",
+      "Checkout tested on a range of devices",
+      "Admin training for your order team",
+      "Two weeks of post-launch monitoring",
     ],
     faqs: [
       {
-        question: "Shopify or WooCommerce: which is right for me?",
+        question: "Should I choose Shopify or WooCommerce?",
         answer:
-          "Shopify if you want to launch fast and never think about hosting; you pay Shopify a monthly fee. WooCommerce if you want full control and lower running costs, on hosting we manage. We compare both against your catalogue on the first call.",
+          "Shopify offers the fastest route to launch for a monthly subscription. WooCommerce provides greater control and lower running costs on managed hosting.",
       },
       {
         question: "Which payment gateways do you integrate?",
         answer:
-          "Razorpay, Cashfree, PayU and PhonePe for India, and Stripe for international cards. Most stores launch with UPI, cards, netbanking, wallets and cash on delivery.",
+          "We integrate Razorpay, Cashfree, PayU and PhonePe for domestic payments and Stripe for international cards.",
       },
       {
-        question: "Can the store connect to my billing software or warehouse?",
+        question: "Can the store integrate with our accounting or warehouse software?",
         answer:
-          "Yes. We connect stores to Tally, Zoho Inventory, Unicommerce or your own ERP through their APIs or scheduled file imports. We confirm it works before we quote.",
+          "Yes. We integrate with Tally, Zoho Inventory, Unicommerce and custom ERP systems through APIs or scheduled imports.",
       },
       {
-        question: "Will you upload all my products?",
+        question: "How long does it take to launch a store?",
         answer:
-          "Yes. Send a spreadsheet and photos and we import them with variants, prices and stock. Large catalogues are imported by script, not by hand.",
+          "A Shopify or WooCommerce store typically takes four to six weeks. Custom builds and complex integrations take eight to ten weeks.",
       },
       {
-        question: "How long until my store is live?",
+        question: "How much does an e-commerce store cost?",
         answer:
-          "Four to six weeks for a Shopify or WooCommerce store with a standard catalogue. Eight to ten weeks for a custom build or heavy integrations.",
+          "E-commerce stores start at ₹60,000. The final price depends on the platform, catalogue size and integrations required.",
       },
       {
-        question: "Do you help with sales after launch?",
+        question: "Do you offer marketing after launch?",
         answer:
-          "Yes, through our SEO and digital marketing service: Google Shopping, Meta catalogue ads and abandoned-cart flows. Tracking is in place at launch, so campaigns can start straight away.",
+          "Yes. Our SEO and digital marketing service covers Google Shopping, Meta catalogue advertising and abandoned-cart campaigns.",
       },
     ],
     related: ["seo-marketing", "product-design", "support-maintenance"],
@@ -495,25 +493,25 @@ export const services: readonly Service[] = [
     slug: "web-development",
     name: "Web application development",
     shortName: "Web app",
-    summary: "Customer portals, dashboards and SaaS products built on Next.js and PostgreSQL.",
+    summary: "Custom portals, dashboards and SaaS platforms engineered for scale.",
     description:
-      "When a website needs logins, payments, an admin side or real business logic, it becomes a web application. We build those on Next.js, TypeScript and PostgreSQL, with a performance budget enforced in CI, error tracking and separate staging and production environments. Most MVPs ship in 8–12 weeks.",
+      "Custom web applications, including customer portals, dashboards and SaaS products, built on Next.js, TypeScript and PostgreSQL. Each application is developed in structured sprints with dedicated staging and production environments.",
     icon: "code",
     accent: ["#8b5cf6", "#6366f1"],
     priceFrom: 120_000,
     typicalTimeline: "8–12 weeks",
     outcomes: [
-      "A working staging link from the first sprint",
-      "Core Web Vitals in the green on mid-range Android over 4G",
-      "Code, repository and cloud account in your name from day one",
+      "Working software from the first sprint",
+      "Secure, scalable architecture",
+      "Full visibility through weekly demos",
     ],
     deliverables: [
-      "Architecture note and fixed-price scope",
-      "Clickable prototype before development",
-      "Working app on staging from week two",
+      "Technical architecture and scope",
+      "Clickable prototype",
+      "Staging environment from week two",
       "Production deployment on AWS or Vercel",
-      "Source code, documentation and admin guide",
-      "Error tracking, analytics and uptime alerts",
+      "Source code and technical documentation",
+      "Error tracking, analytics and uptime monitoring",
     ],
     stack: [
       "Next.js",
@@ -528,144 +526,142 @@ export const services: readonly Service[] = [
     ],
     featured: true,
     group: "build",
-    headline: "Software your customers log in to",
+    headline: "Web applications engineered for scale",
     subheadline:
-      "Customer portals, dashboards, booking systems and SaaS MVPs on Next.js, TypeScript and PostgreSQL. A staging link from week two and a demo every week.",
-    seoTitle: "Web App & SaaS Development",
+      "We build customer portals, dashboards, booking systems and SaaS platforms on Next.js, TypeScript and PostgreSQL, with weekly demonstrations of working software.",
+    seoTitle: "Web application development",
     seoDescription:
-      "Customer portals, dashboards and SaaS MVPs on Next.js and PostgreSQL from ₹1.2 lakh. Fixed scope, weekly demos, code in your name.",
+      "Custom web applications, customer portals, dashboards and SaaS platforms on Next.js and PostgreSQL, with fixed scope, weekly demos and secure deployment.",
     audience: [
       {
-        title: "Founders building a SaaS MVP",
-        body: "You have a tested idea and need a product customers can sign up to and pay for.",
+        title: "SaaS founders",
+        body: "Founders with a validated idea who need a product that customers can subscribe to and use.",
       },
       {
-        title: "Businesses replacing a manual process",
-        body: "Customers email, call or fill Google Forms today. You want a portal where they log in and do it themselves.",
+        title: "Businesses digitising processes",
+        body: "Organisations replacing email, phone and spreadsheet workflows with a self-service portal.",
       },
       {
-        title: "Teams with a stalled codebase",
-        body: "A previous vendor left a half-built app. We audit it, keep what is sound and finish the job.",
+        title: "Teams with unfinished projects",
+        body: "Companies with an incomplete codebase that needs an independent audit and a dependable team to complete it.",
       },
     ],
     problems: [
       {
-        problem: "Scope keeps growing and launch keeps slipping.",
+        problem: "Scope creep and delays",
         solution:
-          "Fixed scope and price before code. Two-week sprints, a demo every week, and every change priced before it is built.",
+          "A fixed scope agreed before development, two-week sprints and change requests priced before they are built.",
       },
       {
-        problem: "The app is slow and falls over under load.",
-        solution:
-          "A performance budget enforced in CI, a load test before launch, and Core Web Vitals monitored in production.",
+        problem: "Poor performance under load",
+        solution: "Performance budgets, load testing before launch and production monitoring.",
       },
       {
-        problem: "You can't see what the developers are doing.",
+        problem: "Limited project visibility",
         solution:
-          "Your own GitHub repository, a staging link from week two and a weekly demo of working software.",
+          "Access to the code repository, a staging environment from week two and weekly demonstrations.",
       },
       {
-        problem: "You're locked in to a vendor.",
-        solution:
-          "Code, repository, domain and cloud accounts in your name from day one, documented for the next developer.",
+        problem: "Vendor dependency",
+        solution: "Documented, conventional code that any qualified developer can maintain.",
       },
     ],
     features: [
       {
-        title: "Accounts and roles",
-        body: "Email, OTP and Google sign-in, with separate roles for admins, staff and customers.",
+        title: "User accounts and roles",
+        body: "Email, OTP and Google sign-in, with role-based access for administrators, staff and customers.",
       },
       {
         title: "Payments and subscriptions",
-        body: "Razorpay or Stripe for one-time payments, recurring plans, invoices and GST.",
+        body: "One-time payments, recurring plans, invoicing and GST through Razorpay or Stripe.",
       },
       {
         title: "Admin dashboard",
-        body: "Manage users, orders, content and reports without touching the database.",
+        body: "Secure management of users, orders, content and reports.",
       },
       {
         title: "Integrations",
-        body: "APIs to your CRM, ERP, accounting software, WhatsApp Business and email tools.",
+        body: "Connections to your CRM, ERP, accounting software, WhatsApp Business and email platforms.",
       },
       {
         title: "Notifications",
-        body: "Email, SMS and WhatsApp alerts for sign-ups, payments and status changes.",
+        body: "Email, SMS and WhatsApp alerts for sign-ups, payments and status updates.",
       },
       {
-        title: "Production setup",
-        body: "CI/CD, separate staging and production, Sentry error tracking and uptime alerts.",
+        title: "Production infrastructure",
+        body: "CI/CD pipelines, separate staging and production environments, error tracking and uptime alerts.",
       },
     ],
     process: [
       {
         title: "Scoping workshop",
-        body: "We map users, flows and must-have features, then write a fixed scope and price.",
+        body: "We map users, workflows and essential features, then confirm a fixed scope and price.",
         duration: "Week 1",
       },
       {
         title: "UX and prototype",
-        body: "Wireframes and a clickable Figma prototype, reviewed with you before any code.",
+        body: "Wireframes and a clickable Figma prototype, reviewed with you before development begins.",
         duration: "Week 1–3",
       },
       {
-        title: "Sprint build",
-        body: "Two-week sprints with a demo every week on a live staging link.",
+        title: "Sprint development",
+        body: "Two-week sprints with a weekly demonstration on a live staging environment.",
         duration: "Week 3–10",
       },
       {
-        title: "QA and load test",
-        body: "Automated tests, manual QA on real devices, security checks and a load test.",
+        title: "Quality assurance",
+        body: "Automated tests, manual testing on real devices, security checks and load testing.",
         duration: "Week 10–11",
       },
       {
         title: "Launch and handover",
-        body: "Production deploy, monitoring switched on and a handover session with your team.",
+        body: "Production deployment, monitoring and a handover session with your team.",
         duration: "Week 12",
       },
       {
         title: "Post-launch support",
-        body: "Bug fixes and small changes after launch, then an optional care plan.",
+        body: "Bug fixes and minor changes after launch, followed by an optional maintenance plan.",
         duration: "6–8 months",
       },
     ],
     priceNote:
-      "Starting price for a focused MVP. Logins, payments, integrations and screen count set the final fixed quote.",
+      "Starting price for a focused MVP. The final quote depends on user roles, payments, integrations and the number of screens.",
     commitments: [
-      "Staging link from week two",
-      "Code, repo and cloud accounts in your name",
-      "Core Web Vitals in the green at launch",
-      "6–8 months of support after launch",
+      "Staging environment from week two",
+      "Weekly demonstrations of progress",
+      "Core Web Vitals targets met at launch",
+      "Six to eight months of post-launch support",
     ],
     faqs: [
       {
-        question: "What does a web application cost?",
+        question: "How much does a web application cost?",
         answer:
-          "Web apps start at ₹1.2 lakh for a focused MVP. Logins, payments, integrations and the number of screens drive the final price. You get a fixed quote after a scoping call; the estimator gives you a range now.",
+          "Web applications start at ₹1,20,000 for a focused MVP. A fixed quote is provided after a scoping call.",
       },
       {
-        question: "Fixed price or hourly billing?",
+        question: "Do you work on a fixed-price or hourly basis?",
         answer:
-          "Fixed price for a defined scope. If you want to add something mid-project, we price the change before we build it. No open-ended hourly billing.",
+          "We work on a fixed price for a defined scope. Additional requirements are priced and approved before development.",
       },
       {
-        question: "Why Next.js and PostgreSQL?",
+        question: "Why do you use Next.js and PostgreSQL?",
         answer:
-          "Both are widely used, well documented and easy to hire for. Your next developer won't have to learn something obscure to keep the product running.",
+          "Both are widely adopted, well documented and supported by a large developer community, which keeps long-term maintenance straightforward.",
       },
       {
-        question: "Can you take over an app another team started?",
+        question: "Can you take over an existing application?",
         answer:
-          "Yes. We run a one-to-two week code audit, tell you what is sound and what needs rework, then quote to finish it.",
+          "Yes. We begin with a code audit of one to two weeks, then provide a recommendation and a quote to complete the work.",
       },
       {
-        question: "Will you sign an NDA?",
+        question: "Will you sign a non-disclosure agreement?",
         answer:
-          "Yes, before the first detailed conversation if you need one. Assignment of IP to you is part of our standard contract.",
+          "Yes. We sign NDAs before detailed discussions, and our standard contract assigns all intellectual property to you.",
       },
       {
-        question: "Can it become a mobile app later?",
+        question: "Can the application be extended to mobile?",
         answer:
-          "Yes. We build the backend as an API, so a React Native app can use the same accounts, data and payments.",
+          "Yes. We build the backend as an API, so a mobile app can share the same accounts, data and payments.",
       },
     ],
     related: ["product-design", "app-development", "managed-hosting"],
@@ -674,25 +670,25 @@ export const services: readonly Service[] = [
     slug: "app-development",
     name: "Mobile app development",
     shortName: "Apps",
-    summary: "iOS and Android apps from one React Native or Flutter codebase.",
+    summary: "High-performance iOS and Android apps built on modern cross-platform frameworks.",
     description:
-      "One codebase, both stores, one release pipeline. We build in React Native or Flutter and handle the parts teams underestimate: offline state, push notifications, store review and crash triage. You get an app your own developers can keep shipping, with the store accounts in your name.",
+      "iOS and Android apps built from a single React Native or Flutter codebase. We manage the complete lifecycle, from design and development to offline support, push notifications and app store submission.",
     icon: "smartphone",
     accent: ["#8b5cf6", "#ec4899"],
     priceFrom: 220_000,
     typicalTimeline: "8–16 weeks",
     outcomes: [
-      "One codebase for iOS and Android, one team to maintain it",
-      "Keeps working offline and syncs when the signal returns",
-      "App Store and Play Store submission handled end to end",
+      "One codebase for iOS and Android",
+      "Reliable offline performance",
+      "Managed app store submission",
     ],
     deliverables: [
-      "User flows and Figma designs",
+      "User flows and interface designs",
       "iOS and Android apps from one codebase",
       "API backend and admin panel",
       "App Store and Play Store listings",
       "Crash reporting and analytics",
-      "Store accounts and source code in your name",
+      "Source code and documentation",
     ],
     stack: [
       "React Native",
@@ -706,139 +702,137 @@ export const services: readonly Service[] = [
     ],
     featured: true,
     group: "build",
-    headline: "One codebase, live on both app stores",
+    headline: "Mobile apps for iOS and Android from a single codebase",
     subheadline:
-      "We build in React Native or Flutter and handle the parts that sink app projects: offline mode, push notifications, store review and crash tracking.",
-    seoTitle: "iOS & Android App Development",
+      "We develop high-performance cross-platform apps in React Native or Flutter, with offline support, push notifications, crash monitoring and app store submission.",
+    seoTitle: "iOS and Android app development",
     seoDescription:
-      "iOS and Android apps in React Native or Flutter from ₹2.2 lakh. Offline sync, push alerts, payments and store submission, in 8–16 weeks.",
+      "Cross-platform iOS and Android apps in React Native or Flutter, with offline sync, push notifications, payments and app store submission.",
     audience: [
       {
-        title: "Businesses with repeat customers",
-        body: "Ordering, booking, loyalty or service apps that customers keep on their home screen.",
+        title: "Customer-facing businesses",
+        body: "Companies offering ordering, booking, loyalty or service experiences that customers use regularly.",
       },
       {
-        title: "Teams with field staff",
-        body: "Sales reps, technicians and delivery staff who need an app that works on patchy networks.",
+        title: "Field-based teams",
+        body: "Sales, service and delivery teams that need dependable apps on variable mobile networks.",
       },
       {
         title: "Mobile-first startups",
-        body: "A consumer or marketplace product where the app is the business.",
+        body: "Consumer and marketplace products in which the app is central to the business.",
       },
     ],
     problems: [
       {
-        problem: "Two native apps double the cost.",
+        problem: "High cost of separate native apps",
         solution:
-          "One React Native or Flutter codebase ships to both stores, so features land on iOS and Android the same day.",
+          "A single cross-platform codebase that releases features to iOS and Android at the same time.",
       },
       {
-        problem: "The app breaks when the signal drops.",
-        solution:
-          "Offline-first data with local storage, and sync that resolves conflicts when the connection returns.",
+        problem: "Unreliable connectivity",
+        solution: "Offline-first data storage with automatic synchronisation when the connection returns.",
       },
       {
-        problem: "Store rejections delay the launch.",
+        problem: "App store review delays",
         solution:
-          "We prepare listings, privacy forms, test accounts and review notes, and turn round any rejection fast.",
+          "Complete preparation of listings, privacy declarations and review notes ahead of submission.",
       },
       {
-        problem: "Users report crashes before your tools do.",
-        solution:
-          "Crashlytics or Sentry logs every crash with the device and screen, and each release fixes the top ones.",
+        problem: "Undetected crashes",
+        solution: "Crash reporting with device-level detail and prioritised fixes in every release.",
       },
     ],
     features: [
       {
-        title: "Cross-platform UI",
-        body: "Screens that feel native on iOS and Android, built from one codebase.",
+        title: "Cross-platform interface",
+        body: "Native-quality screens for iOS and Android from a single codebase.",
       },
       {
-        title: "Logins and profiles",
-        body: "Phone OTP, Google and Apple sign-in, with secure session handling.",
+        title: "Authentication",
+        body: "Phone OTP, Google and Apple sign-in with secure session management.",
       },
       {
         title: "Push notifications",
-        body: "Firebase Cloud Messaging for order updates and reminders, with deep links to the right screen.",
+        body: "Order updates and reminders through Firebase Cloud Messaging, with deep linking.",
       },
       {
-        title: "Payments",
-        body: "Razorpay and UPI intent, plus in-app purchases where store rules require them.",
+        title: "In-app payments",
+        body: "Razorpay and UPI payments, with in-app purchases where store policies require them.",
       },
       {
-        title: "Offline mode",
-        body: "Forms, photos and data captured without signal and synced later.",
+        title: "Offline support",
+        body: "Forms, photos and data captured offline and synchronised automatically.",
       },
       {
         title: "Over-the-air updates",
-        body: "Small fixes ship through Expo EAS Update without waiting for store review.",
+        body: "Minor fixes delivered through Expo EAS Update without a full store review.",
       },
     ],
     process: [
       {
         title: "Product scoping",
-        body: "Users, core flows and device features agreed. We pick React Native or Flutter with you.",
+        body: "We define users, core workflows and device features, and recommend React Native or Flutter.",
         duration: "Week 1–2",
       },
       {
         title: "Design and prototype",
-        body: "Screens for both platforms and a clickable prototype you can try on your own phone.",
+        body: "Interface designs for both platforms and a clickable prototype to review on your own device.",
         duration: "Week 2–4",
       },
       {
-        title: "Build sprints",
-        body: "Two-week sprints, with test builds on your phone through TestFlight and Play internal testing.",
+        title: "Development sprints",
+        body: "Two-week sprints with test builds distributed through TestFlight and Google Play internal testing.",
         duration: "Week 4–12",
       },
       {
-        title: "Beta and QA",
-        body: "Testing across a spread of Android and iOS devices, plus a beta with real users.",
+        title: "Beta and quality assurance",
+        body: "Testing across a range of iOS and Android devices, followed by a beta with real users.",
         duration: "Week 12–14",
       },
       {
         title: "Store submission",
-        body: "Listings, screenshots, privacy forms and review handled by us.",
+        body: "Preparation and submission of store listings, screenshots and privacy declarations.",
         duration: "Week 14–16",
       },
     ],
     priceNote:
-      "Apple's developer programme ($99 a year) and Google Play's one-time $25 fee are paid by you, in your company's name.",
+      "Apple Developer Program (US$99 per year) and Google Play (US$25 one-time) fees are paid directly by your company.",
     commitments: [
-      "Test builds on your phone every sprint",
-      "Store accounts in your company's name",
-      "Tested on budget Android phones, not just flagships",
-      "Crash reporting live from the first beta",
+      "Test builds every sprint",
+      "Testing on a wide range of devices",
+      "Crash reporting from the first beta",
+      "Store submission managed by our team",
     ],
     faqs: [
       {
-        question: "React Native or Flutter?",
+        question: "Should we choose React Native or Flutter?",
         answer:
-          "Both ship good apps. We lean to React Native when you also have a React web app or plan to hire JavaScript developers, and to Flutter for heavy custom UI and animation. We recommend one for your case.",
+          "Both produce high-quality apps. We recommend React Native where you have a React web product and Flutter for interfaces with extensive custom animation.",
       },
       {
         question: "How much does a mobile app cost?",
         answer:
-          "Apps start at ₹2.2 lakh. Screen count, logins, payments, offline sync and the admin backend drive the final number. The estimator gives you a range; a scoping call gives you a fixed quote.",
+          "Mobile apps start at ₹2,20,000. The final price depends on the number of screens, integrations, offline requirements and the admin backend.",
       },
       {
-        question: "Do I need a backend?",
+        question: "Does the app need a backend?",
         answer:
-          "Almost always. Logins, data and notifications need a server. We build it with the app, plus an admin panel for your team.",
+          "In most cases, yes. We develop the backend and an admin panel alongside the app.",
       },
       {
         question: "Who publishes the app to the stores?",
         answer:
-          "We handle submission under developer accounts in your company's name, so the apps and their reviews always belong to you.",
+          "We manage submission through developer accounts registered to your company, so the listings remain yours.",
       },
       {
-        question: "What happens once the app is live?",
+        question: "What support is available after launch?",
         answer:
-          "iOS and Android release major updates every year, and some of them break apps. Our maintenance plans cover OS and library upgrades, crash fixes and small features.",
+          "Our maintenance plans cover operating system updates, library upgrades, crash fixes and minor enhancements.",
       },
       {
-        question: "Can you improve an app we already have?",
+        question: "Can you improve an existing app?",
         answer:
-          "Yes. We audit the codebase and store setup first, then fix, upgrade or rebuild depending on what we find.",
+          "Yes. We audit the codebase and store configuration, then recommend whether to optimise, upgrade or rebuild.",
       },
     ],
     related: ["product-design", "web-development", "support-maintenance"],
@@ -847,157 +841,155 @@ export const services: readonly Service[] = [
     slug: "product-design",
     name: "UI/UX & branding",
     shortName: "Design",
-    summary: "Logos, brand identity and product interfaces designed to be built.",
+    summary: "Brand identities and user experiences that are clear, consistent and memorable.",
     description:
-      "A logo and brand identity for a new business, or the screens and flows for your website and app. Our designers work in Figma alongside the engineers who will build it, so the brand guide and the screens you approve are exactly what ships.",
+      "Brand identities, logos and digital product interfaces designed in Figma. Our designers work alongside our engineers, so every approved design translates accurately into the finished product.",
     icon: "palette",
     accent: ["#ec4899", "#6366f1"],
     priceFrom: 90_000,
     typicalTimeline: "2–6 weeks",
     outcomes: [
-      "A brand that looks the same on your site, app, invoices and social posts",
-      "A clickable prototype before any code is written",
-      "Contrast, focus states and touch targets checked at design time",
+      "A consistent brand across every channel",
+      "Validated prototypes before development",
+      "Accessibility built into every design",
     ],
     deliverables: [
       "Logo files in SVG, PNG and PDF",
-      "Brand guidelines document",
-      "Social and stationery templates",
+      "Brand guidelines",
+      "Social media and stationery templates",
       "User flows and wireframes",
-      "High-fidelity UI in Figma",
+      "High-fidelity interface designs",
       "Design system and clickable prototype",
     ],
     stack: ["Figma", "FigJam", "Illustrator", "Photoshop", "Canva", "Storybook"],
     featured: false,
     group: "grow",
-    headline: "A brand people trust at first glance",
+    headline: "Brand identities and digital experiences that build trust",
     subheadline:
-      "Logos, brand identity and app and website screens, designed in Figma by designers who sit with the engineers who build them.",
-    seoTitle: "UI/UX Design, Logo & Branding",
+      "We create logos, brand identities and website and app interfaces in Figma, working closely with the engineers who build them.",
+    seoTitle: "UI/UX design, logo and branding",
     seoDescription:
-      "Logo, brand identity and website and app UI design in Figma from ₹90,000. Brand guides, design systems and prototypes developers build from.",
+      "Logo design, brand identity and UI/UX design for websites and apps, with brand guidelines, design systems and prototypes ready for development.",
     audience: [
       {
         title: "New businesses",
-        body: "You need to look like a company: a logo, colours, type, and the files to use them everywhere.",
+        body: "Companies that need a professional logo, colour palette, typography and brand assets.",
       },
       {
-        title: "Businesses that outgrew their look",
-        body: "The brand was made in a hurry and now looks different on every card, post and page.",
+        title: "Growing brands",
+        body: "Businesses whose visual identity has become inconsistent across channels.",
       },
       {
         title: "Product teams",
-        body: "You need UX flows and screens for a web or mobile app, ready for developers to build.",
+        body: "Teams that need user flows and interface designs for a web or mobile application.",
       },
     ],
     problems: [
       {
-        problem: "Your brand looks different everywhere.",
+        problem: "Inconsistent branding",
         solution:
-          "A brand guide with logo rules, colours and fonts, plus templates for social posts, letterheads and decks.",
+          "Brand guidelines covering logo usage, colours and typography, with ready-to-use templates.",
       },
       {
-        problem: "Users get lost in your app.",
-        solution:
-          "We map the flows, test a prototype with real users and fix confusing steps before code is written.",
+        problem: "Complex user journeys",
+        solution: "Mapped user flows and prototypes tested with real users before development.",
       },
       {
-        problem: "Developers rebuild what the designer drew.",
-        solution:
-          "A Figma design system whose components match the code, with specs and assets for every state.",
+        problem: "Gaps between design and development",
+        solution: "A Figma design system with components that correspond directly to the code.",
       },
       {
-        problem: "Accessibility is an afterthought.",
+        problem: "Accessibility gaps",
         solution:
-          "Contrast, text size, focus states and touch targets checked in Figma before handover.",
+          "Contrast, text size, focus states and touch targets reviewed against WCAG 2.2 AA.",
       },
     ],
     features: [
       {
-        title: "Logo and identity",
+        title: "Logo and visual identity",
         body: "Logo concepts, primary and secondary marks, a colour palette and typography.",
       },
       {
         title: "Brand guidelines",
-        body: "A short, usable guide to the logo, colours and type, with clear dos and don'ts.",
+        body: "A concise guide to logo usage, colours and typography.",
       },
       {
         title: "Marketing templates",
-        body: "Social posts, business cards, letterhead and pitch-deck templates in Canva or Figma.",
+        body: "Social media, business card, letterhead and presentation templates in Canva or Figma.",
       },
       {
-        title: "UX flows and wireframes",
+        title: "UX research and wireframes",
         body: "User interviews, task flows and wireframes for every key screen.",
       },
       {
-        title: "UI design",
-        body: "High-fidelity screens for mobile and desktop, including empty, loading and error states.",
+        title: "Interface design",
+        body: "High-fidelity mobile and desktop screens, including empty, loading and error states.",
       },
       {
         title: "Design system and prototype",
-        body: "Reusable Figma components and a clickable prototype for user tests and investor demos.",
+        body: "Reusable Figma components and a clickable prototype for user testing and stakeholder reviews.",
       },
     ],
     process: [
       {
         title: "Discovery",
-        body: "Your customers, your competitors, and what the brand or product must say.",
+        body: "We study your customers, your competitors and the core message the brand or product must convey.",
         duration: "Week 1",
       },
       {
         title: "Concepts",
-        body: "Two or three directions for the logo or interface, with the reasoning behind each.",
+        body: "Two or three creative directions, each presented with its rationale.",
         duration: "Week 1–2",
       },
       {
-        title: "Refine",
-        body: "We develop the chosen direction across real uses: website, app, packaging, social.",
+        title: "Refinement",
+        body: "The selected direction is developed across your website, app, packaging and social channels.",
         duration: "Week 2–4",
       },
       {
-        title: "Prototype and test",
-        body: "For products, a clickable prototype tested with five users, then fixes.",
+        title: "Prototype and testing",
+        body: "For digital products, a clickable prototype is tested with five users and refined.",
         duration: "Week 3–5",
       },
       {
         title: "Handover",
-        body: "Final files, the brand guide, a Figma library and a walkthrough with your developers.",
+        body: "Final files, brand guidelines, a Figma library and a walkthrough with your developers.",
         duration: "Week 5–6",
       },
     ],
     priceNote:
-      "A logo-and-identity project, a website design and a full app design are priced separately, by scope.",
+      "Brand identity, website design and app design projects are priced separately according to scope.",
     commitments: [
-      "Full ownership of logo and design files",
       "Two rounds of revisions at each stage",
-      "Contrast and touch targets checked against WCAG 2.2 AA",
-      "Designs reviewed by the engineers who will build them",
+      "Accessibility reviewed against WCAG 2.2 AA",
+      "Designs reviewed by our engineers",
+      "Complete Figma library at handover",
     ],
     faqs: [
       {
-        question: "How many logo concepts do I get?",
+        question: "How many logo concepts will we receive?",
         answer:
-          "Two or three distinct directions, each shown on real uses. We then refine the one you pick, with two rounds of revisions.",
+          "You will receive two or three distinct concepts. We then refine your preferred direction with two rounds of revisions.",
       },
       {
-        question: "Do I own the logo and designs?",
+        question: "Do we own the final designs?",
         answer:
-          "Yes. Copyright in the final logo, brand assets and Figma files transfers to you on final payment.",
+          "Yes. Copyright in the final logo, brand assets and design files transfers to you on final payment.",
       },
       {
-        question: "Can you design screens if another team builds the app?",
+        question: "Can you design for an app that another team will build?",
         answer:
-          "Yes. We hand over a Figma library, specs and assets, and stay available for developer questions during the build.",
+          "Yes. We provide a Figma library, specifications and assets, and remain available to your developers during the build.",
       },
       {
-        question: "What does UI/UX design cost?",
+        question: "How much does UI/UX design cost?",
         answer:
-          "Design projects start at ₹90,000. The price depends on the number of screens, how much research is needed and whether branding is included.",
+          "Design projects start at ₹90,000. The price depends on the number of screens, the research required and whether branding is included.",
       },
       {
-        question: "Do you test designs with real users?",
+        question: "Do you test designs with users?",
         answer:
-          "For products, yes. We run short usability sessions on a clickable prototype and fix what confuses people before any code.",
+          "Yes. For digital products, we run usability sessions on a clickable prototype and refine the design before development.",
       },
     ],
     related: ["business-websites", "app-development", "web-development"],
@@ -1006,21 +998,21 @@ export const services: readonly Service[] = [
     slug: "seo-marketing",
     name: "SEO & digital marketing",
     shortName: "Marketing",
-    summary: "On-page SEO, Google Ads and social campaigns, measured in leads, not likes.",
+    summary: "Search, paid media and content strategies focused on measurable growth.",
     description:
-      "A good website still needs traffic. We fix technical and on-page SEO, set up Google Business Profile, run Google Ads and Meta campaigns, and report every month on what each rupee brought in. Tracking goes in first, so you can see which channel produces enquiries.",
+      "Search engine optimisation, Google Ads and social media campaigns managed by one team. Conversion tracking is configured first, so every channel is measured against the enquiries it generates.",
     icon: "megaphone",
     accent: ["#f59e0b", "#10b981"],
     priceFrom: 15_000,
-    typicalTimeline: "Monthly, first report in 30 days",
+    typicalTimeline: "Ongoing, with monthly reporting",
     outcomes: [
-      "Search rankings tracked for the keywords that bring you customers",
-      "Ad spend tied to leads and cost per enquiry",
-      "A monthly report in plain language, not a screenshot dump",
+      "Higher rankings for priority keywords",
+      "Ad spend measured against leads",
+      "Clear monthly performance reports",
     ],
     deliverables: [
-      "SEO audit with a prioritised fix list",
-      "Keyword map for every key page",
+      "SEO audit and prioritised action plan",
+      "Keyword strategy for key pages",
       "Optimised Google Business Profile",
       "Ad campaigns with conversion tracking",
       "Looker Studio dashboard",
@@ -1038,134 +1030,139 @@ export const services: readonly Service[] = [
     ],
     featured: false,
     group: "grow",
-    headline: "More enquiries from search and ads",
+    headline: "Search and paid campaigns that generate qualified enquiries",
     subheadline:
-      "Technical SEO, local search, Google Ads and Meta campaigns run by one team. Tracking goes in first, so every rupee can be traced to a lead.",
-    seoTitle: "SEO & Digital Marketing Services",
+      "We bring technical SEO, local search, Google Ads and Meta campaigns together under one team, with conversion tracking in place before any budget is spent.",
+    seoTitle: "SEO and digital marketing services",
     seoDescription:
-      "SEO audits, local SEO, Google Ads and Meta ads from ₹15,000. Conversion tracking first, then monthly reports on leads and cost per enquiry.",
+      "SEO audits, local SEO, Google Ads and Meta campaigns with conversion tracking and monthly reports on leads, cost per enquiry and rankings.",
     audience: [
       {
         title: "Local businesses",
-        body: "Clinics, showrooms, institutes and service firms that need to show up on Google Maps and in 'near me' searches.",
+        body: "Clinics, showrooms, institutes and service providers that need visibility in local and map searches.",
       },
       {
-        title: "Companies with a site but no traffic",
-        body: "The website is live and looks good. Nobody visits it.",
+        title: "Businesses with low website traffic",
+        body: "Companies with a well-designed website that is not yet attracting enough visitors.",
       },
       {
-        title: "Teams spending on ads blind",
-        body: "You run Google or Meta ads but can't say which campaign brings customers.",
+        title: "Advertisers seeking clarity",
+        body: "Teams running Google or Meta campaigns without clear attribution to enquiries.",
       },
     ],
     problems: [
       {
-        problem: "You don't rank for what customers search.",
+        problem: "Low search rankings",
         solution:
-          "Keyword research on real search volume, then pages built or rewritten to target those terms.",
+          "Keyword research based on real search demand, with pages optimised for priority terms.",
       },
       {
-        problem: "Your Google Business Profile is half-finished.",
+        problem: "Incomplete Google Business Profile",
         solution:
-          "Categories, services, photos and posts filled in, plus a simple routine for collecting reviews.",
+          "A fully optimised profile with categories, services, photos and a review collection process.",
       },
       {
-        problem: "Ad money goes out and leads don't come in.",
+        problem: "Low return on ad spend",
         solution:
-          "Conversion tracking first, then campaigns split by service and location, with negative keywords and weekly bid checks.",
+          "Conversion tracking, campaigns structured by service and location, and weekly bid management.",
       },
       {
-        problem: "Reports are screenshots of impressions.",
+        problem: "Unclear reporting",
         solution:
-          "A monthly report on enquiries, cost per lead and rankings in plain language, with next month's plan.",
+          "Monthly reports on enquiries, cost per lead and rankings, with a plan for the following month.",
       },
     ],
     features: [
       {
-        title: "Technical SEO audit",
-        body: "Crawl errors, page speed, indexing, schema and Core Web Vitals, fixed rather than just listed.",
+        title: "Technical SEO",
+        body: "Resolution of crawl errors, indexing issues, page speed, schema and Core Web Vitals.",
       },
       {
         title: "On-page and content SEO",
-        body: "A target keyword per page, rewritten titles and headings, and blog topics people actually search.",
+        body: "Target keywords for each page, optimised titles and headings, and a content plan based on search demand.",
       },
       {
         title: "Local SEO",
-        body: "Google Business Profile, local citations, location pages and review requests.",
+        body: "Google Business Profile optimisation, local citations, location pages and review generation.",
       },
       {
         title: "Google Ads",
         body: "Search, Performance Max and Shopping campaigns with conversion and call tracking.",
       },
       {
-        title: "Meta ads and social",
+        title: "Meta advertising",
         body: "Facebook and Instagram campaigns, lead forms and a monthly content calendar.",
       },
       {
-        title: "Tracking and reporting",
-        body: "GA4, Google Tag Manager and a Looker Studio dashboard tied to real enquiries.",
+        title: "Analytics and reporting",
+        body: "GA4, Google Tag Manager and a Looker Studio dashboard linked to enquiries.",
       },
     ],
     process: [
       {
         title: "Audit and tracking",
-        body: "We audit your site, ads and Business Profile, and set up GA4, Tag Manager and call tracking.",
+        body: "We audit your website, campaigns and Business Profile, then configure GA4, Tag Manager and call tracking.",
         duration: "Week 1–2",
       },
       {
         title: "Strategy",
-        body: "Keywords, channels and budget split agreed, with a target cost per enquiry.",
+        body: "We agree keywords, channels, budget allocation and a target cost per enquiry.",
         duration: "Week 2",
       },
       {
-        title: "Fix and launch",
-        body: "Technical fixes, on-page updates and the first campaigns go live.",
+        title: "Implementation",
+        body: "Technical fixes, on-page improvements and the launch of the first campaigns.",
         duration: "Week 3–4",
       },
       {
-        title: "Optimise",
-        body: "Weekly bid and keyword checks, plus new content and pages each month.",
+        title: "Optimisation",
+        body: "Weekly bid and keyword management, with new content and pages each month.",
         duration: "Ongoing",
       },
       {
-        title: "Report and plan",
-        body: "A monthly report on leads, spend and rankings, and a call to plan the next month.",
+        title: "Reporting and planning",
+        body: "A monthly report on leads, spend and rankings, followed by a planning call.",
         duration: "Monthly",
       },
     ],
     priceNote:
-      "Ad spend is not included. You pay Google and Meta directly from your own ad accounts.",
+      "Advertising spend is paid directly to Google and Meta from your own ad accounts and is not included in our fee.",
     commitments: [
-      "Conversion tracking live before any ad spend",
-      "Ad and analytics accounts in your name",
+      "Conversion tracking before any ad spend",
       "First report within 30 days",
-      "Reports on leads and cost per enquiry, not impressions",
+      "Reporting on leads and cost per enquiry",
+      "Weekly campaign optimisation",
     ],
     faqs: [
       {
-        question: "How long does SEO take to work?",
+        question: "How long does SEO take to show results?",
         answer:
-          "Technical fixes and Business Profile changes often show results within weeks. Ranking for competitive terms usually takes three to six months. Ads bring traffic from day one, which is why many businesses run both.",
+          "Technical improvements can show results within weeks, while competitive rankings typically take three to six months. Paid campaigns generate traffic from launch.",
       },
       {
         question: "Do you guarantee first-page rankings?",
         answer:
-          "No. Nobody controls Google's results, and anyone who promises the top spot is guessing. We commit to the work, the tracking and an honest monthly report.",
+          "No agency can guarantee rankings on Google. We commit to a clear strategy, consistent execution and transparent monthly reporting.",
       },
       {
-        question: "Is ad spend included in your fee?",
+        question: "Is advertising spend included in your fee?",
         answer:
-          "No. You pay ad spend straight to Google or Meta. Our fee covers strategy, setup, campaign management and reporting.",
+          "No. Ad spend is paid directly to Google or Meta, and our fee covers strategy, set-up, campaign management and reporting.",
       },
       {
         question: "Who owns the ad accounts and data?",
         answer:
-          "You do. Google Ads, Meta Business Manager, GA4 and Search Console sit under your business, with us added as managers.",
+          "Your business does. All advertising and analytics accounts are registered to you, with our team added as managers.",
       },
       {
-        question: "Do I need a new website before marketing?",
+        question: "Do we need a new website before starting?",
         answer:
-          "Not always. We start with an audit. If the site is too slow or can't turn visitors into enquiries, we tell you and fix the worst issues before spending on ads.",
+          "Not necessarily. We begin with an audit and recommend any improvements needed before investing in paid campaigns.",
+      },
+      {
+        question: "How much do SEO and marketing services cost?",
+        answer:
+          "Monthly retainers start at ₹15,000, excluding advertising spend. The fee depends on the channels and the scope of work.",
       },
     ],
     related: ["business-websites", "ecommerce-stores", "product-design"],
@@ -1174,24 +1171,24 @@ export const services: readonly Service[] = [
     slug: "custom-software",
     name: "Custom software, ERP & CRM",
     shortName: "Software",
-    summary: "Internal tools, ERP and CRM systems built around how your business actually runs.",
+    summary: "Bespoke business systems that streamline operations and reporting.",
     description:
-      "Spreadsheets, WhatsApp groups and three tools that do not talk to each other. We replace them with one system for orders, inventory, customers, staff and billing, built around your process rather than a template, and connected to the accounting and payment tools you already use.",
+      "Custom ERP, CRM and internal systems that bring orders, inventory, customers, staff and billing into one platform. Each system is designed around your processes and integrated with the accounting and payment tools you already use.",
     icon: "boxes",
     accent: ["#0ea5e9", "#6366f1"],
     priceFrom: 150_000,
     typicalTimeline: "10–20 weeks",
     outcomes: [
-      "One system of record instead of spreadsheets and chat threads",
-      "Role-based access for owners, managers and staff",
-      "Reports you can pull yourself, without waiting on IT",
+      "A single source of truth for operations",
+      "Role-based access for every team",
+      "Real-time reporting on demand",
     ],
     deliverables: [
-      "Process map signed off by your team",
-      "Working modules released in phases",
+      "Documented process map",
+      "Modules delivered in phases",
       "Role-based access and audit log",
-      "Integrations with your current tools",
-      "Data migrated from sheets or old software",
+      "Integrations with existing tools",
+      "Data migration",
       "User manuals and team training",
     ],
     stack: [
@@ -1208,56 +1205,56 @@ export const services: readonly Service[] = [
     ],
     featured: false,
     group: "scale",
-    headline: "One system for orders, stock and staff",
+    headline: "Custom ERP and CRM software that streamlines operations",
     subheadline:
-      "Custom ERP, CRM and internal tools built around how your business runs, and connected to Tally, Zoho, Razorpay and WhatsApp.",
-    seoTitle: "Custom ERP & CRM Development",
+      "We build ERP, CRM and internal tools around the way your business operates, integrated with Tally, Zoho, Razorpay and WhatsApp.",
+    seoTitle: "Custom ERP and CRM development",
     seoDescription:
-      "Custom ERP, CRM and internal tools from ₹1.5 lakh, built around your process. Connected to Tally, Zoho and WhatsApp, with your data migrated.",
+      "Custom ERP, CRM and internal business software designed around your processes and integrated with Tally, Zoho and WhatsApp, with full data migration.",
     audience: [
       {
-        title: "SMBs running on Excel",
-        body: "Orders, stock and billing live in spreadsheets that only one person fully understands.",
+        title: "Spreadsheet-driven businesses",
+        body: "SMEs managing orders, stock and billing across spreadsheets and messaging groups.",
       },
       {
         title: "Manufacturers and distributors",
-        body: "You need dispatch, inventory, dealer orders and collections in one place.",
+        body: "Organisations that need dispatch, inventory, dealer orders and collections in one system.",
       },
       {
-        title: "Teams outgrowing off-the-shelf tools",
-        body: "You bent your process to fit Zoho, Odoo or Salesforce and still need three workarounds.",
+        title: "Teams outgrowing packaged software",
+        body: "Businesses whose processes no longer fit off-the-shelf tools such as Zoho, Odoo or Salesforce.",
       },
     ],
     problems: [
       {
-        problem: "Data is spread across sheets and WhatsApp groups.",
+        problem: "Fragmented data",
         solution:
-          "One database for orders, customers, inventory and staff, with search and full history.",
+          "A single database for orders, customers, inventory and staff, with search and a complete history.",
       },
       {
-        problem: "Owners can't see the numbers without asking.",
+        problem: "Limited management visibility",
         solution:
-          "Live dashboards for sales, stock, dues and team performance, on desktop and phone.",
+          "Live dashboards for sales, stock, receivables and team performance on desktop and mobile.",
       },
       {
-        problem: "Staff can see things they shouldn't.",
+        problem: "Uncontrolled data access",
         solution:
-          "Role-based access by branch, department and job, with an audit log of every change.",
+          "Role-based permissions by branch, department and job role, with a complete audit trail.",
       },
       {
-        problem: "Your tools don't talk to each other.",
+        problem: "Disconnected tools",
         solution:
           "Integrations with Tally, Zoho Books, Odoo, Razorpay, the WhatsApp Business API and your website.",
       },
     ],
     features: [
       {
-        title: "Modules you actually need",
-        body: "Orders, inventory, purchase, CRM, HR, attendance or service tickets. Nothing you won't use.",
+        title: "Tailored modules",
+        body: "Orders, inventory, purchasing, CRM, HR, attendance and service management, selected to suit your operations.",
       },
       {
         title: "Workflows and approvals",
-        body: "Multi-step approvals, reminders and status changes that match how your team works.",
+        body: "Multi-step approvals, reminders and status updates aligned with your processes.",
       },
       {
         title: "Dashboards and reports",
@@ -1265,82 +1262,82 @@ export const services: readonly Service[] = [
       },
       {
         title: "Two-way integrations",
-        body: "Sync with accounting, payments, WhatsApp and your online store.",
+        body: "Synchronisation with your accounting software, payment gateway, WhatsApp and online store.",
       },
       {
         title: "Mobile access",
-        body: "Works in any phone browser, with an optional Android app for field and warehouse staff.",
+        body: "Responsive access on any device, with an optional Android app for field and warehouse staff.",
       },
       {
         title: "Migration and training",
-        body: "We move your existing data and train each team on their part of the system.",
+        body: "Migration of existing data and role-specific training for each team.",
       },
     ],
     process: [
       {
         title: "Process mapping",
-        body: "We sit with the people who do the work and map each process as it really runs.",
+        body: "We work with your team to document each process as it operates today.",
         duration: "Week 1–2",
       },
       {
         title: "System design",
-        body: "Modules, roles, reports and integrations agreed, with key screens prototyped in Figma.",
+        body: "We agree modules, roles, reports and integrations, with key screens prototyped in Figma.",
         duration: "Week 2–4",
       },
       {
-        title: "Phased build",
-        body: "The most painful module goes live first. The rest follow in two-week sprints.",
+        title: "Phased development",
+        body: "The highest-priority module is released first, followed by the remaining modules in two-week sprints.",
         duration: "Week 4–16",
       },
       {
         title: "Migration and training",
-        body: "Old data imported and reconciled, then hands-on training for each team.",
+        body: "Existing data is imported and reconciled, followed by hands-on training for each team.",
         duration: "Week 16–18",
       },
       {
         title: "Go-live",
-        body: "A parallel run alongside the old process, then cut-over with us on call.",
+        body: "A parallel run alongside existing processes, followed by a supported cut-over.",
         duration: "Week 18–20",
       },
     ],
     priceNote:
-      "Starting price for one or two modules. Larger systems are phased and billed by milestone as each module goes live.",
+      "Starting price for one or two modules. Larger systems are delivered in phases and billed by milestone.",
     commitments: [
-      "First module in use before the full system is finished",
-      "Your data in a database you own",
-      "Every change logged with who made it and when",
-      "No per-user licence fees to us",
+      "First module live before full completion",
+      "Complete audit trail of every change",
+      "No per-user licence fees",
+      "Hands-on training for every team",
     ],
     faqs: [
       {
-        question: "Why custom software instead of Zoho or Odoo?",
+        question: "Why choose custom software over Zoho or Odoo?",
         answer:
-          "Off-the-shelf tools work well when your process matches theirs. When it doesn't, you pay for licences and still run workarounds. We first check whether Zoho or Odoo with light customisation is enough, and only build custom when it isn't.",
+          "Packaged software works well when your processes match its design. We first assess whether a configured off-the-shelf tool is sufficient and recommend custom development only where it adds clear value.",
       },
       {
-        question: "Can it work with Tally?",
+        question: "Does it integrate with Tally?",
         answer:
-          "Yes. We sync vouchers, ledgers and stock with Tally Prime through its XML interface, so accounts stay in Tally and operations move to the new system.",
+          "Yes. We synchronise vouchers, ledgers and stock with Tally Prime, so accounting remains in Tally while operations move to the new system.",
       },
       {
         question: "How much does custom software cost?",
         answer:
-          "Projects start at ₹1.5 lakh for one or two modules. Bigger ERP and CRM builds are phased, and billed by milestone as each module goes live.",
+          "Projects start at ₹1,50,000 for one or two modules. Larger ERP and CRM systems are delivered in phases and billed by milestone.",
       },
       {
         question: "What happens to our existing data?",
         answer:
-          "We clean and import it from Excel, Google Sheets or your old software, then reconcile totals with you before go-live.",
+          "We clean and import data from Excel, Google Sheets or legacy software, and reconcile it with your team before go-live.",
       },
       {
-        question: "Can staff use it on their phones?",
+        question: "Can staff use the system on mobile?",
         answer:
-          "Yes. Everything works in a mobile browser, and we can add an Android app for field staff who need offline access or barcode scanning.",
+          "Yes. The system works in any mobile browser, and an Android app can be added for offline access or barcode scanning.",
       },
       {
         question: "Who owns the software?",
         answer:
-          "You do. Code, database and cloud account are in your name, and there are no per-user licence fees to us.",
+          "You do. The source code, database and cloud account are registered to your business.",
       },
     ],
     related: ["web-development", "ai-integration", "support-maintenance"],
@@ -1349,25 +1346,25 @@ export const services: readonly Service[] = [
     slug: "ai-integration",
     name: "AI & automation",
     shortName: "AI",
-    summary: "Chatbots, workflow automation and integrations that take repetitive work off your team.",
+    summary: "Intelligent assistants and workflow automation that improve efficiency.",
     description:
-      "AI and automation that do one specific job: a chatbot that answers customers from your own documents, invoices read into your system automatically, leads routed from your website to the right salesperson. We measure accuracy and cost per request before launch, and hand low-confidence cases to a person.",
+      "AI assistants and workflow automation designed for specific business tasks, from answering customer queries to processing documents and routing leads. Each automation is tested for accuracy and cost before launch.",
     icon: "sparkles",
     accent: ["#f59e0b", "#ef4444"],
     priceFrom: 180_000,
     typicalTimeline: "3–8 weeks",
     outcomes: [
-      "Answers grounded in your documents, with citations",
-      "Hours of manual data entry removed each week",
-      "A per-request cost you can forecast and cap",
+      "Accurate answers from your own documents",
+      "Less time spent on manual data entry",
+      "Predictable, capped running costs",
     ],
     deliverables: [
       "Workflow review and feasibility report",
-      "Evaluation set built from your real data",
-      "Production chatbot or automation",
-      "Admin view of conversations and logs",
-      "Spend caps and usage reports",
-      "Runbook for your team",
+      "Evaluation set based on your data",
+      "Production assistant or automation",
+      "Admin dashboard with conversation logs",
+      "Spending limits and usage reports",
+      "Operations runbook",
     ],
     stack: [
       "OpenAI API",
@@ -1381,52 +1378,52 @@ export const services: readonly Service[] = [
     ],
     featured: false,
     group: "scale",
-    headline: "Less data entry, faster customer replies",
+    headline: "AI assistants and automation that reduce manual work",
     subheadline:
-      "Chatbots that answer from your own documents, invoices read into your system, leads routed in seconds. Each one tested for accuracy and cost before it goes live.",
-    seoTitle: "AI Chatbots & Workflow Automation",
+      "We build assistants that answer from your own documents, automate data entry and route leads instantly. Each one is tested for accuracy and cost before it goes live.",
+    seoTitle: "AI chatbots and workflow automation",
     seoDescription:
-      "AI chatbots on your documents, WhatsApp assistants, invoice extraction and workflow automation from ₹1.8 lakh. Accuracy tested before launch.",
+      "AI chatbots trained on your documents, WhatsApp assistants, document extraction and workflow automation, tested for accuracy and cost before launch.",
     audience: [
       {
-        title: "Support teams answering the same questions",
-        body: "Customers ask about prices, order status and policies all day, on your site and on WhatsApp.",
+        title: "Customer support teams",
+        body: "Teams answering recurring questions about pricing, orders and policies across the website and WhatsApp.",
       },
       {
-        title: "Operations teams doing data entry",
-        body: "Staff retype invoices, purchase orders and forms from PDFs and emails.",
+        title: "Operations teams",
+        body: "Staff re-entering invoices, purchase orders and forms from PDFs and emails.",
       },
       {
-        title: "Sales teams losing leads",
-        body: "Enquiries from your website, ads and IndiaMART sit in inboxes until someone notices.",
+        title: "Sales teams",
+        body: "Teams receiving enquiries from websites, advertising and marketplaces that need faster follow-up.",
       },
     ],
     problems: [
       {
-        problem: "Customers wait hours for simple answers.",
+        problem: "Slow customer response times",
         solution:
-          "A website or WhatsApp assistant that answers from your documents, shows its source, and hands off to a person when unsure.",
+          "Website and WhatsApp assistants that answer from your documents, cite their sources and escalate to your team when required.",
       },
       {
-        problem: "Hours lost copying data between systems.",
+        problem: "Manual data entry",
         solution:
-          "Document extraction that reads invoices, POs and forms into your ERP or sheet, with a review queue for unclear fields.",
+          "Document extraction that captures invoices, purchase orders and forms in your ERP, with a review queue for exceptions.",
       },
       {
-        problem: "Leads go cold before anyone calls.",
+        problem: "Delayed lead follow-up",
         solution:
-          "Automations that capture, score and assign every lead, then alert the right salesperson on WhatsApp.",
+          "Automated capture, scoring and assignment of every lead, with instant WhatsApp alerts to your sales team.",
       },
       {
-        problem: "AI pilots never reach production.",
+        problem: "AI pilots that stall",
         solution:
-          "An accuracy target, a test set from your real data, spend caps and logging, all agreed before we build.",
+          "Accuracy targets, test sets from your data, spending limits and logging, agreed before development begins.",
       },
     ],
     features: [
       {
-        title: "Knowledge-base chatbot",
-        body: "Answers from your PDFs, website and FAQs using retrieval, with citations.",
+        title: "Knowledge-base assistant",
+        body: "Answers drawn from your PDFs, website and FAQs, with source citations.",
       },
       {
         title: "WhatsApp assistant",
@@ -1434,86 +1431,86 @@ export const services: readonly Service[] = [
       },
       {
         title: "Document extraction",
-        body: "Invoices, receipts and forms turned into structured data and checked against your rules.",
+        body: "Invoices, receipts and forms converted into structured data and validated against your rules.",
       },
       {
         title: "Workflow automation",
-        body: "n8n, Make or Zapier flows connecting your CRM, sheets, email and accounting.",
+        body: "n8n, Make or Zapier workflows connecting your CRM, spreadsheets, email and accounting.",
       },
       {
         title: "Lead routing",
-        body: "Enquiries captured from every source, scored and assigned automatically.",
+        body: "Enquiries from every channel captured, scored and assigned automatically.",
       },
       {
-        title: "Guardrails and monitoring",
-        body: "Logs, spend caps, masking of personal data, and a person in the loop for uncertain cases.",
+        title: "Governance and monitoring",
+        body: "Logging, spending limits, personal data masking and human review for uncertain cases.",
       },
     ],
     process: [
       {
         title: "Workflow review",
-        body: "We pick one job worth automating, measure how it's done today and set an accuracy target.",
+        body: "We identify one high-value task, measure current performance and agree an accuracy target.",
         duration: "Week 1",
       },
       {
         title: "Proof of concept",
-        body: "A working prototype tested on your real documents and questions.",
+        body: "A working prototype tested on your own documents and questions.",
         duration: "Week 2–3",
       },
       {
-        title: "Build and integrate",
-        body: "Connected to your website, WhatsApp, CRM or ERP, with guardrails and logging.",
+        title: "Build and integration",
+        body: "Integration with your website, WhatsApp, CRM or ERP, with safeguards and logging.",
         duration: "Week 3–6",
       },
       {
-        title: "Evaluate",
-        body: "We run the test set, review failures with you and tune until the target is met.",
+        title: "Evaluation",
+        body: "We test against the evaluation set, review the results with your team and refine until the target is met.",
         duration: "Week 6–7",
       },
       {
-        title: "Launch and monitor",
-        body: "Live with spend caps, and a weekly accuracy review for the first month.",
+        title: "Launch and monitoring",
+        body: "Go-live with spending limits and weekly accuracy reviews during the first month.",
         duration: "Week 7–8",
       },
     ],
     priceNote:
-      "Model usage is billed per request by the AI provider. We estimate the monthly running cost before launch and cap it.",
+      "AI model usage is billed per request by the provider. We estimate monthly running costs before launch and set a spending limit.",
     commitments: [
-      "Accuracy target agreed before build",
+      "Accuracy target agreed before development",
       "Monthly AI spend capped and reported",
-      "Unclear cases handed to a person",
-      "API settings that keep your data out of model training",
+      "Human handoff for uncertain cases",
+      "Your data excluded from model training",
     ],
     faqs: [
       {
-        question: "Will the chatbot make things up?",
+        question: "How do you prevent inaccurate answers?",
         answer:
-          "It answers only from the documents you give it and shows its source. When it isn't confident, it says so and hands the chat to a person. We test this on your real questions before launch.",
+          "The assistant answers only from approved documents and cites its sources. When confidence is low, it transfers the conversation to your team.",
       },
       {
         question: "What does it cost to build and run?",
         answer:
-          "Builds start at ₹1.8 lakh. Running cost depends on volume, because model usage is billed per request. We estimate it before launch and cap monthly spend.",
+          "Builds start at ₹1,80,000. Running costs depend on usage and are estimated and capped before launch.",
       },
       {
-        question: "Is our data safe?",
+        question: "Is our data secure?",
         answer:
-          "Data stays in your cloud account or ours under contract. We use the providers' business API terms, which exclude your data from model training, and mask personal details where we can.",
+          "Yes. Data remains in a secure cloud account under contract, and we use business API terms that exclude your data from model training.",
       },
       {
         question: "Which AI models do you use?",
         answer:
-          "OpenAI, Anthropic's Claude or open-source models, chosen on accuracy and cost for your task. You aren't locked to one provider.",
+          "We select from OpenAI, Anthropic Claude and open-source models based on accuracy and cost for your use case.",
       },
       {
-        question: "Can it work on WhatsApp?",
+        question: "Can the assistant work on WhatsApp?",
         answer:
-          "Yes, through the official WhatsApp Business API, either via Meta's Cloud API or a provider such as Gupshup or Interakt.",
+          "Yes. We integrate through the official WhatsApp Business API, either directly or through a provider such as Gupshup or Interakt.",
       },
       {
-        question: "Do we need AI, or just automation?",
+        question: "Do we need AI or rule-based automation?",
         answer:
-          "Often just automation. Routing leads or syncing orders needs rules, not a model. We tell you which, and the rules-only version costs less.",
+          "Many workflows only require rule-based automation, which costs less to build and run. We recommend the most suitable option during the workflow review.",
       },
     ],
     related: ["custom-software", "web-development", "support-maintenance"],
@@ -1522,25 +1519,25 @@ export const services: readonly Service[] = [
     slug: "managed-hosting",
     name: "Hosting & domains",
     shortName: "Hosting",
-    summary: "Domains, hosting, SSL, business email and backups, set up and watched for you.",
+    summary: "Secure managed hosting, domains and business email with proactive monitoring.",
     description:
-      "We register or move your domain, host your site or app, set up SSL and business email, and keep nightly backups. Monitoring runs around the clock, and if something goes down, our engineer gets the alert, not you. It runs in an account in your name, billed at cost.",
+      "Managed hosting, domain management, SSL, business email and backups for websites and applications. Our team monitors your infrastructure around the clock and responds promptly to any incident.",
     icon: "server",
     accent: ["#06b6d4", "#10b981"],
     priceFrom: 25_000,
     typicalTimeline: "3–7 days to migrate",
     outcomes: [
-      "99.95% uptime SLA in writing on Business and Critical plans",
-      "Nightly backups, restore-tested every month",
-      "Domain, SSL and email renewals that never lapse quietly",
+      "Uptime backed by a written SLA",
+      "Nightly backups with monthly restore tests",
+      "Renewals tracked and managed",
     ],
     deliverables: [
-      "Domain and DNS in your name",
-      "Hosting set up or migrated",
-      "SSL, CDN and firewall live",
-      "Business email configured",
-      "Backups and monitoring switched on",
-      "Access sheet with every login and renewal date",
+      "Domain and DNS configuration",
+      "Hosting set-up or migration",
+      "SSL, CDN and firewall",
+      "Business email configuration",
+      "Backups and monitoring",
+      "Access register with renewal dates",
     ],
     stack: [
       "AWS",
@@ -1553,43 +1550,43 @@ export const services: readonly Service[] = [
     ],
     featured: false,
     group: "run",
-    headline: "Hosting and email that someone watches",
+    headline: "Secure, monitored hosting for your websites and applications",
     subheadline:
-      "We register your domain, host your site or app, set up SSL and business email, and monitor it around the clock. Accounts in your name, billed at cost.",
-    seoTitle: "Managed Hosting, Domains & Email",
+      "We manage your domains, hosting, SSL and business email, with 24×7 monitoring and infrastructure billed at cost.",
+    seoTitle: "Managed hosting, domains and email",
     seoDescription:
-      "Managed hosting on AWS, Vercel and Cloudflare with SSL, nightly backups and monitoring. Domains and business email set up. Plans from ₹8,000/month.",
+      "Managed hosting on AWS, Vercel and Cloudflare with SSL, nightly backups and 24×7 monitoring, plus domain registration and business email set-up.",
     audience: [
       {
-        title: "Sites that keep going down",
-        body: "Cheap shared hosting, slow pages, and nobody to call when it breaks.",
+        title: "Websites with frequent downtime",
+        body: "Businesses on low-cost shared hosting that need reliable performance and responsive support.",
       },
       {
-        title: "Teams that inherited a mess",
-        body: "Nobody knows who holds the domain login, when SSL expires or where the backups are.",
+        title: "Businesses with unclear access",
+        body: "Organisations unsure who holds domain credentials, when certificates expire or where backups are stored.",
       },
       {
-        title: "Apps that carry revenue",
-        body: "Stores, portals and SaaS products where an hour offline costs real money.",
+        title: "Revenue-critical applications",
+        body: "Stores, portals and SaaS products where downtime has a direct commercial impact.",
       },
     ],
     problems: [
       {
-        problem: "You hear about downtime from a customer.",
+        problem: "Undetected downtime",
         solution:
-          "Uptime checks every 5 minutes, alerts to our on-call engineer, and a status update to you.",
+          "Uptime checks every five minutes, with alerts to our on-call engineer and status updates to your team.",
       },
       {
-        problem: "The domain or SSL lapses without warning.",
-        solution: "Renewals tracked and set to auto-renew, with reminders well before anything expires.",
+        problem: "Expired domains or certificates",
+        solution: "Renewals tracked and automated, with reminders well in advance.",
       },
       {
-        problem: "Nobody has tested the backups.",
+        problem: "Untested backups",
         solution:
-          "Nightly backups kept for 14 to 30 days, with a restore test every month on Business plans.",
+          "Nightly backups retained for 14–30 days, with monthly restore tests on Business plans.",
       },
       {
-        problem: "Pages load slowly for Indian visitors.",
+        problem: "Slow performance for Indian visitors",
         solution:
           "Cloudflare CDN, image optimisation and hosting in Indian regions such as AWS Mumbai.",
       },
@@ -1597,23 +1594,23 @@ export const services: readonly Service[] = [
     features: [
       {
         title: "Domains and DNS",
-        body: "New domains or transfers, DNS on Cloudflare, every record documented.",
+        body: "Domain registration and transfers, DNS on Cloudflare and fully documented records.",
       },
       {
-        title: "Hosting or migration",
-        body: "AWS, Vercel or managed WordPress hosting, moved over with no downtime.",
+        title: "Hosting and migration",
+        body: "AWS, Vercel or managed WordPress hosting, with zero-downtime migration.",
       },
       {
         title: "SSL, CDN and firewall",
-        body: "SSL on every domain, Cloudflare CDN, WAF and rate limiting against bots.",
+        body: "SSL on every domain, Cloudflare CDN, a web application firewall and bot protection.",
       },
       {
         title: "Business email",
-        body: "Google Workspace or Zoho Mail with SPF, DKIM and DMARC, so mail lands in inboxes.",
+        body: "Google Workspace or Zoho Mail with SPF, DKIM and DMARC for reliable delivery.",
       },
       {
         title: "Backups and restores",
-        body: "Nightly backups with 14–30 day retention, and restores we actually test.",
+        body: "Nightly backups with 14–30 day retention and regular restore testing.",
       },
       {
         title: "24×7 monitoring",
@@ -1623,69 +1620,68 @@ export const services: readonly Service[] = [
     process: [
       {
         title: "Audit",
-        body: "We list every domain, server, login and renewal date you have today.",
+        body: "We document every domain, server, login and renewal date in your current set-up.",
         duration: "Day 1–2",
       },
       {
-        title: "Plan",
-        body: "Pick the plan and hosting that fit, and schedule the move for a quiet hour.",
+        title: "Planning",
+        body: "We recommend the right plan and hosting, and schedule the migration for a low-traffic period.",
         duration: "Day 2–3",
       },
       {
-        title: "Migrate",
-        body: "Copy, test on a staging URL, then switch DNS with no downtime.",
+        title: "Migration",
+        body: "Your site is copied and tested on a staging URL before DNS is switched without downtime.",
         duration: "Day 3–6",
       },
       {
-        title: "Monitor",
-        body: "Uptime checks, backups and alerts go live, and you get the access sheet.",
+        title: "Monitoring",
+        body: "Uptime checks, backups and alerts are activated, and you receive a complete access register.",
         duration: "Day 7",
       },
       {
-        title: "Run",
-        body: "Patches, renewals and a monthly health report, handled by us.",
+        title: "Ongoing management",
+        body: "Security patches, renewals and a monthly health report, managed by our team.",
         duration: "Ongoing",
       },
     ],
     priceLabel: "Setup from ₹25,000",
     priceNote:
-      "Monthly care plans: Essential ₹8,000, Business ₹25,000, Critical ₹65,000. Cloud, domain and email fees are billed at cost.",
+      "Monthly plans: Essential ₹8,000, Business ₹25,000 and Critical ₹65,000. Cloud, domain and email fees are billed at cost.",
     commitments: [
       "99.95% uptime SLA on Business, 99.99% on Critical",
-      "Accounts in your name, infrastructure billed at cost",
+      "Infrastructure billed at cost",
       "Monthly restore test on Business and Critical",
-      "First response under 30 minutes on Business",
+      "First response within 30 minutes on Business",
     ],
     faqs: [
       {
-        question: "Why not just buy cheap shared hosting?",
+        question: "Why choose managed hosting over shared hosting?",
         answer:
-          "For a small brochure site it can be enough. Once leads or sales depend on the site, you need backups that restore, monitoring, and someone who responds when it fails. That is what you pay us for.",
+          "Shared hosting can suit a small brochure site. Once your business depends on its website, managed hosting provides tested backups, monitoring and a responsive support team.",
       },
       {
-        question: "Will the migration take my site offline?",
+        question: "Will the migration cause downtime?",
         answer:
-          "No. We build and test a copy on a staging URL, lower DNS TTLs in advance and switch over in a quiet hour. Email keeps flowing throughout.",
+          "No. We test a full copy on a staging URL and switch DNS during a low-traffic period, and email continues uninterrupted.",
       },
       {
         question: "Who owns the domain and hosting?",
         answer:
-          "You do. Domains and cloud accounts are registered to your business. We work as an authorised user and bill infrastructure at cost.",
+          "Your business does. Domains and cloud accounts are registered to you, and we operate as an authorised user.",
       },
       {
-        question: "Can you host a site you didn't build?",
+        question: "Can you host a website you did not build?",
         answer:
-          "Yes: WordPress, Next.js, Laravel, Node.js or static sites. We audit it first and flag anything risky.",
+          "Yes. We host WordPress, Next.js, Laravel, Node.js and static sites after an initial audit.",
       },
       {
-        question: "What do the care plans include?",
-        answer:
-          `Essential (₹8,000/month) covers managed deploys, CDN, nightly backups and 5-minute uptime checks. Business (₹25,000) adds 24×7 on-call, a WAF and a 99.95% SLA. Critical (₹65,000) adds multi-region failover and a 15-minute response. Plan clients email ${site.supportEmail} for anything they need.`,
+        question: "What do the monthly plans include?",
+        answer: `Essential (₹8,000 per month) covers managed deployments, CDN, nightly backups and uptime checks. Business (₹25,000) adds 24×7 on-call support, a web application firewall and a 99.95% SLA, while Critical (₹65,000) adds multi-region failover and a 15-minute response. Plan clients can email ${site.supportEmail} with any request.`,
       },
       {
         question: "Do you set up business email?",
         answer:
-          "Yes. Google Workspace or Zoho Mail on your domain, with SPF, DKIM and DMARC so your emails don't land in spam.",
+          "Yes. We configure Google Workspace or Zoho Mail on your domain, with SPF, DKIM and DMARC for reliable delivery.",
       },
     ],
     related: ["support-maintenance", "business-websites", "web-development"],
@@ -1694,23 +1690,23 @@ export const services: readonly Service[] = [
     slug: "support-maintenance",
     name: "Maintenance & support",
     shortName: "Support",
-    summary: "Updates, fixes and security patches for your site or app, on a fixed monthly fee.",
+    summary: "Ongoing updates, security patches and technical support for your platforms.",
     description:
-      "Plugin and dependency updates, security patches, bug fixes and small content changes, handled by a named team with published response times. Inherited a site or app nobody maintains? We audit it first, fix what is fragile, then keep it current. Fixed monthly fee, no surprise invoices.",
+      "Ongoing maintenance for websites and applications, including updates, security patches, bug fixes and content changes. A dedicated team works to published response times for a fixed monthly fee.",
     icon: "shield",
     accent: ["#10b981", "#6366f1"],
     priceFrom: 40_000,
-    typicalTimeline: "Onboard in 1 week",
+    typicalTimeline: "One-week onboarding",
     outcomes: [
-      "Critical issues answered within 30 minutes on the Business plan",
-      "Plugins, dependencies and certificates updated before they expire",
-      "A monthly health report you can forward to your board",
+      "Fast response to critical issues",
+      "Software kept current and secure",
+      "Monthly health reporting",
     ],
     deliverables: [
       "Onboarding audit report",
-      "Staging copy for safe updates",
+      "Staging environment for safe updates",
       "Monthly updates and security patches",
-      "Bug fixes and small changes",
+      "Bug fixes and minor changes",
       "Monitoring and alerting",
       "Monthly health report",
     ],
@@ -1725,136 +1721,134 @@ export const services: readonly Service[] = [
     ],
     featured: false,
     group: "run",
-    headline: "Sites and apps kept secure and current",
+    headline: "Maintenance and support that keep your platforms secure",
     subheadline:
-      "Updates, security patches, bug fixes and small changes, handled every month by a named team with published response times. One fixed monthly fee.",
-    seoTitle: "Website & App Maintenance Plans",
+      "We manage updates, security patches, bug fixes and minor enhancements every month, with a dedicated team and published response times.",
+    seoTitle: "Website and app maintenance plans",
     seoDescription:
-      "Website and app maintenance from ₹40,000. Security patches, plugin and dependency updates, bug fixes, monitoring and a monthly health report.",
+      "Website and app maintenance plans covering security patches, plugin and dependency updates, bug fixes, monitoring and monthly health reports.",
     audience: [
       {
-        title: "Businesses whose developer moved on",
-        body: "The freelancer or agency that built it is gone, and nobody wants to touch the code.",
+        title: "Businesses without a developer",
+        body: "Companies whose original developer or agency is no longer available.",
       },
       {
-        title: "WordPress sites with 30 plugins",
-        body: "Every update feels risky, so nothing has been updated in a year.",
+        title: "WordPress websites",
+        body: "Sites with many plugins, where updates have been postponed because of the risk involved.",
       },
       {
-        title: "Apps in daily use",
-        body: "Customers depend on it, and you need fixes the same day, not next sprint.",
+        title: "Business-critical applications",
+        body: "Applications in daily use that require prompt and dependable fixes.",
       },
     ],
     problems: [
       {
-        problem: "Updates break things, so nobody updates.",
-        solution: "We update a staging copy first, test key pages and flows, then push to live.",
+        problem: "Risky updates",
+        solution: "Updates applied to a staging copy and tested before release to production.",
       },
       {
-        problem: "Security holes go unpatched.",
-        solution: "Monthly patching, malware scans and dependency alerts through Dependabot.",
+        problem: "Unpatched vulnerabilities",
+        solution: "Monthly patching, malware scanning and automated dependency alerts.",
       },
       {
-        problem: "Bugs wait weeks for a fix.",
+        problem: "Slow bug resolution",
+        solution: "A ticketing system with published response times and a dedicated engineer.",
+      },
+      {
+        problem: "Limited visibility",
         solution:
-          "A ticket queue with published response times, and a named engineer who knows your code.",
-      },
-      {
-        problem: "Nobody knows the state of the site.",
-        solution:
-          "A monthly health report: updates done, uptime, speed, issues fixed and what's next.",
+          "A monthly health report covering updates, uptime, performance and resolved issues.",
       },
     ],
     features: [
       {
         title: "Code and security audit",
-        body: "We review the code, plugins, hosting and access before we take responsibility.",
+        body: "A review of code, plugins, hosting and access before we assume responsibility.",
       },
       {
         title: "Monthly updates",
-        body: "Core, plugin, library and OS updates, tested on staging first.",
+        body: "Core, plugin, library and operating system updates, tested on staging first.",
       },
       {
         title: "Bug fixes",
-        body: "Broken pages, forms and features fixed, in order of business impact.",
+        body: "Pages, forms and features repaired in order of business impact.",
       },
       {
-        title: "Small changes",
-        body: "Content edits, new sections and minor features within your monthly hours.",
+        title: "Minor enhancements",
+        body: "Content edits, new sections and small features within your monthly allowance.",
       },
       {
         title: "Monitoring",
-        body: "Uptime checks, Sentry error tracking and alerts routed to our on-call.",
+        body: "Uptime checks, error tracking and alerts routed to our on-call team.",
       },
       {
         title: "Monthly health report",
-        body: "One page you can forward to management: what changed, what broke, what's next.",
+        body: "A one-page summary for management covering changes, issues and next steps.",
       },
     ],
     process: [
       {
-        title: "Handover",
-        body: "We collect access to code, hosting, domains and accounts, and document all of it.",
+        title: "Onboarding",
+        body: "We gather access to code, hosting, domains and accounts, and document everything.",
         duration: "Day 1–3",
       },
       {
         title: "Audit",
-        body: "Code, plugins, security and performance reviewed, with risks listed by priority.",
+        body: "A review of code, plugins, security and performance, with risks ranked by priority.",
         duration: "Day 3–7",
       },
       {
-        title: "Stabilise",
-        body: "Urgent issues fixed, and staging, backups and monitoring set up.",
+        title: "Stabilisation",
+        body: "Urgent issues are resolved, and staging, backups and monitoring are configured.",
         duration: "Week 2",
       },
       {
-        title: "Monthly care",
-        body: "Updates, patches, fixes and small changes worked from your ticket queue.",
+        title: "Monthly maintenance",
+        body: "Updates, patches, fixes and minor changes, managed through your ticket queue.",
         duration: "Monthly",
       },
       {
         title: "Review",
-        body: "The monthly health report, and a short call on what to improve next.",
+        body: "The monthly health report, followed by a short call to plan improvements.",
         duration: "Monthly",
       },
     ],
     priceNote:
-      "Covers the onboarding audit, stabilisation and first month. After that, a fixed monthly fee set by the size of your site or app.",
+      "Includes the onboarding audit, stabilisation and the first month. A fixed monthly fee, based on the size of your platform, applies thereafter.",
     commitments: [
-      "First response under 30 minutes on critical issues",
-      "Every update tested on staging first",
-      "A named engineer who knows your code",
-      "Pause or cancel any time",
+      "First response within 30 minutes on critical issues",
+      "Every update tested on staging",
+      "A dedicated engineer for your account",
+      "Pause or cancel at any time",
     ],
     faqs: [
       {
-        question: "Can you maintain a site or app someone else built?",
+        question: "Can you maintain a site or app built by another team?",
         answer:
-          "Yes. We start with an audit, so we understand the code and its risks before we take responsibility for it.",
+          "Yes. We begin with an audit to understand the code and its risks before taking responsibility for it.",
       },
       {
-        question: "What counts as a small change?",
+        question: "What counts as a minor change?",
         answer:
-          "Text and image edits, new sections on existing pages, form changes and minor features. Anything larger is quoted separately before we start.",
+          "Text and image edits, new sections on existing pages, form updates and small features. Larger requests are quoted separately.",
       },
       {
-        question: "How fast do you respond?",
-        answer: `Under 30 minutes for critical issues on our Business plan, and next business day on Essential. Raise a request by emailing ${site.supportEmail}, or call ${site.phone} if it is critical. Every ticket shows its status.`,
+        question: "How quickly do you respond?",
+        answer: `Critical issues receive a response within 30 minutes on the Business plan and by the next business day on Essential. Email ${site.supportEmail} to raise a request, or call ${site.phone} for critical issues.`,
       },
       {
-        question: "Do you handle WordPress plugin updates?",
+        question: "Do you manage WordPress plugin updates?",
         answer:
-          "Yes. We update core, themes and plugins on a staging copy, test key pages and forms, then roll out. Abandoned plugins get replaced.",
+          "Yes. We update core, themes and plugins on a staging copy and test key pages before release. Unsupported plugins are replaced.",
       },
       {
-        question: "Is there a lock-in period?",
-        answer:
-          "No. You can pause or cancel any time, and you keep every login, document and line of code.",
+        question: "Is there a minimum contract period?",
+        answer: "No. You can pause or cancel your plan at any time.",
       },
       {
-        question: "What does maintenance cost?",
+        question: "How much does maintenance cost?",
         answer:
-          "Onboarding starts at ₹40,000, covering the audit, stabilisation and first month. After that you pay a fixed monthly fee based on the size of your site or app and the response time you need.",
+          "Onboarding starts at ₹40,000, including the audit, stabilisation and the first month. A fixed monthly fee applies thereafter.",
       },
     ],
     related: ["managed-hosting", "business-websites", "app-development"],
@@ -1942,7 +1936,7 @@ export const caseStudies: readonly CaseStudy[] = [
     challenge:
       "Engineers filled paper job cards because the old app lost data whenever connectivity dropped. Back-office re-entry added two days to every billing cycle.",
     approach: [
-      "Shadowed engineers on site to find where connectivity actually failed",
+      "Observed field engineers on site to identify where connectivity failed",
       "Designed an offline-first data model with deterministic conflict rules",
       "Built one React Native codebase for the mixed iOS and Android fleet",
       "Shipped over-the-air updates so fixes land without a store review",
@@ -2129,50 +2123,44 @@ export interface ProcessStep {
 export const processSteps: readonly ProcessStep[] = [
   {
     step: "001",
-    title: "Discovery call",
+    title: "Discovery",
     duration: "30 minutes",
-    description:
-      "A free call about your business, your customers and what the site has to achieve. We review your current site and two or three competitors, and say so plainly if we are not the right team.",
+    description: "Understanding your business, goals and audience.",
     deliverable: "Free 30-minute call | Goals and competitor notes | Draft page list",
   },
   {
     step: "002",
-    title: "Scope & fixed quote",
+    title: "Strategy & proposal",
     duration: "2–5 days",
-    description:
-      "A written proposal with the pages, features, timeline, payment milestones and one fixed price. You know the full cost before you pay anything.",
+    description: "Defining scope, timeline and investment.",
     deliverable: "Written scope | Fixed price | Dated milestones",
   },
   {
     step: "003",
     title: "Design",
     duration: "1–2 weeks",
-    description:
-      "Key pages designed in Figma for mobile and desktop, in your brand. You click through the prototype and request changes before any code is written.",
+    description: "Wireframes, visual design and interactive prototypes.",
     deliverable: "Mobile and desktop designs | Clickable prototype | Your sign-off",
   },
   {
     step: "004",
-    title: "Build",
+    title: "Development",
     duration: "2–3 weeks",
-    description:
-      "We build the approved design on WordPress, Shopify or custom code. You follow progress on a live preview link, with a written update every week.",
+    description: "Engineering, integrations and quality assurance.",
     deliverable: "Live preview link | Weekly update | Content and images loaded",
   },
   {
     step: "005",
     title: "Launch",
     duration: "2–3 days",
-    description:
-      "We test on real phones and browsers, check speed and SEO, and connect forms and analytics. Then we point your domain, go live and train your team to edit the site.",
+    description: "Deployment, testing and go-live support.",
     deliverable: "Device and browser testing | Domain and go-live | Editing walkthrough",
   },
   {
     step: "006",
-    title: "Support",
+    title: "Support & growth",
     duration: "3 months included",
-    description:
-      "Bug fixes and small changes at no extra cost for three months after launch. After that, an optional monthly care plan covers updates, backups and security patches.",
+    description: "Maintenance, optimisation and continuous improvement.",
     deliverable: "Bug fixes | Small changes | Backups and updates",
   },
 ];
@@ -2189,62 +2177,61 @@ export const faqs: readonly Faq[] = [
     group: "Before you start",
     question: "How much does a website cost?",
     answer:
-      "Landing pages start at ₹5,000 and full business websites at ₹25,000 for up to 8 pages, with SEO setup and 3 months of support included. Online stores, web apps and mobile apps start at ₹50,000. Your final price is fixed in a written quote before work starts, and all prices exclude GST.",
+      "Landing pages start at ₹5,000 and complete business websites at ₹25,000. Larger projects are quoted after a short discovery call.",
   },
   {
     group: "Before you start",
     question: "How long does a project take?",
     answer:
-      "A landing page goes live in about a week. A business website typically takes 3 to 6 weeks from the first call to launch, and an online store 4 to 10 weeks. Web apps take 8 to 12 weeks and mobile apps 8 to 16. Your quote sets a date for every milestone.",
+      "A business website typically takes three to six weeks. Applications and custom software are scheduled in the proposal.",
   },
   {
     group: "Before you start",
-    question: "What happens on the discovery call?",
+    question: "What is included in the discovery call?",
     answer:
-      "It is a free 30-minute call about your business, your customers and what the project has to achieve. You leave with a rough scope, a realistic timeline and a price range. If you want to proceed, a written fixed quote follows within 2 to 5 days.",
+      "A free 30-minute consultation to understand your goals, followed by a written proposal.",
   },
   {
     group: "Before you start",
-    question: "How do payments work?",
-    // TODO(owner): confirm the standard milestone split before publishing exact percentages.
+    question: "How are payments structured?",
     answer:
-      "You pay in milestones set out in your quote: an advance to book the work, a payment on design approval and the balance at launch. We accept UPI, bank transfer and cards, with a GST invoice for every payment. Anything outside the agreed scope is quoted separately and starts only after you approve it.",
+      "Payments are milestone-based and set out in the proposal before work begins.",
   },
   {
     group: "Before you start",
-    question: "Who owns the website and the code?",
+    question: "Who owns the website and code?",
     answer:
-      "You do, from day one. The domain, hosting and code accounts are registered in your name, and you receive every login. If you move to another developer, there is nothing to hand back and nothing held back.",
+      "You do. All code, domains and accounts are transferred to your business.",
   },
   {
     group: "Before you start",
-    question: "Do I need a domain and hosting before we start?",
+    question: "Do you provide hosting and domains?",
     answer:
-      "No. We connect your existing domain or help you register one in your name, then set up hosting and SSL in your own account. Domain and hosting fees are paid directly to the providers, at cost.",
+      "Yes. We can register domains and provide managed hosting, or work with your existing provider.",
   },
   {
     group: "Help & support",
     question: "Can I update the website myself?",
     answer:
-      "Yes. We build on WordPress or a simple content editor, so you can change text, photos, prices and blog posts without a developer. Before launch we train your team on a call and leave a short written guide.",
+      "Yes. We build on easy-to-use content management systems and provide a training session at handover.",
   },
   {
     group: "Help & support",
     question: "What support do I get after launch?",
     answer:
-      `Landing pages and website builds include 3 months of support and application builds 6 to 8 months, covering bug fixes and small changes at no extra cost. After that, care plans start at ₹8,000 a month for updates, backups, security patches and uptime checks. Email ${site.supportEmail} for fixes, changes and hosting, or call or WhatsApp the same team, ${site.hours}.`,
+      `Every project includes three months of support. Ongoing maintenance plans are available. Support requests go to ${site.supportEmail}.`,
   },
   {
     group: "Performance & quality",
-    question: "Will my website show up on Google?",
+    question: "Will my website rank on Google?",
     answer:
-      "Every site launches with page titles, a sitemap, Google Search Console, Google Analytics and your Google Business Profile connected, so customers can find you by name. Ranking for competitive searches takes months of content and links, which our SEO and marketing service covers.",
+      "Every site is built with technical SEO best practices. Ongoing SEO campaigns are available as a separate service.",
   },
   {
     group: "Performance & quality",
-    question: "Can you redesign my existing website?",
+    question: "Can you redesign an existing website?",
     answer:
-      "Yes. We first review what your current site does well, where it is slow and which pages bring in enquiries. The redesign carries over your content and web addresses, with redirects for anything that moves, to protect your existing Google rankings.",
+      "Yes. We audit your current site, preserve what works and plan a migration that protects your search rankings.",
   },
 ];
 
@@ -2264,10 +2251,10 @@ export interface Stat {
 
 /** Working-model facts only: no client counts or track-record figures until verified. */
 export const stats: readonly Stat[] = [
-  { value: 30, suffix: " min", label: "Free discovery call", hint: "No obligation" },
-  { value: 1, suffix: "", label: "Fixed written quote", hint: "Before work starts" },
-  { value: 3, suffix: " months", label: "Support after launch", hint: "Included in every website build" },
-  { value: 100, suffix: "%", label: "Yours to keep", hint: "Domain, code and hosting" },
+  { value: 30, suffix: " min", label: "Free consultation", hint: "Followed by a written proposal" },
+  { value: 1, suffix: "", label: "Fixed-price proposal", hint: "Agreed before work begins" },
+  { value: 3, suffix: " months", label: "Post-launch support", hint: "Included with every project" },
+  { value: 100, suffix: "%", label: "Complete ownership", hint: "Code, domains and accounts" },
 ];
 
 export const techStack: readonly { name: string; category: string }[] = [

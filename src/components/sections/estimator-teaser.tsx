@@ -7,18 +7,18 @@ import { Section } from "@/components/ui/section";
 const POINTS = [
   {
     Icon: Calculator,
-    title: "A real range, from our rate card",
-    body: "Not a lead form that promises a number later. The price updates as you choose.",
+    title: "Indicative price range",
+    body: "Calculated from our published rate card and updated as you select options.",
   },
   {
     Icon: Clock,
-    title: "Timeline and team size too",
-    body: "See how many weeks and how many people your scope needs.",
+    title: "Timeline and team size",
+    body: "The expected duration and team required for your scope.",
   },
   {
     Icon: FileText,
-    title: "Milestones you can budget against",
-    body: "The payment schedule, split across discovery, design, build and launch.",
+    title: "Payment milestones",
+    body: "A payment schedule divided across discovery, design, development and launch.",
   },
 ] as const;
 
@@ -39,13 +39,12 @@ export function EstimatorTeaser() {
                 Instant quote
               </span>
               <h2 className="mt-3 text-3xl font-semibold leading-tight text-foreground sm:text-4xl">
-                Find out what your project costs
+                Estimate your project investment
                 <span className="text-gradient"> before you talk to anyone</span>
               </h2>
               <p className="mt-4 max-w-lg text-[1.02rem] leading-relaxed text-muted-foreground">
-                Choose the service, the size and how fast you need it. You get a
-                price range, a realistic timeline and a payment schedule in about a
-                minute. No call required.
+                Select a service, scope and timeline to receive an indicative price
+                range, delivery schedule and payment plan.
               </p>
 
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
@@ -54,7 +53,7 @@ export function EstimatorTeaser() {
                   <ArrowRight className="size-4" aria-hidden />
                 </ButtonLink>
                 <ButtonLink href="/pricing" size="lg" variant="secondary">
-                  See plan pricing
+                  View pricing
                 </ButtonLink>
               </div>
             </div>

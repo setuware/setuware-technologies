@@ -6,33 +6,33 @@ import { Section, SectionHeading } from "@/components/ui/section";
 const POINTS = [
   {
     Icon: KeyRound,
-    title: "You own everything",
-    body: "The domain, code, repository and hosting accounts are in your name from day one. Handover notes are written for a developer who has never met us. Moving on should be easy.",
+    title: "Complete ownership",
+    body: "Your code, domains and accounts remain yours, with full documentation provided at handover.",
   },
   {
     Icon: FileCheck2,
-    title: "Fixed price, written scope",
-    body: "The proposal lists what is included and what is not. You get one fixed price before work starts. Anything new is quoted separately, and only built once you approve it.",
+    title: "Transparent pricing",
+    body: "Every engagement begins with a detailed proposal and a fixed quote. Additional requirements are priced and approved before work begins.",
   },
   {
     Icon: Gauge,
-    title: "Speed checked before launch",
-    body: "Every build is tested on mid-range Android phones over 4G, with Lighthouse and Core Web Vitals checks before go-live. Slow pages are fixed, not shipped.",
+    title: "Performance and security",
+    body: "Fast, secure builds that follow industry best practices and are tested across devices before go-live.",
   },
   {
     Icon: Timer,
-    title: "A live preview every week",
-    body: "From the first week of the build, your site or app sits on a live preview link. A short weekly demo shows what changed and what is next.",
+    title: "Regular progress reviews",
+    body: "A live preview from the first week of development and a weekly demonstration of progress.",
   },
   {
     Icon: Code2,
-    title: "Engineers on your calls",
-    body: "The person answering your technical question is the person writing the code. Nothing gets lost between an account manager and the developer.",
+    title: "Dedicated project team",
+    body: "A dedicated project manager and direct access to the engineers building your product.",
   },
   {
     Icon: HeartHandshake,
-    title: "Fixes after go-live",
-    body: "Every website includes three months of fixes after go-live. Care plans then keep it patched, backed up and monitored by the people who built it.",
+    title: "Post-launch support",
+    body: "Every website includes three months of support, with optional maintenance plans thereafter.",
   },
 ] as const;
 
@@ -41,9 +41,9 @@ export function Differentiators() {
     <Section id="why-us">
       <div className="container-page">
         <SectionHeading
-          eyebrow="How we work"
-          title="What goes wrong elsewhere, handled here"
-          description="Missed deadlines, moving prices and lost logins stall more projects than bad code. These six habits prevent them."
+          eyebrow="Why Setuware Technologies"
+          title="A dependable partner for every project"
+          description="Six principles that keep every engagement on time, on budget and fully transparent."
         />
 
         <div className="mt-14 grid gap-x-10 gap-y-9 md:grid-cols-2 lg:grid-cols-3">

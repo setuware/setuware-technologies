@@ -78,7 +78,7 @@ export const postBodies: Record<string, readonly Block[]> = {
   "fixed-price-software-honestly": [
         {
           type: "p",
-          text: "Clients want a number before they commit. Agencies want protection against a scope that keeps growing. Those two wants are not actually in conflict — but resolving them requires writing down what is out of scope, which is the part most proposals skip.",
+          text: "Clients want a number before they commit. Agencies want protection against a scope that keeps growing. These goals are compatible, but aligning them requires writing down what is out of scope, which is the part most proposals skip.",
         },
         { type: "h2", text: "Price the phase, not the product" },
         {
@@ -137,7 +137,7 @@ export const postBodies: Record<string, readonly Block[]> = {
             "Health checks that remove a bad instance without a human",
             "Nightly backups with a monthly restore rehearsal",
             "A WAF and rate limits in front of public endpoints",
-            "Alerts routed to a person who is actually on call",
+            "Alerts routed to the on-call engineer",
             "An incident report written afterwards, not a verbal apology",
           ],
         },

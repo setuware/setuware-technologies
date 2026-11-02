@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Clock } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { serviceStartingPrice, type Service } from "@/lib/content";
 import { servicePhotos } from "@/lib/service-photos";
@@ -35,7 +35,8 @@ const MEDIA_OVERLAY = [
 /**
  * Card used on the services index and in "related services". The whole card is
  * one link: a photo header with the service icon, then the name and summary,
- * with price and timeline in the footer so cards line up in a grid.
+ * with a "Learn more" footer so cards line up in a grid. Prices live on the
+ * service page's pricing card, not here.
  */
 export function ServiceCard({
   service,
@@ -91,11 +92,13 @@ export function ServiceCard({
             {service.summary}
           </p>
 
-          <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-4 text-[0.82rem]">
-            <span className="font-semibold text-foreground">{servicePriceLabel(service)}</span>
-            <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-              <Clock className="size-3.5 text-setu" aria-hidden />
-              {service.typicalTimeline}
+          <div className="mt-auto flex items-center border-t border-border pt-4 text-[0.88rem]">
+            <span className="inline-flex items-center gap-1.5 font-semibold text-setu">
+              Learn more
+              <ArrowRight
+                className="size-4 transition-transform duration-300 group-hover:translate-x-1"
+                aria-hidden
+              />
             </span>
           </div>
         </div>

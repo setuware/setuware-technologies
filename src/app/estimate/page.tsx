@@ -5,24 +5,24 @@ import { Estimator } from "@/components/interactive/estimator";
 import { PageHero } from "@/components/layout/page-hero";
 
 export const metadata = pageMetadata({
-  title: "Instant Project Cost Estimate",
+  title: "Instant project estimate",
   description:
-    "Price your website, store, app or custom software in about a minute. Ranges from our rate card, with timeline, team size and payment milestones.",
+    "Estimate the cost of your website, e-commerce store, app or custom software, with an indicative timeline, team size and payment milestones.",
   path: "/estimate",
 });
 
 const ASSURANCES = [
   {
     Icon: Calculator,
-    text: "Priced from the same rate card we use for real quotes",
+    text: "Calculated from the rate card used for our proposals",
   },
   {
     Icon: ShieldCheck,
-    text: "No call needed. Nothing is sent until you ask for it",
+    text: "No sign-up required, and no details shared without your consent",
   },
   {
     Icon: Sparkles,
-    text: "Share the link with your team. Your choices travel with it",
+    text: "A shareable link that preserves your selections",
   },
 ] as const;
 
@@ -30,9 +30,9 @@ export default function EstimatePage() {
   return (
     <>
       <PageHero
-        eyebrow="Instant quote"
-        title="Your project's cost and timeline, in a minute"
-        description="Choose a service, the size and the features you need. You get a price range, a timeline, the team size and the payment milestones before you speak to anyone."
+        eyebrow="Instant estimate"
+        title="Estimate your project"
+        description="Select a service, scope and features to receive an indicative price range, timeline, team size and payment schedule."
       >
         <ul className="mx-auto mt-8 flex max-w-3xl flex-col gap-2.5 sm:flex-row sm:justify-center sm:gap-6">
           {ASSURANCES.map(({ Icon, text }) => (

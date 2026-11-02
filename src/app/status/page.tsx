@@ -40,7 +40,7 @@ export default function StatusPage() {
       <PageHero
         eyebrow="Status"
         title="All systems operational"
-        description="What we commit to for hosted and supported clients, and where to reach us when something is wrong."
+        description="Service commitments for hosted and supported clients, and how to contact us about an incident."
       />
 
       <Section className="py-14">
@@ -90,9 +90,9 @@ export default function StatusPage() {
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               Clients on a Business or Critical plan should use the shared incident
-              channel — it pages the on-call engineer directly. Everyone else:
-              email {site.supportEmail} with “URGENT” in the subject, or call{" "}
-              {site.phone}.
+              channel, which alerts the on-call engineer directly. All other clients
+              should email {site.supportEmail} with “URGENT” in the subject line or
+              call {site.phone}.
             </p>
             <p className="mt-3 text-xs text-muted-foreground">
               Automated monitors should probe{" "}
