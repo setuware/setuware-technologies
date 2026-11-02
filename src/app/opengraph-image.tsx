@@ -59,7 +59,7 @@ export default function OpengraphImage() {
               maxWidth: 940,
             }}
           >
-            Websites that turn visitors into enquiries.
+            From ideas to production-ready software.
           </div>
           <div style={{ fontSize: 28, color: "rgba(255,255,255,0.78)", maxWidth: 880 }}>
             Business websites · E-commerce · Apps · SEO · Custom software

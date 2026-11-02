@@ -82,7 +82,7 @@ export function Hero() {
                 stagger={0.07}
                 className="text-wrap text-[2.6rem] font-bold leading-[1.03] tracking-[-0.04em] sm:text-[3.6rem] lg:text-[calc(var(--s)*84)] lg:leading-[calc(var(--s)*86)]"
               >
-                Websites that turn visitors into enquiries.
+                From ideas to production-ready software.
               </TextReveal>
 
               <FadeUp immediate delay={0.75} y={24}>
