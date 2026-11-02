@@ -8,9 +8,9 @@ import { FadeUp } from "@/components/motion/primitives";
 import { CaseStudyGrid, type CaseStudyCard } from "./case-study-grid";
 
 export const metadata = pageMetadata({
-  title: "Our work",
+  title: "Case Studies & Recent Projects",
   description:
-    "Case studies from Setuware Technologies: online stores, mobile apps, AI assistants, dashboards, hosting and design systems. Filter by service or industry and see the results clients measured after launch.",
+    "Case studies from Setuware Technologies: online stores, mobile apps, AI assistants, dashboards and hosting. Filter by service or industry.",
   path: "/work",
 });
 
@@ -35,7 +35,7 @@ export default function WorkPage() {
       <PageHero
         eyebrow="Our work"
         title="Projects that are live and doing their job"
-        description="Each case study covers the problem, what we built and the results the client measured after launch. Filter by the service you need or your industry."
+        description="Each case study sets out the problem, what we built and what changed after launch. Filter by the service you need or by industry."
       />
 
       <div className="container-page py-14 md:py-16">
@@ -49,18 +49,18 @@ export default function WorkPage() {
         >
           <div>
             <h2 className="font-display text-lg font-semibold text-foreground">
-              Do not see your industry here?
+              Looking for your sector?
             </h2>
             <p className="mt-1 text-[0.92rem] leading-relaxed text-muted-foreground">
-              We build for shops, clinics, schools, manufacturers, service firms
-              and startups. See how we work in your sector.
+              Retail, healthcare, education, manufacturing, logistics and more.
+              See the problems we fix and what we build for each.
             </p>
           </div>
           <Link
             href="/industries"
             className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-setu px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-setu hover:text-white"
           >
-            Industries we serve
+            Browse industries
             <ArrowRight className="size-4" aria-hidden />
           </Link>
         </FadeUp>

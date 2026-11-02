@@ -167,12 +167,12 @@ export const services: readonly Service[] = [
     ],
     featured: true,
     group: "build",
-    headline: "A website that brings in enquiries, not just compliments",
+    headline: "A website that brings in enquiries",
     subheadline:
-      "We design and build fast company websites on WordPress or Next.js. Calls, WhatsApp taps and form fills are tracked from day one, and your team can edit every page without us.",
-    seoTitle: "Business Website Design & Development",
+      "Fast company websites on WordPress or Next.js, designed around the one action each page should drive. Calls, WhatsApp taps and form fills are tracked from launch, and your team edits every page without us.",
+    seoTitle: "Business Website Development",
     seoDescription:
-      "Business websites on WordPress or Next.js from ₹20,000. Mobile-first design, on-page SEO, GA4 and enquiry tracking, live in 3–6 weeks. Built in Gurugram.",
+      "Business websites on WordPress or Next.js from ₹20,000. Mobile-first design, on-page SEO and enquiry tracking, live in 3–6 weeks. Gurugram team.",
     audience: [
       {
         title: "Businesses with a dated site",
@@ -268,7 +268,7 @@ export const services: readonly Service[] = [
       },
     ],
     priceNote:
-      "Our Website Build package. Final price depends on page count, copywriting and features like booking or multiple languages.",
+      "Our Website Build package. Page count, copywriting and features such as booking or multiple languages set the final price.",
     commitments: [
       "Lighthouse 90+ on mobile at launch",
       "You own the domain, hosting account and code",
@@ -279,7 +279,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does a business website cost?",
         answer:
-          "Our Website Build package starts at ₹20,000 for a focused site of a few pages. The price rises with page count, copywriting and features like booking or multiple languages. The instant estimator gives you a range in two minutes.",
+          "Our Website Build package starts at ₹20,000 for a focused site of a few pages. The price rises with page count, copywriting and features like booking or multiple languages. The instant estimator gives you a range in about a minute.",
       },
       {
         question: "Should I choose WordPress or Next.js?",
@@ -345,12 +345,12 @@ export const services: readonly Service[] = [
     ],
     featured: true,
     group: "build",
-    headline: "An online store that takes orders from day one",
+    headline: "A store that takes orders from day one",
     subheadline:
       "Shopify, WooCommerce or a custom Next.js store, with UPI and card payments, GST invoices and courier pickups wired in before launch.",
-    seoTitle: "E-commerce Website Development: Shopify & WooCommerce",
+    seoTitle: "E-commerce Store Development",
     seoDescription:
-      "Shopify, WooCommerce and custom Next.js stores from ₹60,000. Razorpay payments, GST invoicing, Shiprocket shipping and inventory sync, live in 4–10 weeks.",
+      "Shopify, WooCommerce and custom stores from ₹60,000. UPI and card payments, GST invoices, Shiprocket shipping and stock sync, live in 4–10 weeks.",
     audience: [
       {
         title: "Brands moving off marketplaces",
@@ -519,12 +519,12 @@ export const services: readonly Service[] = [
     ],
     featured: true,
     group: "build",
-    headline: "Web apps, portals and SaaS products, built for production",
+    headline: "Software your customers log in to",
     subheadline:
       "Customer portals, dashboards, booking systems and SaaS MVPs on Next.js, TypeScript and PostgreSQL. A staging link from week two and a demo every week.",
-    seoTitle: "Web Application Development: Portals, Dashboards & SaaS",
+    seoTitle: "Web App & SaaS Development",
     seoDescription:
-      "Custom web apps, customer portals and SaaS MVPs on Next.js and PostgreSQL from ₹1.2L. Fixed scope, weekly demos, code and cloud accounts in your name.",
+      "Customer portals, dashboards and SaaS MVPs on Next.js and PostgreSQL from ₹1.2 lakh. Fixed scope, weekly demos, code in your name.",
     audience: [
       {
         title: "Founders building a SaaS MVP",
@@ -697,12 +697,12 @@ export const services: readonly Service[] = [
     ],
     featured: true,
     group: "build",
-    headline: "iOS and Android apps from one codebase, shipped to both stores",
+    headline: "One codebase, live on both app stores",
     subheadline:
       "We build in React Native or Flutter and handle the parts that sink app projects: offline mode, push notifications, store review and crash tracking.",
-    seoTitle: "Mobile App Development: React Native & Flutter",
+    seoTitle: "iOS & Android App Development",
     seoDescription:
-      "iOS and Android apps in React Native or Flutter from ₹2.2L. Offline sync, push notifications, payments and App Store and Play Store submission, in 8–16 weeks.",
+      "iOS and Android apps in React Native or Flutter from ₹2.2 lakh. Offline sync, push alerts, payments and store submission, in 8–16 weeks.",
     audience: [
       {
         title: "Businesses with repeat customers",
@@ -822,7 +822,7 @@ export const services: readonly Service[] = [
           "We handle submission under developer accounts in your company's name, so the apps and their reviews always belong to you.",
       },
       {
-        question: "What happens after launch?",
+        question: "What happens once the app is live?",
         answer:
           "iOS and Android release major updates every year, and some of them break apps. Our maintenance plans cover OS and library upgrades, crash fixes and small features.",
       },
@@ -861,12 +861,12 @@ export const services: readonly Service[] = [
     stack: ["Figma", "FigJam", "Illustrator", "Photoshop", "Canva", "Storybook"],
     featured: false,
     group: "grow",
-    headline: "A brand and interface people trust at first glance",
+    headline: "A brand people trust at first glance",
     subheadline:
       "Logos, brand identity and app and website screens, designed in Figma by designers who sit with the engineers who build them.",
-    seoTitle: "UI/UX Design & Branding: Logo, Identity and App Design",
+    seoTitle: "UI/UX Design, Logo & Branding",
     seoDescription:
-      "Logo and brand identity, UX flows and website and app UI design in Figma, from ₹90,000. Brand guides, design systems and prototypes your developers can build from.",
+      "Logo, brand identity and website and app UI design in Figma from ₹90,000. Brand guides, design systems and prototypes developers build from.",
     audience: [
       {
         title: "New businesses",
@@ -1029,12 +1029,12 @@ export const services: readonly Service[] = [
     ],
     featured: false,
     group: "grow",
-    headline: "More enquiries from Google, ads and social, reported in rupees",
+    headline: "More enquiries from search and ads",
     subheadline:
       "Technical SEO, local search, Google Ads and Meta campaigns run by one team. Tracking goes in first, so every rupee can be traced to a lead.",
-    seoTitle: "SEO & Digital Marketing: Local SEO, Google Ads, Meta Ads",
+    seoTitle: "SEO & Digital Marketing Services",
     seoDescription:
-      "SEO audits, local SEO, Google Ads and Meta ads from ₹15,000. Conversion tracking first, then monthly reports on leads, rankings and cost per enquiry.",
+      "SEO audits, local SEO, Google Ads and Meta ads from ₹15,000. Conversion tracking first, then monthly reports on leads and cost per enquiry.",
     audience: [
       {
         title: "Local businesses",
@@ -1199,12 +1199,12 @@ export const services: readonly Service[] = [
     ],
     featured: false,
     group: "scale",
-    headline: "One system for your orders, stock, customers and staff",
+    headline: "One system for orders, stock and staff",
     subheadline:
       "Custom ERP, CRM and internal tools built around how your business runs, and connected to Tally, Zoho, Razorpay and WhatsApp.",
-    seoTitle: "Custom Software, ERP & CRM Development",
+    seoTitle: "Custom ERP & CRM Development",
     seoDescription:
-      "Custom ERP, CRM and internal tools from ₹1.5L, built around your process. Integrated with Tally, Zoho, Odoo and WhatsApp, with role-based access and data migration.",
+      "Custom ERP, CRM and internal tools from ₹1.5 lakh, built around your process. Connected to Tally, Zoho and WhatsApp, with your data migrated.",
     audience: [
       {
         title: "SMBs running on Excel",
@@ -1274,7 +1274,7 @@ export const services: readonly Service[] = [
         duration: "Week 1–2",
       },
       {
-        title: "Solution design",
+        title: "System design",
         body: "Modules, roles, reports and integrations agreed, with key screens prototyped in Figma.",
         duration: "Week 2–4",
       },
@@ -1372,12 +1372,12 @@ export const services: readonly Service[] = [
     ],
     featured: false,
     group: "scale",
-    headline: "AI and automation that take repetitive work off your team",
+    headline: "Less data entry, faster customer replies",
     subheadline:
       "Chatbots that answer from your own documents, invoices read into your system, leads routed in seconds. Each one tested for accuracy and cost before it goes live.",
-    seoTitle: "AI Chatbots & Business Process Automation",
+    seoTitle: "AI Chatbots & Workflow Automation",
     seoDescription:
-      "AI chatbots on your documents, WhatsApp assistants, document extraction and workflow automation with OpenAI, Claude and n8n, from ₹1.8L. Accuracy tested before launch.",
+      "AI chatbots on your documents, WhatsApp assistants, invoice extraction and workflow automation from ₹1.8 lakh. Accuracy tested before launch.",
     audience: [
       {
         title: "Support teams answering the same questions",
@@ -1544,12 +1544,12 @@ export const services: readonly Service[] = [
     ],
     featured: false,
     group: "run",
-    headline: "Hosting, domains and email that someone actually watches",
+    headline: "Hosting and email that someone watches",
     subheadline:
       "We register your domain, host your site or app, set up SSL and business email, and monitor it around the clock. Accounts in your name, billed at cost.",
-    seoTitle: "Managed Hosting, Domains & Business Email",
+    seoTitle: "Managed Hosting, Domains & Email",
     seoDescription:
-      "Managed hosting on AWS, Vercel and Cloudflare with SSL, nightly backups and 24×7 monitoring. Domain and business email setup. Care plans from ₹8,000/month.",
+      "Managed hosting on AWS, Vercel and Cloudflare with SSL, nightly backups and monitoring. Domains and business email set up. Plans from ₹8,000/month.",
     audience: [
       {
         title: "Sites that keep going down",
@@ -1693,7 +1693,7 @@ export const services: readonly Service[] = [
     priceFrom: 40_000,
     typicalTimeline: "Onboard in 1 week",
     outcomes: [
-      "First response in under 30 minutes",
+      "Critical issues answered within 30 minutes on the Business plan",
       "Plugins, dependencies and certificates updated before they expire",
       "A monthly health report you can forward to your board",
     ],
@@ -1716,12 +1716,12 @@ export const services: readonly Service[] = [
     ],
     featured: false,
     group: "run",
-    headline: "Your site or app kept fast, secure and up to date",
+    headline: "Sites and apps kept secure and current",
     subheadline:
       "Updates, security patches, bug fixes and small changes, handled every month by a named team with published response times. One fixed monthly fee.",
-    seoTitle: "Website & App Maintenance and Support Plans",
+    seoTitle: "Website & App Maintenance Plans",
     seoDescription:
-      "Website and app maintenance from ₹40,000: security patches, plugin and dependency updates, bug fixes, monitoring and a monthly health report.",
+      "Website and app maintenance from ₹40,000. Security patches, plugin and dependency updates, bug fixes, monitoring and a monthly health report.",
     audience: [
       {
         title: "Businesses whose developer moved on",
@@ -2117,47 +2117,47 @@ export const processSteps: readonly ProcessStep[] = [
     title: "Discovery call",
     duration: "30 minutes",
     description:
-      "A free call about your business, your customers and what the website or app has to do. We look at your current site and two or three competitors. If we are not the right team, we say so on the call.",
-    deliverable: "Free 30-minute call | Goals and competitor notes | Page or feature list",
+      "A free call about your business, your customers and what the site has to achieve. We review your current site and two or three competitors, and say so plainly if we are not the right team.",
+    deliverable: "Free 30-minute call | Goals and competitor notes | Draft page list",
   },
   {
     step: "002",
-    title: "Proposal & fixed quote",
+    title: "Scope & fixed quote",
     duration: "2–5 days",
     description:
-      "A written proposal with the pages or features, the timeline, the payment milestones and one fixed price. You know the full cost before you pay anything.",
-    deliverable: "Written scope | Fixed quote | Timeline and milestones",
+      "A written proposal with the pages, features, timeline, payment milestones and one fixed price. You know the full cost before you pay anything.",
+    deliverable: "Written scope | Fixed price | Dated milestones",
   },
   {
     step: "003",
     title: "Design",
     duration: "1–2 weeks",
     description:
-      "Your home page and key pages designed in Figma, on mobile and desktop, in your brand. You click through the design and ask for changes before any building starts.",
-    deliverable: "Mobile and desktop designs | Clickable preview | Your approval",
+      "Key pages designed in Figma for mobile and desktop, in your brand. You click through the prototype and request changes before any code is written.",
+    deliverable: "Mobile and desktop designs | Clickable prototype | Your sign-off",
   },
   {
     step: "004",
     title: "Build",
     duration: "2–3 weeks",
     description:
-      "We build the approved design on WordPress, Shopify or custom code. You watch it come together on a private preview link and get an update every week.",
-    deliverable: "Private preview link | Weekly update | Content and photos added",
+      "We build the approved design on WordPress, Shopify or custom code. You follow progress on a live preview link, with a written update every week.",
+    deliverable: "Live preview link | Weekly update | Content and images loaded",
   },
   {
     step: "005",
     title: "Launch",
     duration: "2–3 days",
     description:
-      "Testing on real phones, speed and SEO checks, contact forms and analytics wired up. Then we connect your domain, go live and show your team how to edit the site.",
-    deliverable: "Phone and browser testing | Domain and go-live | Editing walkthrough",
+      "We test on real phones and browsers, check speed and SEO, and connect forms and analytics. Then we point your domain, go live and train your team to edit the site.",
+    deliverable: "Device and browser testing | Domain and go-live | Editing walkthrough",
   },
   {
     step: "006",
     title: "Support",
     duration: "3 months included",
     description:
-      "Fixes, small changes and help after launch, at no extra cost for the support window. After that, a monthly care plan covers updates, backups and security patches.",
+      "Bug fixes and small changes at no extra cost for three months after launch. After that, an optional monthly care plan covers updates, backups and security patches.",
     deliverable: "Bug fixes | Small changes | Backups and updates",
   },
 ];
@@ -2174,62 +2174,62 @@ export const faqs: readonly Faq[] = [
     group: "Before you start",
     question: "How much does a website cost?",
     answer:
-      "A business website starts at ₹20,000 on our Website Build package: up to 8 pages, mobile-first, with SEO setup and 3 months of support. Online stores, web apps and mobile apps start at ₹50,000 on Full Application Build. Your exact price depends on the number of pages, features and integrations, and it is fixed in a written quote before work starts. Prices exclude GST. The instant estimator gives you a figure for your scope in about a minute.",
+      "Business websites start at ₹20,000 for up to 8 pages, with SEO setup and 3 months of support included. Online stores, web apps and mobile apps start at ₹50,000. Your final price is fixed in a written quote before work starts, and all prices exclude GST.",
   },
   {
     group: "Before you start",
-    question: "What is a typical timeline?",
+    question: "How long does a project take?",
     answer:
-      "A business website takes 3 to 6 weeks from the first call to going live. An online store takes 4 to 10 weeks, a web app 8 to 12 and a mobile app 8 to 16. The biggest factor is how quickly content and feedback come back from your side. The timeline is written into your quote, with a date for each milestone.",
+      "A business website typically takes 3 to 6 weeks from the first call to launch, and an online store 4 to 10 weeks. Web apps take 8 to 12 weeks and mobile apps 8 to 16. Your quote sets a date for every milestone.",
+  },
+  {
+    group: "Before you start",
+    question: "What happens on the discovery call?",
+    answer:
+      "It is a free 30-minute call about your business, your customers and what the project has to achieve. You leave with a rough scope, a realistic timeline and a price range. If you want to proceed, a written fixed quote follows within 2 to 5 days.",
   },
   {
     group: "Before you start",
     question: "How do payments work?",
     // TODO(owner): confirm the standard milestone split before publishing exact percentages.
     answer:
-      "You pay in milestones written into the quote, not one large amount up front: an advance to book the work, a payment when you approve the design, and the balance at launch. We accept UPI, bank transfer and cards, and every payment gets a GST invoice. If you ask for something new mid-project, we quote it separately and you approve it before we start.",
+      "You pay in milestones set out in your quote: an advance to book the work, a payment on design approval and the balance at launch. We accept UPI, bank transfer and cards, with a GST invoice for every payment. Anything outside the agreed scope is quoted separately and starts only after you approve it.",
   },
   {
     group: "Before you start",
     question: "Who owns the website and the code?",
     answer:
-      "You do, from day one. The domain is registered in your name, the hosting runs in your own account and the code is handed over in full. You get every login and admin password. If you ever move to another developer, there is nothing to transfer and nothing held back.",
+      "You do, from day one. The domain, hosting and code accounts are registered in your name, and you receive every login. If you move to another developer, there is nothing to hand back and nothing held back.",
   },
   {
     group: "Before you start",
-    question: "Do I need to buy a domain and hosting first?",
+    question: "Do I need a domain and hosting before we start?",
     answer:
-      "No. If you already have a domain, we connect it. If not, we help you pick one and register it in your name. We set up hosting, SSL and business email in your own account as part of the build. The yearly domain and hosting fees are paid to the providers at cost; we never mark them up.",
+      "No. We connect your existing domain or help you register one in your name, then set up hosting and SSL in your own account. Domain and hosting fees are paid directly to the providers, at cost.",
   },
   {
     group: "Help & support",
     question: "Can I update the website myself?",
     answer:
-      "Yes. We build on WordPress or a simple content editor, so you can change text, photos, prices and blog posts without a developer. Before launch we walk your team through it on a call and leave a short written guide. Bigger changes, like new page layouts or features, we handle for you.",
+      "Yes. We build on WordPress or a simple content editor, so you can change text, photos, prices and blog posts without a developer. Before launch we train your team on a call and leave a short written guide.",
   },
   {
     group: "Help & support",
-    question: "Do you provide post-launch support?",
+    question: "What support do I get after launch?",
     answer:
-      "Yes. Every build includes a support window: 3 months on Website Build and 6 to 8 months on Full Application Build. During that time we fix bugs and make small changes at no extra cost. You reach the same team that built your site by phone, WhatsApp or email, during Indian business hours.",
-  },
-  {
-    group: "Help & support",
-    question: "What does maintenance cost after launch?",
-    answer:
-      "After the included support window, care plans start at ₹8,000 a month. That covers hosting management, software and plugin updates, security patches, nightly backups, uptime checks and small content changes. Larger plans add round-the-clock monitoring for stores and apps that take payments. You can also skip a plan and pay for changes as you need them.",
+      "Website builds include 3 months of support and application builds 6 to 8 months, covering bug fixes and small changes at no extra cost. After that, care plans start at ₹8,000 a month for updates, backups, security patches and uptime checks. You reach the same team by phone, WhatsApp or email during IST working hours.",
   },
   {
     group: "Performance & quality",
     question: "Will my website show up on Google?",
     answer:
-      "Every site launches SEO-ready: page titles and descriptions, a sitemap, fast load times, Google Search Console, Google Analytics and your Google Business Profile linked. That gets you found for your business name and helps local searches. Ranking for competitive searches takes months of content and links, which our SEO & marketing service handles, with a monthly report on leads.",
+      "Every site launches with page titles, a sitemap, Google Search Console, Google Analytics and your Google Business Profile connected, so customers can find you by name. Ranking for competitive searches takes months of content and links, which our SEO and marketing service covers.",
   },
   {
     group: "Performance & quality",
     question: "Can you redesign my existing website?",
     answer:
-      "Yes. We review your current site first: what is working, what is slow and which pages bring in enquiries. Then we quote a redesign that keeps your Google rankings by carrying over your content and web addresses, with redirects for anything that moves. If a full rebuild is not needed, we tell you, and quote the smaller fix instead.",
+      "Yes. We first review what your current site does well, where it is slow and which pages bring in enquiries. The redesign carries over your content and web addresses, with redirects for anything that moves, to protect your existing Google rankings.",
   },
 ];
 
@@ -2247,12 +2247,12 @@ export interface Stat {
   hint: string;
 }
 
+/** Working-model facts only: no client counts or track-record figures until verified. */
 export const stats: readonly Stat[] = [
-  // TODO(owner): this says 2018 but site.founded is 2020; confirm which is right.
-  { value: 120, suffix: "+", label: "Products shipped", hint: "Since 2018" },
-  { value: 99.95, suffix: "%", label: "Hosting uptime", hint: "Last 12 months" },
-  { value: 30, suffix: " min", label: "First response", hint: "Support SLA" },
-  { value: 14, suffix: "", label: "Countries served", hint: "Across 3 continents" },
+  { value: 30, suffix: " min", label: "Free discovery call", hint: "No obligation" },
+  { value: 1, suffix: "", label: "Fixed written quote", hint: "Before work starts" },
+  { value: 3, suffix: " months", label: "Support after launch", hint: "Included in every website build" },
+  { value: 100, suffix: "%", label: "Yours to keep", hint: "Domain, code and hosting" },
 ];
 
 export const techStack: readonly { name: string; category: string }[] = [

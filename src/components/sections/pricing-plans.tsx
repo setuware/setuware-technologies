@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 const PACKAGE_CTA: Record<string, { href: string; label: string }> = {
   "website-build": { href: "/contact?service=business-websites", label: "Get a website quote" },
   "full-application-build": { href: "/estimate", label: "Estimate my app" },
-  "enterprise-engagement": { href: "/contact?service=custom-software", label: "Talk to us" },
+  "enterprise-engagement": { href: "/contact?service=custom-software", label: "Discuss a large project" },
 };
 
 export function PricingPlans() {
@@ -23,12 +23,12 @@ export function PricingPlans() {
           <SectionHeading
             eyebrow="Build packages"
             title="Three ways to start a project"
-            description="Pick the package closest to what you need. After a free call we send a written scope and one fixed price. That is the number you pay."
+            description="Pick the package closest to your project. After a free 30-minute call, you get a written scope and one fixed price. That is the number you pay."
           />
 
           <Stagger className="mt-14 grid items-start gap-5 lg:grid-cols-3" stagger={0.08}>
             {projectPackages.map((plan) => {
-              const cta = PACKAGE_CTA[plan.id] ?? { href: "/contact", label: "Talk to us" };
+              const cta = PACKAGE_CTA[plan.id] ?? { href: "/contact", label: "Request a quote" };
               return (
                 <StaggerItem key={plan.id} y={28} className="h-full">
                   <PlanCard plan={plan} ctaHref={cta.href} ctaLabel={cta.label} />
@@ -39,9 +39,8 @@ export function PricingPlans() {
 
           <p className="mx-auto mt-8 flex max-w-xl items-start justify-center gap-2 text-center text-xs leading-relaxed text-muted-foreground">
             <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-            Prices exclude GST. Third-party costs such as domains, payment
-            gateways, cloud and licences are billed to your own accounts at cost.
-            We never mark them up.
+            Prices exclude GST. Domains, payment gateways, cloud and licences are
+            billed to your own accounts at cost, with no markup.
           </p>
         </div>
       </Section>
@@ -50,8 +49,8 @@ export function PricingPlans() {
         <div className="container-page">
           <SectionHeading
             eyebrow="Hosting and care plans"
-            title="Monthly plans that keep your site or app running"
-            description="Hosting, updates, backups, monitoring and fixes for one monthly fee. Works for anything we built, and for sites and apps built by someone else."
+            title="Monthly plans that keep you online"
+            description="Hosting, updates, backups, monitoring and fixes for one monthly fee. Available for anything we built, and for sites and apps built elsewhere."
           />
 
           <Stagger className="mt-14 grid items-start gap-5 lg:grid-cols-3" stagger={0.08}>
@@ -91,7 +90,7 @@ export function PlanCard({
     >
       {plan.highlight ? (
         <Badge className="absolute -top-3 left-6 border-setu/30 bg-setu text-white">
-          Most chosen
+          Recommended
         </Badge>
       ) : null}
 

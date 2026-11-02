@@ -58,7 +58,7 @@ export function CaseStudyGrid({ studies }: { studies: readonly CaseStudyCard[] }
       <div className="flex flex-col gap-4 rounded-card border border-border bg-surface p-4 md:p-5">
         <FilterRow label="By service">
           <Chip active={isActive({ kind: "all" })} onClick={() => setFilter({ kind: "all" })}>
-            All work
+            All projects
           </Chip>
           {serviceOptions.map((option) => (
             <Chip

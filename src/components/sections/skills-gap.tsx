@@ -1,47 +1,36 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { X } from "lucide-react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import { ArrowRight, Pause, Play } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 import { images } from "@/lib/images";
 import { committedVideo, heroVideoPoster, heroVideoSources } from "@/lib/media";
-import { cn } from "@/lib/utils";
-import { EASE_OUT } from "@/components/motion/ease";
 import { TextReveal } from "@/components/motion/text-reveal";
 import {
   FadeUp,
   Magnetic,
-  Parallax,
-  ScrollScale, useReducedMotionSafe } from "@/components/motion/primitives";
+  ScrollScale,
+  useReducedMotionSafe,
+} from "@/components/motion/primitives";
 
-const HEADING = "This is how we jetpack over the skills gap.";
+const HEADING = "A full digital team, without hiring one.";
 
 /**
- * Skills-gap band (Figma 24:2645 still, 24:2646 veil, 24:2819 play button).
- *
- * In the design this is a full-bleed video still under a dimming veil with a
- * play button in the middle. The still is rebuilt in markup so its copy stays
- * readable to assistive tech and search engines.
+ * Skills-gap band: a full-bleed, muted background video of a team working
+ * around a laptop, under a dark brand-tinted scrim, with the headline and a
+ * call to action on top.
  *
  * Motion: the band grows from an inset rounded card to full-bleed as it
- * scrolls in, the still drifts and settles behind it, the portrait parallaxes
- * on its own layer, and the play button leans toward the cursor while two
- * rings ripple out of it.
+ * scrolls in (`ScrollScale`) and the footage drifts slightly against the
+ * scroll. The video autoplays muted and loops; a pause/play control is always
+ * available (WCAG 2.2.2), and visitors who prefer reduced motion get the
+ * poster frame instead of playback.
  *
- * The play button plays the inset video configured through
- * `NEXT_PUBLIC_HERO_VIDEO_*` (see `src/lib/media.ts`). With no video
- * configured it lifts the veil instead, so the button never promises
- * something that does not happen.
- *
- * The env vars are read as literal `process.env.NEXT_PUBLIC_*` members because
- * that is the only form Next inlines into a client bundle.
+ * Sources: `NEXT_PUBLIC_HERO_VIDEO_*` env vars if set, otherwise the clip
+ * committed by `npm run media:fetch` (Pexels, free licence).
  */
 const committed = committedVideo("skills-gap");
 const envSources = heroVideoSources({
@@ -58,242 +47,149 @@ export function SkillsGap() {
   const reduce = useReducedMotionSafe();
   const bandRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const hasVideo = videoSources.length > 0 && !failed;
 
-  // Scroll-linked drift on the still: 1.08 entering the viewport, 1 leaving it.
-  const { scrollYProgress } = useScroll({
-    target: bandRef,
-    offset: ["start end", "end start"],
-  });
-  const layerScale = useTransform(scrollYProgress, [0, 1], [1.08, 1]);
-  const layerY = useTransform(scrollYProgress, [0, 1], [12, -12]);
+  const { scrollYProgress } = useScroll({ target: bandRef, offset: ["start end", "end start"] });
+  const mediaY = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
+  const mediaScale = useTransform(scrollYProgress, [0, 1], [1.12, 1.04]);
 
-  const [videoFailed, setVideoFailed] = useState(false);
-  const [open, setOpen] = useState(false);
-  const hasVideo = videoSources.length > 0 && !videoFailed;
-  const playing = open && hasVideo;
-
-  const close = useCallback(() => {
-    videoRef.current?.pause();
-    setOpen(false);
-  }, []);
-
-  // A user gesture opened the player, so playback with sound is allowed.
+  // Respect reduced motion: hold the poster frame.
   useEffect(() => {
-    if (!playing) return;
     const video = videoRef.current;
     if (!video) return;
-    video.focus();
-    video.play().catch(() => {
-      // Refused or unplayable: the native controls stay available.
-    });
-  }, [playing]);
-
-  useEffect(() => {
-    if (!playing) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close();
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [close, playing]);
+    if (reduce || paused) {
+      video.pause();
+    } else {
+      video.play().catch(() => setPaused(true));
+    }
+  }, [reduce, paused]);
 
   return (
-    <section
-      aria-labelledby="skills-gap-title"
-      className="bg-background pt-20 md:pt-28 lg:pt-[calc(var(--s)*177)]"
-    >
-      <div ref={bandRef}>
-        <ScrollScale
-          from={0.9}
-          radius={28}
-          className="relative isolate bg-[#75a4b1] lg:h-[calc(var(--s)*805)]"
-        >
-          {/* The still (Figma 24:2645), rebuilt: tinted margin, blue panel, portrait. */}
+    <section aria-labelledby="skills-gap-title" className="bg-background py-16 lg:py-[calc(var(--s)*96)]">
+      <ScrollScale from={0.9} radius={32} className="relative isolate overflow-hidden bg-[#05070d]">
+        <div ref={bandRef} className="relative min-h-[560px] lg:min-h-[calc(var(--s)*760)]">
+          {/* Media layer */}
           <motion.div
-            className="relative origin-center will-change-transform lg:absolute lg:inset-0"
-            style={reduce ? undefined : { scale: layerScale, y: layerY }}
+            aria-hidden
+            className="absolute inset-0 -z-20"
+            style={reduce ? undefined : { y: mediaY, scale: mediaScale }}
           >
-            <div
-              className="absolute inset-y-0 right-0 hidden w-[31.4%] overflow-hidden md:block lg:bottom-[calc(var(--s)*24)]"
-              aria-hidden
-            >
-              <Parallax
-                speed={36}
-                scale
-                className="absolute -inset-y-[6%] inset-x-0"
+            {hasVideo ? (
+              <video
+                ref={videoRef}
+                className="size-full object-cover"
+                poster={videoPoster}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                disablePictureInPicture
+                tabIndex={-1}
+                onError={() => setFailed(true)}
               >
-                <Image
-                  src={images.skillsGap.src}
-                  alt=""
-                  fill
-                  sizes="(min-width: 768px) 32vw, 1px"
-                  className="object-cover object-right"
-                />
-              </Parallax>
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(76,52,140,0.55)_0%,rgba(24,22,60,0.35)_45%,rgba(10,90,80,0.55)_100%)] mix-blend-multiply" />
-            </div>
+                {videoSources.map((source) => (
+                  <source key={source.src} src={source.src} type={source.type} />
+                ))}
+              </video>
+            ) : (
+              <Image
+                src={images.skillsGap.src}
+                alt=""
+                fill
+                sizes="100vw"
+                className="object-cover"
+              />
+            )}
+          </motion.div>
 
-            <div className="relative bg-[linear-gradient(200deg,#253c97_0%,#114d93_35%,#0e5895_100%)] px-6 pb-20 pt-14 sm:px-10 md:mr-[31.4%] lg:absolute lg:top-0 lg:left-[20.36%] lg:right-[31.4%] lg:mr-0 lg:bottom-[calc(var(--s)*24)] lg:rounded-bl-[calc(var(--s)*16)] lg:px-[calc(var(--s)*47)] lg:pb-0 lg:pt-[calc(var(--s)*40)]">
-              <FadeUp y={16} blur={false}>
-                <p className="text-[16px] font-medium leading-[24px] text-white/70 lg:text-[calc(var(--s)*20)] lg:leading-[calc(var(--s)*30)]">
-                  No in-house tech team needed
+          {/* Scrim: dark on the copy side, brand tint across, fade at the base. */}
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(5,7,13,0.92)_0%,rgba(5,7,13,0.72)_45%,rgba(5,7,13,0.25)_100%)]"
+          />
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 bg-[radial-gradient(80%_70%_at_85%_30%,rgba(0,161,198,0.22),transparent_70%)] mix-blend-screen"
+          />
+          <div
+            aria-hidden
+            className="absolute inset-x-0 bottom-0 -z-10 h-1/3 bg-[linear-gradient(to_top,rgba(5,7,13,0.85),transparent)]"
+          />
+
+          {/* Copy */}
+          <div className="container-figma relative flex min-h-[560px] flex-col justify-center py-16 lg:min-h-[calc(var(--s)*760)] lg:py-[calc(var(--s)*96)]">
+            <div className="max-w-[640px] lg:max-w-[calc(var(--s)*760)]">
+              <FadeUp y={16}>
+                <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-white/80 backdrop-blur-sm lg:text-[calc(var(--s)*13)]">
+                  <span className="size-1.5 rounded-full bg-setu" />
+                  One team
                 </p>
               </FadeUp>
-              {/* Two colours in one heading, so the reveal is split into spans;
-                  the heading itself carries the sentence for assistive tech. */}
+
+              {/* Two colours in one heading; the h2 carries the sentence for
+                  assistive tech and the animated spans are hidden from it. */}
               <h2
                 id="skills-gap-title"
                 aria-label={HEADING}
-                className="mt-3 text-[32px] font-bold leading-[1.15] tracking-[-0.02em] text-[#e0e8ef] sm:text-[52px] lg:mt-[calc(var(--s)*12)] lg:text-[calc(var(--s)*72)] lg:leading-[calc(var(--s)*80)]"
+                className="mt-6 text-[36px] font-bold leading-[1.1] tracking-[-0.03em] text-white sm:text-[52px] lg:mt-[calc(var(--s)*24)] lg:text-[calc(var(--s)*72)] lg:leading-[calc(var(--s)*80)]"
               >
                 <TextReveal as="span" delay={0.1}>
-                  This is how
+                  A full digital team,
                 </TextReveal>
                 <br />
-                <span className="text-[#12a493]">
-                  <TextReveal as="span" delay={0.28}>
-                    we jetpack over the
-                  </TextReveal>
-                  <br className="hidden sm:block" />{" "}
-                  <TextReveal as="span" delay={0.52}>
-                    skills gap.
+                <span className="text-[#3fd0ee]">
+                  <TextReveal as="span" delay={0.32}>
+                    without hiring one.
                   </TextReveal>
                 </span>
               </h2>
+
               <FadeUp delay={0.45} y={24}>
-                <p className="mt-6 max-w-[760px] text-[16px] font-medium leading-[26px] text-white/80 lg:mt-[calc(var(--s)*40)] lg:max-w-[calc(var(--s)*760)] lg:text-[calc(var(--s)*18)] lg:leading-[calc(var(--s)*30)]">
-                  Designers, developers, SEO and marketing people on one team,
-                  so you never hire for a skill you need once.{" "}
-                  <br className="hidden lg:block" />
-                  Your website, store, app and ads are handled by people who
-                  already know your business.
+                <p className="mt-6 max-w-[620px] text-[16px] font-medium leading-[27px] text-white/80 lg:mt-[calc(var(--s)*32)] lg:max-w-[calc(var(--s)*680)] lg:text-[calc(var(--s)*19)] lg:leading-[calc(var(--s)*31)]">
+                  Designers, developers and marketing specialists on one team, so
+                  you never hire for a skill you need once. Your website, store,
+                  app and campaigns are run by people who already know your business.
                 </p>
               </FadeUp>
+
               <FadeUp delay={0.6} y={20} blur={false}>
-                <Magnetic
-                  strength={0.3}
-                  className="mt-8 lg:mt-[calc(var(--s)*52)]"
-                >
+                <div className="mt-8 flex flex-wrap items-center gap-4 lg:mt-[calc(var(--s)*44)]">
+                  <Magnetic strength={0.3}>
+                    <Link
+                      href="/contact"
+                      className="group inline-flex h-12 items-center gap-2 rounded-full bg-setu px-7 text-[15px] font-semibold text-white shadow-[0_12px_40px_-12px_rgba(0,161,198,0.8)] transition-colors hover:bg-[#0089a9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:h-[calc(var(--s)*56)] lg:px-[calc(var(--s)*32)] lg:text-[calc(var(--s)*16)]"
+                    >
+                      Book a 30-minute call
+                      <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    </Link>
+                  </Magnetic>
                   <Link
-                    href="/contact"
-                    className="inline-flex h-12 items-center justify-center rounded-full bg-[#dfe7ea] px-8 text-[15px] font-semibold text-black transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:h-[calc(var(--s)*62)] lg:w-[calc(var(--s)*164)] lg:px-0 lg:text-[calc(var(--s)*18)]"
+                    href="/services"
+                    className="inline-flex h-12 items-center rounded-full border border-white/30 px-7 text-[15px] font-semibold text-white transition-colors hover:border-white hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:h-[calc(var(--s)*56)] lg:px-[calc(var(--s)*32)] lg:text-[calc(var(--s)*16)]"
                   >
-                    Let&apos;s talk
+                    Explore services
                   </Link>
-                </Magnetic>
+                </div>
               </FadeUp>
             </div>
-          </motion.div>
-
-          {/* The veil (Figma 24:2646): dims the still until the visitor presses play. */}
-          <div
-            aria-hidden
-            className={cn(
-              "pointer-events-none absolute inset-0 bg-black/30 transition-opacity duration-500",
-              open && "opacity-0",
-            )}
-          />
-
-          {/* Play button (Figma 24:2819), 41 × 41 at the band's centre. The
-              Magnetic wrapper is padded so the pull starts before the cursor
-              reaches the button itself. */}
-          <div
-            className={cn(
-              "absolute bottom-8 right-8 z-10 transition-[opacity,scale] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] md:bottom-auto md:right-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2",
-              open && "pointer-events-none scale-75 opacity-0",
-            )}
-          >
-            <Magnetic strength={0.4} className="-m-8 p-8">
-              <span className="relative block">
-                {/* Always rendered (so server and client markup agree) and
-                    hidden by CSS when the visitor prefers reduced motion. */}
-                {[0, 1].map((ring) => (
-                  <motion.span
-                    key={ring}
-                    aria-hidden
-                    className="absolute inset-0 rounded-full bg-white/60 motion-reduce:hidden"
-                    initial={{ scale: 1, opacity: 0.6 }}
-                    animate={{ scale: 2.1, opacity: 0 }}
-                    transition={{
-                      duration: 2.4,
-                      ease: EASE_OUT,
-                      repeat: Infinity,
-                      delay: ring * 1.2,
-                    }}
-                  />
-                ))}
-                <motion.button
-                  type="button"
-                  onClick={() => setOpen(true)}
-                  tabIndex={open ? -1 : 0}
-                  aria-hidden={open || undefined}
-                  aria-label={
-                    hasVideo
-                      ? "Play video: this is how we jetpack over the skills gap"
-                      : "Lift the overlay on this is how we jetpack over the skills gap"
-                  }
-                  whileHover={reduce ? undefined : { scale: 1.12 }}
-                  whileTap={reduce ? undefined : { scale: 0.92 }}
-                  transition={{ type: "spring", stiffness: 380, damping: 20 }}
-                  className="relative flex size-[52px] items-center justify-center rounded-full bg-white text-[#0b2a3a] shadow-[0_8px_24px_rgba(0,0,0,0.25)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white lg:size-[calc(var(--s)*41)]"
-                >
-                  <svg
-                    viewBox="0 0 12 14"
-                    aria-hidden
-                    className="ml-[2px] h-[16px] w-[14px] lg:h-[calc(var(--s)*13)] lg:w-[calc(var(--s)*11)]"
-                  >
-                    <path
-                      d="M1 1.4v11.2a.6.6 0 0 0 .9.5l9.4-5.6a.6.6 0 0 0 0-1L1.9.9A.6.6 0 0 0 1 1.4Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </motion.button>
-              </span>
-            </Magnetic>
           </div>
 
           {hasVideo ? (
-            <div
-              className={cn(
-                "absolute inset-0 z-20 bg-black transition-opacity duration-500",
-                playing ? "opacity-100" : "pointer-events-none opacity-0",
-              )}
-              aria-hidden={!playing}
+            <button
+              type="button"
+              onClick={() => setPaused((value) => !value)}
+              aria-label={paused ? "Play background video" : "Pause background video"}
+              aria-pressed={paused}
+              className="absolute bottom-5 right-5 z-10 inline-flex size-11 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-md transition-colors hover:bg-black/55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:bottom-[calc(var(--s)*32)] lg:right-[calc(var(--s)*32)]"
             >
-              {open ? (
-                <video
-                  ref={videoRef}
-                  className="size-full object-contain"
-                  poster={videoPoster}
-                  controls
-                  playsInline
-                  preload="metadata"
-                  aria-label="This is how we jetpack over the skills gap"
-                  onError={() => setVideoFailed(true)}
-                  onEnded={close}
-                >
-                  {videoSources.map((source) => (
-                    <source
-                      key={source.src}
-                      src={source.src}
-                      type={source.type}
-                    />
-                  ))}
-                </video>
-              ) : null}
-              <button
-                type="button"
-                onClick={close}
-                tabIndex={playing ? 0 : -1}
-                aria-label="Close video"
-                className="absolute right-4 top-4 inline-flex size-10 items-center justify-center rounded-full bg-white/90 text-black transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              >
-                <X className="size-5" aria-hidden />
-              </button>
-            </div>
+              {paused ? <Play className="size-4 translate-x-px" /> : <Pause className="size-4" />}
+            </button>
           ) : null}
-        </ScrollScale>
-      </div>
+        </div>
+      </ScrollScale>
     </section>
   );
 }

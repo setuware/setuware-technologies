@@ -37,8 +37,13 @@ export interface Industry {
   name: string;
   /** One line used on cards and in the nav. */
   summary: string;
-  /** Opening paragraph for the industry page hero. */
+  /** Hero H1: the outcome, in a few words. The name sits above it as the eyebrow. */
+  headline: string;
+  /** Opening paragraph for the industry page hero: outcome first, then how. */
   intro: string;
+  /** `<title>` for the industry page (the site name is appended). */
+  seoTitle: string;
+  seoDescription: string;
   icon: IndustryIconName;
   problems: readonly IndustryProblem[];
   builds: readonly IndustryBuild[];
@@ -51,8 +56,12 @@ export const industries: readonly Industry[] = [
     slug: "retail-ecommerce",
     name: "Retail & e-commerce",
     summary: "Online stores, catalogues and order tools for shops and D2C brands.",
+    headline: "Sell direct, with stock that matches",
     intro:
-      "Most retailers we speak to already sell on WhatsApp, Instagram or a marketplace. What they lack is a store they own, stock that matches across channels, and a checkout that works on a cheap phone over 4G. We build that, then keep it running through sale season.",
+      "Sell directly to your customers, with one stock count across shop, website and marketplace. Most retailers already sell on WhatsApp, Instagram or Amazon; what they lack is a store they own and a checkout that works on a budget phone over 4G. We build that store, then keep it running through sale season.",
+    seoTitle: "Retail & E-commerce Websites",
+    seoDescription:
+      "Online stores, stock sync and order tools for Indian retailers and D2C brands. UPI checkout, GST invoices and courier integration, at a fixed price.",
     icon: "store",
     problems: [
       {
@@ -113,8 +122,12 @@ export const industries: readonly Industry[] = [
     slug: "healthcare-clinics",
     name: "Healthcare & clinics",
     summary: "Clinic websites, appointment booking and patient record tools.",
+    headline: "Fewer phone bookings, fewer no-shows",
     intro:
-      "Clinics, diagnostic labs and specialist practices lose time to phone bookings, paper files and missed follow-ups. We build sites patients can find and trust, booking that fills the calendar without a receptionist on the line, and record systems that keep patient data private.",
+      "Patients book online at any hour, get a reminder before the visit, and their records are a search away. Clinics, diagnostic labs and specialist practices come to us when phone bookings, paper files and missed follow-ups cost them patients. We build the website, the booking flow and the record system, with patient data kept private.",
+    seoTitle: "Clinic Websites & Booking Software",
+    seoDescription:
+      "Clinic websites, online appointment booking, WhatsApp reminders and patient record systems for clinics, diagnostic labs and specialist practices.",
     icon: "stethoscope",
     problems: [
       {
@@ -175,8 +188,12 @@ export const industries: readonly Industry[] = [
     slug: "education-coaching",
     name: "Education & coaching",
     summary: "Admissions sites, learning portals and fee tools for schools and institutes.",
+    headline: "More admissions, less admin",
     intro:
-      "Schools, coaching institutes and online educators need two things from software: more enquiries in admission season, and less admin the rest of the year. We build the website that brings students in and the portal that handles batches, fees, tests and parent updates.",
+      "More enquiries in admission season, and less admin for the rest of the year. Schools, coaching institutes and online educators need both from their software. We build the website that brings students in and the portal that runs batches, fees, tests and parent updates.",
+    seoTitle: "School & Coaching Institute Websites",
+    seoDescription:
+      "Admissions websites, learning portals, online fee collection and parent apps for schools, coaching institutes and online educators across India.",
     icon: "graduation",
     problems: [
       {
@@ -237,8 +254,12 @@ export const industries: readonly Industry[] = [
     slug: "real-estate-construction",
     name: "Real estate & construction",
     summary: "Project sites, lead capture and CRM for builders, brokers and contractors.",
+    headline: "Turn ad spend into site visits",
     intro:
-      "Builders and brokers spend heavily on portals and ads, then lose leads in a spreadsheet. Contractors run sites on phone calls and paper. We build project websites that turn ad spend into site visits, and the CRM and site-tracking tools that follow through.",
+      "Every portal lead followed up the same day, and every new launch online in days. Builders and brokers spend heavily on portals and ads, then lose leads in a spreadsheet; contractors run sites on phone calls and paper. We build project websites that turn ad spend into site visits, and the CRM and site-tracking tools that follow through.",
+    seoTitle: "Real Estate Websites & CRM",
+    seoDescription:
+      "Project websites, lead capture and sales CRM for builders and brokers, plus site-progress tools for contractors. RERA details, floor plans, follow-ups.",
     icon: "building",
     problems: [
       {
@@ -299,8 +320,12 @@ export const industries: readonly Industry[] = [
     slug: "manufacturing-distribution",
     name: "Manufacturing & distribution",
     summary: "Catalogue sites, dealer portals and ERP for manufacturers and traders.",
+    headline: "Dealer orders and stock in one place",
     intro:
-      "Manufacturers and distributors often run on Tally, spreadsheets and a WhatsApp group per dealer. That works until volume grows. We build catalogue sites that bring in trade enquiries, dealer portals for repeat orders, and ERP modules that connect production, stock and dispatch.",
+      "Dealer orders, stock and dispatch in one system, with the numbers ready each morning. Manufacturers and distributors often run on Tally, spreadsheets and a WhatsApp group per dealer, which holds until volume grows. We build catalogue sites that bring in trade enquiries, dealer portals for repeat orders, and ERP modules that connect production, stock and dispatch.",
+    seoTitle: "Manufacturing ERP & Dealer Portals",
+    seoDescription:
+      "Catalogue websites, dealer ordering portals and ERP modules for Indian manufacturers and distributors, synced with Tally and GST e-invoicing.",
     icon: "factory",
     problems: [
       {
@@ -361,8 +386,12 @@ export const industries: readonly Industry[] = [
     slug: "logistics-transport",
     name: "Logistics & transport",
     summary: "Tracking, dispatch and driver apps for fleets, couriers and 3PLs.",
+    headline: "Fewer where-is-my-shipment calls",
     intro:
-      "Transporters, courier companies and warehouse operators deal with constant calls asking where a shipment is. We build booking and tracking sites for customers, dispatch tools for operations, and driver apps that work on patchy networks.",
+      "Customers track their own shipments, drivers record proof of delivery on the spot, and invoices follow each completed trip. Transporters, couriers and warehouse operators come to us when tracking calls fill the operations team's day. We build the booking portal, the dispatch board and a driver app that works on patchy networks.",
+    seoTitle: "Logistics Tracking & Driver Apps",
+    seoDescription:
+      "Shipment tracking portals, dispatch tools and offline-ready driver apps for transporters, couriers and 3PLs, with proof of delivery and trip billing.",
     icon: "truck",
     problems: [
       {
@@ -415,7 +444,7 @@ export const industries: readonly Industry[] = [
       "Customer portal with invoice downloads",
     ],
     cta: {
-      title: "Tired of tracking calls?",
+      title: "Spending the day on tracking calls?",
       body: "Tell us how many vehicles and shipments you run. We will suggest where tracking and a driver app would save the most time.",
     },
   },
@@ -423,8 +452,12 @@ export const industries: readonly Industry[] = [
     slug: "hospitality-restaurants",
     name: "Hospitality & restaurants",
     summary: "Websites, direct booking and ordering for hotels, cafés and restaurants.",
+    headline: "More direct bookings, less commission",
     intro:
-      "Hotels and restaurants pay steep commissions to booking and delivery platforms for customers who would happily book direct. We build fast, photo-led websites with direct booking and ordering, and connect them to the tools you already use at the front desk and in the kitchen.",
+      "More guests booking and ordering with you directly, and less paid away in platform commission. Hotels, cafés and restaurants already have guests who would book direct if it were easy. We build fast, photo-led websites with booking and ordering, connected to the tools at your front desk and in your kitchen.",
+    seoTitle: "Hotel & Restaurant Websites",
+    seoDescription:
+      "Fast hotel and restaurant websites with direct booking, online ordering and QR menus, so more guests book with you instead of through aggregators.",
     icon: "utensils",
     problems: [
       {
@@ -485,8 +518,12 @@ export const industries: readonly Industry[] = [
     slug: "professional-services",
     name: "Professional services",
     summary: "Websites and client portals for CA firms, law practices and consultants.",
+    headline: "A website that matches your reputation",
     intro:
-      "CA firms, law practices and consultancies win work on reputation, but clients still check the website before they call. We build sites that explain your practice clearly, and client portals that replace email chains for document collection, deadlines and invoices.",
+      "A website that reflects the firm's experience, and a portal that ends the chase for client documents. CA firms, law practices and consultancies win work on reputation, but clients still check the website before they call. We build both, so documents, deadlines and invoices sit behind one secure login instead of in email chains.",
+    seoTitle: "Websites for CA & Law Firms",
+    seoDescription:
+      "Practice websites and secure client portals for CA firms, law practices and consultancies. Document collection, compliance calendars and invoices.",
     icon: "briefcase",
     problems: [
       {
@@ -547,8 +584,12 @@ export const industries: readonly Industry[] = [
     slug: "startups-saas",
     name: "Startups & SaaS",
     summary: "MVPs, SaaS products and launch sites for founders.",
+    headline: "Launch an MVP you will not rebuild",
     intro:
-      "Founders need a working product in front of users fast, without code they will have to throw away after the first funding round. We scope an MVP to what you need to learn, build it on a stack that scales, and stay on to run and extend it.",
+      "A working product in front of users by a fixed date, on code that survives the first funding round. We scope the MVP to what you need to learn, build it on Next.js and PostgreSQL, and stay on to run and extend it. The repository and cloud accounts are yours from day one.",
+    seoTitle: "MVP & SaaS Development for Startups",
+    seoDescription:
+      "MVP and SaaS development for founders: sign-up, billing, dashboards and mobile apps on Next.js and PostgreSQL, at a fixed price and launch date.",
     icon: "rocket",
     problems: [
       {

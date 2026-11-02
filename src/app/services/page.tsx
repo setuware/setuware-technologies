@@ -12,9 +12,9 @@ import { DeferredSection } from "@/components/ui/deferred-section";
 import { cn } from "@/lib/utils";
 
 export const metadata = pageMetadata({
-  title: "Services: Websites, Apps, E-commerce, SEO & Software",
+  title: "Web, App, SEO & Software Services",
   description:
-    "Business websites, e-commerce stores, web and mobile apps, UI/UX and branding, SEO and digital marketing, custom ERP and CRM, AI automation, hosting and maintenance. One team in Gurugram.",
+    "Business websites, online stores, web and mobile apps, branding, SEO, custom ERP and CRM, AI automation, hosting and support. One team in Gurugram.",
   path: "/services",
 });
 
@@ -30,8 +30,8 @@ export default function ServicesPage() {
     <>
       <PageHero
         eyebrow="Services"
-        title="Everything your business needs online, from one team"
-        description="Most clients start with a website. Many come back for a store, an app, marketing or the software that runs the back office. The same team designs it, builds it, hosts it and answers the phone when something breaks."
+        title="Start with a website. Grow from there."
+        description="Most clients start with a website, then come back for a store, an app, marketing or the software that runs the back office. The same team designs it, builds it, hosts it and answers the phone when something breaks."
       >
         <nav aria-label="Service groups" className="mt-8 flex flex-wrap justify-center gap-2">
           {groups.map((group, index) => (
@@ -105,9 +105,9 @@ export default function ServicesPage() {
                   {"Tell us the problem.\nWe'll suggest the fix."}
                 </TextReveal>
                 <p className="mt-4 max-w-lg text-[1rem] leading-relaxed text-white/70">
-                  People often ask us for an app when a better website would do the job,
-                  or for a new website when the real gap is tracking. A 30-minute call with an
-                  engineer sorts that out, free.
+                  Clients often ask for an app when a better website would do the job, or
+                  for a redesign when the real gap is tracking. A free 30-minute call with an
+                  engineer settles it.
                 </p>
               </div>
 
@@ -115,15 +115,15 @@ export default function ServicesPage() {
                 <NotSureLink
                   href="/contact"
                   icon={<MessageCircle className="size-5" aria-hidden />}
-                  title="Book a free consultation"
-                  body="Talk to the people who would build it. We reply within one working day."
+                  title="Book a free 30-min call"
+                  body="Speak to the people who would build it, not a sales team."
                   primary
                 />
                 <NotSureLink
                   href="/estimate"
                   icon={<Calculator className="size-5" aria-hidden />}
                   title="Get an instant estimate"
-                  body="Pick a service and features, and see a price range in two minutes."
+                  body="Choose a service and features, and see a price range in about a minute."
                 />
               </div>
             </div>

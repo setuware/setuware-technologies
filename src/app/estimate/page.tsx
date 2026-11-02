@@ -5,9 +5,9 @@ import { Estimator } from "@/components/interactive/estimator";
 import { PageHero } from "@/components/layout/page-hero";
 
 export const metadata = pageMetadata({
-  title: "Instant project quote",
+  title: "Instant Project Cost Estimate",
   description:
-    "Price your website, online store, app or custom software in about a minute. Real ranges from the Setuware Technologies rate card, with timeline, team size and payment milestones.",
+    "Price your website, store, app or custom software in about a minute. Ranges from our rate card, with timeline, team size and payment milestones.",
   path: "/estimate",
 });
 
@@ -31,8 +31,8 @@ export default function EstimatePage() {
     <>
       <PageHero
         eyebrow="Instant quote"
-        title="What will your project cost, and how long will it take?"
-        description="Pick a service, the size and the features you need. You get a price range, a timeline, the team size and the payment milestones in about a minute, before you speak to anyone."
+        title="Your project's cost and timeline, in a minute"
+        description="Choose a service, the size and the features you need. You get a price range, a timeline, the team size and the payment milestones before you speak to anyone."
       >
         <ul className="mx-auto mt-8 flex max-w-3xl flex-col gap-2.5 sm:flex-row sm:justify-center sm:gap-6">
           {ASSURANCES.map(({ Icon, text }) => (

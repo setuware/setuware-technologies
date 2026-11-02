@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -14,6 +15,7 @@ import {
 
 import { caseStudies, getService, serviceGroups, services, type Service } from "@/lib/content";
 import { breadcrumbJsonLd, faqJsonLd, pageMetadata, serviceJsonLd } from "@/lib/seo";
+import { servicePhotos } from "@/lib/service-photos";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -124,7 +126,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
             <SectionIntro
               id="problems-heading"
               eyebrow="Problems we fix"
-              title="What's going wrong, and what we do about it"
+              title="What goes wrong, and how we fix it"
             />
             <div className="mt-10 hidden grid-cols-[1fr_2.5rem_1.3fr] gap-4 px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground md:grid">
               <span>The problem</span>
@@ -305,7 +307,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                 </div>
               </dl>
               <p className="mt-6 text-sm leading-relaxed text-white/65">
-                You get a fixed quote in writing before any work starts.
+                The quote is fixed and in writing before any work starts.
               </p>
               <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row lg:flex-col">
                 <Link href={estimateHref} className={cn(primaryCta, "flex-1")}>
@@ -316,7 +318,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                   href={contactHref}
                   className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border-[1.5px] border-white/30 px-6 text-[15px] font-semibold text-white transition-colors hover:border-white hover:bg-white/10"
                 >
-                  Ask for a quote
+                  Request a fixed quote
                 </Link>
               </div>
             </div>
@@ -401,7 +403,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                 Common questions
               </h2>
               <p className="mt-4 max-w-sm text-[0.98rem] leading-relaxed text-muted-foreground">
-                Something not covered here? Ask an engineer directly. We reply within one working day.
+                Something not covered here? Ask the engineer who would build it, by email, phone or WhatsApp.
               </p>
               <Link
                 href={contactHref}
@@ -436,7 +438,10 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
             <Stagger className="mt-10 grid gap-5 md:grid-cols-3">
               {related.map((item) => (
                 <StaggerItem key={item.slug} className="h-full">
-                  <ServiceCard service={item} />
+                  <ServiceCard
+                    service={item}
+                    sizes="(min-width: 1280px) 24rem, (min-width: 768px) 33vw, 100vw"
+                  />
                 </StaggerItem>
               ))}
             </Stagger>
@@ -458,11 +463,11 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                   id="final-cta-heading"
                   className="mt-3 font-display text-3xl font-semibold leading-tight sm:text-[2.6rem]"
                 >
-                  {"Let's scope your project"}
+                  {"Get a fixed quote in writing"}
                 </TextReveal>
                 <p className="mt-4 text-[1.02rem] leading-relaxed text-white/85">
-                  Send us what you have: a brief, a site you like, or just the problem. A senior
-                  engineer replies within one working day with questions, options and next steps.
+                  Send what you have: a brief, a site you like, or just the problem. An engineer
+                  replies within one working day with questions, options and a next step.
                 </p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row lg:shrink-0">
@@ -471,7 +476,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                     href={contactHref}
                     className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-white px-7 text-[15px] font-semibold text-black transition-colors hover:bg-black hover:text-white"
                   >
-                    Start a project
+                    Send your brief
                     <ArrowRight className="size-4" aria-hidden />
                   </Link>
                 </Magnetic>
@@ -520,6 +525,12 @@ function SectionIntro({ id, eyebrow, title }: { id: string; eyebrow: string; tit
   );
 }
 
+/** Bottom-weighted navy so the inset card sits on a calm edge, plus a cyan wash. */
+const HERO_PHOTO_OVERLAY = [
+  "linear-gradient(to top, rgba(11,16,32,0.55) 0%, rgba(11,16,32,0.1) 45%, rgba(11,16,32,0) 100%)",
+  "linear-gradient(135deg, rgba(0,161,198,0.2) 0%, rgba(0,161,198,0) 55%)",
+].join(", ");
+
 function Hero({
   service,
   groupLabel,
@@ -531,6 +542,7 @@ function Hero({
   contactHref: string;
   estimateHref: string;
 }) {
+  const photo = servicePhotos[service.slug];
   return (
     <section className="relative overflow-hidden border-b border-border pb-16 pt-28 md:pb-24 md:pt-36">
       <div className="pointer-events-none absolute inset-0 bg-mesh opacity-60" aria-hidden />
@@ -613,8 +625,35 @@ function Hero({
           </div>
 
           <FadeUp immediate delay={0.2} className="min-w-0">
-            <ServiceVisual variant={service.icon} accent={service.accent} className="shadow-xl" />
-            <ul className="mt-4 flex flex-wrap gap-2" aria-label="Key outcomes">
+            {/* A large photo panel, with the service's motion graphic as an
+                inset card overlapping its lower-left corner. */}
+            <div className="relative">
+              <figure className="relative aspect-[4/3] overflow-hidden rounded-[1.6rem] bg-[#0b1020] shadow-2xl ring-1 ring-black/5 lg:aspect-[5/4]">
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  fill
+                  loading="eager"
+                  fetchPriority="high"
+                  sizes="(min-width: 1280px) 34rem, (min-width: 1024px) 44vw, 100vw"
+                  className="object-cover"
+                />
+                <span
+                  className="pointer-events-none absolute inset-0"
+                  style={{ backgroundImage: HERO_PHOTO_OVERLAY }}
+                  aria-hidden
+                />
+                <figcaption className="absolute right-3 top-3 rounded-full bg-[#0b1020]/55 px-2.5 py-1 text-[10px] font-medium text-white/90 backdrop-blur-md">
+                  {photo.credit}
+                </figcaption>
+              </figure>
+              <ServiceVisual
+                variant={service.icon}
+                accent={service.accent}
+                className="relative z-10 mx-4 -mt-16 w-auto shadow-2xl sm:mx-10 sm:-mt-24 lg:absolute lg:-bottom-10 lg:-left-8 lg:mx-0 lg:mt-0 lg:w-[60%]"
+              />
+            </div>
+            <ul className="mt-5 flex flex-wrap gap-2 lg:mt-16" aria-label="Key outcomes">
               {service.outcomes.map((outcome) => (
                 <li
                   key={outcome}
@@ -654,7 +693,7 @@ function ProcessTimeline({ service }: { service: Service }) {
           </TextReveal>
           <p className="mt-4 max-w-sm text-[0.98rem] leading-relaxed text-white/65">
             {steps.length} stages. Typical timeline: {service.typicalTimeline.toLowerCase()}. You
-            sign off each stage and always know what happens next.
+            sign off each stage before the next one starts.
           </p>
           <Link
             href="/process"

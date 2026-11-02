@@ -8,7 +8,7 @@ import { TextReveal } from "@/components/motion/text-reveal";
  *
  * Deliberately plain: it sits between two dense sections, so the contrast
  * comes from the whitespace rather than another gradient. The motion is
- * equally quiet: the question rises word by word, the buttons follow, and
+ * equally quiet: the heading rises word by word, the buttons follow, and
  * both buttons lean toward the cursor.
  */
 export function ChallengeCta() {
@@ -25,14 +25,13 @@ export function ChallengeCta() {
             stagger={0.05}
             className="max-w-[807px] text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-black text-balance sm:text-[44px] lg:text-wrap lg:max-w-[calc(var(--s)*807)] lg:text-[calc(var(--s)*56)] lg:leading-[calc(var(--s)*72)] dark:text-white"
           >
-            Have a challenge to solve or an idea to explore?
+            {"A clear scope and price\nin a single call"}
           </TextReveal>
           <FadeUp delay={0.35} y={18}>
             <p className="mt-4 max-w-[1067px] text-[16px] font-medium leading-[28px] text-black/70 lg:mt-[calc(var(--s)*19)] lg:max-w-none lg:text-[calc(var(--s)*17)] lg:leading-[calc(var(--s)*32)] dark:text-white/70">
-              Tell us about your business and what you need: a new website, a
-              redesign, a store or an app. In one free 30-minute call you get a
-              rough scope, a realistic timeline and a price range. Or price it
-              yourself in a minute with the instant estimator.
+              Tell us what you need: a new website, a redesign, a store or an
+              app. In one free 30-minute call you get a rough scope, a
+              realistic timeline and a price range.
             </p>
           </FadeUp>
 
@@ -46,7 +45,7 @@ export function ChallengeCta() {
                 href="/contact"
                 className="group inline-flex h-10 w-full max-w-[280px] items-center justify-center gap-2.5 rounded-[50px] bg-setu text-[15px] font-semibold leading-5 text-white transition-[background-color] duration-200 hover:bg-setu-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu sm:w-[202px] lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*202)] lg:gap-[calc(var(--s)*10)] lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*20)]"
               >
-                Start A Project
+                Book a 30-minute call
                 {/* Figma vector 24:2814 — 13 × 10 arrow. */}
                 <svg
                   viewBox="0 0 13 10"
@@ -69,7 +68,7 @@ export function ChallengeCta() {
                 href="/estimate"
                 className="inline-flex h-10 w-full max-w-[280px] items-center justify-center rounded-[50px] border-[1.5px] border-setu text-[15px] font-semibold leading-5 text-black transition-[background-color,color] duration-200 hover:bg-setu hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu sm:w-[246px] lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*246)] lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*20)] dark:text-white"
               >
-                Get an Instant Estimate
+                Get an instant estimate
               </Link>
             </Magnetic>
           </FadeUp>

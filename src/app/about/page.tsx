@@ -28,24 +28,24 @@ import {
 } from "@/components/motion/primitives";
 
 export const metadata = pageMetadata({
-  title: "About us",
-  description: `${site.name} is a ${site.address.city} team that designs, builds and runs websites, apps and custom software for businesses. Fixed prices, weekly demos, and you own everything we build.`,
+  title: "About Our Gurugram Team",
+  description: `${site.name} is a ${site.address.city} team that designs, builds and runs business websites, apps and software. Fixed quotes, weekly previews, your code.`,
   path: "/about",
 });
 
 /** Plain facts, all drawn from site data, shown under the hero. */
 const FACTS = [
-  { label: "Based in", value: `${site.address.city}, ${site.address.region}` },
-  { label: "Building since", value: site.founded },
-  { label: "Quotes", value: "Fixed price, in writing" },
-  { label: "Support", value: `${site.sla.support} on care plans` },
+  { label: "Based in", value: `${site.address.street}, ${site.address.city}` },
+  { label: "First call", value: "Free, 30 minutes" },
+  { label: "Quotes", value: "Fixed, in writing" },
+  { label: "After launch", value: "3 months' support" },
 ] as const;
 
 const BELIEFS = [
   {
     Icon: BadgeIndianRupee,
     title: "Fixed scope, fixed price",
-    body: "You get a written scope and one price before we start. If you ask for something new mid-project, we quote it first. The number never moves without your sign-off.",
+    body: "You get a written scope and one fixed price before work starts. Anything new mid-project is quoted first. The number moves only with your sign-off.",
   },
   {
     Icon: KeyRound,
@@ -54,18 +54,18 @@ const BELIEFS = [
   },
   {
     Icon: CalendarCheck,
-    title: "A demo every week",
-    body: "You see your website or app on a live link from the first week of the build. Each week we show what changed and what comes next.",
+    title: "Progress you can open",
+    body: "Your website or app is on a live preview link from the first week of the build. You check it on your own phone, whenever you like.",
   },
   {
     Icon: MessageSquareText,
     title: "Updates in plain language",
-    body: "No jargon and no status reports that need a translator. You hear what is done, what is blocked and what we need from you.",
+    body: "Every week you hear what is done, what is blocked and what we need from you. No jargon, and no reports that need translating.",
   },
   {
     Icon: LifeBuoy,
     title: "We stay after launch",
-    body: "Every build comes with a support window. After that, monthly care plans cover hosting, updates, backups and fixes, with published response times.",
+    body: "Support is included for three months after a website goes live. After that, a monthly care plan covers hosting, updates, backups and fixes.",
   },
 ] as const;
 
@@ -83,7 +83,7 @@ const HOW_WE_WORK = [
   {
     step: "03",
     title: "Design and build",
-    body: "Designs you can click through, then weekly demos on a live staging link.",
+    body: "Designs you can click through, then weekly progress on a live preview link.",
   },
   {
     step: "04",
@@ -109,8 +109,8 @@ export default function AboutPage() {
       <PageHero
         align="left"
         eyebrow={`About ${site.name}`}
-        title="We design, build and run websites and software for businesses"
-        description={`${site.name} is a team in ${site.address.city}. Most clients come to us for a website. Many stay for what comes next: an online store, an app, marketing, custom software, and someone to keep it all running.`}
+        title="Websites and software, built to keep running"
+        description={`${site.name} is a team in ${site.address.city}. Most clients come to us for a website. Many stay for what follows: an online store, an app, marketing, custom software, and someone to keep it all running.`}
       >
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <ButtonLink
@@ -118,11 +118,11 @@ export default function AboutPage() {
             size="lg"
             className="rounded-full bg-setu text-white shadow-none hover:bg-setu-dark"
           >
-            Start a project
+            Book a discovery call
             <ArrowRight className="size-4" aria-hidden />
           </ButtonLink>
           <ButtonLink href="/work" size="lg" variant="secondary" className="rounded-full">
-            See our work
+            See recent projects
           </ButtonLink>
         </div>
 
@@ -160,40 +160,39 @@ export default function AboutPage() {
               as="h2"
               className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
             >
-              {"One team for your website\nand everything after it"}
+              {"One team, from the website\nto everything after"}
             </TextReveal>
           </div>
 
           <Stagger className="flex flex-col gap-5 text-[1.02rem] leading-relaxed text-muted-foreground" delay={0.1}>
             <StaggerItem y={24}>
               <p>
-                We are designers and engineers who build for businesses. Shops,
-                clinics, schools, manufacturers, service firms and startups. Most
-                of them need a website that brings in enquiries. Some need an
-                online store, a customer app or software that replaces their
-                spreadsheets.
+                We are designers and engineers who build for shops, clinics,
+                schools, manufacturers, service firms and startups. Most need a
+                website that brings in enquiries. Some need an online store, a
+                customer app or software that replaces their spreadsheets.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
               <p>
-                We started {site.name} because launch day is where most agencies
-                stop. The site goes live, the invoice goes out, and six months
-                later nobody can update the homepage or explain why the
-                certificate expired.
+                We started {site.name} because launch day is where many projects
+                are abandoned. The site goes live, the invoice goes out, and six
+                months later nobody can update the homepage or explain why the
+                SSL certificate expired.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
               <p>
                 So we built the company around the part that usually gets
-                dropped. We quote hosting and support alongside the build. We
-                write the documentation before handover. And we stay on call for
-                the websites and systems we run.
+                dropped. Hosting and support are quoted alongside the build,
+                documentation is written before handover, and the team that
+                built your site stays on call for it.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
               <p className="font-medium text-foreground">
-                One team, one point of contact, and nothing to re-explain to a
-                new agency when your business grows.
+                One team, one point of contact, and nothing to re-explain when
+                your business grows.
               </p>
             </StaggerItem>
           </Stagger>
@@ -215,7 +214,7 @@ export default function AboutPage() {
             </TextReveal>
             <FadeUp delay={0.2} y={20}>
               <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
-                These are in every proposal we send. Hold us to them.
+                Each one appears in every proposal we send. Hold us to them.
               </p>
             </FadeUp>
           </div>
@@ -244,13 +243,13 @@ export default function AboutPage() {
             <StaggerItem y={28}>
               <div className="flex h-full flex-col justify-between gap-6 rounded-card bg-setu p-6 text-white md:p-7">
                 <p className="font-display text-lg font-semibold leading-snug">
-                  Want to see these in a real proposal?
+                  See these terms in a real proposal.
                 </p>
                 <ButtonLink
                   href="/contact"
                   className="w-fit bg-white text-foreground shadow-none hover:bg-white/90"
                 >
-                  Ask for a quote
+                  Request a proposal
                   <ArrowRight className="size-4" aria-hidden />
                 </ButtonLink>
               </div>
@@ -318,8 +317,8 @@ export default function AboutPage() {
             </TextReveal>
             <FadeUp delay={0.2} y={20}>
               <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
-                Start with one. Add the next when you need it. Everything is
-                built to work together.
+                Most clients start with a website. The store, app or CRM that
+                follows connects to what is already there.
               </p>
             </FadeUp>
           </div>
@@ -362,12 +361,12 @@ export default function AboutPage() {
               as="h2"
               className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
             >
-              {"Businesses that need\nthe work to pay off"}
+              {"Built for businesses\nthat measure results"}
             </TextReveal>
             <FadeUp delay={0.2} y={20}>
               <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
                 Small and growing businesses across India, and startups shipping
-                their first product. We learn how your industry sells before we
+                their first product. We learn how your sector sells before we
                 design a single page.
               </p>
               <ButtonLink href="/industries" variant="secondary" className="mt-6">

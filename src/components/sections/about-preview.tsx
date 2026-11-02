@@ -33,28 +33,26 @@ export function AboutPreview() {
             as="h2"
             className="font-display text-[2.4rem] font-semibold leading-tight text-foreground"
           >
-            About us
+            {"One team, from website\nto software"}
           </TextReveal>
           <Stagger className="flex flex-col gap-4" delay={0.15}>
             <StaggerItem y={24}>
               <p className="text-[1.02rem] font-semibold text-foreground">
-                Websites first. Everything digital after.
+                A design and build studio in Gurugram.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
               <p className="text-[0.92rem] leading-relaxed text-muted-foreground">
-                Setuware Technologies is a design and development team in
-                Gurugram. Most clients come to us for a website. Many stay for
-                the online store, the mobile app, the logo refresh, the Google
-                Ads or the CRM that follows.
+                Most clients start with a website. When they need an online
+                store, an app, a brand refresh or a CRM, the same team builds
+                it.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
               <p className="text-[0.92rem] leading-relaxed text-muted-foreground">
-                You get one team and one contact for all of it. We quote a fixed
-                price before work starts, show you progress every week, and
-                register the domain, code and hosting in your name. Nothing to
-                re-explain to a new agency each time you grow.
+                Every project has a fixed written quote, weekly progress on a
+                live preview and one point of contact. The domain, code and
+                hosting accounts are registered in your name.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
@@ -63,7 +61,7 @@ export function AboutPreview() {
                 variant="secondary"
                 className="mt-3 w-fit rounded-full"
               >
-                More About Us
+                Meet the team
               </ButtonLink>
             </StaggerItem>
           </Stagger>
@@ -88,12 +86,12 @@ export function AboutPreview() {
         <FadeUp delay={0.2} className="flex flex-col gap-5">
           <div>
             <span className="font-display text-[5.5rem] font-semibold leading-[0.85] tracking-tight text-foreground">
-              <Counter to={5} suffix="+" durationMs={1800} />
+              <Counter to={100} suffix="%" durationMs={1800} />
             </span>
             <p className="mt-3 font-display text-xl font-semibold leading-tight text-foreground">
-              Years of
+              Ownership of your
               <br />
-              experience
+              code and accounts
             </p>
           </div>
 
@@ -110,9 +108,12 @@ export function AboutPreview() {
                 </span>
               ))}
             </div>
-            <p className="mt-3 text-sm text-muted-foreground">
-              Businesses who have launched with us
-            </p>
+            <a
+              href="#testimonials"
+              className="mt-3 inline-block text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+            >
+              Read client feedback
+            </a>
           </div>
         </FadeUp>
       </div>

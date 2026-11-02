@@ -11,10 +11,10 @@ import type { ServiceKey } from "./pricing";
 const items: readonly { label: string; service: ServiceKey }[] = [
   { label: "Business websites", service: "business-websites" },
   { label: "E-commerce stores", service: "ecommerce-stores" },
-  { label: "Web apps", service: "web-development" },
+  { label: "Web applications", service: "web-development" },
   { label: "Mobile apps", service: "app-development" },
   { label: "UI/UX & branding", service: "product-design" },
-  { label: "SEO & marketing", service: "seo-marketing" },
+  { label: "SEO & digital marketing", service: "seo-marketing" },
   { label: "Custom software & ERP", service: "custom-software" },
   { label: "AI & automation", service: "ai-integration" },
   { label: "Hosting & domains", service: "managed-hosting" },
@@ -24,7 +24,7 @@ const items: readonly { label: string; service: ServiceKey }[] = [
   { label: "WooCommerce", service: "ecommerce-stores" },
   { label: "Landing pages", service: "business-websites" },
   { label: "Google Ads", service: "seo-marketing" },
-  { label: "CRM", service: "custom-software" },
+  { label: "CRM systems", service: "custom-software" },
 ];
 
 export const capabilities: readonly { label: string; href: string }[] = items.map(

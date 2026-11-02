@@ -46,14 +46,14 @@ export function ToolsRow() {
             id="tools-heading"
             className="text-[1.6rem] leading-[1.366] font-semibold tracking-[-0.01em] text-foreground lg:text-[calc(var(--s)*30)]"
           >
-            Built with the right tools
+            The platforms we build on
           </TextReveal>
           <FadeUp delay={0.25} y={18}>
             <p className="mt-3 text-[0.95rem] leading-[1.8] text-foreground/70 lg:mt-[calc(var(--s)*21)] lg:text-[calc(var(--s)*16)] lg:leading-[calc(var(--s)*29)]">
               WordPress or Next.js for websites, Shopify or WooCommerce for
-              stores, React Native or Flutter for mobile apps, and Figma for
-              every design. We pick the simplest tool that does the job, so
-              your site is easy to edit and cheap to run.
+              stores, React Native or Flutter for apps, and Figma for design.
+              We choose the simplest platform that does the job, so your site
+              stays easy to edit and inexpensive to run.
             </p>
           </FadeUp>
         </div>

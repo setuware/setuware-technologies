@@ -29,8 +29,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   return pageMetadata({
-    title: `Websites and software for ${industry.name.toLowerCase()}`,
-    description: industry.intro,
+    title: industry.seoTitle,
+    description: industry.seoDescription,
     path: `/industries/${industry.slug}`,
   });
 }
@@ -38,15 +38,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 const START_STEPS = [
   {
     title: "A 30-minute call",
-    body: "You walk us through how the work runs today. We ask about volumes, tools and who uses what.",
+    body: "Free, and with the people who would build it. You walk us through how the work runs today, and we ask about volumes, tools and who uses what.",
   },
   {
-    title: "A written scope and fixed price",
-    body: "Within a few working days you get the features, timeline and price in writing.",
+    title: "A fixed quote in writing",
+    body: "Features, timeline and one price, agreed before any work starts. The price moves only if you approve a change.",
   },
   {
-    title: "Weekly builds you can click",
-    body: "A staging link every week, so your team tries it on real work before launch.",
+    title: "Weekly progress you can click",
+    body: "A live preview link, updated every week, so your staff try it on real work before launch.",
   },
 ] as const;
 
@@ -74,8 +74,8 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
     <>
       <PageHero
         align="left"
-        eyebrow="Industries"
-        title={industry.name}
+        eyebrow={industry.name}
+        title={industry.headline}
         description={industry.intro}
         above={
           <div className="mb-8 flex flex-col gap-6">
@@ -113,7 +113,7 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
           <SectionHeading
             align="left"
             eyebrow="What we hear on first calls"
-            title="Problems we are usually asked to fix"
+            title="The problems we are asked to fix"
           />
           <div className="mt-10 grid gap-5 sm:grid-cols-2">
             {industry.problems.map((problem, index) => (
@@ -141,7 +141,7 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
             align="left"
             eyebrow="What we build"
             title={`What we build for ${industry.name.toLowerCase()}`}
-            description="Each one links to the service behind it, with prices and timelines."
+            description="Each card links to the service behind it, with starting prices and timelines."
           />
           <div className="mt-10 grid gap-5 md:grid-cols-2">
             {industry.builds.map((build, index) => {

@@ -120,7 +120,7 @@ export function SelectedProjects() {
           id="projects-heading"
           className="text-center text-3xl leading-tight font-bold tracking-[-0.04em] text-foreground sm:text-[2.6rem] lg:text-[calc(var(--s)*58)] lg:leading-[calc(var(--s)*72)]"
         >
-          Selected Projects
+          Selected work
         </TextReveal>
 
         <motion.div
@@ -151,7 +151,7 @@ export function SelectedProjects() {
               <ImageReveal delay={0.15} className="absolute inset-0">
                 <div className="relative h-full w-full">
                   <Image
-                    src={images.projectMedicare.src}
+                    src={images.caseStudyFeature.src}
                     // Decorative: the title beside it names the project, and
                     // the slot's own alt describes a different placeholder.
                     alt=""
@@ -179,7 +179,7 @@ export function SelectedProjects() {
                   href={`/work/${lead.slug}`}
                   className="group/btn inline-flex h-10 w-fit items-center gap-2.5 rounded-full border-[1.5px] border-foreground px-6 text-[15px] font-semibold text-foreground transition-colors hover:bg-foreground hover:text-background lg:h-[calc(var(--s)*40)] lg:gap-[calc(var(--s)*10)] lg:px-[calc(var(--s)*26)] lg:text-[calc(var(--s)*15)]"
                 >
-                  View Project
+                  Read the case study
                   <ArrowUpRight
                     className="size-4 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 lg:size-[calc(var(--s)*18)]"
                     aria-hidden
@@ -190,14 +190,14 @@ export function SelectedProjects() {
           </SpotlightCard>
         </motion.div>
 
-        {/* "Explore More Projects" pill (24:3105). */}
+        {/* "See all projects" pill (24:3105). */}
         <div className="mt-10 flex justify-center lg:mt-[calc(var(--s)*70)]">
           <Magnetic>
             <Link
               href="/work"
               className="inline-flex h-10 min-w-[14.4rem] items-center justify-center rounded-full bg-black px-8 text-[15px] font-semibold text-white transition-colors hover:bg-setu dark:bg-foreground dark:text-background lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*230)] lg:min-w-0 lg:px-0 lg:text-[calc(var(--s)*15)]"
             >
-              Explore More Projects
+              See all projects
             </Link>
           </Magnetic>
         </div>

@@ -11,10 +11,10 @@ export interface CtaBandProps {
 }
 
 export function CtaBand({
-  title = "Tell us what you are trying to ship",
-  description = "A 45-minute call, a written summary and a ballpark range. If we are not the right team for it, we will tell you on that call and point you somewhere better.",
+  title = "Bring us the problem, not a spec",
+  description = "Book a free 30-minute call. You get a written summary and a price range afterwards. If we are not the right team, we will say so on the call.",
   primaryHref = "/contact",
-  primaryLabel = "Start a project",
+  primaryLabel = "Book a free 30-min call",
 }: CtaBandProps) {
   return (
     <section className="relative overflow-hidden border-y border-border">
@@ -54,7 +54,7 @@ export function CtaBand({
           </div>
 
           <p className="mt-5 text-xs text-white/70">
-            Or email {site.salesEmail} · We reply within one working day
+            Or email {site.salesEmail} · Mon–Fri, 10:00–19:00 IST
           </p>
         </div>
       </div>

@@ -12,23 +12,23 @@ import { PageHero } from "@/components/layout/page-hero";
 import { CtaBand } from "@/components/sections/cta-band";
 
 export const metadata = pageMetadata({
-  title: "Industries",
+  title: "Industries We Build For",
   description:
-    "Websites, apps and business software for retail, healthcare, education, real estate, manufacturing, logistics, hospitality, professional services and startups across India.",
+    "Websites, apps and business software for retail, clinics, schools, real estate, manufacturing, logistics, hospitality, CA firms and startups in India.",
   path: "/industries",
 });
 
 const ADAPT = [
   "The features: GST invoices for a distributor, slot booking for a clinic, batch timetables for an institute.",
-  "The integrations: Tally, Shiprocket, Razorpay, WhatsApp, Google Business Profile or whatever you already use.",
-  "The words on the page, written for the customers you actually sell to.",
+  "The integrations: Tally, Shiprocket, Razorpay, WhatsApp, Google Business Profile, or the tools you already run.",
+  "The copy on every page, written for the buyers in your sector.",
 ] as const;
 
 const SAME = [
-  "A written scope and a fixed price before any work starts.",
-  "A staging link every week, so you see progress instead of hearing about it.",
-  "You own the code, the domain and every account.",
-  "The team that builds it stays on for hosting and support.",
+  "A free 30-minute discovery call, then a written fixed quote.",
+  "Weekly progress on a live preview link, not a status email.",
+  "The domain, code and hosting accounts in your name.",
+  "Three months of support after launch, from the team that built it.",
 ] as const;
 
 export default function IndustriesPage() {
@@ -36,8 +36,8 @@ export default function IndustriesPage() {
     <>
       <PageHero
         eyebrow="Industries"
-        title="Built for how your business already works"
-        description="A clinic, a coaching institute and a transporter need different software. We start from the way your work runs today, then build the website, app or system around it."
+        title="Software shaped around your trade"
+        description="A clinic, a coaching institute and a transporter need different software. We start from how your work runs today, then build the website, app or system around it."
       />
 
       <Section>
@@ -80,8 +80,8 @@ export default function IndustriesPage() {
         <div className="container-page">
           <SectionHeading
             eyebrow="Across every industry"
-            title="What changes, and what does not"
-            description="Every business gets its own features. The way we run the project stays the same."
+            title="What changes, and what stays fixed"
+            description="The features change with your sector. The way we run the project does not."
           />
           <div className="mx-auto mt-12 grid max-w-5xl gap-5 md:grid-cols-2">
             <Reveal className="rounded-card border border-border bg-surface p-7">
@@ -113,7 +113,7 @@ export default function IndustriesPage() {
       <DeferredSection minHeight={380}>
         <CtaBand
           title="Your industry not listed?"
-          description="Most of what we build is workflow software. If your business runs on phone calls, spreadsheets and WhatsApp groups, a 30-minute call is usually enough to see whether we can help."
+          description="Most of what we build is workflow software. If your business runs on phone calls, spreadsheets and WhatsApp groups, one 30-minute call will show whether we can help."
           primaryLabel="Tell us about your business"
         />
       </DeferredSection>

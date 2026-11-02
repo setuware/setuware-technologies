@@ -28,31 +28,31 @@ import { TextReveal } from "@/components/motion/text-reveal";
  */
 const DESIGN_COPY: Record<string, { tagline?: string; features?: readonly string[] }> = {
   "website-build": {
-    tagline: "A fast business website that brings in enquiries.",
+    tagline: "A website that brings in enquiries.",
     features: [
       "Up to 8 pages, designed mobile-first",
       "Edit text and photos yourself",
-      "Contact form, WhatsApp and call buttons",
+      "WhatsApp, call and enquiry buttons",
       "SEO setup and Google Analytics",
       "Domain, hosting and launch handled",
       "3 months of support after launch",
     ],
   },
   "full-application-build": {
-    tagline: "An online store, web app or mobile app.",
+    tagline: "Online stores, web apps and mobile apps.",
     features: [
       "Customer logins and an admin panel",
       "UPI, card and net-banking payments",
       "Order, booking and email alerts",
       "Weekly progress on a preview link",
-      "6 – 8 months of support after launch",
+      "6–8 months of support after launch",
     ],
   },
   "enterprise-engagement": {
-    tagline: "ERP, CRM and multi-team projects.",
+    tagline: "ERP, CRM and multi-team programmes.",
     features: [
       "Custom ERP, CRM or customer portal",
-      "Move off old software in phases",
+      "Phased move off legacy software",
       "Milestones fixed in the contract",
       "One named project lead",
       "Extended support and on-call cover",
@@ -131,7 +131,7 @@ function PlanCard({ plan }: { plan: Plan }) {
 
         <div className="flex flex-col gap-[13px] lg:gap-[calc(var(--s)*13)]">
           <p className="text-[15px] font-medium leading-[29px] tracking-[0.02em] opacity-40 lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*29)]">
-            What&apos;s Included:
+            What&apos;s included
           </p>
           <ul className="flex flex-col gap-2 lg:gap-[calc(var(--s)*8)]">
             {features.map((feature, index) => (
@@ -151,10 +151,10 @@ function PlanCard({ plan }: { plan: Plan }) {
         {quoted ? null : (
           <div className="flex flex-col">
             <p className="text-[14px] font-normal leading-[29px] tracking-[0.02em] opacity-70 lg:text-[calc(var(--s)*14)] lg:leading-[calc(var(--s)*29)]">
-              Starts from
+              Starting from
             </p>
             <p className="text-[34px] font-extrabold leading-[normal] tracking-[-0.03em] lg:text-[calc(var(--s)*39)]">
-              {formatINR(plan.setupFrom ?? 0).replace("₹", "Rs. ")}
+              {formatINR(plan.setupFrom ?? 0)}
             </p>
           </div>
         )}
@@ -169,7 +169,7 @@ function PlanCard({ plan }: { plan: Plan }) {
             : "text-black hover:bg-setu hover:text-white dark:text-white",
         )}
       >
-        {quoted ? "Book a Call" : "Get Started"}
+        {quoted ? "Book a 30-minute call" : "Estimate your project"}
       </Link>
     </SpotlightCard>
   );
@@ -217,13 +217,13 @@ export function FlexiblePlans() {
             id="flexible-plans-title"
             className="text-[40px] font-bold leading-[1.2] tracking-[-0.02em] text-black sm:text-[48px] lg:text-[calc(var(--s)*56)] lg:leading-[calc(var(--s)*72)] dark:text-white"
           >
-            Flexible plans
+            Clear starting prices
           </TextReveal>
           <FadeUp delay={0.25} y={18}>
             <p className="text-[15px] font-normal leading-[29px] tracking-[0.02em] text-black opacity-70 lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*29)] dark:text-white">
-              One fixed price, agreed in writing before work starts. No hourly
-              billing, no surprise invoices, and you own everything we build.
-              Prices exclude GST.{" "}
+              One fixed price, agreed in writing before work starts, with no
+              hourly billing. You own everything we build, and all prices
+              exclude GST.{" "}
               <Link href="/pricing" className="font-medium text-setu underline-offset-4 hover:underline">
                 See full pricing
               </Link>
