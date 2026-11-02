@@ -22,7 +22,7 @@ export interface Post {
 export const posts: readonly Post[] = [
   {
     slug: "surviving-a-traffic-spike",
-    title: "What actually breaks when 1,000 people hit your site at once",
+    title: "How to prepare your website for sudden traffic spikes",
     excerpt:
       "Spikes rarely kill a site because of raw CPU. They kill it because one uncached query sits in the hot path. Here is the order we fix things in.",
     date: "2026-09-18",
@@ -46,7 +46,7 @@ export const posts: readonly Post[] = [
   },
   {
     slug: "choosing-managed-hosting",
-    title: "Managed hosting: what you are actually paying for",
+    title: "Managed hosting explained: what your plan should include",
     excerpt:
       "A ₹500 VPS and a ₹25,000 managed plan both run your app. The difference shows up at 2am on a Saturday.",
     date: "2026-06-21",

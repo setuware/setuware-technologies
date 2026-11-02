@@ -1936,7 +1936,7 @@ export const caseStudies: readonly CaseStudy[] = [
     challenge:
       "Engineers filled paper job cards because the old app lost data whenever connectivity dropped. Back-office re-entry added two days to every billing cycle.",
     approach: [
-      "Shadowed engineers on site to find where connectivity actually failed",
+      "Observed field engineers on site to identify where connectivity failed",
       "Designed an offline-first data model with deterministic conflict rules",
       "Built one React Native codebase for the mixed iOS and Android fleet",
       "Shipped over-the-air updates so fixes land without a store review",
