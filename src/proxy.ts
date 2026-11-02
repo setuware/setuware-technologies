@@ -73,5 +73,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/services/:slug", "/work/:slug", "/blog/:slug", "/industries/:slug"],
+  matcher: ["/services/:slug", "/work/:slug", "/blog/:slug", "/industries/:slug", "/careers/:slug"],
 };

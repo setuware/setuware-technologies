@@ -52,6 +52,13 @@ export function HeroBackdrop({ sources, poster, tone = "page" }: HeroBackdropPro
     const wrapper = wrapperRef.current;
     if (!video || !wrapper) return;
 
+    // iOS Safari only autoplays when the element is muted *as a property*
+    // before play() — React doesn't serialise `muted` into the server HTML.
+    video.muted = true;
+    video.defaultMuted = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+
     const play = () => {
       void video.play().catch(() => {
         // Autoplay refused (battery saver, browser policy). The poster frame
@@ -102,7 +109,8 @@ export function HeroBackdrop({ sources, poster, tone = "page" }: HeroBackdropPro
             tone === "dark" ? "opacity-100" : "opacity-[0.28] dark:opacity-40",
           )}
           poster={poster}
-          preload="none"
+          preload="metadata"
+          autoPlay
           muted
           loop
           playsInline
@@ -130,7 +138,9 @@ export function HeroBackdrop({ sources, poster, tone = "page" }: HeroBackdropPro
       */}
       {tone === "dark" ? (
         <>
-          <div className="absolute inset-0 bg-[linear-gradient(95deg,rgba(6,9,18,0.82)_0%,rgba(6,9,18,0.45)_42%,rgba(6,9,18,0)_75%)]" />
+          {/* Phones: copy spans the full width, so a light vertical scrim keeps
+              the footage visible; desktop darkens only the copy side. */}
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,9,18,0.35)_0%,rgba(6,9,18,0.55)_45%,rgba(6,9,18,0.8)_100%)] lg:bg-[linear-gradient(95deg,rgba(6,9,18,0.82)_0%,rgba(6,9,18,0.45)_42%,rgba(6,9,18,0)_75%)]" />
           <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(to_top,rgba(6,9,18,0.7),transparent)]" />
         </>
       ) : (

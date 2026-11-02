@@ -54,7 +54,7 @@ export function CtaBand({
           </div>
 
           <p className="mt-5 text-xs text-white/70">
-            Or email {site.salesEmail} · Mon–Fri, 10:00–19:00 IST
+            Or email {site.salesEmail} · {site.hours}
           </p>
         </div>
       </div>

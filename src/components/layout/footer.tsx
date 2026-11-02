@@ -30,7 +30,14 @@ import { FadeUp, Magnetic } from "@/components/motion/primitives";
  * to their dark values for everything inside.
  */
 
-const OFFICE_HOURS = "Mon–Sat, 10:00–19:00 IST";
+const OFFICE_HOURS = site.hours;
+
+/** One address per kind of enquiry, so mail lands with the right person. */
+const EMAIL_ROUTES = [
+  { label: "Sales and new projects", email: site.salesEmail },
+  { label: "Client support", email: site.supportEmail },
+  { label: "General enquiries", email: site.generalEmail },
+] as const;
 const INDUSTRIES_SHOWN = 6;
 
 type FooterLinkItem = { label: string; href: string };
@@ -126,12 +133,17 @@ function ContactList() {
           </span>
         </a>
       </li>
-      <li>
-        <a href={`mailto:${site.salesEmail}`} className={row}>
-          <Mail className={icon} aria-hidden />
-          <span className={UNDERLINE}>{site.salesEmail}</span>
-        </a>
-      </li>
+      {EMAIL_ROUTES.map((route) => (
+        <li key={route.email}>
+          <a href={`mailto:${route.email}`} className={cn(row, "items-start py-1.5 lg:py-0")}>
+            <Mail className={cn(icon, "mt-0.5")} aria-hidden />
+            <span className="flex min-w-0 flex-col">
+              <span className="text-xs text-white/45">{route.label}</span>
+              <span className={cn(UNDERLINE, "break-all")}>{route.email}</span>
+            </span>
+          </a>
+        </li>
+      ))}
       <li className="flex items-start gap-3 py-2.5 text-[0.9375rem] leading-snug text-white/70 lg:py-0 lg:text-sm">
         <MapPin className={cn(icon, "mt-0.5")} aria-hidden />
         <address className="not-italic">

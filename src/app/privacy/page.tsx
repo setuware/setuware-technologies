@@ -43,7 +43,7 @@ const SECTIONS: LegalSection[] = [
   {
     heading: "Your rights",
     paragraphs: [
-      `You can ask us for a copy of what we hold about you, ask us to correct it, or ask us to delete it. Email ${site.email} and we will action it within 30 days.`,
+      `You can ask us for a copy of what we hold about you, ask us to correct it, or ask us to delete it. Email ${site.generalEmail} and we will action it within 30 days.`,
       "Every newsletter email has a one-click unsubscribe link, and we honour it immediately.",
     ],
   },
@@ -62,7 +62,7 @@ const SECTIONS: LegalSection[] = [
   {
     heading: "Contact",
     paragraphs: [
-      `Questions about this policy, or about data we hold: ${site.email}. Postal address: ${site.address.street}, ${site.address.city}, ${site.address.region} ${site.address.postalCode}, India.`,
+      `Questions about this policy, or about data we hold: ${site.generalEmail}. Postal address: ${site.address.street}, ${site.address.city}, ${site.address.region} ${site.address.postalCode}, India.`,
     ],
   },
 ];

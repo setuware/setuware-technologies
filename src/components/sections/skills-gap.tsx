@@ -59,6 +59,10 @@ export function SkillsGap() {
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+    // iOS: muted must be set as a property before play() (see hero backdrop).
+    video.muted = true;
+    video.defaultMuted = true;
+    video.setAttribute("muted", "");
     if (reduce || paused) {
       video.pause();
     } else {

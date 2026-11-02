@@ -15,8 +15,9 @@ import {
 } from "lucide-react";
 
 import { pageMetadata } from "@/lib/seo";
-import { getService, services } from "@/lib/content";
-import { carePlans } from "@/lib/plans";
+import { site } from "@/lib/site";
+import { getService, serviceStartingPrice, services } from "@/lib/content";
+import { carePlans, LANDING_PAGE_FROM, WEBSITE_FROM } from "@/lib/plans";
 import { SERVICE_RATES } from "@/lib/pricing";
 import { formatINR, formatINRCompact } from "@/lib/utils";
 import { PricingPlans } from "@/components/sections/pricing-plans";
@@ -35,7 +36,7 @@ const carePlanFrom = Math.min(
 
 export const metadata = pageMetadata({
   title: "Website, App & Software Pricing",
-  description: `Starting prices for websites, online stores, apps and custom software, plus care plans from ${formatINR(carePlanFrom)} a month. Fixed quotes in writing, no markups.`,
+  description: `Landing pages from ${formatINR(LANDING_PAGE_FROM)}, business websites from ${formatINR(WEBSITE_FROM)}, plus stores, apps and custom software. Care plans from ${formatINR(carePlanFrom)} a month. Fixed quotes in writing.`,
   path: "/pricing",
 });
 
@@ -89,7 +90,7 @@ const PRICING_FAQS = [
     group: "Before you start" as const,
     question: "Why does a website start at one price and an app at another?",
     answer:
-      "The starting price reflects the smallest useful version of each. A business website is mostly pages and content. An app adds accounts, data, an admin panel and more testing. Your proposal prices your actual scope, page by page or feature by feature.",
+      "The starting price reflects the smallest useful version of each. A landing page is one page with an enquiry form, from ₹5,000. A full business website is several pages and a CMS, from ₹25,000. An app adds accounts, data, an admin panel and more testing. Your proposal prices your actual scope, page by page or feature by feature.",
   },
   {
     group: "Before you start" as const,
@@ -120,6 +121,11 @@ const PRICING_FAQS = [
     question: "What happens when the included support ends?",
     answer:
       "You can move to a monthly care plan for hosting, updates, backups and fixes, or take everything in-house. The code, accounts and documentation are already yours, so there is nothing to transfer.",
+  },
+  {
+    group: "Help & support" as const,
+    question: "Where do existing clients send support requests?",
+    answer: `Email ${site.supportEmail} for bugs, changes, hosting and care plan questions. It goes straight to the team that looks after your site or app. For anything urgent, call or WhatsApp ${site.phone} as well.`,
   },
   {
     group: "Help & support" as const,
@@ -243,7 +249,7 @@ export default function PricingPage() {
                     <span className="flex items-baseline gap-1.5">
                       <span className="text-xs text-muted-foreground">from</span>
                       <span className="font-display text-2xl font-semibold text-foreground">
-                        {formatINRCompact(service.priceFrom)}
+                        {formatINRCompact(serviceStartingPrice(service))}
                       </span>
                     </span>
                     <span className="text-xs text-muted-foreground">{service.typicalTimeline}</span>

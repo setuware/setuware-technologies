@@ -1,4 +1,7 @@
-/** Published plan pricing, shared by the pricing page and the hosting service page. */
+/**
+ * Published plan pricing, shared by the homepage, the pricing page and the
+ * hosting service page.
+ */
 
 export interface Plan {
   id: string;
@@ -13,15 +16,37 @@ export interface Plan {
   limits: readonly string[];
 }
 
+/** Cheapest published build package: a single-page site. */
+export const LANDING_PAGE_FROM = 5_000;
+/** The full business website package. The estimator's business-websites base matches it. */
+export const WEBSITE_FROM = 25_000;
+
 export const projectPackages: readonly Plan[] = [
+  {
+    id: "landing-page",
+    name: "Landing Page",
+    tagline: "One focused page that turns visitors into enquiries.",
+    monthly: null,
+    setupFrom: LANDING_PAGE_FROM,
+    highlight: false,
+    bestFor: "New businesses, single offers and ad campaigns",
+    features: [
+      "Hero, services and an enquiry form on one page",
+      "WhatsApp and call buttons",
+      "Designed mobile-first",
+      "Basic SEO: titles, meta tags and a sitemap",
+      "3 months of support after launch",
+    ],
+    limits: ["Single page", "Live in about a week"],
+  },
   {
     id: "website-build",
     name: "Website Build",
     tagline: "A fast company website that brings in enquiries.",
     monthly: null,
-    setupFrom: 20_000,
+    setupFrom: WEBSITE_FROM,
     highlight: false,
-    bestFor: "Company sites, service pages and campaign landing pages",
+    bestFor: "Company sites with several service, product or location pages",
     features: [
       "Custom design for mobile and desktop",
       "On-page SEO, sitemap and analytics from launch",

@@ -49,7 +49,7 @@ export default function Error({
           <RefreshCw className="size-4" aria-hidden />
           Try again
         </Button>
-        <ButtonLink href={`mailto:${site.email}`} variant="secondary" size="lg">
+        <ButtonLink href={`mailto:${site.supportEmail}`} variant="secondary" size="lg">
           Report it
         </ButtonLink>
       </div>

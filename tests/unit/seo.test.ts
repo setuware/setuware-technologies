@@ -70,6 +70,15 @@ describe("structured data", () => {
     expect(data.sameAs).toContain(site.social.linkedin);
   });
 
+  it("lists separate sales and customer support contact points", () => {
+    const points = organizationJsonLd().contactPoint;
+
+    expect(points.find((point) => point.contactType === "sales")?.email).toBe(site.salesEmail);
+    expect(points.find((point) => point.contactType === "customer support")?.email).toBe(
+      site.supportEmail,
+    );
+  });
+
   it("links a service offer back to the organisation", () => {
     const data = serviceJsonLd({
       name: "Web development",

@@ -385,7 +385,7 @@ export default function ProcessPage() {
                   {
                     title: "Included support",
                     body: websitePackage && appPackage
-                      ? `${supportTerm(websitePackage.features)} on Website Build, ${supportTerm(appPackage.features)} on Full Application Build.`
+                      ? `${supportTerm(websitePackage.features)} on Landing Page and Website Build, ${supportTerm(appPackage.features)} on Full Application Build.`
                       : "Every build includes a support window after launch.",
                   },
                   { title: "Updates and fixes", body: "Security patches, plugin and framework updates, and bug fixes." },

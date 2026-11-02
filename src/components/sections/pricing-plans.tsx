@@ -1,6 +1,7 @@
 import { Check, Info } from "lucide-react";
 
 import { carePlans, projectPackages, type Plan } from "@/lib/plans";
+import { site } from "@/lib/site";
 import { formatINR, formatINRCompact } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { cn } from "@/lib/utils";
 
 /** Where each build package's button goes, so the next step matches the package. */
 const PACKAGE_CTA: Record<string, { href: string; label: string }> = {
+  "landing-page": { href: "/contact?service=business-websites", label: "Get a landing page quote" },
   "website-build": { href: "/contact?service=business-websites", label: "Get a website quote" },
   "full-application-build": { href: "/estimate", label: "Estimate my app" },
   "enterprise-engagement": { href: "/contact?service=custom-software", label: "Discuss a large project" },
@@ -22,11 +24,14 @@ export function PricingPlans() {
         <div className="container-page">
           <SectionHeading
             eyebrow="Build packages"
-            title="Three ways to start a project"
+            title="Four ways to start a project"
             description="Pick the package closest to your project. After a free 30-minute call, you get a written scope and one fixed price. That is the number you pay."
           />
 
-          <Stagger className="mt-14 grid items-start gap-5 lg:grid-cols-3" stagger={0.08}>
+          <Stagger
+            className="mt-14 grid items-start gap-5 md:grid-cols-2 xl:grid-cols-4"
+            stagger={0.08}
+          >
             {projectPackages.map((plan) => {
               const cta = PACKAGE_CTA[plan.id] ?? { href: "/contact", label: "Request a quote" };
               return (
@@ -64,6 +69,20 @@ export function PricingPlans() {
               </StaggerItem>
             ))}
           </Stagger>
+
+          <p className="mx-auto mt-8 flex max-w-xl items-start justify-center gap-2 text-center text-xs leading-relaxed text-muted-foreground">
+            <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+            <span>
+              Already on a plan? Email{" "}
+              <a
+                href={`mailto:${site.supportEmail}`}
+                className="font-medium text-setu underline-offset-2 hover:underline"
+              >
+                {site.supportEmail}
+              </a>{" "}
+              for fixes, changes and hosting requests.
+            </span>
+          </p>
         </div>
       </Section>
     </>

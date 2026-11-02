@@ -1,4 +1,6 @@
+import { LANDING_PAGE_FROM, WEBSITE_FROM } from "./plans";
 import type { ServiceKey } from "./pricing";
+import { site } from "./site";
 
 /**
  * Editorial content for the marketing site.
@@ -87,6 +89,12 @@ export interface Service {
   accent: readonly [string, string];
   /** Matches `SERVICE_RATES[slug].base` in pricing.ts. */
   priceFrom: number;
+  /**
+   * A fixed entry package priced below the estimator base, such as the
+   * single-page landing page under business websites. Cards, the pricing grid
+   * and structured data quote this; the estimator keeps quoting `priceFrom`.
+   */
+  entryPriceFrom?: number;
   typicalTimeline: string;
   outcomes: readonly string[];
   /** What the client holds at handover. */
@@ -140,8 +148,9 @@ export const services: readonly Service[] = [
       "Most of our work starts here: a website that explains what your business does and turns visitors into calls, WhatsApp messages and enquiry forms. We build on WordPress or Next.js, set up a CMS your team can edit, and launch with SEO basics, analytics and contact tracking already in place.",
     icon: "globe",
     accent: ["#6366f1", "#22d3ee"],
-    priceFrom: 20_000,
-    typicalTimeline: "3–6 weeks",
+    priceFrom: WEBSITE_FROM,
+    entryPriceFrom: LANDING_PAGE_FROM,
+    typicalTimeline: "1–6 weeks",
     outcomes: [
       "A site that loads in under 2 seconds on a mid-range phone",
       "Your team updates pages, photos and blog posts without a developer",
@@ -172,7 +181,7 @@ export const services: readonly Service[] = [
       "Fast company websites on WordPress or Next.js, designed around the one action each page should drive. Calls, WhatsApp taps and form fills are tracked from launch, and your team edits every page without us.",
     seoTitle: "Business Website Development",
     seoDescription:
-      "Business websites on WordPress or Next.js from ₹20,000. Mobile-first design, on-page SEO and enquiry tracking, live in 3–6 weeks. Gurugram team.",
+      "Landing pages from ₹5,000 and full business websites on WordPress or Next.js from ₹25,000. Mobile-first design, on-page SEO and enquiry tracking. Gurugram team.",
     audience: [
       {
         title: "Businesses with a dated site",
@@ -268,7 +277,7 @@ export const services: readonly Service[] = [
       },
     ],
     priceNote:
-      "Our Website Build package. Page count, copywriting and features such as booking or multiple languages set the final price.",
+      "Landing pages from ₹5,000, live in about a week. Full business websites from ₹25,000, live in 3–6 weeks. Page count, copywriting and features such as booking or multiple languages set the final price.",
     commitments: [
       "Lighthouse 90+ on mobile at launch",
       "You own the domain, hosting account and code",
@@ -279,7 +288,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does a business website cost?",
         answer:
-          "Our Website Build package starts at ₹20,000 for a focused site of a few pages. The price rises with page count, copywriting and features like booking or multiple languages. The instant estimator gives you a range in about a minute.",
+          "Landing pages from ₹5,000; full business websites from ₹25,000. A landing page is one page with your services, an enquiry form, WhatsApp and call buttons and basic SEO, live in about a week. It suits one main service or an ad campaign, and can grow into a full site later. A full website adds the pages you need, a CMS and analytics, and the price rises with page count, copywriting and features like booking or multiple languages. The instant estimator gives you a range in about a minute.",
       },
       {
         question: "Should I choose WordPress or Next.js?",
@@ -1671,7 +1680,7 @@ export const services: readonly Service[] = [
       {
         question: "What do the care plans include?",
         answer:
-          "Essential (₹8,000/month) covers managed deploys, CDN, nightly backups and 5-minute uptime checks. Business (₹25,000) adds 24×7 on-call, a WAF and a 99.95% SLA. Critical (₹65,000) adds multi-region failover and a 15-minute response.",
+          `Essential (₹8,000/month) covers managed deploys, CDN, nightly backups and 5-minute uptime checks. Business (₹25,000) adds 24×7 on-call, a WAF and a 99.95% SLA. Critical (₹65,000) adds multi-region failover and a 15-minute response. Plan clients email ${site.supportEmail} for anything they need.`,
       },
       {
         question: "Do you set up business email?",
@@ -1830,8 +1839,7 @@ export const services: readonly Service[] = [
       },
       {
         question: "How fast do you respond?",
-        answer:
-          "Under 30 minutes for critical issues on our Business plan, and next business day on Essential. Every ticket shows its status.",
+        answer: `Under 30 minutes for critical issues on our Business plan, and next business day on Essential. Raise a request by emailing ${site.supportEmail}, or call ${site.phone} if it is critical. Every ticket shows its status.`,
       },
       {
         question: "Do you handle WordPress plugin updates?",
@@ -1852,6 +1860,13 @@ export const services: readonly Service[] = [
     related: ["managed-hosting", "business-websites", "app-development"],
   },
 ];
+
+/** The lowest price a service is sold at: its entry package if it has one. */
+export function serviceStartingPrice(
+  service: Pick<Service, "priceFrom" | "entryPriceFrom">,
+): number {
+  return service.entryPriceFrom ?? service.priceFrom;
+}
 
 export function getService(slug: string): Service | undefined {
   return services.find((service) => service.slug === slug);
@@ -2174,13 +2189,13 @@ export const faqs: readonly Faq[] = [
     group: "Before you start",
     question: "How much does a website cost?",
     answer:
-      "Business websites start at ₹20,000 for up to 8 pages, with SEO setup and 3 months of support included. Online stores, web apps and mobile apps start at ₹50,000. Your final price is fixed in a written quote before work starts, and all prices exclude GST.",
+      "Landing pages start at ₹5,000 and full business websites at ₹25,000 for up to 8 pages, with SEO setup and 3 months of support included. Online stores, web apps and mobile apps start at ₹50,000. Your final price is fixed in a written quote before work starts, and all prices exclude GST.",
   },
   {
     group: "Before you start",
     question: "How long does a project take?",
     answer:
-      "A business website typically takes 3 to 6 weeks from the first call to launch, and an online store 4 to 10 weeks. Web apps take 8 to 12 weeks and mobile apps 8 to 16. Your quote sets a date for every milestone.",
+      "A landing page goes live in about a week. A business website typically takes 3 to 6 weeks from the first call to launch, and an online store 4 to 10 weeks. Web apps take 8 to 12 weeks and mobile apps 8 to 16. Your quote sets a date for every milestone.",
   },
   {
     group: "Before you start",
@@ -2217,7 +2232,7 @@ export const faqs: readonly Faq[] = [
     group: "Help & support",
     question: "What support do I get after launch?",
     answer:
-      "Website builds include 3 months of support and application builds 6 to 8 months, covering bug fixes and small changes at no extra cost. After that, care plans start at ₹8,000 a month for updates, backups, security patches and uptime checks. You reach the same team by phone, WhatsApp or email during IST working hours.",
+      `Landing pages and website builds include 3 months of support and application builds 6 to 8 months, covering bug fixes and small changes at no extra cost. After that, care plans start at ₹8,000 a month for updates, backups, security patches and uptime checks. Email ${site.supportEmail} for fixes, changes and hosting, or call or WhatsApp the same team, ${site.hours}.`,
   },
   {
     group: "Performance & quality",
