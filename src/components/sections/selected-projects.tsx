@@ -153,9 +153,10 @@ export function SelectedProjects() {
                 <div className="relative h-full w-full">
                   <Image
                     src={(lead && caseStudyPhoto(lead.slug)?.src) ?? images.caseStudyFeature.src}
-                    // Decorative: the title beside it names the project, and
-                    // the slot's own alt describes a different placeholder.
-                    alt=""
+                    // The project photo's own description; the generic
+                    // placeholder stays decorative, since its slot alt
+                    // describes a different image.
+                    alt={(lead && caseStudyPhoto(lead.slug)?.alt) ?? ""}
                     fill
                     sizes="(min-width: 1024px) 589px, (min-width: 768px) 50vw, 90vw"
                     className="object-cover transition-[scale] duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/card:scale-[1.04]"

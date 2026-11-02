@@ -41,7 +41,7 @@ import {
 
 export const metadata = pageMetadata({
   title: "About Our Gurugram Web Development Studio",
-  description: `${site.name} is a ${site.address.city} web development studio designing websites, e-commerce stores, mobile apps and custom software for businesses across India.`,
+  description: `${site.name} is a ${site.address.city} web development studio building websites, e-commerce stores, mobile apps and custom software for Indian businesses.`,
   path: "/about",
 });
 

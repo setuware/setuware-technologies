@@ -14,7 +14,6 @@ export default function AppleIcon() {
   return new ImageResponse(
     (
       <div style={{ width: "100%", height: "100%", display: "flex", background: "#0b1020" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element -- rendered by ImageResponse, not the browser */}
         <img
           src={`data:image/svg+xml;base64,${Buffer.from(MARK).toString("base64")}`}
           width={180}

@@ -326,9 +326,14 @@ export function jobMetaTitle(job: Job): string {
  */
 export function jobMetaDescription(job: Job): string {
   if (job.summary.length >= 120) return job.summary;
-  const where = job.location === "Gurugram · Hybrid" ? "hybrid, Gurugram" : "on-site in Gurugram";
-  const extra = ` ${job.type} role, ${where}, at ${site.name}.`;
-  return job.summary.length + extra.length <= 155 ? `${job.summary}${extra}` : job.summary;
+  const where = job.location === "Gurugram · Hybrid" ? "hybrid, Gurugram" : "on-site, Gurugram";
+  const options = [
+    ` ${job.type} role at ${site.name} (${where}).`,
+    ` ${job.type} role, ${where}.`,
+    ` ${job.type}, Gurugram.`,
+  ];
+  const fit = options.find((extra) => job.summary.length + extra.length <= 155);
+  return fit ? `${job.summary}${fit}` : job.summary;
 }
 
 /** `validThrough` for the current listings, as YYYY-MM-DD. */
