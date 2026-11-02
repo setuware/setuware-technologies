@@ -2,19 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
-import { images } from "@/lib/images";
 import { postsByDate, type Post } from "@/lib/posts";
 import { formatDate } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/button";
 import { TextReveal } from "@/components/motion/text-reveal";
 import { FadeUp, ImageReveal, Magnetic } from "@/components/motion/primitives";
-
-/** Article slug to its image slot; the data layer stays free of asset paths. */
-const ARTICLE_IMAGES = [
-  images.articleAutomation,
-  images.articleProcesses,
-  images.articleGrowth,
-] as const;
 
 /** Slow expo-out zoom shared by every card image on hover. */
 const IMAGE_HOVER =
@@ -34,12 +26,10 @@ function TitleArrow() {
 
 function ArticleCard({
   post,
-  image,
   lead = false,
   delay = 0,
 }: {
   post: Post;
-  image: (typeof ARTICLE_IMAGES)[number];
   lead?: boolean;
   delay?: number;
 }) {
@@ -59,8 +49,8 @@ function ArticleCard({
         {/* ImageReveal's inner layer is unpositioned; `fill` needs a relative parent. */}
         <div className="relative size-full">
           <Image
-            src={image.src}
-            alt={image.alt}
+            src={post.cover.src}
+            alt={post.cover.alt}
             fill
             sizes={lead ? "(min-width: 768px) 32rem, 90vw" : "(min-width: 768px) 20rem, 90vw"}
             className={IMAGE_HOVER}
@@ -114,12 +104,11 @@ export function Articles() {
         </FadeUp>
 
         <div className="mt-12 grid gap-6 md:grid-cols-[1.25fr_1fr_1fr]">
-          <ArticleCard post={lead} image={ARTICLE_IMAGES[0]} lead />
+          <ArticleCard post={lead} lead />
           {rest.map((post, index) => (
             <ArticleCard
               key={post.slug}
               post={post}
-              image={ARTICLE_IMAGES[index + 1]}
               delay={(index + 1) * 0.12}
             />
           ))}

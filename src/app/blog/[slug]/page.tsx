@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
@@ -93,6 +94,19 @@ export default async function PostPage({
                   {post.readingMinutes} min read
                 </span>
               </span>
+            </div>
+          </div>
+
+          <div className="container-page relative mt-10 max-w-5xl md:mt-12">
+            <div className="relative aspect-[3/2] overflow-hidden rounded-card border border-border bg-background-subtle shadow-ambient sm:aspect-[16/9]">
+              <Image
+                src={post.cover.src}
+                alt={post.cover.alt}
+                fill
+                fetchPriority="high"
+                sizes="(min-width: 1024px) 64rem, 100vw"
+                className="object-cover"
+              />
             </div>
           </div>
         </header>

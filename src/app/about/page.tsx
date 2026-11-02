@@ -21,8 +21,10 @@ import { services } from "@/lib/content";
 import { images, type ImageSlot } from "@/lib/images";
 import { industries } from "@/lib/industries";
 import { servicePhotos } from "@/lib/service-photos";
+import { founder } from "@/lib/team";
 import { cn } from "@/lib/utils";
 import { PageHero } from "@/components/layout/page-hero";
+import { FounderCard } from "@/components/sections/founder-card";
 import { LIGHT_CARD_SHADOW, LightSectionBackdrop } from "@/components/sections/services-dark";
 import { ButtonLink } from "@/components/ui/button";
 import { IndustryIcon } from "@/components/ui/industry-icon";
@@ -101,8 +103,8 @@ const EYEBROW = "text-xs font-semibold uppercase tracking-[0.18em] text-setu";
 const H2 =
   "mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]";
 
-/** One framed photo in the "Who we are" collage. */
-function CollagePhoto({
+/** One framed photo in the "Who we are" composition. */
+function TeamPhoto({
   image,
   sizes,
   className,
@@ -118,7 +120,7 @@ function CollagePhoto({
   direction: "up" | "left" | "right";
 }) {
   return (
-    <Parallax speed={speed} className={cn("absolute", className)}>
+    <Parallax speed={speed} className={className}>
       {/* The shadow sits outside the reveal, whose clip-path would cut it off. */}
       <div className={cn("h-full w-full rounded-[1.25rem]", LIGHT_CARD_SHADOW)}>
         <ImageReveal
@@ -127,7 +129,13 @@ function CollagePhoto({
           className="relative h-full w-full rounded-[1.25rem] border-[5px] border-surface bg-surface-2"
         >
           <div className="relative h-full w-full">
-            <Image src={image.src} alt={image.alt} fill sizes={sizes} className="object-cover" />
+            <Image
+              src={image.src}
+              alt={image.alt}
+              fill
+              sizes={sizes}
+              className="object-cover"
+            />
           </div>
         </ImageReveal>
       </div>
@@ -219,8 +227,8 @@ export default function AboutPage() {
             </Stagger>
           </div>
 
-          {/* Photo collage: percentages keep the overlap identical at every width. */}
-          <div className="relative mx-auto aspect-[6/5] w-full max-w-xl lg:max-w-none">
+          {/* Team photos: percentages keep the overlap identical at every width. */}
+          <div className="relative mx-auto w-full max-w-xl pb-[18%] pr-[10%] lg:max-w-none">
             <div
               aria-hidden
               className="pointer-events-none absolute -right-6 -top-6 h-1/2 w-1/2 rounded-[1.5rem] bg-[radial-gradient(currentColor_1px,transparent_1.2px)] bg-[size:16px_16px] text-setu/30"
@@ -229,28 +237,20 @@ export default function AboutPage() {
               aria-hidden
               className="pointer-events-none absolute -bottom-10 left-1/4 size-64 rounded-full bg-setu/15 blur-3xl"
             />
-            <CollagePhoto
-              image={images.skillsGap}
-              sizes="(min-width: 1024px) 34rem, 78vw"
-              className="right-0 top-0 aspect-[14/9] w-[78%]"
-              speed={18}
+            <TeamPhoto
+              image={images.teamGroup}
+              sizes="(min-width: 1024px) 34rem, 88vw"
+              className="relative aspect-[4/3] w-full"
+              speed={14}
               delay={0}
-              direction="left"
-            />
-            <CollagePhoto
-              image={images.aboutOffice}
-              sizes="(min-width: 1024px) 20rem, 44vw"
-              className="bottom-0 left-0 aspect-[9/10] w-[44%]"
-              speed={40}
-              delay={0.15}
               direction="up"
             />
-            <CollagePhoto
-              image={images.articleAutomation}
-              sizes="(min-width: 1024px) 22rem, 48vw"
-              className="bottom-[3%] right-[3%] aspect-[3/2] w-[48%]"
-              speed={28}
-              delay={0.3}
+            <TeamPhoto
+              image={images.teamWorkshop}
+              sizes="(min-width: 1024px) 18rem, 46vw"
+              className="absolute bottom-0 right-0 aspect-[4/3] w-[46%]"
+              speed={-30}
+              delay={0.2}
               direction="right"
             />
           </div>
@@ -482,6 +482,21 @@ export default function AboutPage() {
               </StaggerItem>
             ))}
           </Stagger>
+        </div>
+      </Section>
+
+      {/* Founder */}
+      <Section className="border-t border-border pb-0 md:pb-0">
+        <div className="container-page">
+          <div className="max-w-2xl">
+            <span className={EYEBROW}>Leadership</span>
+            <TextReveal as="h2" className={H2}>
+              Meet our founder
+            </TextReveal>
+          </div>
+          <FadeUp y={28} className="mt-10">
+            <FounderCard person={founder} />
+          </FadeUp>
         </div>
       </Section>
 

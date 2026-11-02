@@ -9,7 +9,55 @@ import { site } from "./site";
  * new page cannot accidentally ship without them.
  */
 
+/** Google truncates titles at roughly 60 characters. */
+export const MAX_TITLE_LENGTH = 60;
+
+/** Brand suffix used when the full company name would push a title past 60. */
+export const SHORT_BRAND = "Setuware";
+
+/** Stable node ids, so every page's structured data points at the same entities. */
+export const ORGANIZATION_ID = `${site.url}/#organization`;
+export const WEBSITE_ID = `${site.url}/#website`;
+
+const absolute = (path: string) => new URL(path, site.url).toString();
+
+/**
+ * The site-wide social card (`app/opengraph-image.tsx`). Child segments that
+ * set `openGraph` replace the root's object wholesale (metadata merges are
+ * shallow), so every page names the card explicitly instead of relying on
+ * inheritance.
+ */
+export const DEFAULT_OG_IMAGE = {
+  url: "/opengraph-image",
+  width: 1200,
+  height: 630,
+  type: "image/png",
+  alt: `${site.name} — website, app and software development in Gurugram`,
+} as const;
+
+/** Square brand mark (`app/apple-icon.tsx`), used as the schema.org logo. */
+export const LOGO_URL = absolute("/apple-icon");
+
+/**
+ * Appends the brand to a page title while keeping it inside 60 characters:
+ * the full company name when it fits, the short brand when that fits, and
+ * otherwise the title trimmed at a word boundary.
+ */
+export function fitTitle(title: string): string {
+  const full = `${title} | ${site.name}`;
+  if (full.length <= MAX_TITLE_LENGTH) return full;
+
+  const short = `${title} | ${SHORT_BRAND}`;
+  if (short.length <= MAX_TITLE_LENGTH) return short;
+
+  const room = MAX_TITLE_LENGTH - ` | ${SHORT_BRAND}`.length - 1;
+  const cut = title.slice(0, room);
+  const trimmed = cut.slice(0, Math.max(cut.lastIndexOf(" "), 1)).replace(/[\s,:;–—-]+$/, "");
+  return `${trimmed}… | ${SHORT_BRAND}`;
+}
+
 export interface PageMetaOptions {
+  /** Page-specific part of the title; the brand is appended by `fitTitle`. */
   title: string;
   description: string;
   path: string;
@@ -29,32 +77,35 @@ export function pageMetadata({
   publishedTime,
   noIndex = false,
 }: PageMetaOptions): Metadata {
-  const url = new URL(path, site.url).toString();
-  // When no override is given we deliberately omit `images` so Next's
-  // `opengraph-image` file convention supplies the card for every route.
-  const images = image ? [{ url: image, width: 1200, height: 630, alt: title }] : undefined;
+  const url = absolute(path);
+  const fullTitle = fitTitle(title);
+  const ogImage = image
+    ? { url: image, width: 1200, height: 630, alt: title }
+    : DEFAULT_OG_IMAGE;
 
   return {
-    title,
+    // `absolute` so the root layout's template cannot push it past 60.
+    title: { absolute: fullTitle },
     description,
     alternates: { canonical: url },
     openGraph: {
-      title,
+      title: fullTitle,
       description,
       url,
       type,
       siteName: site.name,
       locale: site.locale,
-      ...(images ? { images } : {}),
+      images: [ogImage],
       ...(publishedTime ? { publishedTime } : {}),
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: fullTitle,
       description,
-      ...(image ? { images: [image] } : {}),
+      images: [ogImage.url],
     },
-    ...(noIndex ? { robots: { index: false, follow: false } } : {}),
+    // Links on a noindex page still lead somewhere useful, so keep `follow`.
+    ...(noIndex ? { robots: { index: false, follow: true } } : {}),
   };
 }
 
@@ -66,26 +117,47 @@ const OFFICE_HOURS_SPEC = {
   closes: "19:00",
 } as const;
 
-/** Organisation schema, emitted once in the root layout. */
+const POSTAL_ADDRESS = {
+  "@type": "PostalAddress",
+  streetAddress: site.address.street,
+  addressLocality: site.address.city,
+  addressRegion: site.address.region,
+  postalCode: site.address.postalCode,
+  addressCountry: site.address.country,
+} as const;
+
+/**
+ * Site-wide structured data, emitted once in the root layout.
+ *
+ * One graph, two nodes: the business itself — a `ProfessionalService`, which
+ * schema.org defines as both an `Organization` and a `LocalBusiness`, so a
+ * single entity carries the logo, NAP, map position and opening hours — and
+ * the `WebSite` it publishes. There is no URL-addressable site search, so the
+ * WebSite node deliberately has no `SearchAction`.
+ */
 export function organizationJsonLd() {
-  return {
-    "@context": "https://schema.org",
+  const organization = {
     "@type": "ProfessionalService",
-    "@id": `${site.url}#organization`,
+    "@id": ORGANIZATION_ID,
     name: site.name,
+    alternateName: SHORT_BRAND,
     url: site.url,
+    logo: { "@type": "ImageObject", url: LOGO_URL, width: 180, height: 180 },
+    image: absolute(DEFAULT_OG_IMAGE.url),
     email: site.email,
     telephone: site.phone,
     description: site.description,
     foundingDate: site.founded,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: site.address.street,
-      addressLocality: site.address.city,
-      addressRegion: site.address.region,
-      postalCode: site.address.postalCode,
-      addressCountry: site.address.country,
+    priceRange: "₹₹",
+    currenciesAccepted: "INR",
+    address: POSTAL_ADDRESS,
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: site.geo.latitude,
+      longitude: site.geo.longitude,
     },
+    hasMap: `https://www.google.com/maps/search/?api=1&query=${site.geo.latitude},${site.geo.longitude}`,
+    openingHoursSpecification: [OFFICE_HOURS_SPEC],
     contactPoint: [
       {
         "@type": "ContactPoint",
@@ -107,10 +179,10 @@ export function organizationJsonLd() {
       },
     ],
     sameAs: Object.values(site.social),
-    areaServed: ["IN", "Worldwide"],
+    areaServed: { "@type": "Country", name: "India" },
     knowsAbout: [
       "Business website design and development",
-      "E-commerce store development",
+      "E-commerce website development",
       "Web application development",
       "Mobile app development",
       "UI/UX design and branding",
@@ -121,6 +193,21 @@ export function organizationJsonLd() {
       "Website maintenance and support",
     ],
   };
+
+  const website = {
+    "@type": "WebSite",
+    "@id": WEBSITE_ID,
+    url: site.url,
+    name: site.name,
+    description: site.description,
+    inLanguage: "en-IN",
+    publisher: { "@id": ORGANIZATION_ID },
+  };
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [organization, website],
+  };
 }
 
 export function serviceJsonLd(options: {
@@ -129,20 +216,30 @@ export function serviceJsonLd(options: {
   path: string;
   priceFrom: number;
 }) {
+  const url = absolute(options.path);
+
   return {
     "@context": "https://schema.org",
     "@type": "Service",
+    "@id": `${url}#service`,
     name: options.name,
+    serviceType: options.name,
     description: options.description,
-    url: new URL(options.path, site.url).toString(),
-    provider: { "@id": `${site.url}#organization` },
+    url,
+    image: absolute(DEFAULT_OG_IMAGE.url),
+    provider: { "@id": ORGANIZATION_ID },
+    areaServed: { "@type": "Country", name: "India" },
     offers: {
       "@type": "Offer",
+      url,
       priceCurrency: "INR",
       price: options.priceFrom,
+      availability: "https://schema.org/InStock",
+      seller: { "@id": ORGANIZATION_ID },
       priceSpecification: {
         "@type": "PriceSpecification",
         priceCurrency: "INR",
+        price: options.priceFrom,
         minPrice: options.priceFrom,
       },
     },
@@ -161,35 +258,54 @@ export function faqJsonLd(items: readonly { question: string; answer: string }[]
   };
 }
 
+/**
+ * BlogPosting for an article. The author is the person in the visible byline
+ * (Google matches the two), credited as working for the organisation, which
+ * is also the publisher.
+ */
 export function articleJsonLd(options: {
   title: string;
   description: string;
   path: string;
   date: string;
   author: string;
+  image?: string;
 }) {
+  const url = absolute(options.path);
+
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
+    "@id": `${url}#article`,
     headline: options.title,
     description: options.description,
+    image: [absolute(options.image ?? DEFAULT_OG_IMAGE.url)],
     datePublished: options.date,
     dateModified: options.date,
-    author: { "@type": "Person", name: options.author },
-    publisher: { "@id": `${site.url}#organization` },
-    mainEntityOfPage: new URL(options.path, site.url).toString(),
+    inLanguage: "en-IN",
+    author: {
+      "@type": "Person",
+      name: options.author,
+      worksFor: { "@id": ORGANIZATION_ID },
+    },
+    publisher: { "@id": ORGANIZATION_ID },
+    isPartOf: { "@id": WEBSITE_ID },
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
   };
 }
 
+/** BreadcrumbList for an inner page. "Home" is prepended automatically. */
 export function breadcrumbJsonLd(trail: readonly { name: string; path: string }[]) {
+  const items = trail[0]?.path === "/" ? trail : [{ name: "Home", path: "/" }, ...trail];
+
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: trail.map((item, index) => ({
+    itemListElement: items.map((item, index) => ({
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      item: new URL(item.path, site.url).toString(),
+      item: absolute(item.path),
     })),
   };
 }

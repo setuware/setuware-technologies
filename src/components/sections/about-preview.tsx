@@ -90,11 +90,11 @@ export function AboutPreview() {
               {/* Overscanned so the scroll drift never shows an edge. */}
               <Parallax speed={20} className="absolute inset-x-0 -inset-y-[6%]">
                 <Image
-                  src={images.teamGroup.src}
-                  alt={images.teamGroup.alt}
+                  src={images.teamPortrait.src}
+                  alt={images.teamPortrait.alt}
                   fill
                   sizes="(min-width: 1024px) 36rem, 92vw"
-                  className="object-cover object-[50%_35%]"
+                  className="object-cover object-[50%_30%]"
                 />
               </Parallax>
             </ImageReveal>

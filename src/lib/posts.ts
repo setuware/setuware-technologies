@@ -17,7 +17,27 @@ export interface Post {
   author: { name: string; role: string; initials: string };
   accent: readonly [string, string];
   featured: boolean;
+  /**
+   * Cover photo (free Pexels licence), cropped to 1200×800 under
+   * `public/images/blog/`. Used by the homepage cards, /blog and the article
+   * hero, so a post looks the same wherever it appears.
+   */
+  cover: PostCover;
 }
+
+export interface PostCover {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+
+const cover = (slug: string, alt: string): PostCover => ({
+  src: `/images/blog/${slug}.jpg`,
+  alt,
+  width: 1200,
+  height: 800,
+});
 
 export const posts: readonly Post[] = [
   {
@@ -31,6 +51,10 @@ export const posts: readonly Post[] = [
     author: { name: "Harsh Jain", role: "Principal Engineer", initials: "HJ" },
     accent: ["#6366f1", "#22d3ee"],
     featured: true,
+    cover: cover(
+      "surviving-a-traffic-spike",
+      "A software engineer reviewing code across two monitors at his desk",
+    ),
   },
   {
     slug: "fixed-price-software-honestly",
@@ -43,6 +67,10 @@ export const posts: readonly Post[] = [
     author: { name: "Priya Manik", role: "Delivery Lead", initials: "PM" },
     accent: ["#8b5cf6", "#ec4899"],
     featured: true,
+    cover: cover(
+      "fixed-price-software-honestly",
+      "Two colleagues planning a project together over a laptop and a notebook",
+    ),
   },
   {
     slug: "choosing-managed-hosting",
@@ -55,6 +83,10 @@ export const posts: readonly Post[] = [
     author: { name: "Harsh Jain", role: "Principal Engineer", initials: "HJ" },
     accent: ["#06b6d4", "#10b981"],
     featured: true,
+    cover: cover(
+      "choosing-managed-hosting",
+      "An engineer checking systems on a laptop in a server room",
+    ),
   },
   {
     slug: "animation-without-wrecking-performance",
@@ -67,6 +99,10 @@ export const posts: readonly Post[] = [
     author: { name: "Priya Manik", role: "Delivery Lead", initials: "PM" },
     accent: ["#f59e0b", "#ef4444"],
     featured: false,
+    cover: cover(
+      "animation-without-wrecking-performance",
+      "A front-end developer working across two monitors and a laptop in an open-plan office",
+    ),
   },
 ];
 
