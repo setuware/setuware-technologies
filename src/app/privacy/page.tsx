@@ -1,10 +1,11 @@
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/json-ld";
 import { site } from "@/lib/site";
 import { LegalPage, type LegalSection } from "@/components/layout/legal-page";
 
 export const metadata = pageMetadata({
-  title: "Privacy policy",
-  description: `How ${site.name} collects, uses and protects the personal data you share through this website.`,
+  title: "Privacy Policy",
+  description: `How ${site.name}, a web development company in ${site.address.city}, collects, uses and protects the personal data you share through this website.`,
   path: "/privacy",
 });
 
@@ -69,11 +70,14 @@ const SECTIONS: LegalSection[] = [
 
 export default function PrivacyPage() {
   return (
-    <LegalPage
-      title="Privacy policy"
-      updated="2026-10-01"
-      intro="This policy explains how we collect, use and protect the personal information you share with us. We retain data only as long as necessary and never sell it."
-      sections={SECTIONS}
-    />
+    <>
+      <LegalPage
+        title="Privacy policy"
+        updated="2026-10-01"
+        intro="This policy explains how we collect, use and protect the personal information you share with us. We retain data only as long as necessary and never sell it."
+        sections={SECTIONS}
+      />
+      <JsonLd data={breadcrumbJsonLd([{ name: "Privacy policy", path: "/privacy" }])} />
+    </>
   );
 }

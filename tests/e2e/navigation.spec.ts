@@ -5,12 +5,15 @@ test.describe("navigation and rendering", () => {
     await page.goto("/");
 
     await expect(
-      page.getByRole("heading", { level: 1, name: /from ideas to\s+production-ready software/i }),
+      page.getByRole("heading", { level: 1, name: /website & app development company in gurugram/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 2, name: /from ideas to\s+production-ready software/i }),
     ).toBeVisible();
     await expect(
       page.getByRole("link", { name: /start a project/i }).first(),
     ).toBeVisible();
-    await expect(page).toHaveTitle(/Setuware Technologies/);
+    await expect(page).toHaveTitle(/Website Development Company in Gurugram \| Setuware/);
   });
 
   test("every section below the fold is present in the HTML, not gated on JS", async ({

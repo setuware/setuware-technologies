@@ -130,11 +130,11 @@ export function AboutPreview() {
             </FadeUp>
           </Parallax>
 
-          {/* Frosted figure card over the lower-left of the main photograph. */}
+          {/* Frosted figure card straddling the lower-left edge of the main photograph. */}
           <FadeUp
             delay={0.4}
             y={20}
-            className="absolute bottom-[calc(16%+0.75rem)] left-3 max-w-[48%] rounded-2xl bg-white/80 p-3.5 shadow-[0_18px_40px_-20px_rgba(11,16,32,0.55)] ring-1 ring-white/70 backdrop-blur-md sm:bottom-[calc(16%+1.25rem)] sm:left-5 sm:p-5"
+            className="absolute bottom-[3%] left-3 max-w-[46%] rounded-2xl bg-white/85 p-3.5 shadow-[0_18px_40px_-20px_rgba(11,16,32,0.55)] ring-1 ring-white/70 backdrop-blur-md sm:left-6 sm:p-5"
           >
             <span className="block font-display text-[2.2rem] font-semibold leading-none tracking-tight text-[#0b1020] sm:text-[3.25rem]">
               <Counter to={10} suffix="+" durationMs={1800} />

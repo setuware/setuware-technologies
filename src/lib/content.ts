@@ -179,7 +179,7 @@ export const services: readonly Service[] = [
     headline: "Business websites that build credibility and generate leads",
     subheadline:
       "We design and develop fast, responsive company websites on WordPress or Next.js. Each site is structured to convert visitors into enquiries and is simple for your team to manage.",
-    seoTitle: "Business website development",
+    seoTitle: "Business Website Development in Gurugram",
     seoDescription:
       "Responsive business websites and landing pages on WordPress or Next.js, with technical SEO, analytics and an easy-to-use CMS. Based in Gurugram.",
     audience: [
@@ -356,9 +356,9 @@ export const services: readonly Service[] = [
     headline: "E-commerce stores built to sell and scale",
     subheadline:
       "We build online stores on Shopify, WooCommerce or Next.js. Secure payments, GST invoicing and courier integration are configured and tested before launch.",
-    seoTitle: "E-commerce store development",
+    seoTitle: "E-commerce Website Development in India",
     seoDescription:
-      "Shopify, WooCommerce and custom e-commerce stores with secure payments, GST invoicing, shipping integration and inventory management.",
+      "E-commerce website development in India: Shopify, WooCommerce and custom stores with secure payments, GST invoicing, shipping and inventory sync.",
     audience: [
       {
         title: "Marketplace sellers",
@@ -529,7 +529,7 @@ export const services: readonly Service[] = [
     headline: "Web applications engineered for scale",
     subheadline:
       "We build customer portals, dashboards, booking systems and SaaS platforms on Next.js, TypeScript and PostgreSQL, with weekly demonstrations of working software.",
-    seoTitle: "Web application development",
+    seoTitle: "Custom Web Application Development",
     seoDescription:
       "Custom web applications, customer portals, dashboards and SaaS platforms on Next.js and PostgreSQL, with fixed scope, weekly demos and secure deployment.",
     audience: [
@@ -705,9 +705,9 @@ export const services: readonly Service[] = [
     headline: "Mobile apps for iOS and Android from a single codebase",
     subheadline:
       "We develop high-performance cross-platform apps in React Native or Flutter, with offline support, push notifications, crash monitoring and app store submission.",
-    seoTitle: "iOS and Android app development",
+    seoTitle: "Mobile App Development Company in Gurugram",
     seoDescription:
-      "Cross-platform iOS and Android apps in React Native or Flutter, with offline sync, push notifications, payments and app store submission.",
+      "Mobile app development in Gurugram: cross-platform iOS and Android apps in React Native or Flutter, with offline sync, payments and app store launch.",
     audience: [
       {
         title: "Customer-facing businesses",
@@ -867,7 +867,7 @@ export const services: readonly Service[] = [
     headline: "Brand identities and digital experiences that build trust",
     subheadline:
       "We create logos, brand identities and website and app interfaces in Figma, working closely with the engineers who build them.",
-    seoTitle: "UI/UX design, logo and branding",
+    seoTitle: "UI/UX Design & Branding Agency in Gurugram",
     seoDescription:
       "Logo design, brand identity and UI/UX design for websites and apps, with brand guidelines, design systems and prototypes ready for development.",
     audience: [
@@ -1033,9 +1033,9 @@ export const services: readonly Service[] = [
     headline: "Search and paid campaigns that generate qualified enquiries",
     subheadline:
       "We bring technical SEO, local search, Google Ads and Meta campaigns together under one team, with conversion tracking in place before any budget is spent.",
-    seoTitle: "SEO and digital marketing services",
+    seoTitle: "SEO Services in Gurugram & Digital Marketing",
     seoDescription:
-      "SEO audits, local SEO, Google Ads and Meta campaigns with conversion tracking and monthly reports on leads, cost per enquiry and rankings.",
+      "SEO services in Gurugram: SEO audits, local SEO, Google Ads and Meta campaigns with conversion tracking and monthly reports on leads and rankings.",
     audience: [
       {
         title: "Local businesses",
@@ -1208,7 +1208,7 @@ export const services: readonly Service[] = [
     headline: "Custom ERP and CRM software that streamlines operations",
     subheadline:
       "We build ERP, CRM and internal tools around the way your business operates, integrated with Tally, Zoho, Razorpay and WhatsApp.",
-    seoTitle: "Custom ERP and CRM development",
+    seoTitle: "Custom Software Development: ERP & CRM",
     seoDescription:
       "Custom ERP, CRM and internal business software designed around your processes and integrated with Tally, Zoho and WhatsApp, with full data migration.",
     audience: [
@@ -1381,7 +1381,7 @@ export const services: readonly Service[] = [
     headline: "AI assistants and automation that reduce manual work",
     subheadline:
       "We build assistants that answer from your own documents, automate data entry and route leads instantly. Each one is tested for accuracy and cost before it goes live.",
-    seoTitle: "AI chatbots and workflow automation",
+    seoTitle: "AI Chatbots & Business Automation Services",
     seoDescription:
       "AI chatbots trained on your documents, WhatsApp assistants, document extraction and workflow automation, tested for accuracy and cost before launch.",
     audience: [
@@ -1553,7 +1553,7 @@ export const services: readonly Service[] = [
     headline: "Secure, monitored hosting for your websites and applications",
     subheadline:
       "We manage your domains, hosting, SSL and business email, with 24×7 monitoring and infrastructure billed at cost.",
-    seoTitle: "Managed hosting, domains and email",
+    seoTitle: "Managed Website Hosting, Domains & Email",
     seoDescription:
       "Managed hosting on AWS, Vercel and Cloudflare with SSL, nightly backups and 24×7 monitoring, plus domain registration and business email set-up.",
     audience: [
@@ -1724,7 +1724,7 @@ export const services: readonly Service[] = [
     headline: "Maintenance and support that keep your platforms secure",
     subheadline:
       "We manage updates, security patches, bug fixes and minor enhancements every month, with a dedicated team and published response times.",
-    seoTitle: "Website and app maintenance plans",
+    seoTitle: "Website & App Maintenance Services",
     seoDescription:
       "Website and app maintenance plans covering security patches, plugin and dependency updates, bug fixes, monitoring and monthly health reports.",
     audience: [
@@ -1888,11 +1888,18 @@ export interface CaseStudy {
   stack: readonly string[];
   quote?: { text: string; author: string; role: string };
   featured: boolean;
+  /** Search title (brand is appended; keep it short) when `title` is too long. */
+  seoTitle?: string;
+  /** Meta description, 120–155 characters, when `summary` is too short. */
+  seoDescription?: string;
 }
 
 export const caseStudies: readonly CaseStudy[] = [
   {
     slug: "kirana-commerce-platform",
+    seoTitle: "Grocery E-commerce Platform Case Study",
+    seoDescription:
+      "How we built one e-commerce platform for a 14-store grocery chain, handling 40,000 orders a month and launched in nine weeks. Read the case study.",
     client: "Vanik Retail",
     sector: "Retail / D2C",
     title: "A grocery chain's 14-store network, online in nine weeks",
@@ -1925,6 +1932,9 @@ export const caseStudies: readonly CaseStudy[] = [
   },
   {
     slug: "field-service-mobile-app",
+    seoTitle: "Offline-First Field Service App Case Study",
+    seoDescription:
+      "A React Native field service app for 400 engineers that works offline in basements and tunnels, then syncs cleanly when the signal returns.",
     client: "Arcline Utilities",
     sector: "Field services",
     title: "400 field engineers working offline, syncing when they surface",
@@ -1957,6 +1967,9 @@ export const caseStudies: readonly CaseStudy[] = [
   },
   {
     slug: "clinic-support-desk-ai",
+    seoTitle: "AI Patient Support Assistant Case Study",
+    seoDescription:
+      "An AI support assistant for a clinic chain that answers 68% of patient questions from its own policies, with citations, and escalates the rest to staff.",
     client: "Medinest Clinics",
     sector: "Healthcare",
     title: "An assistant that answers patients from the clinic's own policies",
@@ -1984,6 +1997,9 @@ export const caseStudies: readonly CaseStudy[] = [
   },
   {
     slug: "fintech-dashboard-rebuild",
+    seoTitle: "Fintech Dashboard Performance Case Study",
+    seoDescription:
+      "How we re-architected queries and caching for a fintech reporting dashboard, taking its heaviest report from 48 seconds to under one second.",
     client: "Ledgerloop",
     sector: "Fintech / SaaS",
     title: "A reporting dashboard that stopped timing out at month end",
@@ -2011,6 +2027,9 @@ export const caseStudies: readonly CaseStudy[] = [
   },
   {
     slug: "education-platform-hosting",
+    seoTitle: "Exam Platform Hosting & Load Testing Case Study",
+    seoDescription:
+      "Migrating an online exam platform to managed hosting and load-testing it to four times its worst day: 1,200 concurrent students, no incident.",
     client: "Shiksha Bridge",
     sector: "Education",
     title: "Exam day traffic: 1,200 concurrent students, no incident",
@@ -2038,6 +2057,9 @@ export const caseStudies: readonly CaseStudy[] = [
   },
   {
     slug: "logistics-brand-design-system",
+    seoTitle: "Logistics Design System Case Study",
+    seoDescription:
+      "One token-driven design system for a logistics company's website, customer portal and driver app, replacing three visual languages across three teams.",
     client: "Pathway Freight",
     sector: "Logistics",
     title: "One design system across a website, portal and driver app",

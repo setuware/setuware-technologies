@@ -3,13 +3,14 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { postsByDate } from "@/lib/posts";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/json-ld";
 import { formatDate } from "@/lib/utils";
 import { Reveal } from "@/components/ui/reveal";
 import { PageHero } from "@/components/layout/page-hero";
 
 export const metadata = pageMetadata({
-  title: "Articles and insights",
+  title: "Blog: Web Development, SEO & Software Insights",
   description:
     "Articles on websites, e-commerce, apps, SEO, hosting and project planning from the Setuware Technologies team, written for business leaders.",
   path: "/blog",
@@ -108,6 +109,7 @@ export default function BlogPage() {
           ))}
         </div>
       </div>
+      <JsonLd data={breadcrumbJsonLd([{ name: "Blog", path: "/blog" }])} />
     </>
   );
 }

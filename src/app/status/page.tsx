@@ -7,9 +7,11 @@ import { PageHero } from "@/components/layout/page-hero";
 import { ButtonLink } from "@/components/ui/button";
 
 export const metadata = pageMetadata({
-  title: "Service status",
-  description: `Current operational status and published SLA targets for ${site.name} managed hosting and support.`,
+  title: "Service Status",
+  description: `Current operational status, uptime and response-time SLA targets for ${site.name} managed hosting, maintenance and support plans.`,
   path: "/status",
+  // A thin, operational page: useful to clients, not a search landing page.
+  noIndex: true,
 });
 
 /**

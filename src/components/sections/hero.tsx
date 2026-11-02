@@ -73,8 +73,13 @@ export function Hero() {
         <div className="container-figma relative flex min-h-[clamp(30rem,72vh,40rem)] flex-col justify-center py-16 md:py-20 lg:h-[calc(var(--s)*765)] lg:min-h-0 lg:justify-start lg:pb-0 lg:pt-[calc(var(--s)*184)]">
           <HeroScrollFade className="flex max-w-[42.625rem] flex-col items-start gap-8 lg:ml-[calc(var(--s)*2)] lg:w-[calc(var(--s)*682)] lg:max-w-none lg:gap-[calc(var(--s)*43)]">
             <div className="flex flex-col gap-4 text-white lg:gap-[calc(var(--s)*21)]">
+              {/* The page's one h1 names the service and the city; the display
+                  line below is the brand promise, so it is the subheading. */}
+              <h1 className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-white/75 sm:text-sm">
+                Website &amp; app development company in Gurugram
+              </h1>
               <TextReveal
-                as="h1"
+                as="h2"
                 immediate
                 delay={0.15}
                 stagger={0.07}

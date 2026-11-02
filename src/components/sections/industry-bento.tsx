@@ -105,7 +105,7 @@ export function IndustryBento() {
           </FadeUp>
         </div>
 
-        <div className="mt-12 grid gap-5 lg:mt-[calc(var(--s)*56)] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.3fr)] lg:gap-[calc(var(--s)*28)]">
+        <div className="mt-12 grid gap-5 lg:mt-[calc(var(--s)*56)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:gap-[calc(var(--s)*28)]">
           {/* Photo card: a project meeting, linking to the portfolio. */}
           <FadeUp y={28} className="h-full">
             <Link
@@ -122,7 +122,7 @@ export function IndustryBento() {
                     alt={images.clientMeeting.alt}
                     fill
                     sizes="(min-width: 1024px) 40vw, 92vw"
-                    className="object-cover object-[45%_50%] transition-[scale] duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                    className="object-cover object-[60%_45%] transition-[scale] duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
                   />
                 </Parallax>
               </ImageReveal>
@@ -153,7 +153,7 @@ export function IndustryBento() {
           <Stagger
             as="ul"
             stagger={0.08}
-            className="grid gap-4 sm:grid-cols-2 lg:gap-[calc(var(--s)*20)]"
+            className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:gap-[calc(var(--s)*20)]"
           >
             {BENEFITS.map(({ Icon, title, body }) => (
               <StaggerItem key={title} as="li" y={28} className="h-full">
@@ -161,18 +161,18 @@ export function IndustryBento() {
                   tilt={2}
                   glow="rgba(0,161,198,0.14)"
                   className={cn(
-                    "h-full rounded-[1.25rem] border border-border bg-surface p-6 transition-[border-color] duration-300 hover:border-setu/40 lg:p-[calc(var(--s)*30)]",
+                    "h-full rounded-[1.25rem] border border-border bg-surface p-5 transition-[border-color] duration-300 hover:border-setu/40 sm:p-6 lg:p-[calc(var(--s)*30)]",
                     CARD_SHADOW,
                   )}
                 >
-                  <div className="relative">
-                    <span className="inline-flex size-11 items-center justify-center rounded-xl bg-[linear-gradient(135deg,rgba(0,161,198,0.16),rgba(10,52,166,0.08))] text-setu ring-1 ring-setu/20 ring-inset">
+                  <div className="relative grid grid-cols-[auto_1fr] items-start gap-x-4 sm:block">
+                    <span className="row-span-2 inline-flex size-11 items-center justify-center rounded-xl bg-[linear-gradient(135deg,rgba(0,161,198,0.16),rgba(10,52,166,0.08))] text-setu ring-1 ring-setu/20 ring-inset">
                       <Icon className="size-5" strokeWidth={1.8} aria-hidden />
                     </span>
-                    <h3 className="mt-5 text-[1.08rem] leading-snug font-semibold tracking-[-0.01em] text-foreground lg:text-[calc(var(--s)*19)]">
+                    <h3 className="text-[1.08rem] leading-snug font-semibold tracking-[-0.01em] text-foreground sm:mt-5 lg:text-[calc(var(--s)*19)]">
                       {title}
                     </h3>
-                    <p className="mt-2 text-[0.93rem] leading-relaxed text-foreground/65 lg:text-[calc(var(--s)*15.5)] lg:leading-[calc(var(--s)*25)]">
+                    <p className="mt-1.5 text-[0.93rem] leading-relaxed text-foreground/65 sm:mt-2 lg:text-[calc(var(--s)*15.5)] lg:leading-[calc(var(--s)*25)]">
                       {body}
                     </p>
                   </div>

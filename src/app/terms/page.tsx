@@ -1,10 +1,11 @@
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/json-ld";
 import { site } from "@/lib/site";
 import { LegalPage, type LegalSection } from "@/components/layout/legal-page";
 
 export const metadata = pageMetadata({
-  title: "Terms of service",
-  description: `The terms that apply to this website and to engagements with ${site.name}.`,
+  title: "Terms of Service",
+  description: `The terms that apply to this website and to website, app and software development engagements with ${site.name}, ${site.address.city}, India.`,
   path: "/terms",
 });
 
@@ -61,11 +62,14 @@ const SECTIONS: LegalSection[] = [
 
 export default function TermsPage() {
   return (
-    <LegalPage
-      title="Terms of service"
-      updated="2026-10-01"
-      intro="These terms govern the use of this website. Client engagements are governed by the signed proposal for each project."
-      sections={SECTIONS}
-    />
+    <>
+      <LegalPage
+        title="Terms of service"
+        updated="2026-10-01"
+        intro="These terms govern the use of this website. Client engagements are governed by the signed proposal for each project."
+        sections={SECTIONS}
+      />
+      <JsonLd data={breadcrumbJsonLd([{ name: "Terms of service", path: "/terms" }])} />
+    </>
   );
 }

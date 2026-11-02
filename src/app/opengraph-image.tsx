@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 import { site } from "@/lib/site";
 
-export const alt = `${site.name} — ${site.tagline}`;
+export const alt = `${site.name} — website, app and software development in Gurugram`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -76,7 +76,7 @@ export default function OpengraphImage() {
         >
           <span>{site.sla.uptime} uptime SLA</span>
           <span>Fixed-price scopes</span>
-          <span>setuwaresoftware.in</span>
+          <span>{new URL(site.url).host}</span>
         </div>
       </div>
     ),

@@ -2,7 +2,8 @@ import Link from "next/link";
 import { ArrowRight, Calculator, MessageCircle } from "lucide-react";
 
 import { serviceGroups, services } from "@/lib/content";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/json-ld";
 import { PageHero } from "@/components/layout/page-hero";
 import { FadeUp, Magnetic, Stagger, StaggerItem } from "@/components/motion/primitives";
 import { TextReveal } from "@/components/motion/text-reveal";
@@ -12,9 +13,9 @@ import { DeferredSection } from "@/components/ui/deferred-section";
 import { cn } from "@/lib/utils";
 
 export const metadata = pageMetadata({
-  title: "Web, app and software services",
+  title: "Web, App & Software Development Services",
   description:
-    "End-to-end digital services: business websites, e-commerce, web and mobile apps, branding, SEO, custom ERP and CRM, AI automation, hosting and support.",
+    "Web and app development services from Gurugram: business websites, e-commerce, mobile apps, branding, SEO, custom ERP and CRM, AI automation and hosting.",
   path: "/services",
 });
 
@@ -31,7 +32,7 @@ export default function ServicesPage() {
       <PageHero
         video="services"
         eyebrow="Services"
-        title="Our services"
+        title="Web, app and software development services"
         description="End-to-end digital services, from your first website to enterprise-grade software. Strategy, design, engineering and support are delivered by one accountable team."
       >
         <nav aria-label="Service groups" className="mt-8 flex flex-wrap justify-center gap-2">
@@ -134,6 +135,7 @@ export default function ServicesPage() {
       <DeferredSection minHeight={820}>
         <ProcessDark />
       </DeferredSection>
+      <JsonLd data={breadcrumbJsonLd([{ name: "Services", path: "/services" }])} />
     </>
   );
 }

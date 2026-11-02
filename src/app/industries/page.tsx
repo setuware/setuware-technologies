@@ -12,7 +12,7 @@ import { PageHero } from "@/components/layout/page-hero";
 import { CtaBand } from "@/components/sections/cta-band";
 
 export const metadata = pageMetadata({
-  title: "Industries we serve",
+  title: "Industry Websites, Apps & Software Solutions",
   description:
     "Websites, apps and business software for retail, healthcare, education, real estate, manufacturing, logistics, hospitality and professional services.",
   path: "/industries",

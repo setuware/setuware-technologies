@@ -13,7 +13,7 @@ import { FadeUp, SpotlightCard, Stagger, StaggerItem } from "@/components/motion
 import { RoleBoard, type RoleCard } from "./role-board";
 
 export const metadata = pageMetadata({
-  title: "Careers",
+  title: "Careers in Gurugram: Developer & Design Jobs",
   description: `Careers at ${site.name}, Gurugram: open roles in engineering, design, marketing and sales, with full role descriptions and how to apply.`,
   path: "/careers",
 });

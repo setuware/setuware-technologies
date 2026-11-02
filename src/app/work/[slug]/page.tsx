@@ -6,6 +6,7 @@ import { ArrowRight, Quote } from "lucide-react";
 
 import { caseStudyPhoto } from "@/lib/case-study-photos";
 import { caseStudies, getCaseStudy, getService } from "@/lib/content";
+import { caseStudyPhotos } from "@/lib/case-study-photos";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
@@ -27,11 +28,14 @@ export async function generateMetadata({
     return pageMetadata({ title: "Not found", description: "", path: "/work", noIndex: true });
   }
 
+  const photo = caseStudyPhotos[study.slug];
+
   return pageMetadata({
-    title: study.title,
-    description: study.summary,
+    title: study.seoTitle ?? study.title,
+    description: study.seoDescription ?? study.summary,
     path: `/work/${study.slug}`,
     type: "article",
+    ...(photo ? { image: { url: photo.src, width: 1200, height: 800, alt: photo.alt } } : {}),
   });
 }
 

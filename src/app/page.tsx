@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 
 import { faqs } from "@/lib/content";
-import { faqJsonLd } from "@/lib/seo";
+import { faqJsonLd, HOME_DESCRIPTION, HOME_KEYWORD_TITLE, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Hero } from "@/components/sections/hero";
 import { CapabilityTicker } from "@/components/sections/capability-ticker";
@@ -30,6 +30,12 @@ import { DeferredSection } from "@/components/ui/deferred-section";
  * served as a prerendered file from the CDN edge and a traffic spike never
  * reaches the application server.
  */
+
+export const metadata = pageMetadata({
+  title: HOME_KEYWORD_TITLE,
+  description: HOME_DESCRIPTION,
+  path: "/",
+});
 
 const ProcessDark = dynamic(() =>
   import("@/components/sections/process-dark").then((mod) => mod.ProcessDark),

@@ -29,13 +29,18 @@ import { TextReveal } from "@/components/motion/text-reveal";
  * neutral monogram chip instead of a redrawn logo.
  */
 type Tool =
-  | { name: string; icon: SimpleIcon }
+  /**
+   * `wide`: a landscape mark (WooCommerce's is about 5:1) that would shrink to
+   * a sliver in the square box. Its symbol is cropped to the mark and given a
+   * wider box instead.
+   */
+  | { name: string; icon: SimpleIcon; wide?: boolean }
   | { name: string; monogram: string };
 
 const ROW_ONE: readonly Tool[] = [
   { name: "WordPress", icon: siWordpress },
   { name: "Shopify", icon: siShopify },
-  { name: "WooCommerce", icon: siWoocommerce },
+  { name: "WooCommerce", icon: siWoocommerce, wide: true },
   { name: "Razorpay", icon: siRazorpay },
   { name: "Next.js", icon: siNextdotjs },
   { name: "React", icon: siReact },
@@ -53,6 +58,9 @@ const ROW_TWO: readonly Tool[] = [
   { name: "Google Cloud", icon: siGooglecloud },
   { name: "Google Analytics", icon: siGoogleanalytics },
 ];
+
+/** Viewboxes cropped to the artwork, for the `wide` marks. */
+const CROPPED_VIEWBOX: Record<string, string> = { woocommerce: "0 9.08 24 5.84" };
 
 /** Every distinct icon once, for the sprite. */
 const SPRITE_ICONS = [...new Map(
@@ -81,7 +89,11 @@ function IconSprite() {
     <svg aria-hidden focusable="false" className="absolute size-0 overflow-hidden">
       <defs>
         {SPRITE_ICONS.map((icon) => (
-          <symbol key={icon.slug} id={`tool-${icon.slug}`} viewBox="0 0 24 24">
+          <symbol
+            key={icon.slug}
+            id={`tool-${icon.slug}`}
+            viewBox={CROPPED_VIEWBOX[icon.slug] ?? "0 0 24 24"}
+          >
             <path d={icon.path} fill="currentColor" />
           </symbol>
         ))}
@@ -112,11 +124,16 @@ function ToolPill({ tool }: { tool: Tool }) {
         <span
           aria-hidden
           className={cn(
-            "flex size-9 items-center justify-center rounded-xl bg-[color-mix(in_oklab,var(--brand)_9%,transparent)] text-[var(--brand)] lg:size-10",
+            "flex h-9 items-center justify-center rounded-xl bg-[color-mix(in_oklab,var(--brand)_9%,transparent)] text-[var(--brand)] lg:h-10",
+            tool.wide ? "w-16 lg:w-[4.5rem]" : "w-9 lg:w-10",
             dark && "dark:bg-white/10 dark:text-foreground",
           )}
         >
-          <svg aria-hidden focusable="false" className="size-[1.15rem] lg:size-5">
+          <svg
+            aria-hidden
+            focusable="false"
+            className={tool.wide ? "h-3 w-12 lg:h-3.5 lg:w-14" : "size-[1.15rem] lg:size-5"}
+          >
             <use href={`#tool-${tool.icon.slug}`} />
           </svg>
         </span>

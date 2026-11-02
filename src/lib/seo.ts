@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { site } from "./site";
+import { founder } from "./team";
 
 /**
  * Metadata helpers.
@@ -35,6 +36,12 @@ export const DEFAULT_OG_IMAGE = {
   alt: `${site.name} — website, app and software development in Gurugram`,
 } as const;
 
+/** Home page title and description; also the site-wide defaults. */
+export const HOME_KEYWORD_TITLE = "Website Development Company in Gurugram";
+export const HOME_TITLE = fitTitle(HOME_KEYWORD_TITLE);
+export const HOME_DESCRIPTION =
+  "Setuware Technologies is a website development company in Gurugram building business websites, e-commerce stores, mobile apps and custom software in India.";
+
 /** Square brand mark (`app/apple-icon.tsx`), used as the schema.org logo. */
 export const LOGO_URL = absolute("/apple-icon");
 
@@ -61,8 +68,8 @@ export interface PageMetaOptions {
   title: string;
   description: string;
   path: string;
-  /** Overrides the default social card. */
-  image?: string;
+  /** Overrides the default social card (a path or absolute URL plus its size). */
+  image?: { url: string; width: number; height: number; alt: string };
   type?: "website" | "article";
   publishedTime?: string;
   noIndex?: boolean;
@@ -79,9 +86,7 @@ export function pageMetadata({
 }: PageMetaOptions): Metadata {
   const url = absolute(path);
   const fullTitle = fitTitle(title);
-  const ogImage = image
-    ? { url: image, width: 1200, height: 630, alt: title }
-    : DEFAULT_OG_IMAGE;
+  const ogImage = image ?? DEFAULT_OG_IMAGE;
 
   return {
     // `absolute` so the root layout's template cannot push it past 60.
@@ -108,6 +113,16 @@ export function pageMetadata({
     ...(noIndex ? { robots: { index: false, follow: true } } : {}),
   };
 }
+
+/**
+ * Founder's public profiles, as confirmed by the owner. Inlined here because
+ * `team.ts` does not carry GitHub or X links; move them there if it grows them.
+ */
+const FOUNDER_PROFILES = [
+  "https://www.linkedin.com/in/satyamraj1/",
+  "https://github.com/stymrj",
+  "https://x.com/ersatyamraj",
+] as const;
 
 /** `site.hours` (Mon–Sat, 10:00–19:00 IST) as schema.org opening hours. */
 const OFFICE_HOURS_SPEC = {
@@ -148,6 +163,16 @@ export function organizationJsonLd() {
     telephone: site.phone,
     description: site.description,
     foundingDate: site.founded,
+    founder: {
+      "@type": "Person",
+      "@id": `${site.url}/#founder`,
+      name: founder.name,
+      jobTitle: "Founder",
+      email: founder.email,
+      url: absolute("/about"),
+      sameAs: [...FOUNDER_PROFILES],
+      worksFor: { "@id": ORGANIZATION_ID },
+    },
     priceRange: "₹₹",
     currenciesAccepted: "INR",
     address: POSTAL_ADDRESS,
@@ -206,7 +231,7 @@ export function organizationJsonLd() {
 
   return {
     "@context": "https://schema.org",
-    "@graph": [organization, website],
+    "@graph": [organization, website] as const,
   };
 }
 

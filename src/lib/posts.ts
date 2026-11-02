@@ -23,6 +23,10 @@ export interface Post {
    * hero, so a post looks the same wherever it appears.
    */
   cover: PostCover;
+  /** Search title (brand is appended; keep it short) when `title` is too long. */
+  seoTitle?: string;
+  /** Meta description, 120–155 characters, when `excerpt` is too short. */
+  seoDescription?: string;
 }
 
 export interface PostCover {
@@ -42,6 +46,7 @@ const cover = (slug: string, alt: string): PostCover => ({
 export const posts: readonly Post[] = [
   {
     slug: "surviving-a-traffic-spike",
+    seoTitle: "How to Prepare Your Website for Traffic Spikes",
     title: "How to prepare your website for sudden traffic spikes",
     excerpt:
       "Spikes rarely kill a site because of raw CPU. They kill it because one uncached query sits in the hot path. Here is the order we fix things in.",
@@ -58,6 +63,7 @@ export const posts: readonly Post[] = [
   },
   {
     slug: "fixed-price-software-honestly",
+    seoTitle: "How We Quote Fixed-Price Software Projects",
     title: "How we quote fixed-price software without padding the number",
     excerpt:
       "Fixed price usually means one of two things: the agency added 40% for risk, or they plan to argue about scope later. There is a third option.",
@@ -74,6 +80,9 @@ export const posts: readonly Post[] = [
   },
   {
     slug: "choosing-managed-hosting",
+    seoTitle: "Managed Hosting Explained: What Your Plan Needs",
+    seoDescription:
+      "A ₹500 VPS and a ₹25,000 managed hosting plan both run your app. Here is what a managed plan should include, and why it matters at 2am on a Saturday.",
     title: "Managed hosting explained: what your plan should include",
     excerpt:
       "A ₹500 VPS and a ₹25,000 managed plan both run your app. The difference shows up at 2am on a Saturday.",
@@ -90,6 +99,7 @@ export const posts: readonly Post[] = [
   },
   {
     slug: "animation-without-wrecking-performance",
+    seoTitle: "Website Animation Without Hurting Performance",
     title: "Animating a marketing site without wrecking its performance",
     excerpt:
       "Motion sells. Motion also ships megabytes of JavaScript and drops frames on mid-range Android. Both can be true; here is the budget we work to.",

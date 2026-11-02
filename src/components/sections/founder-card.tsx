@@ -5,7 +5,12 @@ import type { TeamMember } from "@/lib/team";
 import { cn } from "@/lib/utils";
 import { LIGHT_CARD_SHADOW } from "@/components/sections/services-dark";
 import { ButtonLink } from "@/components/ui/button";
-import { LinkedInIcon } from "@/components/ui/social-icons";
+import {
+  GitHubIcon,
+  LinkedInIcon,
+  XIcon,
+  type SocialIcon,
+} from "@/components/ui/social-icons";
 
 /**
  * Portrait slot: the person's photo when one is set, otherwise their initials
@@ -42,6 +47,21 @@ function Portrait({ person }: { person: TeamMember }) {
   );
 }
 
+/** The person's public profiles that are set, in a fixed order. */
+function profiles(
+  person: TeamMember,
+): { href: string; label: string; Icon: SocialIcon }[] {
+  const all = [
+    { href: person.linkedin, label: "LinkedIn", Icon: LinkedInIcon },
+    { href: person.github, label: "GitHub", Icon: GitHubIcon },
+    { href: person.x, label: "X", Icon: XIcon },
+  ];
+  return all.filter(
+    (p): p is { href: string; label: string; Icon: SocialIcon } =>
+      Boolean(p.href),
+  );
+}
+
 /** A large, light profile card: portrait, name and role, bio, quote and contact links. */
 export function FounderCard({ person }: { person: TeamMember }) {
   return (
@@ -74,52 +94,47 @@ export function FounderCard({ person }: { person: TeamMember }) {
           >
             {person.name}
           </h3>
-          <p className="mt-1.5 text-[0.95rem] font-semibold text-setu">{person.role}</p>
+          <p className="mt-1.5 text-[0.95rem] font-semibold text-setu">
+            {person.role}
+          </p>
           <p className="mt-5 max-w-2xl text-[1.02rem] leading-relaxed text-muted-foreground">
             {person.bio}
           </p>
 
-          <figure className="mt-7 max-w-2xl rounded-2xl border border-setu/15 bg-[linear-gradient(120deg,rgba(0,161,198,0.07),rgba(10,52,166,0.03))] p-5 sm:p-6">
+          <div className="mt-7 max-w-2xl rounded-2xl border border-setu/15 bg-[linear-gradient(120deg,rgba(0,161,198,0.07),rgba(10,52,166,0.03))] p-5 sm:p-6">
             <Quote className="size-5 fill-setu/20 text-setu" aria-hidden />
             <blockquote className="mt-3">
               <p className="font-display text-[1.15rem] font-semibold leading-snug tracking-[-0.01em] text-foreground sm:text-[1.3rem]">
                 {person.quote}
               </p>
             </blockquote>
-            <figcaption className="mt-3 text-sm text-muted-foreground">
-              {person.name}
-            </figcaption>
-          </figure>
+          </div>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <ButtonLink
               href={`mailto:${person.email}`}
-              className="rounded-full bg-setu text-white shadow-[0_10px_24px_-10px_rgba(0,161,198,0.8)] hover:bg-setu-dark"
+              className="w-full rounded-full bg-setu text-white shadow-[0_10px_24px_-10px_rgba(0,161,198,0.8)] hover:bg-setu-dark sm:w-auto"
             >
               <Mail className="size-4" aria-hidden />
-              Email {person.name.split(" ")[0]}
-            </ButtonLink>
-            {person.linkedin ? (
-              <ButtonLink
-                href={person.linkedin}
-                variant="secondary"
-                className="rounded-full"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <LinkedInIcon className="size-4" />
-                LinkedIn
-              </ButtonLink>
-            ) : null}
-          </div>
-          <p className="mt-3 text-sm text-muted-foreground">
-            <a
-              href={`mailto:${person.email}`}
-              className="underline decoration-setu/40 underline-offset-4 transition-colors hover:text-setu"
-            >
+              <span className="sr-only">Email {person.name}: </span>
               {person.email}
-            </a>
-          </p>
+            </ButtonLink>
+            <div className="flex items-center gap-3">
+              {profiles(person).map(({ href, label, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${person.name} on ${label}`}
+                  title={label}
+                  className="inline-flex size-11 items-center justify-center rounded-full border border-border bg-surface text-foreground/75 transition-[border-color,color,transform] duration-200 hover:border-setu/50 hover:text-setu motion-safe:hover:-translate-y-0.5"
+                >
+                  <Icon className="size-[18px]" />
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </article>

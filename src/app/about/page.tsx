@@ -40,8 +40,8 @@ import {
 } from "@/components/motion/primitives";
 
 export const metadata = pageMetadata({
-  title: "About us",
-  description: `${site.name} is a ${site.address.city}-based digital studio that designs and engineers websites, e-commerce platforms, mobile apps and custom software.`,
+  title: "About Our Gurugram Web Development Studio",
+  description: `${site.name} is a ${site.address.city} web development studio designing websites, e-commerce stores, mobile apps and custom software for businesses across India.`,
   path: "/about",
 });
 
