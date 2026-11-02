@@ -59,10 +59,10 @@ export default function OpengraphImage() {
               maxWidth: 940,
             }}
           >
-            We build the software, then we keep it running.
+            Websites that turn visitors into enquiries.
           </div>
           <div style={{ fontSize: 28, color: "rgba(255,255,255,0.78)", maxWidth: 880 }}>
-            Web apps · Mobile apps · Managed hosting · 24×7 support
+            Business websites · E-commerce · Apps · SEO · Custom software
           </div>
         </div>
 

@@ -31,7 +31,7 @@ const POINTS = [
   },
   {
     Icon: HeartHandshake,
-    title: "Support after go-live",
+    title: "Fixes after go-live",
     body: "Every website includes three months of fixes after go-live. Care plans then keep it patched, backed up and monitored by the people who built it.",
   },
 ] as const;

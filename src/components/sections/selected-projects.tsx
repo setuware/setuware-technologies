@@ -151,7 +151,7 @@ export function SelectedProjects() {
               <ImageReveal delay={0.15} className="absolute inset-0">
                 <div className="relative h-full w-full">
                   <Image
-                    src={images.projectMedicare.src}
+                    src={images.caseStudyFeature.src}
                     // Decorative: the title beside it names the project, and
                     // the slot's own alt describes a different placeholder.
                     alt=""

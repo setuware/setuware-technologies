@@ -186,7 +186,7 @@ export default function PricingPage() {
       <PageHero
         eyebrow="Pricing"
         title="Clear prices before you pick up the phone"
-        description="Starting prices for every service, what each project includes, and the monthly plans that keep it running. The estimator prices your exact scope in about a minute."
+        description="Starting prices, what every project includes, and the monthly plans that keep it running. The estimator prices your exact scope in about a minute."
       >
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <ButtonLink

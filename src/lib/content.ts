@@ -279,7 +279,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does a business website cost?",
         answer:
-          "Our Website Build package starts at ₹20,000 for a focused site of a few pages. The price rises with page count, copywriting and features like booking or multiple languages. The instant estimator gives you a range in two minutes.",
+          "Our Website Build package starts at ₹20,000 for a focused site of a few pages. The price rises with page count, copywriting and features like booking or multiple languages. The instant estimator gives you a range in about a minute.",
       },
       {
         question: "Should I choose WordPress or Next.js?",
@@ -519,7 +519,7 @@ export const services: readonly Service[] = [
     ],
     featured: true,
     group: "build",
-    headline: "Customer portals and SaaS, built for production",
+    headline: "Software your customers log in to",
     subheadline:
       "Customer portals, dashboards, booking systems and SaaS MVPs on Next.js, TypeScript and PostgreSQL. A staging link from week two and a demo every week.",
     seoTitle: "Web App & SaaS Development",
@@ -822,7 +822,7 @@ export const services: readonly Service[] = [
           "We handle submission under developer accounts in your company's name, so the apps and their reviews always belong to you.",
       },
       {
-        question: "What happens after launch?",
+        question: "What happens once the app is live?",
         answer:
           "iOS and Android release major updates every year, and some of them break apps. Our maintenance plans cover OS and library upgrades, crash fixes and small features.",
       },
@@ -1274,7 +1274,7 @@ export const services: readonly Service[] = [
         duration: "Week 1–2",
       },
       {
-        title: "Solution design",
+        title: "System design",
         body: "Modules, roles, reports and integrations agreed, with key screens prototyped in Figma.",
         duration: "Week 2–4",
       },

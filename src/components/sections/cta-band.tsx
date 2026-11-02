@@ -11,7 +11,7 @@ export interface CtaBandProps {
 }
 
 export function CtaBand({
-  title = "Tell us what you need built",
+  title = "Bring us the problem, not a spec",
   description = "Book a free 30-minute call. You get a written summary and a price range afterwards. If we are not the right team, we will say so on the call.",
   primaryHref = "/contact",
   primaryLabel = "Book a free 30-min call",

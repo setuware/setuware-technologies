@@ -26,7 +26,7 @@ export const projectPackages: readonly Plan[] = [
       "Custom design for mobile and desktop",
       "On-page SEO, sitemap and analytics from launch",
       "Domain, SSL and go-live handled for you",
-      "Weekly progress on a live preview link",
+      "Copy structure and wireframes for every page",
       "3 months of support after launch",
     ],
     limits: ["WordPress or Next.js", "Typically live in 3–6 weeks"],

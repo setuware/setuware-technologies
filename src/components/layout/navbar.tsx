@@ -166,7 +166,7 @@ export function Navbar({ links }: NavbarProps) {
               className="hidden flex-col items-end text-right leading-[normal] text-foreground lg:flex lg:w-[calc(var(--s)*139)]"
             >
               <span className="text-[calc(var(--s)*11)] font-medium text-foreground/60">
-                Call us 24/7
+                Call us
               </span>
               <span className="text-[calc(var(--s)*17)] font-bold">{site.phone}</span>
             </a>
