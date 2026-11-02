@@ -14,7 +14,7 @@ import { RoleBoard, type RoleCard } from "./role-board";
 
 export const metadata = pageMetadata({
   title: "Careers",
-  description: `Careers at ${site.name}, Gurugram: open roles in engineering, design, marketing and sales, with full role descriptions and details on how to apply.`,
+  description: `Careers at ${site.name}, Gurugram: open roles in engineering, design, marketing and sales, with full role descriptions and how to apply.`,
   path: "/careers",
 });
 
@@ -239,8 +239,8 @@ export default function CareersPage() {
         <div className="container-page">
           <SectionHeading
             eyebrow="Hiring process"
-            title="Five steps, no surprises"
-            description="We tell you at each step what comes next. Nobody is asked to do unpaid work that takes more than a few hours."
+            title="A clear, five-step process"
+            description="Candidates are informed of the next step at every stage, and any task requiring more than a few hours is paid."
           />
           <Stagger as="ol" className="relative mx-auto mt-14 grid max-w-6xl gap-4 md:grid-cols-5">
             <span

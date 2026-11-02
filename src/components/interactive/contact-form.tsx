@@ -13,10 +13,10 @@ const STORAGE_KEY = "setuware.contact-draft.v1";
 
 const BUDGETS = [
   { value: "", label: "To be confirmed" },
-  { value: "under-1l", label: "Under ₹1 lakh" },
-  { value: "1l-5l", label: "₹1–5 lakh" },
-  { value: "5l-15l", label: "₹5–15 lakh" },
-  { value: "15l-plus", label: "Above ₹15 lakh" },
+  { value: "under-1l", label: "Under ₹1,00,000" },
+  { value: "1l-5l", label: "₹1,00,000–₹5,00,000" },
+  { value: "5l-15l", label: "₹5,00,000–₹15,00,000" },
+  { value: "15l-plus", label: "Above ₹15,00,000" },
 ] as const;
 
 /**

@@ -191,7 +191,7 @@ export const industries: readonly Industry[] = [
     headline: "Websites and software for education and coaching",
     intro:
       "We build admissions websites, learning portals and fee management systems for schools, coaching institutes and online educators. Each platform is designed to increase enquiries during admissions and reduce administration throughout the year.",
-    seoTitle: "School and coaching institute websites",
+    seoTitle: "School and coaching websites",
     seoDescription:
       "Admissions websites, learning portals, online fee collection and parent apps for schools, coaching institutes and online educators across India.",
     icon: "graduation",
@@ -587,9 +587,9 @@ export const industries: readonly Industry[] = [
     headline: "Product development for startups and SaaS companies",
     intro:
       "We help founders bring a working product to market by a fixed date, on a codebase designed to scale. Each MVP is scoped to its core objectives, built on Next.js and PostgreSQL and supported as the product grows.",
-    seoTitle: "MVP and SaaS development for startups",
+    seoTitle: "MVP and SaaS development",
     seoDescription:
-      "MVP and SaaS development for founders, including sign-up, billing, dashboards and mobile apps on Next.js and PostgreSQL, with a fixed price and launch date.",
+      "MVP and SaaS development for founders, with sign-up, billing, dashboards and mobile apps on Next.js and PostgreSQL, at a fixed price and launch date.",
     icon: "rocket",
     problems: [
       {

@@ -14,7 +14,7 @@ import { CtaBand } from "@/components/sections/cta-band";
 export const metadata = pageMetadata({
   title: "Industries we serve",
   description:
-    "Websites, apps and business software for retail, healthcare, education, real estate, manufacturing, logistics, hospitality, professional services and startups.",
+    "Websites, apps and business software for retail, healthcare, education, real estate, manufacturing, logistics, hospitality and professional services.",
   path: "/industries",
 });
 

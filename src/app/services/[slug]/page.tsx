@@ -485,8 +485,8 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                   {"Request a fixed-price proposal"}
                 </TextReveal>
                 <p className="mt-4 text-[1.02rem] leading-relaxed text-white/85">
-                  Share your brief and our team will respond within one business day with a
-                  recommended approach and next steps.
+                  Share your requirements and our team will respond within one business day
+                  with a recommended approach.
                 </p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row lg:shrink-0">
@@ -681,6 +681,9 @@ function Hero({
   );
 }
 
+/** Sentence-initial numbers are written as words. */
+const STAGE_COUNT: Record<number, string> = { 3: "Three", 4: "Four", 5: "Five", 6: "Six", 7: "Seven" };
+
 function ProcessTimeline({ service }: { service: Service }) {
   const steps = service.process ?? [];
   return (
@@ -702,8 +705,8 @@ function ProcessTimeline({ service }: { service: Service }) {
             {"A structured delivery plan"}
           </TextReveal>
           <p className="mt-4 max-w-sm text-[0.98rem] leading-relaxed text-white/65">
-            {steps.length} stages, each reviewed and approved before the next begins. Typical
-            timeline: {service.typicalTimeline.toLowerCase()}.
+            {STAGE_COUNT[steps.length] ?? steps.length} stages, each reviewed and approved before
+            the next begins. Typical timeline: {service.typicalTimeline.toLowerCase()}.
           </p>
           <Link
             href="/process"

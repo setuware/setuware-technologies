@@ -5,7 +5,6 @@ import {
   editDistance,
   EMPTY_LEAD,
   faqReply,
-  isWithinHours,
   leadPayload,
   matchIntent,
   normalise,
@@ -15,6 +14,7 @@ import {
   whatsappHref,
   wordMatches,
 } from "@/components/interactive/chatbot/engine";
+import { isWithinHours } from "@/components/interactive/chatbot/constants";
 import { faqs } from "@/lib/content";
 import { contactSchema } from "@/lib/validation";
 

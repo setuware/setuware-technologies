@@ -1,15 +1,27 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Gauge, X } from "lucide-react";
+import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
+import { CheckCircle2, Gauge, Globe, Loader2, X } from "lucide-react";
 
-import { usePersistentState } from "@/lib/hooks";
-import { ButtonLink } from "@/components/ui/button";
+import { EASE_OUT } from "@/components/motion/ease";
+import { useReducedMotionSafe } from "@/components/motion/primitives";
+import { Field, Honeypot, Input } from "@/components/ui/field";
+import { postJson } from "@/lib/client-api";
+import { usePersistentState, useScrollLock } from "@/lib/hooks";
+import { cn } from "@/lib/utils";
+import { contactSchema, fieldErrors } from "@/lib/validation";
+
+import { isChatOpen } from "./chatbot/state";
 
 const STORAGE_KEY = "setuware.audit-offer.v1";
 const SUPPRESS_DAYS = 14;
 const MOBILE_IDLE_MS = 28_000;
 const MOBILE_SCROLL_THRESHOLD = 0.55;
+const HONEYPOT = "audit-honeypot";
+
+const URL_RE = /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(:\d+)?(\/\S*)?$/i;
 
 interface OfferState {
   dismissedAt: number | null;
@@ -18,8 +30,18 @@ interface OfferState {
 
 const INITIAL: OfferState = { dismissedAt: null, takenAt: null };
 
+interface Draft {
+  name: string;
+  email: string;
+  website: string;
+}
+
+const EMPTY: Draft = { name: "", email: "", website: "" };
+
+const TRUST = ["Free", "No obligation", "Reply within one business day"] as const;
+
 /**
- * Offers a free performance audit to visitors who are about to leave.
+ * Offers a free website audit to visitors who are about to leave.
  *
  * Trigger rules are deliberately conservative — showing this twice is worse
  * than never showing it:
@@ -28,21 +50,40 @@ const INITIAL: OfferState = { dismissedAt: null, takenAt: null };
  *  - touch: no exit event exists, so it waits for real scroll depth plus a
  *    pause in activity
  *  - either way: once per visitor per fortnight, and never again once taken
+ *  - never while the visitor is talking to the assistant
+ *
+ * The request goes to the same `/api/contact` endpoint as the contact form,
+ * with the message the `/contact?intent=audit` link used to prefill.
  */
 export function ExitIntentOffer() {
   const [state, setState] = usePersistentState<OfferState>(STORAGE_KEY, INITIAL);
   const [open, setOpen] = useState(false);
   const shownThisSession = useRef(false);
-  const closeRef = useRef<HTMLButtonElement>(null);
+  const openedAt = useRef(0);
+  const restoreFocus = useRef<HTMLElement | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const reduce = useReducedMotionSafe();
 
-  const dismiss = () => {
+  const [draft, setDraft] = useState<Draft>(EMPTY);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+
+  useScrollLock(open);
+
+  const close = () => {
     setOpen(false);
-    setState((previous) => ({ ...previous, dismissedAt: Date.now() }));
+    window.requestAnimationFrame(() => restoreFocus.current?.focus?.());
   };
 
-  const accept = () => {
-    setOpen(false);
-    setState((previous) => ({ ...previous, takenAt: Date.now() }));
+  const dismiss = () => {
+    close();
+    // A completed request already recorded `takenAt`; closing the thank-you
+    // card must not overwrite it with a dismissal.
+    if (status !== "sent") {
+      setState((previous) => ({ ...previous, dismissedAt: Date.now() }));
+    }
   };
 
   useEffect(() => {
@@ -61,7 +102,11 @@ export function ExitIntentOffer() {
 
     const show = () => {
       if (shownThisSession.current) return;
+      // Never interrupt a conversation; a later exit gesture can still show it.
+      if (isChatOpen()) return;
       shownThisSession.current = true;
+      openedAt.current = Date.now();
+      restoreFocus.current = document.activeElement as HTMLElement | null;
       setOpen(true);
     };
 
@@ -103,90 +148,300 @@ export function ExitIntentOffer() {
     };
   }, [state.takenAt, state.dismissedAt]);
 
-  // Escape closes; focus moves into the dialog when it appears.
+  // Escape closes, Tab stays inside, and focus moves in when it appears. On
+  // touch screens the sheet itself takes focus so the keyboard does not pop up
+  // uninvited.
   useEffect(() => {
     if (!open) return;
-    closeRef.current?.focus();
+    const coarse = window.matchMedia?.("(pointer: coarse)").matches ?? false;
+    const frame = window.requestAnimationFrame(() => {
+      if (coarse) dialogRef.current?.focus();
+      else nameRef.current?.focus();
+    });
+
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") dismiss();
+      if (event.key === "Escape") {
+        dismiss();
+        return;
+      }
+      if (event.key !== "Tab" || !dialogRef.current) return;
+      const focusable = Array.from(
+        dialogRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), [tabindex]',
+        ),
+      ).filter((element) => element.tabIndex >= 0);
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+      if (event.shiftKey && (active === first || active === dialogRef.current)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("keydown", onKeyDown);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  if (!open) return null;
+  const set = (patch: Partial<Draft>) => {
+    setDraft((previous) => ({ ...previous, ...patch }));
+    const [key] = Object.keys(patch);
+    if (key && errors[key]) setErrors(({ [key]: _removed, ...rest }) => rest);
+  };
+
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (status === "sending") return;
+
+    const website = draft.website.trim();
+    const honeypot =
+      (formRef.current?.elements.namedItem(HONEYPOT) as HTMLInputElement | null)?.value ?? "";
+    const payload = {
+      name: draft.name,
+      email: draft.email,
+      message: `I'd like the free website audit. Our URL is: ${website}\n\n(Requested from the website audit offer.)`,
+      consent: true as const,
+      honeypot,
+      elapsedMs: openedAt.current === 0 ? 0 : Date.now() - openedAt.current,
+    };
+
+    const local: Record<string, string> = {};
+    const parsed = contactSchema.safeParse(payload);
+    if (!parsed.success) Object.assign(local, fieldErrors(parsed.error));
+    if (!URL_RE.test(website)) local.website = "Enter your website address, for example example.com";
+    const visible = Object.fromEntries(
+      Object.entries(local).filter(([key]) => key === "name" || key === "email" || key === "website"),
+    );
+    if (Object.keys(visible).length > 0) {
+      setErrors(visible);
+      return;
+    }
+
+    setStatus("sending");
+    setErrors({});
+    const result = await postJson<{ reference: string }>("/api/contact", payload);
+
+    if (result.ok) {
+      setStatus("sent");
+      setState((previous) => ({ ...previous, takenAt: Date.now() }));
+      return;
+    }
+
+    setStatus("idle");
+    setErrors({ ...(result.fields ?? {}), _form: result.message });
+  };
+
+  const firstName = draft.name.trim().split(/\s+/)[0] ?? "";
 
   return (
-    <div
-      className="fixed inset-0 z-[80] flex items-end justify-center p-4 sm:items-center"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="audit-offer-title"
-    >
-      <div className="absolute inset-0 bg-black/55 backdrop-blur-sm" onClick={dismiss} aria-hidden />
-
-      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl">
-        <div className="h-1 bg-[linear-gradient(90deg,var(--color-brand-500),var(--color-accent-400))]" />
-        <button
-          ref={closeRef}
-          type="button"
-          onClick={dismiss}
-          className="absolute right-3 top-4 inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
-          aria-label="Close offer"
+    <AnimatePresence>
+      {open ? (
+        <div
+          key="audit-offer"
+          className="fixed inset-0 z-[80] flex items-end justify-center sm:items-center sm:p-6"
         >
-          <X className="size-4" aria-hidden />
-        </button>
+          <motion.div
+            className="absolute inset-0 bg-[#0b1020]/50 backdrop-blur-[3px]"
+            onClick={dismiss}
+            aria-hidden
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          />
 
-        <div className="p-6 md:p-7">
-          <span className="inline-flex size-11 items-center justify-center rounded-xl bg-[linear-gradient(135deg,var(--color-brand-600),var(--color-accent-500))] text-white">
-            <Gauge className="size-5" aria-hidden />
-          </span>
-
-          <h2
-            id="audit-offer-title"
-            className="mt-4 text-xl font-semibold text-foreground"
+          <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="audit-offer-title"
+            aria-describedby="audit-offer-description"
+            tabIndex={-1}
+            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 40, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={reduce ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.98 }}
+            transition={{ duration: reduce ? 0.15 : 0.5, ease: EASE_OUT }}
+            className="relative max-h-[92dvh] w-full overflow-y-auto rounded-t-3xl border border-border bg-surface pb-[env(safe-area-inset-bottom)] shadow-[0_32px_80px_-20px_rgba(11,16,32,0.45)] outline-none sm:max-w-[460px] sm:rounded-3xl sm:pb-0"
           >
-            Before you go — want your current site audited?
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            A real engineer spends 45 minutes on your site and sends you a written
-            report: load times on a mid-range phone, the three things costing you
-            conversions, and what each would take to fix. Free, no pitch deck.
-          </p>
+            {/* Brand accent: hairline gradient plus a soft wash behind the header. */}
+            <div
+              aria-hidden
+              className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#00a1c6,var(--color-accent-400),var(--color-brand-500))]"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-[radial-gradient(120%_100%_at_0%_0%,rgba(0,161,198,0.14),transparent_60%),radial-gradient(90%_90%_at_100%_0%,rgba(59,130,246,0.10),transparent_60%)]"
+            />
+            <div aria-hidden className="mx-auto mt-2.5 h-1 w-10 rounded-full bg-border sm:hidden" />
 
-          <ul className="mt-4 flex flex-col gap-2 text-sm text-muted-foreground">
-            {[
-              "Core Web Vitals measured on real mobile hardware",
-              "Security headers, SEO and accessibility checks",
-              "Prioritised fix list with effort estimates",
-            ].map((item) => (
-              <li key={item} className="flex items-start gap-2">
-                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
-                {item}
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-6 flex flex-col gap-2.5 sm:flex-row">
-            <ButtonLink
-              href="/contact?intent=audit"
-              variant="gradient"
-              className="flex-1"
-              onClick={accept}
-            >
-              Claim my free audit
-            </ButtonLink>
             <button
               type="button"
               onClick={dismiss}
-              className="rounded-xl px-4 py-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="absolute right-3 top-3.5 z-10 inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-setu sm:right-4 sm:top-4"
+              aria-label="Close offer"
             >
-              No thanks
+              <X className="size-4" aria-hidden />
             </button>
-          </div>
+
+            <div className="relative px-5 pb-5 pt-4 sm:px-7 sm:pb-6 sm:pt-7">
+              {status === "sent" ? (
+                <div className="py-4 text-center" role="status">
+                  <span className="mx-auto inline-flex size-12 items-center justify-center rounded-full bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
+                    <CheckCircle2 className="size-6" aria-hidden />
+                  </span>
+                  <h2 id="audit-offer-title" className="mt-4 text-xl font-semibold tracking-tight text-foreground">
+                    Thank you{firstName ? `, ${firstName}` : ""}
+                  </h2>
+                  <p id="audit-offer-description" className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+                    Your audit request is with our team. We will email a short report on speed, SEO and conversion within two business days.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={dismiss}
+                    className="mt-6 inline-flex h-11 items-center justify-center rounded-xl border border-border px-6 text-sm font-medium text-foreground transition-colors hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu"
+                  >
+                    Close
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-3 pr-10">
+                    <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#00a1c6,var(--color-brand-600))] text-white shadow-[0_8px_20px_-8px_rgba(0,161,198,0.8)]">
+                      <Gauge className="size-5" aria-hidden />
+                    </span>
+                    <span className="inline-flex items-center rounded-full border border-setu/25 bg-setu/8 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-setu-dark dark:text-[#5fe0f7]">
+                      Free for growing businesses
+                    </span>
+                  </div>
+
+                  <h2
+                    id="audit-offer-title"
+                    className="mt-4 text-[1.4rem] font-semibold leading-tight tracking-tight text-foreground sm:text-2xl"
+                  >
+                    Get a free website audit
+                  </h2>
+                  <p id="audit-offer-description" className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    Share your website and we&apos;ll send a short report on speed, SEO and conversion within two business days.
+                  </p>
+
+                  <form ref={formRef} onSubmit={onSubmit} noValidate className="relative mt-5 flex flex-col gap-3.5">
+                    <Honeypot name={HONEYPOT} />
+                    <div className="grid gap-3.5 sm:grid-cols-2">
+                      <Field label="Name" htmlFor="audit-name" error={errors.name} required>
+                        <Input
+                          ref={nameRef}
+                          id="audit-name"
+                          name="name"
+                          autoComplete="name"
+                          value={draft.name}
+                          onChange={(event) => set({ name: event.target.value })}
+                          aria-invalid={Boolean(errors.name)}
+                          aria-describedby={errors.name ? "audit-name-error" : undefined}
+                          className="py-2.5 text-[0.95rem] shadow-none"
+                          placeholder="Your name"
+                        />
+                      </Field>
+                      <Field label="Email" htmlFor="audit-email" error={errors.email} required>
+                        <Input
+                          id="audit-email"
+                          name="email"
+                          type="email"
+                          inputMode="email"
+                          autoComplete="email"
+                          value={draft.email}
+                          onChange={(event) => set({ email: event.target.value })}
+                          aria-invalid={Boolean(errors.email)}
+                          aria-describedby={errors.email ? "audit-email-error" : undefined}
+                          className="py-2.5 text-[0.95rem] shadow-none"
+                          placeholder="name@company.com"
+                        />
+                      </Field>
+                    </div>
+                    <Field label="Website URL" htmlFor="audit-website" error={errors.website} required>
+                      <div className="relative">
+                        <Globe
+                          className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                          aria-hidden
+                        />
+                        <Input
+                          id="audit-website"
+                          name="website"
+                          type="text"
+                          inputMode="url"
+                          autoComplete="url"
+                          autoCapitalize="none"
+                          spellCheck={false}
+                          value={draft.website}
+                          onChange={(event) => set({ website: event.target.value })}
+                          aria-invalid={Boolean(errors.website)}
+                          aria-describedby={errors.website ? "audit-website-error" : undefined}
+                          className="py-2.5 pl-10 text-[0.95rem] shadow-none"
+                          placeholder="yourcompany.com"
+                        />
+                      </div>
+                    </Field>
+
+                    {errors._form ? (
+                      <p role="alert" className="rounded-lg bg-red-500/8 px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400">
+                        {errors._form}
+                      </p>
+                    ) : null}
+
+                    <button
+                      type="submit"
+                      disabled={status === "sending"}
+                      className={cn(
+                        "mt-1 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[0.95rem] font-semibold text-white",
+                        "bg-[linear-gradient(100deg,#00a1c6,var(--color-accent-500)_50%,var(--color-brand-600))] shadow-[0_10px_24px_-10px_rgba(0,161,198,0.85)]",
+                        "transition-[filter,translate] duration-200 hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu motion-safe:hover:-translate-y-px disabled:opacity-70",
+                      )}
+                    >
+                      {status === "sending" ? (
+                        <>
+                          <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden />
+                          Sending request
+                        </>
+                      ) : (
+                        "Request my free audit"
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={dismiss}
+                      className="mx-auto -mt-1 rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-setu"
+                    >
+                      No thanks
+                    </button>
+                  </form>
+
+                  <ul className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 border-t border-border pt-4 text-xs font-medium text-muted-foreground">
+                    {TRUST.map((item) => (
+                      <li key={item} className="inline-flex items-center gap-1.5">
+                        <CheckCircle2 className="size-3.5 text-emerald-500" aria-hidden />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-3 text-center text-[11px] leading-relaxed text-muted-foreground/90">
+                    By requesting an audit you agree to our{" "}
+                    <Link href="/privacy" onClick={dismiss} className="underline underline-offset-2 hover:text-foreground">
+                      privacy policy
+                    </Link>
+                    .
+                  </p>
+                </>
+              )}
+            </div>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      ) : null}
+    </AnimatePresence>
   );
 }

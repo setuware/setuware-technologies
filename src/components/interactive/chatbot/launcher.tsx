@@ -29,14 +29,12 @@ export function ChatLauncher() {
   const [visible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
   const [requested, setRequested] = useState(false);
-  const [online, setOnline] = useState(true);
+  const [online, setOnline] = useState(() => isWithinHours());
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setVisible(true), ENTRANCE_DELAY_MS);
-    const tick = () => setOnline(isWithinHours());
-    tick();
-    const clock = window.setInterval(tick, 60_000);
+    const clock = window.setInterval(() => setOnline(isWithinHours()), 60_000);
     return () => {
       window.clearTimeout(timer);
       window.clearInterval(clock);
@@ -83,10 +81,10 @@ export function ChatLauncher() {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: reduce ? 0.2 : 0.6, ease: EASE_OUT }}
           className={cn(
-            "group fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-[80px] z-[35] inline-flex items-center rounded-full bg-setu text-white",
+            "group fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-[35] inline-flex items-center rounded-full bg-setu text-white",
             "shadow-[0_10px_28px_-8px_rgba(0,161,198,0.7),0_2px_6px_rgba(15,23,42,0.18)] transition-[background-color,box-shadow,translate] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
             "hover:bg-setu-dark focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-setu motion-safe:hover:-translate-y-0.5",
-            "size-[52px] justify-center sm:bottom-6 sm:right-[88px] sm:h-14 sm:w-auto sm:justify-start sm:gap-3 sm:py-0 sm:pl-2 sm:pr-5",
+            "size-[52px] justify-center sm:bottom-[92px] sm:right-5 sm:h-14 sm:w-auto sm:justify-start sm:gap-3 sm:py-0 sm:pl-2 sm:pr-5",
           )}
         >
           <span className="relative inline-flex size-[52px] shrink-0 items-center justify-center sm:size-10 sm:rounded-full sm:bg-white/15">

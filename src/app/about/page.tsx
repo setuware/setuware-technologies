@@ -15,7 +15,6 @@ import { heroVideoPoster, heroVideoSources } from "@/lib/media";
 import { HeroVideo } from "@/components/interactive/hero-video";
 import { PipelineAnimation } from "@/components/interactive/pipeline-animation";
 import { PageHero } from "@/components/layout/page-hero";
-import { CtaBand } from "@/components/sections/cta-band";
 import { ButtonLink } from "@/components/ui/button";
 import { Section } from "@/components/ui/section";
 import { ServiceIcon } from "@/components/ui/service-icon";
@@ -371,12 +370,6 @@ export default function AboutPage() {
           </Stagger>
         </div>
       </Section>
-
-      <CtaBand
-        title="Start a conversation with our team"
-        description="Tell us about your goals and we will recommend the right approach, with a clear proposal to follow."
-        primaryLabel="Start a project"
-      />
     </>
   );
 }

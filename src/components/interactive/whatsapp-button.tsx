@@ -12,8 +12,9 @@ import { whatsappHref } from "./chatbot/constants";
 const ENTRANCE_DELAY_MS = 2_000;
 
 /**
- * Floating WhatsApp shortcut, bottom-right. The assistant launcher sits to its
- * left and the back-to-top button bottom-left, so the three never overlap.
+ * Floating WhatsApp shortcut, bottom-right. The assistant launcher and the
+ * back-to-top button stack above it, so the three never overlap; the tooltip
+ * opens to the left, where the column leaves room.
  * It fades in after a short delay so it never competes with the hero.
  */
 export function WhatsAppButton() {
@@ -41,10 +42,10 @@ export function WhatsAppButton() {
       <WhatsAppIcon className="size-[26px] sm:size-7" />
       <span
         aria-hidden
-        className="pointer-events-none absolute bottom-full right-0 mb-3 translate-y-1 whitespace-nowrap rounded-lg bg-[#0b1020] px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-[opacity,translate] duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 motion-reduce:translate-y-0"
+        className="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 translate-x-1 whitespace-nowrap rounded-lg bg-[#0b1020] px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-[opacity,translate] duration-200 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:translate-x-0"
       >
         Chat on WhatsApp
-        <span className="absolute -bottom-1 right-5 size-2 rotate-45 bg-[#0b1020]" />
+        <span className="absolute -right-1 top-1/2 size-2 -translate-y-1/2 rotate-45 bg-[#0b1020]" />
       </span>
     </motion.a>
   );
