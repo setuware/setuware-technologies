@@ -1,10 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
+import { caseStudyPhoto } from "@/lib/case-study-photos";
 import { cn } from "@/lib/utils";
 
 export interface CaseStudyCard {
@@ -145,18 +147,33 @@ function Chip({
 }
 
 function StudyCard({ study }: { study: CaseStudyCard }) {
+  const photo = caseStudyPhoto(study.slug);
   return (
     <Link
       href={`/work/${study.slug}`}
       className="group flex h-full flex-col overflow-hidden rounded-card border border-border bg-surface shadow-ambient transition-[transform,border-color,box-shadow] duration-300 hover:border-setu/50 hover:shadow-glow motion-safe:hover:-translate-y-1"
     >
       <div
-        className="relative h-40 overflow-hidden"
+        className="relative aspect-[16/10] overflow-hidden"
         style={{
           backgroundImage: `linear-gradient(135deg, ${study.accent[0]}, ${study.accent[1]})`,
         }}
       >
-        <div className="absolute inset-0 bg-grid opacity-30" aria-hidden />
+        {photo ? (
+          <Image
+            src={photo.src}
+            alt={photo.alt}
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05]"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-grid opacity-30" aria-hidden />
+        )}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,7,13,0.35)_0%,rgba(5,7,13,0)_35%,rgba(5,7,13,0.15)_55%,rgba(5,7,13,0.8)_100%)]"
+        />
         <div className="absolute inset-x-0 top-0 flex flex-wrap gap-1.5 p-5">
           <span className="rounded-full bg-black/25 px-2.5 py-0.5 text-[11px] font-medium text-white backdrop-blur">
             {study.sector}

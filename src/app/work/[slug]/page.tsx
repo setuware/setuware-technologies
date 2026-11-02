@@ -1,8 +1,10 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Quote } from "lucide-react";
 
+import { caseStudyPhoto } from "@/lib/case-study-photos";
 import { caseStudies, getCaseStudy, getService } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -65,17 +67,41 @@ async function CaseStudy({ params }: { params: Promise<{ slug: string }> }) {
     .map((serviceSlug) => getService(serviceSlug))
     .filter((service) => service !== undefined);
   const primaryService = studyServices[0];
+  const photo = caseStudyPhoto(study.slug);
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-border pb-14 pt-28 md:pt-36">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.14]"
-          style={{
-            backgroundImage: `linear-gradient(135deg, ${study.accent[0]}, ${study.accent[1]})`,
-          }}
-          aria-hidden
-        />
+      <section
+        className={
+          photo
+            ? "dark relative isolate overflow-hidden bg-[#05070d] pb-16 pt-32 text-foreground md:pt-40"
+            : "relative overflow-hidden border-b border-border pb-14 pt-28 md:pt-36"
+        }
+      >
+        {photo ? (
+          <>
+            <Image
+              src={photo.src}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="-z-20 object-cover"
+            />
+            <div
+              aria-hidden
+              className="absolute inset-0 -z-10 bg-[linear-gradient(95deg,rgba(5,7,13,0.92)_0%,rgba(5,7,13,0.75)_50%,rgba(5,7,13,0.45)_100%)]"
+            />
+          </>
+        ) : (
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.14]"
+            style={{
+              backgroundImage: `linear-gradient(135deg, ${study.accent[0]}, ${study.accent[1]})`,
+            }}
+            aria-hidden
+          />
+        )}
 
         <div className="container-page relative">
           <nav aria-label="Breadcrumb" className="mb-6 text-xs text-muted-foreground">

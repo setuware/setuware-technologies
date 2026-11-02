@@ -110,9 +110,13 @@ const CARD_COPY: Record<ServiceKey, { name: string; description: string }> = {
  * and each card carries a cursor-following glow with a slight tilt. The arrow
  * buttons lean toward the pointer.
  */
+const INITIAL_CARD = 1;
+
 export function ServicesDark() {
   const trackRef = useRef<HTMLUListElement>(null);
-  const [active, setActive] = useState(0);
+  // Open on the second card so the carousel starts centred, with a
+  // neighbour visible on each side.
+  const [active, setActive] = useState(INITIAL_CARD);
   const reduce = useReducedMotionSafe();
   const wide = useMediaQuery("(min-width: 768px)");
 
@@ -151,6 +155,14 @@ export function ServicesDark() {
     });
     setActive(nearest);
   }, []);
+
+  // Centre the initial card without animating the page on load.
+  useEffect(() => {
+    const track = trackRef.current;
+    const card = track?.children[INITIAL_CARD] as HTMLElement | undefined;
+    if (!track || !card) return;
+    track.scrollLeft = card.offsetLeft - (track.clientWidth - card.clientWidth) / 2;
+  }, [wide]);
 
   useEffect(() => {
     const track = trackRef.current;
