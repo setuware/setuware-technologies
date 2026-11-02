@@ -29,7 +29,7 @@ const CARD_OVERLAY = [
 ].join(", ");
 
 /**
- * "All services under one roof".
+ * "Start with a website. Add what comes next."
  *
  * A peek carousel: the active card is centred and full-size, its neighbours
  * sit behind it scaled down and dimmed. Built on native scroll snapping, so
@@ -119,13 +119,13 @@ export function ServicesDark() {
               as="h2"
               className="font-display text-3xl font-semibold leading-tight text-white sm:text-[2.6rem]"
             >
-              {"All services\nunder one roof"}
+              {"Start with a website.\nAdd what comes next."}
             </TextReveal>
             <FadeUp delay={0.25} y={20}>
               <p className="mt-4 text-[0.92rem] leading-relaxed text-white/60">
-                Start with a website. Add an online store, an app, branding,
-                marketing or custom software when you need it, from the same
-                team. Every service has a published starting price.
+                Stores, apps, branding, marketing and custom software come from
+                the team that built your site. Every service lists its starting
+                price and typical timeline.
               </p>
             </FadeUp>
           </div>
@@ -135,7 +135,7 @@ export function ServicesDark() {
               href="/services"
               className="mr-2 inline-flex h-10 items-center rounded-full border border-white/20 px-5 text-xs font-medium text-white transition-colors hover:bg-white/10"
             >
-              All {services.length} services
+              Explore all {services.length} services
             </Link>
             <Magnetic strength={0.4}>
               <button
@@ -264,7 +264,7 @@ export function ServicesDark() {
                             "group-hover:border-setu group-hover:bg-setu-dark",
                           )}
                         >
-                          View Details
+                          See scope and pricing
                           <ArrowRight
                             className="size-3.5 transition-transform duration-300 group-hover:translate-x-1"
                             aria-hidden

@@ -223,7 +223,7 @@ export const FEATURE_RATES: Record<
     label: "AI assistant / automation",
     cost: 90_000,
     weeks: 1.8,
-    hint: "Search over your documents, assistants, parsing",
+    hint: "Chat over your documents, data extraction, workflows",
   },
   i18n: {
     label: "Multi-language",
@@ -241,7 +241,7 @@ export const FEATURE_RATES: Record<
     label: "Technical SEO & analytics",
     cost: 25_000,
     weeks: 0.5,
-    hint: "Schema markup, sitemaps, analytics dashboards",
+    hint: "Schema markup, sitemaps and an analytics dashboard",
   },
   pwa: {
     label: "Offline / installable PWA",
@@ -258,7 +258,7 @@ export const DESIGN_TIERS: Record<
   starter: {
     label: "Clean & conventional",
     multiplier: 1,
-    hint: "Proven layouts built on our component library",
+    hint: "Proven layouts from our component library",
   },
   custom: {
     label: "Custom branded",
@@ -280,19 +280,19 @@ export const TIMELINES: Record<
     label: "Flexible",
     multiplier: 0.92,
     speed: 0.8,
-    hint: "Fits between other sprints. Lowest price.",
+    hint: "Scheduled around other work. Lowest price.",
   },
   standard: {
     label: "Standard",
     multiplier: 1,
     speed: 1,
-    hint: "Dedicated squad, two-week sprints",
+    hint: "A dedicated team in two-week sprints",
   },
   accelerated: {
     label: "Accelerated",
     multiplier: 1.35,
     speed: 1.45,
-    hint: "Larger squad working in parallel tracks",
+    hint: "A larger team working in parallel",
   },
 };
 
@@ -393,7 +393,7 @@ export function estimateProject(input: EstimateInput): EstimateResult {
 
   const notes: string[] = [];
   if (timeline.multiplier > 1) {
-    notes.push("Accelerated delivery adds engineers and weekend QA cover.");
+    notes.push("Accelerated delivery adds engineers and extra testing capacity.");
   }
   if (features.includes("payments")) {
     notes.push("Payment gateway activation needs your business KYC documents.");

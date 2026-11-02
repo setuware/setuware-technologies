@@ -8,12 +8,12 @@ const POINTS = [
   {
     Icon: Calculator,
     title: "A real range, from our rate card",
-    body: "Not a lead form that promises a number later — the price updates as you choose.",
+    body: "Not a lead form that promises a number later. The price updates as you choose.",
   },
   {
     Icon: Clock,
-    title: "Timeline and squad size too",
-    body: "See how many weeks and how many people the scope you picked actually needs.",
+    title: "Timeline and team size too",
+    body: "See how many weeks and how many people your scope needs.",
   },
   {
     Icon: FileText,
@@ -43,9 +43,9 @@ export function EstimatorTeaser() {
                 <span className="text-gradient"> before you talk to anyone</span>
               </h2>
               <p className="mt-4 max-w-lg text-[1.02rem] leading-relaxed text-muted-foreground">
-                Pick what you need, how big it is and how fast you want it. You get
-                a priced range, a realistic timeline and a payment schedule — in
-                about a minute, with no call required.
+                Choose the service, the size and how fast you need it. You get a
+                price range, a realistic timeline and a payment schedule in about a
+                minute. No call required.
               </p>
 
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">

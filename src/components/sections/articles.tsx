@@ -104,12 +104,12 @@ export function Articles() {
           id="articles-title"
           className="text-center font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
         >
-          Articles & insights
+          Guides for business owners
         </TextReveal>
         <FadeUp delay={0.2} y={18}>
           <p className="mx-auto mt-4 max-w-xl text-center text-[0.92rem] leading-relaxed text-muted-foreground">
-            Plain-English notes on pricing, hosting, speed and keeping a
-            business website running, from the team that builds them.
+            Plain-English guides to website pricing, hosting, speed and
+            upkeep, from the team that builds them.
           </p>
         </FadeUp>
 
@@ -131,7 +131,7 @@ export function Articles() {
               href="/blog"
               className="rounded-full bg-foreground text-background shadow-none hover:bg-foreground/85"
             >
-              Explore All Articles
+              Read all articles
             </ButtonLink>
           </Magnetic>
         </FadeUp>

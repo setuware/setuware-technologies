@@ -80,15 +80,15 @@ export function Hero() {
                 stagger={0.07}
                 className="text-wrap text-[2.6rem] font-bold leading-[1.03] tracking-[-0.04em] sm:text-[3.6rem] lg:text-[calc(var(--s)*84)] lg:leading-[calc(var(--s)*86)]"
               >
-                From ideas to production-ready software.
+                Websites that turn visitors into enquiries.
               </TextReveal>
 
               <FadeUp immediate delay={0.75} y={24}>
                 <p className="text-base font-medium leading-relaxed opacity-78 sm:text-lg lg:ml-[calc(var(--s)*5)] lg:w-[calc(var(--s)*672)] lg:text-[calc(var(--s)*18)] lg:leading-[calc(var(--s)*32)]">
-                  We build websites for businesses, then the online store,
-                  app, branding, SEO and software that come next. Fixed
-                  price from ₹20,000, live in 3 to 6 weeks, and you own
-                  everything we make.
+                  We design and build business websites, then the store,
+                  app and software your business needs next.
+                  Fixed quotes from ₹20,000, weekly progress on a live
+                  preview, and the domain, code and hosting in your name.
                 </p>
               </FadeUp>
             </div>
@@ -105,7 +105,7 @@ export function Hero() {
                   variant="ghost"
                   className="h-11 rounded-full bg-setu px-6 font-semibold text-white hover:bg-setu-dark lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*202)] lg:justify-start lg:gap-[calc(var(--s)*10)] lg:pl-[calc(var(--s)*39)] lg:pr-0 lg:text-[calc(var(--s)*15)] lg:leading-[normal] dark:hover:bg-setu-dark"
                 >
-                  Start A Project
+                  Get a fixed quote
                   <ArrowRight
                     className="size-4 lg:h-[calc(var(--s)*12.5)] lg:w-[calc(var(--s)*13)]"
                     strokeWidth={2.4}
@@ -118,7 +118,7 @@ export function Hero() {
                 variant="ghost"
                 className="h-11 rounded-full border-[1.5px] border-white/60 px-6 font-semibold text-white hover:bg-white/12 lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*202)] lg:px-0 lg:text-[calc(var(--s)*15)] lg:leading-[normal]"
               >
-                Free Consultation
+                Book a 30-minute call
               </ButtonLink>
             </FadeUp>
           </HeroScrollFade>

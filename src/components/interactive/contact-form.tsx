@@ -16,7 +16,7 @@ const BUDGETS = [
   { value: "under-1l", label: "Under ₹1 lakh" },
   { value: "1l-5l", label: "₹1–5 lakh" },
   { value: "5l-15l", label: "₹5–15 lakh" },
-  { value: "15l-plus", label: "₹15 lakh+" },
+  { value: "15l-plus", label: "Above ₹15 lakh" },
 ] as const;
 
 /**
@@ -125,7 +125,7 @@ export function ContactForm() {
     if (result.ok) {
       setStatus("done");
       setReference(result.data.reference);
-      setMessage(result.message ?? "Thanks — we'll be in touch.");
+      setMessage(result.message ?? "Thank you. Your brief is with us.");
       clear();
       return;
     }
@@ -149,7 +149,7 @@ export function ContactForm() {
           Reference{" "}
           <span className="font-mono font-semibold text-foreground">{reference}</span>.
           The people who would build it read this and reply within one working
-          day. Keep the reference handy if you call or WhatsApp us.
+          day. Quote this reference if you call or WhatsApp us.
         </p>
       </div>
     );
@@ -253,7 +253,7 @@ export function ContactForm() {
         htmlFor="contact-message"
         required
         error={errors.message}
-        hint="What does your business do, what do you need, and when should it be live?"
+        hint="What your business does, what you need built, and when it should be live."
       >
         <Textarea
           id="contact-message"

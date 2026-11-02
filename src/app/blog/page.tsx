@@ -8,9 +8,9 @@ import { Reveal } from "@/components/ui/reveal";
 import { PageHero } from "@/components/layout/page-hero";
 
 export const metadata = pageMetadata({
-  title: "Articles and insights",
+  title: "Guides for Business Owners",
   description:
-    "Practical guides from Setuware Technologies on websites, online stores, apps, SEO, hosting and pricing a project, written for business owners.",
+    "Practical guides on websites, online stores, apps, SEO, hosting and project pricing, written for business owners by Setuware Technologies.",
   path: "/blog",
 });
 
@@ -22,7 +22,7 @@ export default function BlogPage() {
       <PageHero
         eyebrow="Articles and insights"
         title="Plain answers for business owners"
-        description="What a website should cost, how to keep it fast, when you need an app, and what to ask before you hire anyone. Written from real projects, in plain language."
+        description="What a website should cost, how to keep it fast, when you need an app, and what to ask before you hire anyone. Written from project work, in plain language."
       />
 
       <div className="container-page py-16">

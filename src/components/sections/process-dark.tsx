@@ -24,7 +24,7 @@ const STAGE_WORDS: Record<number, string> = {
 };
 
 /**
- * "A refined process built on clarity".
+ * "From first call to launch".
  *
  * One row per stage: number, name, the deliverables as a pill, and the
  * duration. The deliverable string is pipe-separated in the content layer, so
@@ -63,15 +63,14 @@ export function ProcessDark() {
             as="h2"
             className="font-display text-3xl font-semibold leading-tight text-white sm:text-[2.6rem]"
           >
-            {"A refined process\nbuilt on clarity"}
+            {"From first call\nto launch"}
           </TextReveal>
           <FadeUp delay={0.25} y={20}>
             <p className="mx-auto mt-5 max-w-xl text-[0.92rem] leading-relaxed text-white/60">
-              {STAGE_WORDS[processSteps.length] ?? processSteps.length} steps
-              from first call to launch, each with a clear output. The price is
-              fixed before design starts, and you see your site on a preview
-              link every week. Timings are for a typical business website;
-              apps take longer, and your quote says exactly how long.
+              {STAGE_WORDS[processSteps.length] ?? processSteps.length} steps,
+              each with an output you review and sign off. Timings are for a
+              typical business website; your quote sets the dates for larger
+              builds.
             </p>
           </FadeUp>
         </div>

@@ -7,32 +7,32 @@ const POINTS = [
   {
     Icon: KeyRound,
     title: "You own everything",
-    body: "Repositories in your organisation, infrastructure in your accounts, documentation written for a developer who has never met us. Leaving us should be easy — that is the point.",
+    body: "The domain, code, repository and hosting accounts are in your name from day one. Handover notes are written for a developer who has never met us. Moving on should be easy.",
   },
   {
     Icon: FileCheck2,
     title: "Fixed price, written scope",
-    body: "The proposal lists what is included and, more importantly, what is not. Change requests are quoted as small separate items within two working days.",
+    body: "The proposal lists what is included and what is not. You get one fixed price before work starts. Anything new is quoted separately, and only built once you approve it.",
   },
   {
     Icon: Gauge,
-    title: "Performance budgets, enforced",
-    body: "Under 120KB of JavaScript before interaction and an LCP budget checked in CI. A regression fails the build instead of quietly shipping.",
+    title: "Speed checked before launch",
+    body: "Every build is tested on mid-range Android phones over 4G, with Lighthouse and Core Web Vitals checks before go-live. Slow pages are fixed, not shipped.",
   },
   {
     Icon: Timer,
-    title: "A staging URL in week one",
-    body: "You see something real within days, then a demo every fortnight. No four-week silence followed by a surprise.",
+    title: "A live preview every week",
+    body: "From the first week of the build, your site or app sits on a live preview link. A short weekly demo shows what changed and what is next.",
   },
   {
     Icon: Code2,
     title: "Engineers on your calls",
-    body: "The person answering your technical question is the person writing the code. No account manager relaying messages.",
+    body: "The person answering your technical question is the person writing the code. Nothing gets lost between an account manager and the developer.",
   },
   {
     Icon: HeartHandshake,
-    title: "We stay after launch",
-    body: "Monitoring, patches and a named engineer on call. Most agencies disappear at handover; our hosting and support plans exist precisely so we do not.",
+    title: "Support after go-live",
+    body: "Every website includes three months of fixes after go-live. Care plans then keep it patched, backed up and monitored by the people who built it.",
   },
 ] as const;
 
@@ -41,9 +41,9 @@ export function Differentiators() {
     <Section id="why-us">
       <div className="container-page">
         <SectionHeading
-          eyebrow="Why teams switch to us"
-          title="The things that actually go wrong, handled"
-          description="None of this is exciting. All of it is what separates a project that ships from one that quietly stalls."
+          eyebrow="How we work"
+          title="What goes wrong elsewhere, handled here"
+          description="Missed deadlines, moving prices and lost logins stall more projects than bad code. These six habits prevent them."
         />
 
         <div className="mt-14 grid gap-x-10 gap-y-9 md:grid-cols-2 lg:grid-cols-3">

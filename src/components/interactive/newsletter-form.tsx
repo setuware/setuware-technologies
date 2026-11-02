@@ -57,8 +57,9 @@ export function NewsletterForm({ source = "site" }: { source?: string }) {
   }
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} className="relative flex flex-col gap-2" noValidate>
-      <div className="flex flex-col gap-2 sm:flex-row">
+    <form ref={formRef} onSubmit={onSubmit} className="relative flex flex-col gap-1.5" noValidate>
+      {/* One pill on wider screens: the field and the button share a border. */}
+      <div className="flex flex-col gap-2 rounded-2xl sm:flex-row sm:items-center sm:gap-1 sm:rounded-full sm:border sm:border-border sm:bg-surface sm:p-1 sm:transition-[border-color,box-shadow] sm:focus-within:border-primary sm:focus-within:ring-4 sm:focus-within:ring-primary/15 sm:has-[[aria-invalid=true]]:border-red-500">
         <label htmlFor="newsletter-email" className="sr-only">
           Email address
         </label>
@@ -75,29 +76,36 @@ export function NewsletterForm({ source = "site" }: { source?: string }) {
           aria-invalid={status === "error"}
           aria-describedby={status === "error" ? "newsletter-error" : undefined}
           disabled={status === "sending"}
+          className="h-12 rounded-full px-5 sm:h-10 sm:border-0 sm:bg-transparent sm:px-4 sm:shadow-none! sm:focus:ring-0 sm:focus-visible:outline-none"
         />
         <Honeypot name="newsletter-honeypot" />
-        <Button type="submit" disabled={status === "sending"} className="shrink-0">
+        <Button
+          type="submit"
+          disabled={status === "sending"}
+          className="h-12 shrink-0 rounded-full bg-foreground px-5 font-semibold text-background shadow-none! hover:bg-foreground/85 motion-safe:hover:translate-y-0 sm:h-10 dark:hover:bg-foreground/85"
+        >
           {status === "sending" ? (
             <>
               <Loader2 className="size-4 animate-spin" aria-hidden />
-              Joining
+              Subscribing
             </>
           ) : (
             <>
-              <Send className="size-4" aria-hidden />
               Subscribe
+              <Send className="size-3.5" aria-hidden />
             </>
           )}
         </Button>
       </div>
 
-      <p aria-live="polite" className="min-h-[1rem]">
+      <p aria-live="polite" className="min-h-[1rem] px-1">
         {status === "error" ? (
-          <span id="newsletter-error" className="text-xs font-medium text-red-500">
+          <span id="newsletter-error" className="text-xs font-medium text-red-600 dark:text-red-400">
             {message}
           </span>
-        ) : null}
+        ) : (
+          <span className="text-xs text-muted-foreground">Unsubscribe in one click.</span>
+        )}
       </p>
     </form>
   );

@@ -8,8 +8,8 @@ import { PageHero } from "@/components/layout/page-hero";
 import { FadeUp, Stagger, StaggerItem } from "@/components/motion/primitives";
 
 export const metadata = pageMetadata({
-  title: "Contact us",
-  description: `Tell ${site.name} what you need: a website, online store, app, marketing or support. We reply within one working day. Call or WhatsApp ${site.phone}.`,
+  title: "Contact Us: Book a Free Call",
+  description: `Tell ${site.name} what you need built: a website, store, app or software. Reply within one working day. Call or WhatsApp ${site.phone}.`,
   path: "/contact",
 });
 
@@ -39,8 +39,8 @@ const CHANNELS = [
 
 const NEXT_STEPS = [
   {
-    title: "We reply within one working day",
-    body: "The people who would build it read your brief and get back to you by email or phone.",
+    title: "A reply within one working day",
+    body: "The people who would build it read your brief and reply by email or phone.",
   },
   {
     title: "A free 30-minute call",
@@ -58,8 +58,8 @@ export default function ContactPage() {
       <PageHero
         align="left"
         eyebrow="Contact"
-        title="Tell us what you need. We reply within one working day."
-        description="A new website, an online store, an app, marketing, or help with something already live. Share a few details and we will come back with clear next steps and a price range."
+        title="Tell us what you need built"
+        description="A new website, an online store, an app, marketing, or help with something already live. Share a few details and we will reply within one working day with next steps and a price range."
       />
 
       <div className="container-page grid gap-12 py-14 lg:grid-cols-[1.4fr_1fr] lg:gap-16">

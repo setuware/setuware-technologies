@@ -34,8 +34,8 @@ const carePlanFrom = Math.min(
 );
 
 export const metadata = pageMetadata({
-  title: "Pricing",
-  description: `Published starting prices for websites, online stores, apps and custom software, plus monthly hosting and care plans from ${formatINR(carePlanFrom)}. Fixed price, written scope, no hidden markups.`,
+  title: "Website, App & Software Pricing",
+  description: `Starting prices for websites, online stores, apps and custom software, plus care plans from ${formatINR(carePlanFrom)} a month. Fixed quotes in writing, no markups.`,
   path: "/pricing",
 });
 
@@ -57,10 +57,10 @@ const INCLUDED = [
   "Mobile-friendly on every screen size",
   "Basic on-page SEO, sitemap and analytics setup",
   "SSL certificate and launch on your domain",
-  "Weekly demos on a live staging link",
+  "Weekly progress on a live preview link",
   "Testing on real phones and browsers",
   "Handover notes and a training session",
-  "Support window after launch",
+  "Support after launch, 3 months on websites",
   "Code, designs and accounts in your name",
   "GST invoice for every payment",
 ] as const;
@@ -107,7 +107,7 @@ const PRICING_FAQS = [
     group: "Before you start" as const,
     question: "Do you mark up hosting, domains or other third-party costs?",
     answer:
-      "Never. Domains, cloud hosting, payment gateway fees and licences are billed to your own accounts at cost. You see exactly what the infrastructure costs.",
+      "No. Domains, cloud hosting, payment gateway fees and licences are billed to your own accounts at cost. You see exactly what the infrastructure costs.",
   },
   {
     group: "Before you start" as const,
@@ -198,7 +198,7 @@ export default function PricingPage() {
             <ArrowRight className="size-4" aria-hidden />
           </ButtonLink>
           <ButtonLink href="/contact" size="lg" variant="secondary" className="rounded-full">
-            Talk to us first
+            Book a free call first
           </ButtonLink>
         </div>
       </PageHero>
@@ -254,7 +254,7 @@ export default function PricingPage() {
             <StaggerItem y={24}>
               <div className="flex h-full flex-col justify-between gap-5 rounded-card bg-setu p-5 text-white">
                 <span className="font-display text-lg font-semibold leading-snug">
-                  Need more than one? We quote them together.
+                  Need more than one service? We quote them together.
                 </span>
                 <ButtonLink
                   href="/estimate"

@@ -238,7 +238,7 @@ export function Testimonials() {
           id="testimonials-title"
           className="text-center text-[40px] font-bold leading-[1.2] tracking-[-0.02em] text-black sm:text-[48px] lg:text-[calc(var(--s)*56)] lg:leading-[calc(var(--s)*72)] dark:text-white"
         >
-          Real words, real people
+          What clients say
         </TextReveal>
 
         <div

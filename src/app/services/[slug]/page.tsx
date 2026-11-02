@@ -126,7 +126,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
             <SectionIntro
               id="problems-heading"
               eyebrow="Problems we fix"
-              title="What's going wrong, and what we do about it"
+              title="What goes wrong, and how we fix it"
             />
             <div className="mt-10 hidden grid-cols-[1fr_2.5rem_1.3fr] gap-4 px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground md:grid">
               <span>The problem</span>
@@ -307,7 +307,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                 </div>
               </dl>
               <p className="mt-6 text-sm leading-relaxed text-white/65">
-                You get a fixed quote in writing before any work starts.
+                The quote is fixed and in writing before any work starts.
               </p>
               <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row lg:flex-col">
                 <Link href={estimateHref} className={cn(primaryCta, "flex-1")}>
@@ -318,7 +318,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                   href={contactHref}
                   className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border-[1.5px] border-white/30 px-6 text-[15px] font-semibold text-white transition-colors hover:border-white hover:bg-white/10"
                 >
-                  Ask for a quote
+                  Request a fixed quote
                 </Link>
               </div>
             </div>
@@ -403,7 +403,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                 Common questions
               </h2>
               <p className="mt-4 max-w-sm text-[0.98rem] leading-relaxed text-muted-foreground">
-                Something not covered here? Ask an engineer directly. We reply within one working day.
+                Something not covered here? Ask the engineer who would build it, by email, phone or WhatsApp.
               </p>
               <Link
                 href={contactHref}
@@ -463,11 +463,11 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                   id="final-cta-heading"
                   className="mt-3 font-display text-3xl font-semibold leading-tight sm:text-[2.6rem]"
                 >
-                  {"Let's scope your project"}
+                  {"Get a fixed quote in writing"}
                 </TextReveal>
                 <p className="mt-4 text-[1.02rem] leading-relaxed text-white/85">
-                  Send us what you have: a brief, a site you like, or just the problem. A senior
-                  engineer replies within one working day with questions, options and next steps.
+                  Send what you have: a brief, a site you like, or just the problem. An engineer
+                  replies within one working day with questions, options and a next step.
                 </p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row lg:shrink-0">
@@ -476,7 +476,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                     href={contactHref}
                     className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-white px-7 text-[15px] font-semibold text-black transition-colors hover:bg-black hover:text-white"
                   >
-                    Start a project
+                    Send your brief
                     <ArrowRight className="size-4" aria-hidden />
                   </Link>
                 </Magnetic>
@@ -693,7 +693,7 @@ function ProcessTimeline({ service }: { service: Service }) {
           </TextReveal>
           <p className="mt-4 max-w-sm text-[0.98rem] leading-relaxed text-white/65">
             {steps.length} stages. Typical timeline: {service.typicalTimeline.toLowerCase()}. You
-            sign off each stage and always know what happens next.
+            sign off each stage before the next one starts.
           </p>
           <Link
             href="/process"

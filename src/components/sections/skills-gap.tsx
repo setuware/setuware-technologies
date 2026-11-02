@@ -16,7 +16,7 @@ import {
   useReducedMotionSafe,
 } from "@/components/motion/primitives";
 
-const HEADING = "This is how we jetpack over the skills gap.";
+const HEADING = "A full digital team, without hiring one.";
 
 /**
  * Skills-gap band: a full-bleed, muted background video of a team working
@@ -125,7 +125,7 @@ export function SkillsGap() {
               <FadeUp y={16}>
                 <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-white/80 backdrop-blur-sm lg:text-[calc(var(--s)*13)]">
                   <span className="size-1.5 rounded-full bg-setu" />
-                  No in-house tech team needed
+                  One team
                 </p>
               </FadeUp>
 
@@ -137,25 +137,21 @@ export function SkillsGap() {
                 className="mt-6 text-[36px] font-bold leading-[1.1] tracking-[-0.03em] text-white sm:text-[52px] lg:mt-[calc(var(--s)*24)] lg:text-[calc(var(--s)*72)] lg:leading-[calc(var(--s)*80)]"
               >
                 <TextReveal as="span" delay={0.1}>
-                  This is how
+                  A full digital team,
                 </TextReveal>
                 <br />
                 <span className="text-[#3fd0ee]">
-                  <TextReveal as="span" delay={0.28}>
-                    we jetpack over the
-                  </TextReveal>
-                  <br className="hidden sm:block" />{" "}
-                  <TextReveal as="span" delay={0.52}>
-                    skills gap.
+                  <TextReveal as="span" delay={0.32}>
+                    without hiring one.
                   </TextReveal>
                 </span>
               </h2>
 
               <FadeUp delay={0.45} y={24}>
                 <p className="mt-6 max-w-[620px] text-[16px] font-medium leading-[27px] text-white/80 lg:mt-[calc(var(--s)*32)] lg:max-w-[calc(var(--s)*680)] lg:text-[calc(var(--s)*19)] lg:leading-[calc(var(--s)*31)]">
-                  Designers, developers, SEO and marketing people on one team, so
+                  Designers, developers and marketing specialists on one team, so
                   you never hire for a skill you need once. Your website, store,
-                  app and ads are handled by people who already know your business.
+                  app and campaigns are run by people who already know your business.
                 </p>
               </FadeUp>
 
@@ -166,7 +162,7 @@ export function SkillsGap() {
                       href="/contact"
                       className="group inline-flex h-12 items-center gap-2 rounded-full bg-setu px-7 text-[15px] font-semibold text-white shadow-[0_12px_40px_-12px_rgba(0,161,198,0.8)] transition-colors hover:bg-[#0089a9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:h-[calc(var(--s)*56)] lg:px-[calc(var(--s)*32)] lg:text-[calc(var(--s)*16)]"
                     >
-                      Let&apos;s talk
+                      Book a 30-minute call
                       <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
                     </Link>
                   </Magnetic>
@@ -174,7 +170,7 @@ export function SkillsGap() {
                     href="/services"
                     className="inline-flex h-12 items-center rounded-full border border-white/30 px-7 text-[15px] font-semibold text-white transition-colors hover:border-white hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:h-[calc(var(--s)*56)] lg:px-[calc(var(--s)*32)] lg:text-[calc(var(--s)*16)]"
                   >
-                    See all services
+                    Explore services
                   </Link>
                 </div>
               </FadeUp>

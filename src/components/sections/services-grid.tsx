@@ -19,8 +19,8 @@ export function ServicesGrid({
         {heading ? (
           <SectionHeading
             eyebrow="What we do"
-            title="Six services, one accountable team"
-            description="Most clients start with one and add the next. You never get handed to a different agency halfway through."
+            title={`${services.length} services, one accountable team`}
+            description="Most clients start with a website and add the next service when they need it. The same team stays with you throughout."
           />
         ) : null}
 

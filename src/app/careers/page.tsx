@@ -10,8 +10,8 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { PageHero } from "@/components/layout/page-hero";
 
 export const metadata = pageMetadata({
-  title: "Careers",
-  description: `Work at ${site.name} in Gurugram: websites, apps and business software for Indian companies. Roles are posted on this page, and open applications are always read.`,
+  title: "Careers: Developers & Designers",
+  description: `Join ${site.name} in Gurugram to build websites, apps and business software. Open applications for developers, designers and marketers.`,
   path: "/careers",
 });
 
@@ -19,7 +19,7 @@ const REASONS = [
   {
     Icon: Rocket,
     title: "Your work goes live",
-    body: "Everything we build is for a paying client with a launch date. You see it used, and you hear when it breaks.",
+    body: "Everything we build is for a paying client with a deadline. You see it used, and you hear when it breaks.",
   },
   {
     Icon: MessageSquare,
@@ -40,7 +40,7 @@ const REASONS = [
 
 const PRACTICES = [
   "Every project starts with a written scope that the whole team reads.",
-  "Clients get a staging link every week, so feedback arrives early.",
+  "Clients see progress on a live preview link every week, so feedback arrives early.",
   "Every change goes through code review before it ships.",
   "We document as we go, for whoever maintains the project next.",
   "The team that built a system supports it after launch.",
@@ -87,7 +87,7 @@ export default function CareersPage() {
       <PageHero
         eyebrow="Careers"
         title="Build software that businesses run on"
-        description={`${site.name} is a small team in Gurugram building websites, apps and internal tools for Indian businesses. We hire when the work needs it, and we hire carefully.`}
+        description={`${site.name} builds websites, apps and internal tools for Indian businesses from MG Road, Gurugram. We hire when the work needs it, and we hire carefully.`}
       >
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <ButtonLink
@@ -107,7 +107,7 @@ export default function CareersPage() {
 
       <Section>
         <div className="container-page">
-          <SectionHeading eyebrow="Why work here" title="Small team, real projects" />
+          <SectionHeading eyebrow="Why work here" title="Real clients, real launch dates" />
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {REASONS.map(({ Icon, title, body }, index) => (
               <Reveal

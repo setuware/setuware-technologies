@@ -34,14 +34,14 @@ export function Faq({ items = faqs }: FaqProps) {
             id="faq-title"
             className="font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.2rem]"
           >
-            {"Frequently Asked\nQuestions"}
+            {"Questions we\nhear most"}
           </TextReveal>
           <FadeUp delay={0.25} y={20}>
             <p className="mt-4 max-w-xs text-[0.85rem] leading-relaxed text-muted-foreground">
-              Cost, timelines, payments, who owns the site and what happens
-              after launch. Question not here?{" "}
+              Cost, timelines, payments, ownership and support after launch.
+              For anything else,{" "}
               <Link href="/contact" className="font-medium text-primary underline-offset-4 hover:underline">
-                Ask us directly
+                ask us directly
               </Link>
               .
             </p>

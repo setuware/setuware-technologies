@@ -13,9 +13,9 @@ import { TextReveal } from "@/components/motion/text-reveal";
 import { FadeUp, Stagger, StaggerItem } from "@/components/motion/primitives";
 
 export const metadata = pageMetadata({
-  title: "How it works",
+  title: "How We Work: Call to Launch",
   description:
-    "How Setuware Technologies delivers a website or app: discovery, fixed quote, design, build, testing and launch, then support. What you get at each step, how long it takes and what we need from you.",
+    "How a website or app project runs with Setuware Technologies: discovery, fixed quote, design, build, testing, launch and support, with timings.",
   path: "/process",
 });
 
@@ -83,11 +83,11 @@ const STAGES: readonly Stage[] = [
     step: "04",
     title: "Build",
     summary:
-      "Your website or app on a live staging link from the first week. A short demo every week shows what changed and what is next.",
+      "Your website or app on a live preview link from the first week of the build. A short demo every week covers what changed and what is next.",
     website: "1–3 weeks",
     app: "4–10 weeks",
     youGet: [
-      "A live staging link you can open on any device",
+      "A live preview link you can open on any device",
       "A weekly demo and a plain-language changelog",
       "Direct access to the people building it",
     ],
@@ -152,7 +152,7 @@ const PROCESS_FAQS = [
     group: "Help & support" as const,
     question: "How will I know how the project is going?",
     answer:
-      "You get a live staging link from the first week of the build and a short demo every week. Each demo comes with a written note of what is done, what is next and anything we need from you.",
+      "You get a live preview link from the first week of the build and a short demo every week. Each demo comes with a written note of what is done, what is next and anything we need from you.",
   },
   {
     group: "Help & support" as const,
@@ -182,7 +182,7 @@ export default function ProcessPage() {
       <PageHero
         eyebrow="How it works"
         title="From first call to launch, and after"
-        description="Six stages. Each one has a clear output, a time frame and a short list of what we need from you. You always know what is being built this week and what it costs."
+        description="Six stages, each with a clear output, a time frame and a short list of what we need from you. You always know what is being built this week and what it costs."
       >
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <ButtonLink
@@ -190,7 +190,7 @@ export default function ProcessPage() {
             size="lg"
             className="rounded-full bg-setu text-white shadow-none hover:bg-setu-dark"
           >
-            Book a free call
+            Book a free 30-min call
             <ArrowRight className="size-4" aria-hidden />
           </ButtonLink>
           <ButtonLink href="/estimate" size="lg" variant="secondary" className="rounded-full">
@@ -354,7 +354,7 @@ export default function ProcessPage() {
                   as="h2"
                   className="mt-4 font-display text-3xl font-semibold leading-tight text-white sm:text-[2.4rem]"
                 >
-                  We do not disappear at handover
+                  Support continues after handover
                 </TextReveal>
                 <FadeUp delay={0.2} y={20}>
                   <p className="mt-4 max-w-lg text-[1.02rem] leading-relaxed text-white/70">
