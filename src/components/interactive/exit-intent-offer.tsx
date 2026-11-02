@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle2, Gauge, Globe, Loader2, X } from "lucide-react";
+import { CheckCircle2, Loader2, MessageSquareText, Phone, X } from "lucide-react";
 
 import { EASE_OUT } from "@/components/motion/ease";
 import { useReducedMotionSafe } from "@/components/motion/primitives";
@@ -21,7 +21,6 @@ const MOBILE_IDLE_MS = 28_000;
 const MOBILE_SCROLL_THRESHOLD = 0.55;
 const HONEYPOT = "audit-honeypot";
 
-const URL_RE = /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(:\d+)?(\/\S*)?$/i;
 
 interface OfferState {
   dismissedAt: number | null;
@@ -33,15 +32,27 @@ const INITIAL: OfferState = { dismissedAt: null, takenAt: null };
 interface Draft {
   name: string;
   email: string;
-  website: string;
+  phone: string;
+  service: string;
+  message: string;
 }
 
-const EMPTY: Draft = { name: "", email: "", website: "" };
+const EMPTY: Draft = { name: "", email: "", phone: "", service: "", message: "" };
 
-const TRUST = ["Free", "No obligation", "Reply within one business day"] as const;
+/** Short labels for the service chips; sent as the enquiry's service. */
+const SERVICES = [
+  "Website",
+  "E-commerce store",
+  "Mobile app",
+  "Custom software",
+  "SEO & marketing",
+  "Not sure yet",
+] as const;
+
+const TRUST = ["Free consultation", "Fixed-price quote", "Reply within one business day"] as const;
 
 /**
- * Offers a free website audit to visitors who are about to leave.
+ * Invites visitors who are about to leave to send a project enquiry.
  *
  * Trigger rules are deliberately conservative — showing this twice is worse
  * than never showing it:
@@ -53,7 +64,7 @@ const TRUST = ["Free", "No obligation", "Reply within one business day"] as cons
  *  - never while the visitor is talking to the assistant
  *
  * The request goes to the same `/api/contact` endpoint as the contact form,
- * with the message the `/contact?intent=audit` link used to prefill.
+ * as a regular enquiry (name, email, optional phone, service, message).
  */
 export function ExitIntentOffer() {
   const [state, setState] = usePersistentState<OfferState>(STORAGE_KEY, INITIAL);
@@ -200,13 +211,21 @@ export function ExitIntentOffer() {
     event.preventDefault();
     if (status === "sending") return;
 
-    const website = draft.website.trim();
+    const note = draft.message.trim();
     const honeypot =
       (formRef.current?.elements.namedItem(HONEYPOT) as HTMLInputElement | null)?.value ?? "";
     const payload = {
       name: draft.name,
       email: draft.email,
-      message: `I'd like the free website audit. Our URL is: ${website}\n\n(Requested from the website audit offer.)`,
+      phone: draft.phone.trim(),
+      service: draft.service || undefined,
+      message: [
+        draft.service ? `Service: ${draft.service}.` : "",
+        note || "Please contact me to discuss a project.",
+        "(Sent from the website enquiry pop-up.)",
+      ]
+        .filter(Boolean)
+        .join("\n\n"),
       consent: true as const,
       honeypot,
       elapsedMs: openedAt.current === 0 ? 0 : Date.now() - openedAt.current,
@@ -215,9 +234,8 @@ export function ExitIntentOffer() {
     const local: Record<string, string> = {};
     const parsed = contactSchema.safeParse(payload);
     if (!parsed.success) Object.assign(local, fieldErrors(parsed.error));
-    if (!URL_RE.test(website)) local.website = "Enter your website address, for example example.com";
     const visible = Object.fromEntries(
-      Object.entries(local).filter(([key]) => key === "name" || key === "email" || key === "website"),
+      Object.entries(local).filter(([key]) => key === "name" || key === "email" || key === "phone"),
     );
     if (Object.keys(visible).length > 0) {
       setErrors(visible);
@@ -300,7 +318,7 @@ export function ExitIntentOffer() {
                     Thank you{firstName ? `, ${firstName}` : ""}
                   </h2>
                   <p id="audit-offer-description" className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
-                    Your audit request is with our team. We will email a short report on speed, SEO and conversion within two business days.
+                    Your enquiry has been received. Our team will contact you within one business day to arrange a free consultation.
                   </p>
                   <button
                     type="button"
@@ -314,10 +332,10 @@ export function ExitIntentOffer() {
                 <>
                   <div className="flex items-center gap-3 pr-10">
                     <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#00a1c6,var(--color-brand-600))] text-white shadow-[0_8px_20px_-8px_rgba(0,161,198,0.8)]">
-                      <Gauge className="size-5" aria-hidden />
+                      <MessageSquareText className="size-5" aria-hidden />
                     </span>
                     <span className="inline-flex items-center rounded-full border border-setu/25 bg-setu/8 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-setu-dark dark:text-[#5fe0f7]">
-                      Free for growing businesses
+                      Free consultation
                     </span>
                   </div>
 
@@ -325,10 +343,10 @@ export function ExitIntentOffer() {
                     id="audit-offer-title"
                     className="mt-4 text-[1.4rem] font-semibold leading-tight tracking-tight text-foreground sm:text-2xl"
                   >
-                    Get a free website audit
+                    Planning a new project?
                   </h2>
                   <p id="audit-offer-description" className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    Share your website and we&apos;ll send a short report on speed, SEO and conversion within two business days.
+                    Share a few details and our team will respond within one business day with recommendations and a fixed quote.
                   </p>
 
                   <form ref={formRef} onSubmit={onSubmit} noValidate className="relative mt-5 flex flex-col gap-3.5">
@@ -364,28 +382,63 @@ export function ExitIntentOffer() {
                         />
                       </Field>
                     </div>
-                    <Field label="Website URL" htmlFor="audit-website" error={errors.website} required>
+                    <Field label="Phone" htmlFor="audit-phone" error={errors.phone}>
                       <div className="relative">
-                        <Globe
+                        <Phone
                           className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
                           aria-hidden
                         />
                         <Input
-                          id="audit-website"
-                          name="website"
-                          type="text"
-                          inputMode="url"
-                          autoComplete="url"
-                          autoCapitalize="none"
-                          spellCheck={false}
-                          value={draft.website}
-                          onChange={(event) => set({ website: event.target.value })}
-                          aria-invalid={Boolean(errors.website)}
-                          aria-describedby={errors.website ? "audit-website-error" : undefined}
+                          id="audit-phone"
+                          name="phone"
+                          type="tel"
+                          inputMode="tel"
+                          autoComplete="tel"
+                          value={draft.phone}
+                          onChange={(event) => set({ phone: event.target.value })}
+                          aria-invalid={Boolean(errors.phone)}
+                          aria-describedby={errors.phone ? "audit-phone-error" : undefined}
                           className="py-2.5 pl-10 text-[0.95rem] shadow-none"
-                          placeholder="yourcompany.com"
+                          placeholder="+91 98765 43210"
                         />
                       </div>
+                    </Field>
+
+                    <fieldset>
+                      <legend className="mb-2 text-sm font-medium text-foreground">What do you need?</legend>
+                      <div className="flex flex-wrap gap-2">
+                        {SERVICES.map((service) => {
+                          const selected = draft.service === service;
+                          return (
+                            <button
+                              key={service}
+                              type="button"
+                              aria-pressed={selected}
+                              onClick={() => set({ service: selected ? "" : service })}
+                              className={cn(
+                                "rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu",
+                                selected
+                                  ? "border-setu bg-setu text-white"
+                                  : "border-border bg-surface text-foreground hover:border-setu/50 hover:text-setu",
+                              )}
+                            >
+                              {service}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </fieldset>
+
+                    <Field label="Project details" htmlFor="audit-message">
+                      <textarea
+                        id="audit-message"
+                        name="message"
+                        rows={3}
+                        value={draft.message}
+                        onChange={(event) => set({ message: event.target.value })}
+                        className="w-full resize-none rounded-xl border border-border bg-surface px-3.5 py-2.5 text-[0.95rem] text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-setu focus:ring-2 focus:ring-setu/20"
+                        placeholder="A few lines about your business and what you would like to build."
+                      />
                     </Field>
 
                     {errors._form ? (
@@ -406,10 +459,10 @@ export function ExitIntentOffer() {
                       {status === "sending" ? (
                         <>
                           <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden />
-                          Sending request
+                          Sending enquiry
                         </>
                       ) : (
-                        "Request my free audit"
+                        "Send enquiry"
                       )}
                     </button>
                     <button
@@ -430,7 +483,7 @@ export function ExitIntentOffer() {
                     ))}
                   </ul>
                   <p className="mt-3 text-center text-[11px] leading-relaxed text-muted-foreground/90">
-                    By requesting an audit you agree to our{" "}
+                    By sending an enquiry you agree to our{" "}
                     <Link href="/privacy" onClick={dismiss} className="underline underline-offset-2 hover:text-foreground">
                       privacy policy
                     </Link>
