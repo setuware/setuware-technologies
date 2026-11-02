@@ -6,7 +6,7 @@ export const site = {
   tagline: "Websites, apps and custom software",
   description:
     "A Gurugram-based digital studio designing and engineering websites, e-commerce platforms, mobile apps and custom software for growing businesses.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://setuwaresoftware.in",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://setuware.in",
   locale: "en_IN",
   /** Primary address on CTAs: new projects and quotes. */
   email: "sales@setuware.in",
@@ -28,12 +28,13 @@ export const site = {
     postalCode: "122001",
     country: "IN",
   },
+  /** Approximate map position of the MG Road, Gurugram office (structured data). */
+  geo: { latitude: 28.4795, longitude: 77.0806 },
   founded: "2020",
+  /** Company profiles (confirmed by the owner). Founder links live in src/lib/team.ts. */
   social: {
     linkedin: "https://www.linkedin.com/company/setuware-technologies/",
     github: "https://github.com/setuware",
-    x: "https://x.com/setuware",
-    instagram: "https://instagram.com/setuware",
   },
   /** Used by the SLA strip and hosting pages. */
   sla: {
