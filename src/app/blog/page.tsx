@@ -1,14 +1,16 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { postsByDate } from "@/lib/posts";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/json-ld";
 import { formatDate } from "@/lib/utils";
 import { Reveal } from "@/components/ui/reveal";
 import { PageHero } from "@/components/layout/page-hero";
 
 export const metadata = pageMetadata({
-  title: "Articles and insights",
+  title: "Blog: Web Development, SEO & Software Insights",
   description:
     "Articles on websites, e-commerce, apps, SEO, hosting and project planning from the Setuware Technologies team, written for business leaders.",
   path: "/blog",
@@ -32,14 +34,15 @@ export default function BlogPage() {
             href={`/blog/${lead.slug}`}
             className="group grid gap-6 overflow-hidden rounded-card border border-border bg-surface shadow-ambient transition-colors hover:border-primary/40 md:grid-cols-[1fr_1.4fr]"
           >
-            <div
-              className="relative min-h-[12rem]"
-              style={{
-                backgroundImage: `linear-gradient(135deg, ${lead.accent[0]}, ${lead.accent[1]})`,
-              }}
-            >
-              <div className="absolute inset-0 bg-grid opacity-30" aria-hidden />
-              <span className="absolute left-5 top-5 rounded-full bg-white/20 px-3 py-1 text-[11px] font-medium text-white backdrop-blur">
+            <div className="relative aspect-[3/2] overflow-hidden md:aspect-auto md:min-h-[20rem]">
+              <Image
+                src={lead.cover.src}
+                alt={lead.cover.alt}
+                fill
+                sizes="(min-width: 768px) 40vw, 100vw"
+                className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:scale-[1.04]"
+              />
+              <span className="absolute left-5 top-5 rounded-full bg-black/45 px-3 py-1 text-[11px] font-medium text-white backdrop-blur">
                 Latest
               </span>
             </div>
@@ -74,34 +77,39 @@ export default function BlogPage() {
             <Reveal key={post.slug} delay={index * 70}>
               <Link
                 href={`/blog/${post.slug}`}
-                className="group flex h-full flex-col gap-3 rounded-card border border-border bg-surface p-6 transition-[transform,border-color] duration-300 hover:border-primary/40 motion-safe:hover:-translate-y-1"
+                className="group flex h-full flex-col overflow-hidden rounded-card border border-border bg-surface transition-[transform,border-color] duration-300 hover:border-primary/40 motion-safe:hover:-translate-y-1"
               >
-                <span
-                  className="h-1 w-12 rounded-full"
-                  style={{
-                    backgroundImage: `linear-gradient(90deg, ${post.accent[0]}, ${post.accent[1]})`,
-                  }}
-                  aria-hidden
-                />
-                <span className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
-                  <span className="font-medium text-primary">{post.category}</span>
-                  <span aria-hidden>·</span>
-                  <time dateTime={post.date}>{formatDate(post.date)}</time>
-                </span>
-                <h2 className="text-[1.05rem] font-semibold leading-snug text-foreground">
-                  {post.title}
-                </h2>
-                <p className="text-[0.9rem] leading-relaxed text-muted-foreground">
-                  {post.excerpt}
-                </p>
-                <span className="mt-auto pt-2 text-xs text-muted-foreground">
-                  {post.readingMinutes} min read
-                </span>
+                <div className="relative aspect-[3/2] overflow-hidden">
+                  <Image
+                    src={post.cover.src}
+                    alt={post.cover.alt}
+                    fill
+                    sizes="(min-width: 768px) 30vw, 100vw"
+                    className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:scale-[1.05]"
+                  />
+                </div>
+                <div className="flex flex-1 flex-col gap-3 p-6">
+                  <span className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+                    <span className="font-medium text-primary">{post.category}</span>
+                    <span aria-hidden>·</span>
+                    <time dateTime={post.date}>{formatDate(post.date)}</time>
+                  </span>
+                  <h2 className="text-[1.05rem] font-semibold leading-snug text-foreground">
+                    {post.title}
+                  </h2>
+                  <p className="text-[0.9rem] leading-relaxed text-muted-foreground">
+                    {post.excerpt}
+                  </p>
+                  <span className="mt-auto pt-2 text-xs text-muted-foreground">
+                    {post.readingMinutes} min read
+                  </span>
+                </div>
               </Link>
             </Reveal>
           ))}
         </div>
       </div>
+      <JsonLd data={breadcrumbJsonLd([{ name: "Blog", path: "/blog" }])} />
     </>
   );
 }

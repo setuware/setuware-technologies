@@ -21,6 +21,7 @@ import {
   compensationNote,
   getJob,
   jobMetaTitle,
+  jobMetaDescription,
   jobPostingJsonLd,
   jobs,
   whatWeOffer,
@@ -48,7 +49,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   return pageMetadata({
     title: jobMetaTitle(job),
-    description: job.summary,
+    description: jobMetaDescription(job),
     path: `/careers/${job.slug}`,
   });
 }

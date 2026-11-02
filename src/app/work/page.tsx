@@ -2,13 +2,14 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { caseStudies, getService } from "@/lib/content";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/json-ld";
 import { PageHero } from "@/components/layout/page-hero";
 import { FadeUp } from "@/components/motion/primitives";
 import { CaseStudyGrid, type CaseStudyCard } from "./case-study-grid";
 
 export const metadata = pageMetadata({
-  title: "Our work and case studies",
+  title: "Case Studies: Web, App & Software Projects",
   description:
     "Selected case studies from Setuware Technologies across e-commerce, mobile apps, AI assistants, dashboards and hosting, filterable by service or industry.",
   path: "/work",
@@ -66,6 +67,7 @@ export default function WorkPage() {
           </Link>
         </FadeUp>
       </div>
+      <JsonLd data={breadcrumbJsonLd([{ name: "Our work", path: "/work" }])} />
     </>
   );
 }

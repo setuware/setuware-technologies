@@ -12,14 +12,15 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/json-ld";
 import { site } from "@/lib/site";
 import { ContactForm } from "@/components/interactive/contact-form";
 import { PageHero } from "@/components/layout/page-hero";
 import { FadeUp, Stagger, StaggerItem } from "@/components/motion/primitives";
 
 export const metadata = pageMetadata({
-  title: "Contact us",
+  title: "Contact Our Gurugram Web Development Team",
   description: `Contact ${site.name} about your website, e-commerce, app or software project. Our team responds within one business day. Call ${site.phone}.`,
   path: "/contact",
 });
@@ -238,6 +239,7 @@ export default function ContactPage() {
           </FadeUp>
         </aside>
       </div>
+      <JsonLd data={breadcrumbJsonLd([{ name: "Contact", path: "/contact" }])} />
     </>
   );
 }

@@ -9,10 +9,8 @@ import { cn } from "@/lib/utils";
 import { Logo } from "@/components/layout/logo";
 import {
   GitHubIcon,
-  InstagramIcon,
   LinkedInIcon,
   WhatsAppIcon,
-  XIcon,
 } from "@/components/ui/social-icons";
 import { NewsletterForm } from "@/components/interactive/newsletter-form";
 import { FadeUp, Magnetic } from "@/components/motion/primitives";
@@ -85,8 +83,6 @@ const COLUMNS: readonly FooterColumn[] = [
 
 const SOCIALS = [
   { href: site.social.linkedin, label: "LinkedIn", Icon: LinkedInIcon },
-  { href: site.social.instagram, label: "Instagram", Icon: InstagramIcon },
-  { href: site.social.x, label: "X", Icon: XIcon },
   { href: site.social.github, label: "GitHub", Icon: GitHubIcon },
 ] as const;
 

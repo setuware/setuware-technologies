@@ -14,7 +14,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <html lang="en">
+    <html lang="en-IN">
       <body
         style={{
           margin: 0,
@@ -34,7 +34,7 @@ export default function GlobalError({
           </h1>
           <p style={{ color: "#9aa3b8", lineHeight: 1.6, margin: "0 0 1.5rem" }}>
             We hit an unexpected error loading the site. Reloading usually fixes
-            it. If not, email hello@setuwaresoftware.in
+            it. If not, email support@setuware.in
             {error.digest ? ` and quote ${error.digest}.` : "."}
           </p>
           <button

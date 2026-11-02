@@ -1,0 +1,31 @@
+# /etc/systemd/system/setuware.service
+#
+# Keeps the website running, restarts it if it crashes and starts it on boot.
+#   sudo cp deploy/setuware.service /etc/systemd/system/setuware.service
+#   sudo systemctl daemon-reload && sudo systemctl enable --now setuware
+
+[Unit]
+Description=Setuware Technologies website (Next.js)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/setuware/current
+EnvironmentFile=/etc/setuware.env
+Environment=NODE_ENV=production
+Environment=PORT=3000
+# Only nginx should reach the app.
+Environment=HOST=127.0.0.1
+# One worker per CPU by default; cap it on small instances.
+Environment=WEB_CONCURRENCY=2
+ExecStart=/usr/bin/node scripts/server.mjs
+Restart=always
+RestartSec=3
+KillSignal=SIGTERM
+TimeoutStopSec=20
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

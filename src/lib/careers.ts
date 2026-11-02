@@ -320,6 +320,22 @@ export function jobMetaTitle(job: Job): string {
   return withCity.length + JOB_TITLE_SUFFIX_LENGTH <= 60 ? withCity : base;
 }
 
+/**
+ * Meta description for a role: the summary, topped up with the job type and
+ * location when it is too short to fill a search snippet (aim 120–155).
+ */
+export function jobMetaDescription(job: Job): string {
+  if (job.summary.length >= 120) return job.summary;
+  const where = job.location === "Gurugram · Hybrid" ? "hybrid, Gurugram" : "on-site, Gurugram";
+  const options = [
+    ` ${job.type} role at ${site.name} (${where}).`,
+    ` ${job.type} role, ${where}.`,
+    ` ${job.type}, Gurugram.`,
+  ];
+  const fit = options.find((extra) => job.summary.length + extra.length <= 155);
+  return fit ? `${job.summary}${fit}` : job.summary;
+}
+
 /** `validThrough` for the current listings, as YYYY-MM-DD. */
 export function jobsValidThrough(): string {
   const date = new Date(`${JOBS_POSTED_ON}T00:00:00Z`);
@@ -374,8 +390,9 @@ export function jobPostingJsonLd(job: Job) {
     hiringOrganization: {
       "@type": "Organization",
       name: site.name,
-      sameAs: site.url,
+      sameAs: Object.values(site.social),
       url: site.url,
+      logo: new URL("/apple-icon", site.url).toString(),
     },
     jobLocation: {
       "@type": "Place",

@@ -552,7 +552,7 @@ function QuoteSummary({
 
         <div className="flex flex-col gap-5 p-5 md:p-6">
           <div>
-            <h3 className="text-sm font-semibold text-foreground">Payment milestones</h3>
+            <h2 className="text-sm font-semibold text-foreground">Payment milestones</h2>
             <ul className="mt-2.5 flex flex-col gap-2">
               {result.milestones.map((milestone) => (
                 <li
@@ -604,9 +604,9 @@ function QuoteSummary({
             </div>
           ) : (
             <form ref={formRef} onSubmit={onSubmit} className="relative flex flex-col gap-3" noValidate>
-              <h3 className="text-sm font-semibold text-foreground">
+              <h2 className="text-sm font-semibold text-foreground">
                 Email me this quote
-              </h3>
+              </h2>
 
               <Field label="Name" htmlFor="quote-name" required error={errors.name}>
                 <Input

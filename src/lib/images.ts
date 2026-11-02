@@ -92,6 +92,41 @@ export const images = {
     height: 700,
     alt: "A team reviewing growth metrics on a display",
   },
+  /*
+   * Team photography (free Pexels licence), cropped and encoded under
+   * public/images/team/. Pexels ids: teamGroup 7581117, teamPortrait 8636650,
+   * teamLaptop 3182812, teamWorkshop 3184360, clientMeeting 3184291.
+   */
+  teamGroup: {
+    src: "/images/team/team-group.jpg",
+    width: 1600,
+    height: 1200,
+    alt: "Four smiling colleagues gathered by their desks in a bright office",
+  },
+  teamPortrait: {
+    src: "/images/team/team-portrait.jpg",
+    width: 1200,
+    height: 900,
+    alt: "Four colleagues standing together and smiling in an office",
+  },
+  teamLaptop: {
+    src: "/images/team/team-laptop.jpg",
+    width: 1200,
+    height: 900,
+    alt: "A team gathered around a laptop, reviewing work together",
+  },
+  teamWorkshop: {
+    src: "/images/team/team-workshop.jpg",
+    width: 1200,
+    height: 900,
+    alt: "Colleagues working on laptops around a shared table during a planning session",
+  },
+  clientMeeting: {
+    src: "/images/team/client-meeting.jpg",
+    width: 1400,
+    height: 1400,
+    alt: "Colleagues shaking hands across a meeting table at the start of a project",
+  },
   /**
    * Figma 24:2647 — the dark halftone backdrop behind "All services" and the
    * process timeline. A render of the composited node (black + 13% texture),

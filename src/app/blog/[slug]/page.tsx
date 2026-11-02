@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
@@ -30,19 +32,38 @@ export async function generateMetadata({
   }
 
   return pageMetadata({
-    title: post.title,
-    description: post.excerpt,
+    title: post.seoTitle ?? post.title,
+    description: post.seoDescription ?? post.excerpt,
     path: `/blog/${post.slug}`,
     type: "article",
     publishedTime: post.date,
+    image: {
+      url: post.cover.src,
+      width: post.cover.width,
+      height: post.cover.height,
+      alt: post.cover.alt,
+    },
   });
 }
 
-export default async function PostPage({
+/**
+ * `params` is read inside a Suspense boundary so navigations render the shell
+ * instantly. Every known slug is prerendered by `generateStaticParams`, so the
+ * fallback only ever shows on the way to a 404.
+ */
+export default function PostPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  return (
+    <Suspense fallback={<div className="min-h-[70vh]" aria-busy="true" />}>
+      <PostArticle params={params} />
+    </Suspense>
+  );
+}
+
+async function PostArticle({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = getPost(slug);
   if (!post) notFound();
@@ -64,7 +85,7 @@ export default async function PostPage({
           <div className="container-page relative max-w-3xl">
             <Link
               href="/blog"
-              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+              className="flex w-fit items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
             >
               <ArrowLeft className="size-3" aria-hidden />
               All articles
@@ -93,6 +114,19 @@ export default async function PostPage({
                   {post.readingMinutes} min read
                 </span>
               </span>
+            </div>
+          </div>
+
+          <div className="container-page relative mt-10 max-w-5xl md:mt-12">
+            <div className="relative aspect-[3/2] overflow-hidden rounded-card border border-border bg-background-subtle shadow-ambient sm:aspect-[16/9] lg:aspect-[2/1]">
+              <Image
+                src={post.cover.src}
+                alt={post.cover.alt}
+                fill
+                fetchPriority="high"
+                sizes="(min-width: 1024px) 76rem, 100vw"
+                className="object-cover object-[50%_35%]"
+              />
             </div>
           </div>
         </header>
@@ -155,6 +189,7 @@ export default async function PostPage({
           path: `/blog/${post.slug}`,
           date: post.date,
           author: post.author.name,
+          image: post.cover.src,
         })}
       />
       <JsonLd

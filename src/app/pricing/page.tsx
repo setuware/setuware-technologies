@@ -14,7 +14,8 @@ import {
   LayoutTemplate,
 } from "lucide-react";
 
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, faqJsonLd, pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/json-ld";
 import { site } from "@/lib/site";
 import { getService, serviceStartingPrice, services } from "@/lib/content";
 import { carePlans, LANDING_PAGE_FROM, WEBSITE_FROM } from "@/lib/plans";
@@ -35,7 +36,7 @@ const carePlanFrom = Math.min(
 );
 
 export const metadata = pageMetadata({
-  title: "Pricing",
+  title: "Website Development Pricing in India",
   description: `Transparent, fixed-price packages: landing pages from ${formatINR(LANDING_PAGE_FROM)}, business websites from ${formatINR(WEBSITE_FROM)} and maintenance plans from ${formatINR(carePlanFrom)} a month.`,
   path: "/pricing",
 });
@@ -192,7 +193,7 @@ export default function PricingPage() {
       <PageHero
         video="pricing"
         eyebrow="Plans and packages"
-        title="Pricing"
+        title="Website and app development pricing"
         description="Transparent, fixed-price packages for every stage of your business."
       >
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -421,6 +422,8 @@ export default function PricingPage() {
       <DeferredSection minHeight={720}>
         <Faq items={PRICING_FAQS} />
       </DeferredSection>
+      <JsonLd data={breadcrumbJsonLd([{ name: "Pricing", path: "/pricing" }])} />
+      <JsonLd data={faqJsonLd(PRICING_FAQS)} />
     </>
   );
 }

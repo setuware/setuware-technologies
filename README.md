@@ -97,7 +97,8 @@ All optional — the site runs without any of them.
 
 | Variable | Effect |
 | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | Canonical origin for metadata and sitemap |
+| `NEXT_PUBLIC_SITE_URL` | Canonical origin for metadata and sitemap (default `https://setuware.in`) |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Google Search Console HTML-tag token; adds the `google-site-verification` meta tag. See `docs/seo.md` |
 | `LEAD_WEBHOOK_URL` | Enquiries are POSTed here (Slack, CRM, email relay). Without it they are written to the server log |
 | `NEXT_PUBLIC_HERO_BG_*` | Hero background video (above) |
 | `NEXT_PUBLIC_HERO_VIDEO_*` | Inset video player |

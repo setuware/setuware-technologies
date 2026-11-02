@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Check, Clock, Hand, PackageCheck } from "lucide-react";
 
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, faqJsonLd, pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/json-ld";
 import { services } from "@/lib/content";
 import { projectPackages } from "@/lib/plans";
 import { Faq } from "@/components/sections/faq";
@@ -13,7 +14,7 @@ import { TextReveal } from "@/components/motion/text-reveal";
 import { FadeUp, Stagger, StaggerItem } from "@/components/motion/primitives";
 
 export const metadata = pageMetadata({
-  title: "Our delivery process",
+  title: "Our Website & App Development Process",
   description:
     "Our six-stage delivery process: discovery, proposal, design, development, launch and support, with clear outputs and timelines at every stage.",
   path: "/process",
@@ -412,6 +413,8 @@ export default function ProcessPage() {
       <DeferredSection minHeight={720}>
         <Faq items={PROCESS_FAQS} />
       </DeferredSection>
+      <JsonLd data={breadcrumbJsonLd([{ name: "How it works", path: "/process" }])} />
+      <JsonLd data={faqJsonLd(PROCESS_FAQS)} />
     </>
   );
 }

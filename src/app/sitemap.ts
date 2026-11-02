@@ -9,7 +9,8 @@ import { currentDateIso } from "@/lib/time";
 
 /**
  * Generated at build time from the same content the pages render, so a new
- * service or post can never be published without appearing here.
+ * service or post can never be published without appearing here. Only
+ * indexable pages belong here: `/status` and `/not-found` are `noindex`.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const url = (path: string) => new URL(path, site.url).toString();
@@ -28,7 +29,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: "/careers", priority: 0.5, changeFrequency: "monthly" },
       { path: "/blog", priority: 0.7, changeFrequency: "weekly" },
       { path: "/contact", priority: 0.8, changeFrequency: "yearly" },
-      { path: "/status", priority: 0.3, changeFrequency: "weekly" },
       { path: "/privacy", priority: 0.2, changeFrequency: "yearly" },
       { path: "/terms", priority: 0.2, changeFrequency: "yearly" },
     ] as const

@@ -1,13 +1,14 @@
 import { Calculator, ShieldCheck, Sparkles } from "lucide-react";
 
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/json-ld";
 import { Estimator } from "@/components/interactive/estimator";
 import { PageHero } from "@/components/layout/page-hero";
 
 export const metadata = pageMetadata({
-  title: "Instant project estimate",
+  title: "Website & App Development Cost Calculator",
   description:
-    "Estimate the cost of your website, e-commerce store, app or custom software, with an indicative timeline, team size and payment milestones.",
+    "Estimate the cost of your website, e-commerce store, app or custom software in India, with an indicative timeline, team size and payment milestones.",
   path: "/estimate",
 });
 
@@ -50,6 +51,7 @@ export default function EstimatePage() {
       <div className="container-page py-12 md:py-16">
         <Estimator />
       </div>
+      <JsonLd data={breadcrumbJsonLd([{ name: "Cost estimate", path: "/estimate" }])} />
     </>
   );
 }

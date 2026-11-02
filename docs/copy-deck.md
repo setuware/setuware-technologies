@@ -29,7 +29,8 @@ Corporate-professional, like an established digital agency (think Infosys/TCS di
 - P1: We partner with startups, SMEs and established companies across India to plan, design and build digital products that perform.
 - P2: Product strategy, design, engineering and marketing work together in one accountable team, from your first website to enterprise software.
 - CTA: About Setuware
-- Stat block: "10+" / "Digital services, delivered by one team" (no avatars line "Read client feedback")
+- Stat block (frosted card over the team photo): "10+" / "Digital services, delivered by one team" (no avatars line "Read client feedback")
+- Photo badge: Gurugram studio
 
 **Services**
 - H2: Services that grow with your business
@@ -59,18 +60,18 @@ Corporate-professional, like an established digital agency (think Infosys/TCS di
   5. Launch — Deployment, testing and go-live support.
   6. Support & growth — Maintenance, optimisation and continuous improvement.
 
-**Industries / why us (bento)**
+**Industries / why us**
 - H2: Software designed for your industry. Built for your growth.
 - Sub: We bring domain understanding to every engagement, across retail, healthcare, education, real estate, manufacturing and professional services.
-- Tiles:
-  - Transparent pricing — Every engagement begins with a detailed proposal and a fixed quote.
-  - "End-to-end" big tile — Strategy, design, development and support from a single partner. (replaces "₹20k")
-  - Work tile CTA — View our work
-  - "Dedicated" tile — A dedicated project manager and regular progress updates.
-  - Why Setuware Technologies? —
-    - Complete ownership — Your code, domains and accounts remain yours.
-    - Performance and security — Fast, secure builds that follow industry best practices.
-    - Built for search — Technical SEO and analytics configured before launch.
+- Photo card (links to /work): label "End-to-end delivery" · Strategy, design, development and support from a single partner. · CTA: View our work
+- Benefit cards (2 × 3):
+  - Transparent pricing — A detailed proposal and a fixed quote before any work begins.
+  - Dedicated project manager — One point of contact and regular progress updates.
+  - Complete ownership — Your code, domains and accounts remain yours.
+  - Performance and security — Fast, secure builds that follow industry best practices.
+  - Built for search — Technical SEO and analytics configured before launch.
+  - Support after launch — Three months of support included, with maintenance plans available.
+- Removed: the "₹ Fixed quote" glyph tile, the "Call / WhatsApp / Email" chip tile and the "Why Setuware Technologies?" list tile.
 
 **Selected work**
 - H2: Selected work · CTA: View all projects · card CTA: View case study
@@ -137,4 +138,8 @@ Corporate-professional, like an established digital agency (think Infosys/TCS di
   4. Launch and support — Testing, go-live and handover, followed by ongoing maintenance and optimisation.
 - Services: H2: Comprehensive digital services · Sub: From a first company website to enterprise software, every service is delivered by the same team. · CTA: View all services
 - Industries: H2: Experience across key sectors · Sub: We work with startups and growing businesses across India, and bring an understanding of each sector to every engagement. · CTA: Industries we serve
+- Founder (Leadership): H2: Meet our founder · Satyam Raj — Founder, Setuware Technologies · Based in Gurugram
+  - Bio (placeholder until the owner supplies one): Satyam founded Setuware Technologies to give growing businesses a dependable technology partner. He leads client engagements from the first consultation through delivery.
+  - Quote: Every project should leave the client with something they own, understand and can grow.
+  - Contact: satyam.raj@setuware.in · LinkedIn · GitHub · X (data in src/lib/team.ts)
 - Closing CTA: H2: Discuss your project with our team · Sub: Book a free 30-minute consultation. We will review your requirements and follow up with a recommended approach and an indicative budget. · CTAs: Book a consultation · phone number

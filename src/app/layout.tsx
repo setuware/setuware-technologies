@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Sora } from "next/font/google";
 
-import { organizationJsonLd } from "@/lib/seo";
+import { DEFAULT_OG_IMAGE, HOME_DESCRIPTION, HOME_TITLE, organizationJsonLd } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Footer } from "@/components/layout/footer";
@@ -43,37 +43,40 @@ const display = Manrope({
   weight: ["500", "600", "700", "800"],
 });
 
+const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
+
+/**
+ * Site-wide defaults. Every page overrides title, description, canonical and
+ * social card through `pageMetadata` (src/lib/seo.ts); these cover anything
+ * that does not, such as error pages.
+ */
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
     template: `%s | ${site.name}`,
-    default: `${site.name} — ${site.tagline}`,
+    default: HOME_TITLE,
   },
-  description: site.description,
+  description: HOME_DESCRIPTION,
   applicationName: site.name,
-  keywords: [
-    "website development company Gurugram",
-    "business website design India",
-    "e-commerce website development",
-    "web and mobile app development",
-    "SEO and digital marketing",
-    "custom software ERP CRM",
-    "website hosting and maintenance",
-    "Setuware Technologies",
-  ],
   authors: [{ name: site.name, url: site.url }],
   creator: site.name,
   publisher: site.name,
-  alternates: { canonical: site.url },
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     siteName: site.name,
     locale: site.locale,
-    url: site.url,
-    title: `${site.name} — ${site.tagline}`,
-    description: site.description,
+    url: "/",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
   },
-  twitter: { card: "summary_large_image", creator: "@setuware" },
+  twitter: {
+    card: "summary_large_image",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE.url],
+  },
   robots: {
     index: true,
     follow: true,
@@ -85,6 +88,8 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  // Google Search Console HTML-tag verification; omitted when the env is unset.
+  ...(googleVerification ? { verification: { google: googleVerification } } : {}),
   formatDetection: { telephone: true, address: false, email: true },
 };
 

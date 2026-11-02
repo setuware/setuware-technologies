@@ -40,7 +40,7 @@ export function Logo({
     >
       <LogoMark className="size-9 shrink-0 transition-transform duration-500 group-hover:-rotate-6 lg:size-[calc(var(--s)*44)]" />
       <span className="flex flex-col leading-none">
-        <span className="font-[family-name:var(--font-brand)] text-[1.2rem] font-semibold tracking-[-0.03em] lg:text-[calc(var(--s)*22)]">
+        <span className="font-[family-name:var(--font-brand)] text-[1.2rem] font-semibold uppercase tracking-[0.02em] lg:text-[calc(var(--s)*22)]">
           {first}
         </span>
         {second ? (
