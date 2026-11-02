@@ -656,9 +656,6 @@ function Hero({
                   style={{ backgroundImage: HERO_PHOTO_OVERLAY }}
                   aria-hidden
                 />
-                <figcaption className="absolute right-3 top-3 rounded-full bg-[#0b1020]/55 px-2.5 py-1 text-[10px] font-medium text-white/90 backdrop-blur-md">
-                  {photo.credit}
-                </figcaption>
               </figure>
               <ServiceVisual
                 variant={service.icon}
