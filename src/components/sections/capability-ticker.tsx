@@ -18,8 +18,8 @@ import { capabilities } from "@/lib/capabilities";
 import { useReducedMotionSafe } from "@/components/motion/primitives";
 
 /** Seconds for one full loop at rest (one copy of the list), sized so the
- *  sixteen labels drift at a readable pace. */
-const LOOP_SECONDS = 96;
+ *  ten labels drift at a readable pace. */
+const LOOP_SECONDS = 60;
 /** Extra speed multiplier at a brisk scroll (~2000 px/s). */
 const MAX_BOOST = 5;
 /** Lean, in degrees, at that same scroll speed. */
@@ -30,7 +30,7 @@ const MAX_SKEW = 5;
  *
  * Sits directly under the hero as a continuous scrolling band. A marquee
  * rather than a static row because the list is longer than any viewport —
- * every service plus the platforms people search for would otherwise either
+ * every service would otherwise either
  * wrap into a block or get cut off.
  *
  * The band is driven by scroll velocity: idle it drifts, a flick of the wheel

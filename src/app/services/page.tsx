@@ -12,9 +12,9 @@ import { DeferredSection } from "@/components/ui/deferred-section";
 import { cn } from "@/lib/utils";
 
 export const metadata = pageMetadata({
-  title: "Web, App, SEO & Software Services",
+  title: "Web, app and software services",
   description:
-    "Business websites, online stores, web and mobile apps, branding, SEO, custom ERP and CRM, AI automation, hosting and support. One team in Gurugram.",
+    "End-to-end digital services: business websites, e-commerce, web and mobile apps, branding, SEO, custom ERP and CRM, AI automation, hosting and support.",
   path: "/services",
 });
 
@@ -30,8 +30,8 @@ export default function ServicesPage() {
     <>
       <PageHero
         eyebrow="Services"
-        title="Start with a website. Grow from there."
-        description="Most clients start with a website, then come back for a store, an app, marketing or the software that runs the back office. The same team designs it, builds it, hosts it and answers the phone when something breaks."
+        title="Our services"
+        description="End-to-end digital services, from your first website to enterprise-grade software. Strategy, design, engineering and support are delivered by one accountable team."
       >
         <nav aria-label="Service groups" className="mt-8 flex flex-wrap justify-center gap-2">
           {groups.map((group, index) => (
@@ -95,19 +95,18 @@ export default function ServicesPage() {
             <div className="relative grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">
               <div>
                 <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
-                  Not sure what you need?
+                  Expert guidance
                 </span>
                 <TextReveal
                   as="h2"
                   id="not-sure-heading"
                   className="mt-4 font-display text-3xl font-semibold leading-tight sm:text-[2.4rem]"
                 >
-                  {"Tell us the problem.\nWe'll suggest the fix."}
+                  {"Not sure which service is right for you?"}
                 </TextReveal>
                 <p className="mt-4 max-w-lg text-[1rem] leading-relaxed text-white/70">
-                  Clients often ask for an app when a better website would do the job, or
-                  for a redesign when the real gap is tracking. A free 30-minute call with an
-                  engineer settles it.
+                  Our consultants will assess your requirements and recommend the most
+                  effective approach for your goals and budget.
                 </p>
               </div>
 
@@ -115,15 +114,15 @@ export default function ServicesPage() {
                 <NotSureLink
                   href="/contact"
                   icon={<MessageCircle className="size-5" aria-hidden />}
-                  title="Book a free 30-min call"
-                  body="Speak to the people who would build it, not a sales team."
+                  title="Book a free consultation"
+                  body="A 30-minute call with a senior member of our team."
                   primary
                 />
                 <NotSureLink
                   href="/estimate"
                   icon={<Calculator className="size-5" aria-hidden />}
                   title="Get an instant estimate"
-                  body="Choose a service and features, and see a price range in about a minute."
+                  body="Select a service and features to see an indicative price range."
                 />
               </div>
             </div>

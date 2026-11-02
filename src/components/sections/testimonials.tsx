@@ -12,7 +12,7 @@ import { testimonials, type Testimonial } from "@/lib/content";
 import { cn } from "@/lib/utils";
 import { EASE_OUT, VIEWPORT } from "@/components/motion/ease";
 import { TextReveal } from "@/components/motion/text-reveal";
-import { Magnetic, SpotlightCard, Stagger, StaggerItem, useReducedMotionSafe } from "@/components/motion/primitives";
+import { FadeUp, Magnetic, SpotlightCard, Stagger, StaggerItem, useReducedMotionSafe } from "@/components/motion/primitives";
 
 /**
  * "Real words, real people" (Figma 24:2680, cards 24:2900, pager 24:2997,
@@ -238,8 +238,13 @@ export function Testimonials() {
           id="testimonials-title"
           className="text-center text-[40px] font-bold leading-[1.2] tracking-[-0.02em] text-black sm:text-[48px] lg:text-[calc(var(--s)*56)] lg:leading-[calc(var(--s)*72)] dark:text-white"
         >
-          What clients say
+          Real words, real people
         </TextReveal>
+        <FadeUp delay={0.2} y={18}>
+          <p className="mx-auto mt-4 max-w-xl text-center text-[15px] font-normal leading-[29px] tracking-[0.02em] text-black/70 lg:mt-[calc(var(--s)*14)] lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*29)] dark:text-white/70">
+            Feedback from the businesses we work with.
+          </p>
+        </FadeUp>
 
         <div
           role="region"

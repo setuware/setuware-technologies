@@ -3,9 +3,9 @@
 export const site = {
   name: "Setuware Technologies",
   shortName: "Setuware Technologies",
-  tagline: "Websites that bring in enquiries",
+  tagline: "Websites, apps and custom software",
   description:
-    "Business websites, online stores, apps and custom software from a Gurugram team. A fixed quote in writing, weekly previews, and you own the code.",
+    "A Gurugram-based digital studio designing and engineering websites, e-commerce platforms, mobile apps and custom software for growing businesses.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://setuwaresoftware.in",
   locale: "en_IN",
   /** Primary address on CTAs: new projects and quotes. */

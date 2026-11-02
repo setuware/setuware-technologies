@@ -6,9 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { images } from "@/lib/images";
-import { carePlans, LANDING_PAGE_FROM, WEBSITE_FROM } from "@/lib/plans";
-import { cn, formatINR } from "@/lib/utils";
-import { Counter } from "@/components/ui/counter";
+import { cn } from "@/lib/utils";
 import { DURATION, EASE_OUT } from "@/components/motion/ease";
 import {
   FadeUp,
@@ -22,26 +20,26 @@ import { TextReveal } from "@/components/motion/text-reveal";
 
 const REASONS = [
   {
-    title: "You own everything",
-    body: "Domain, code, hosting and every login are in your name from day one. If you move on, you take all of it with you.",
+    title: "Complete ownership",
+    body: "Your code, domains and accounts remain yours.",
   },
   {
-    title: "Designed for phones first",
-    body: "We design for small screens first and test on real Android and iOS devices before launch. Images and code are optimised so pages stay quick on mobile data.",
+    title: "Performance and security",
+    body: "Fast, secure builds that follow industry best practices.",
   },
   {
-    title: "Ready for Google at launch",
-    body: "Page titles, sitemap, Search Console, analytics and enquiry tracking are configured before go-live. Google can index your site from the first day.",
+    title: "Built for search",
+    body: "Technical SEO and analytics configured before launch.",
   },
 ] as const;
 
-/** The first tile (Figma 24:3132): the fixed-price promise, in the pull-quote layout. */
+/** The first tile (Figma 24:3132): transparent pricing, in the pull-quote layout. */
 const PROMISE = {
-  title: "One fixed price,\nin writing",
-  body: "Your quote lists the pages, features, timeline and payment milestones before work begins. New requests are quoted separately, so the price changes only with your sign-off.",
+  title: "Transparent pricing",
+  body: "Every engagement begins with a detailed proposal and a fixed quote.",
   badge: "₹",
-  label: "Written quote",
-  detail: "Agreed before work starts",
+  label: "Fixed quote",
+  detail: "Agreed before work begins",
 } as const;
 
 /** Ways to reach the team, sliding in on the support tile (Figma 24:3146). */
@@ -64,10 +62,6 @@ function BentoTile({ className, children }: { className?: string; children: Reac
   );
 }
 
-/** Headline figures, read from the published plans so they never drift. */
-const WEBSITE_FROM_K = Math.round(WEBSITE_FROM / 1000);
-const CARE_FROM = carePlans[0]?.monthly ?? 8_000;
-
 /** Channel chips slide in one after another once their tile has landed. */
 const CHIP_VARIANTS = {
   hidden: { opacity: 0, x: -14, scale: 0.85 },
@@ -87,12 +81,11 @@ const TILE =
  * Industry band (Figma 24:2610 → 24:2746).
  *
  * A 3-column bento on the 1400px column, laid out as the design's tiles but
- * carrying the reasons a business owner picks us: the fixed-price promise,
- * the starting price and a link to our work on the top row (420px); post-
- * launch support and the "why us" tile (spanning two columns) beneath
- * (444px). Tiles rise in a stagger and respond to the cursor; the figures
- * count up when they scroll into view and the oversized "₹" drifts against
- * the scroll.
+ * carrying the reasons a business chooses us: transparent pricing, the
+ * end-to-end tile and a link to our work on the top row (420px); the
+ * dedicated-team tile and the "why us" tile (spanning two columns) beneath
+ * (444px). Tiles rise in a stagger and respond to the cursor, and the
+ * oversized glyph drifts against the scroll.
  */
 export function IndustryBento() {
   return (
@@ -107,13 +100,13 @@ export function IndustryBento() {
             id="industry-heading"
             className="mx-auto max-w-[40rem] text-3xl leading-tight font-bold tracking-[-0.04em] text-foreground sm:text-[2.6rem] lg:max-w-[calc(var(--s)*1033)] lg:text-[calc(var(--s)*58)] lg:leading-[calc(var(--s)*72)]"
           >
-            {"Websites shaped by how\nyour customers buy."}
+            {"Software designed for your industry.\nBuilt for your growth."}
           </TextReveal>
           <FadeUp delay={0.35} y={20}>
             <p className="mx-auto mt-5 max-w-xl text-[0.95rem] leading-relaxed text-foreground/70 lg:mt-[calc(var(--s)*21)] lg:max-w-[calc(var(--s)*889)] lg:text-[calc(var(--s)*16)] lg:leading-[calc(var(--s)*32)]">
-              A clinic, a school and a manufacturer each win customers
-              differently. We study how yours find you and what makes them get
-              in touch, then build the site around that.
+              We bring domain understanding to every engagement, across retail,
+              healthcare, education, real estate, manufacturing and
+              professional services.
             </p>
           </FadeUp>
         </div>
@@ -122,7 +115,7 @@ export function IndustryBento() {
           stagger={0.1}
           className="mt-12 grid gap-4 md:grid-cols-2 lg:mt-[calc(var(--s)*40)] lg:grid-cols-3 lg:grid-rows-[calc(var(--s)*420)_calc(var(--s)*444)] lg:gap-[calc(var(--s)*25)]"
         >
-          {/* 1 — Fixed-price promise, in the pull-quote tile (24:2684 / 24:3132). */}
+          {/* 1 — Transparent pricing, in the pull-quote tile (24:2684 / 24:3132). */}
           <BentoTile>
             <figure
               className={`${TILE} flex flex-col p-6 sm:p-8 lg:pt-[calc(var(--s)*50)] lg:pr-[calc(var(--s)*56)] lg:pb-[calc(var(--s)*40)] lg:pl-[calc(var(--s)*62)]`}
@@ -152,12 +145,12 @@ export function IndustryBento() {
             </figure>
           </BentoTile>
 
-          {/* 2 — Starting price (24:2612 / 24:2613 / 24:2734). */}
+          {/* 2 — End-to-end delivery (24:2612 / 24:2613 / 24:2734). */}
           <BentoTile>
             <div
               className={`${TILE} flex min-h-[15rem] flex-col justify-between p-7 lg:min-h-0 lg:pt-[calc(var(--s)*60)] lg:pb-[calc(var(--s)*56)] lg:pl-[calc(var(--s)*53)]`}
             >
-              {/* Oversized "₹" glyph clipped by the tile (24:2615). */}
+              {/* Oversized decorative glyph clipped by the tile (24:2615). */}
               <Parallax
                 speed={70}
                 className="pointer-events-none absolute top-[-11rem] left-[52%] select-none lg:top-[calc(var(--s)*-367)] lg:left-[calc(var(--s)*225)]"
@@ -166,25 +159,16 @@ export function IndustryBento() {
                   aria-hidden
                   className="block text-[22rem] leading-[1.366] font-bold text-setu/[0.04] lg:text-[calc(var(--s)*778)]"
                 >
-                  ₹
+                  +
                 </span>
               </Parallax>
-              <span className="relative block text-[4.5rem] leading-none font-bold tracking-[-0.03em] text-foreground lg:text-[calc(var(--s)*88)] lg:leading-[calc(var(--s)*72)]">
-                <Counter to={WEBSITE_FROM_K} prefix="₹" suffix="k" />
-              </span>
+              <h3 className="relative block text-[3.25rem] leading-none font-bold tracking-[-0.04em] text-foreground sm:text-[4rem] lg:text-[calc(var(--s)*68)] lg:leading-[calc(var(--s)*72)]">
+                End-to-end
+              </h3>
               <div className="relative mt-8 lg:mt-0">
-                <p className="max-w-[15rem] text-[1.45rem] leading-[1.32] font-semibold tracking-[-0.02em] text-foreground lg:max-w-[calc(var(--s)*300)] lg:text-[calc(var(--s)*28)] lg:leading-[calc(var(--s)*37)]">
-                  Starting price for a full business website
+                <p className="max-w-[17rem] text-[1.45rem] leading-[1.32] font-semibold tracking-[-0.02em] text-foreground lg:max-w-[calc(var(--s)*330)] lg:text-[calc(var(--s)*28)] lg:leading-[calc(var(--s)*37)]">
+                  Strategy, design, development and support from a single partner.
                 </p>
-                <p className="mt-2 text-[0.95rem] leading-relaxed text-foreground/70 lg:mt-[calc(var(--s)*8)] lg:text-[calc(var(--s)*16)] lg:leading-[calc(var(--s)*26)]">
-                  Single-page landing pages from {formatINR(LANDING_PAGE_FROM)}.
-                </p>
-                <Link
-                  href="/pricing"
-                  className="mt-3 inline-block text-[0.9rem] font-medium text-setu underline-offset-4 hover:underline lg:mt-[calc(var(--s)*12)] lg:text-[calc(var(--s)*15)]"
-                >
-                  Compare all packages
-                </Link>
               </div>
             </div>
           </BentoTile>
@@ -211,21 +195,20 @@ export function IndustryBento() {
                 className="absolute inset-0 bg-[linear-gradient(200deg,rgba(10,52,166,0.35)_0%,rgba(0,161,198,0.45)_45%,rgba(4,48,74,0.85)_100%)]"
               />
               <p className="relative max-w-[18rem] text-[1.2rem] leading-[1.55] font-medium text-white lg:max-w-[calc(var(--s)*320)] lg:text-[calc(var(--s)*21)] lg:leading-[calc(var(--s)*33)]">
-                Websites, stores and apps, with the brief and approach behind
-                each one
+                Case studies across websites, e-commerce and applications
               </p>
               <span className="relative mt-6 inline-flex h-10 w-fit items-center rounded-full border-[1.5px] border-white/60 px-[2.1rem] text-[15px] font-semibold text-white transition-[background-color,translate] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-0.5 group-hover:bg-white/15 lg:mt-[calc(var(--s)*28)] lg:h-[calc(var(--s)*40)] lg:px-[calc(var(--s)*34)] lg:text-[calc(var(--s)*15)]">
-                See our work
+                View our work
               </span>
             </Link>
           </BentoTile>
 
-          {/* 4 — Post-launch care and local support (24:3140). */}
+          {/* 4 — Dedicated team and contact channels (24:3140). */}
           <BentoTile>
             <div
               className={`${TILE} flex flex-col p-7 lg:pt-[calc(var(--s)*69)] lg:pr-[calc(var(--s)*49)] lg:pb-[calc(var(--s)*60)] lg:pl-[calc(var(--s)*55)]`}
             >
-              <ul className="flex flex-wrap gap-2" aria-label="Ways to reach us">
+              <ul className="flex flex-wrap gap-2" aria-label="Contact channels">
                 {CHANNELS.map((channel, index) => (
                   <motion.li
                     key={channel}
@@ -237,12 +220,11 @@ export function IndustryBento() {
                   </motion.li>
                 ))}
               </ul>
-              <span className="mt-10 block text-[4.5rem] leading-none font-bold tracking-[-0.03em] text-foreground lg:mt-auto lg:text-[calc(var(--s)*88)] lg:leading-[calc(var(--s)*72)]">
-                <Counter to={3} />
-              </span>
+              <h3 className="mt-10 block text-[3.25rem] leading-none font-bold tracking-[-0.04em] text-foreground sm:text-[4rem] lg:mt-auto lg:text-[calc(var(--s)*68)] lg:leading-[calc(var(--s)*72)]">
+                Dedicated
+              </h3>
               <p className="mt-6 max-w-[21rem] text-base leading-[1.75] text-foreground/70 lg:mt-[calc(var(--s)*29)] lg:max-w-[calc(var(--s)*345)] lg:text-[calc(var(--s)*17)] lg:leading-[calc(var(--s)*30)]">
-                Months of support included after launch, on IST working hours.
-                Then optional care plans from {formatINR(CARE_FROM)} a month.
+                A dedicated project manager and regular progress updates.
               </p>
             </div>
           </BentoTile>
@@ -253,7 +235,7 @@ export function IndustryBento() {
               className={`${TILE} grid gap-6 p-7 sm:grid-cols-[minmax(0,11rem)_1fr] md:p-8 lg:grid-cols-[calc(var(--s)*274)_calc(var(--s)*522)] lg:gap-0 lg:pt-[calc(var(--s)*51)] lg:pr-[calc(var(--s)*67)] lg:pb-[calc(var(--s)*62)] lg:pl-[calc(var(--s)*62)]`}
             >
               <h3 className="text-[1.45rem] leading-[1.36] font-semibold tracking-[-0.02em] text-foreground lg:pr-[calc(var(--s)*24)] lg:text-[calc(var(--s)*28)] lg:leading-[calc(var(--s)*38)]">
-                What every build includes
+                Why Setuware Technologies?
               </h3>
 
               <dl className="flex flex-col lg:pt-[calc(var(--s)*2)]">

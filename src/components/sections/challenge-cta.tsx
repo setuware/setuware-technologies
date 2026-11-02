@@ -25,13 +25,12 @@ export function ChallengeCta() {
             stagger={0.05}
             className="max-w-[807px] text-[34px] font-bold leading-[1.2] tracking-[-0.02em] text-black text-balance sm:text-[44px] lg:text-wrap lg:max-w-[calc(var(--s)*807)] lg:text-[calc(var(--s)*56)] lg:leading-[calc(var(--s)*72)] dark:text-white"
           >
-            {"A clear scope and price\nin a single call"}
+            Have a challenge to solve or an idea to explore?
           </TextReveal>
           <FadeUp delay={0.35} y={18}>
             <p className="mt-4 max-w-[1067px] text-[16px] font-medium leading-[28px] text-black/70 lg:mt-[calc(var(--s)*19)] lg:max-w-none lg:text-[calc(var(--s)*17)] lg:leading-[calc(var(--s)*32)] dark:text-white/70">
-              Tell us what you need: a new website, a redesign, a store or an
-              app. In one free 30-minute call you get a rough scope, a
-              realistic timeline and a price range.
+              Share your requirements and our team will respond within one
+              business day with recommendations and next steps.
             </p>
           </FadeUp>
 
@@ -45,7 +44,7 @@ export function ChallengeCta() {
                 href="/contact"
                 className="group inline-flex h-10 w-full max-w-[280px] items-center justify-center gap-2.5 rounded-[50px] bg-setu text-[15px] font-semibold leading-5 text-white transition-[background-color] duration-200 hover:bg-setu-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu sm:w-[202px] lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*202)] lg:gap-[calc(var(--s)*10)] lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*20)]"
               >
-                Book a 30-minute call
+                Start a project
                 {/* Figma vector 24:2814 — 13 × 10 arrow. */}
                 <svg
                   viewBox="0 0 13 10"

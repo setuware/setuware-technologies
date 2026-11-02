@@ -16,7 +16,14 @@ export interface CounterProps {
 
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
-/** Counts up once the number scrolls into view. Static for reduced-motion users. */
+/**
+ * Counts up once the number scrolls into view. Static for reduced-motion users.
+ *
+ * The final value is the initial state, so the server-rendered HTML (and any
+ * visitor without JavaScript, or a screenshot taken before the reveal) shows
+ * the real figure rather than a zero. The count restarts from zero only when
+ * the number scrolls into view, and always settles on `to`.
+ */
 export function Counter({
   to,
   decimals,
@@ -28,21 +35,18 @@ export function Counter({
   const places = decimals ?? (Number.isInteger(to) ? 0 : 2);
   const { ref, inView } = useInView<HTMLSpanElement>({ threshold: 0.4 });
   const reduceMotion = usePrefersReducedMotion();
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(to);
   const frame = useRef(0);
 
   useEffect(() => {
-    if (!inView) return;
-    if (reduceMotion) {
-      setValue(to);
-      return;
-    }
+    // Reduced motion: the initial state already holds the final value.
+    if (!inView || reduceMotion) return;
 
     const start = performance.now();
     const tick = (now: number) => {
       const elapsed = now - start;
       const progress = Math.min(1, elapsed / durationMs);
-      setValue(to * easeOut(progress));
+      setValue(progress >= 1 ? to : to * easeOut(progress));
       if (progress < 1) frame.current = requestAnimationFrame(tick);
     };
 

@@ -1,7 +1,6 @@
 import Image from "next/image";
 
 import { images } from "@/lib/images";
-import { testimonials } from "@/lib/content";
 import { ButtonLink } from "@/components/ui/button";
 import { Counter } from "@/components/ui/counter";
 import {
@@ -29,30 +28,34 @@ export function AboutPreview() {
     <section className="bg-[linear-gradient(115deg,color-mix(in_oklab,var(--color-brand-100)_55%,var(--background)),var(--background)_55%,color-mix(in_oklab,var(--color-brand-100)_35%,var(--background)))] py-20 md:py-28">
       <div className="container-page grid items-center gap-10 lg:grid-cols-[1fr_0.9fr_0.7fr] lg:gap-14">
         <div className="flex flex-col gap-4">
+          <FadeUp y={16}>
+            <p className="text-sm font-semibold tracking-[0.04em] text-primary">
+              About us
+            </p>
+          </FadeUp>
           <TextReveal
             as="h2"
             className="font-display text-[2.4rem] font-semibold leading-tight text-foreground"
           >
-            {"One team, from website\nto software"}
+            Strategy, design and engineering under one roof
           </TextReveal>
           <Stagger className="flex flex-col gap-4" delay={0.15}>
             <StaggerItem y={24}>
               <p className="text-[1.02rem] font-semibold text-foreground">
-                A design and build studio in Gurugram.
+                A digital studio for growing businesses.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
               <p className="text-[0.92rem] leading-relaxed text-muted-foreground">
-                Most clients start with a website. When they need an online
-                store, an app, a brand refresh or a CRM, the same team builds
-                it.
+                We partner with startups, SMEs and established companies across
+                India to plan, design and build digital products that perform.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
               <p className="text-[0.92rem] leading-relaxed text-muted-foreground">
-                Every project has a fixed written quote, weekly progress on a
-                live preview and one point of contact. The domain, code and
-                hosting accounts are registered in your name.
+                Product strategy, design, engineering and marketing work
+                together in one accountable team, from your first website to
+                enterprise software.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
@@ -61,7 +64,7 @@ export function AboutPreview() {
                 variant="secondary"
                 className="mt-3 w-fit rounded-full"
               >
-                Meet the team
+                About Setuware
               </ButtonLink>
             </StaggerItem>
           </Stagger>
@@ -86,34 +89,11 @@ export function AboutPreview() {
         <FadeUp delay={0.2} className="flex flex-col gap-5">
           <div>
             <span className="font-display text-[5.5rem] font-semibold leading-[0.85] tracking-tight text-foreground">
-              <Counter to={100} suffix="%" durationMs={1800} />
+              <Counter to={10} suffix="+" durationMs={1800} />
             </span>
-            <p className="mt-3 font-display text-xl font-semibold leading-tight text-foreground">
-              Ownership of your
-              <br />
-              code and accounts
+            <p className="mt-3 max-w-[16rem] font-display text-xl font-semibold leading-tight text-foreground">
+              Digital services, delivered by one team
             </p>
-          </div>
-
-          <div>
-            {/* Initials, not stock headshots: real people, no invented faces. */}
-            <div className="flex -space-x-2">
-              {testimonials.map((person) => (
-                <span
-                  key={person.author}
-                  title={`${person.author}, ${person.company}`}
-                  className="inline-flex size-10 items-center justify-center rounded-full border-2 border-background bg-[linear-gradient(135deg,var(--color-brand-600),var(--color-accent-500))] text-xs font-semibold text-white"
-                >
-                  {person.initials}
-                </span>
-              ))}
-            </div>
-            <a
-              href="#testimonials"
-              className="mt-3 inline-block text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-            >
-              Read client feedback
-            </a>
           </div>
         </FadeUp>
       </div>

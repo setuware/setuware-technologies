@@ -6,11 +6,12 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { serviceStartingPrice, services } from "@/lib/content";
+import type { ServiceKey } from "@/lib/pricing";
+import { services } from "@/lib/content";
 import { images } from "@/lib/images";
 import { servicePhotos } from "@/lib/service-photos";
 import { useMediaQuery } from "@/lib/hooks";
-import { cn, formatINR } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { ServiceIcon } from "@/components/ui/service-icon";
 import { FadeUp, Magnetic, SpotlightCard, useReducedMotionSafe } from "@/components/motion/primitives";
 import { TextReveal } from "@/components/motion/text-reveal";
@@ -29,7 +30,66 @@ const CARD_OVERLAY = [
 ].join(", ");
 
 /**
- * "Start with a website. Add what comes next."
+ * Homepage card copy, from the approved copy deck. Kept here rather than in
+ * `services[]` because the cards carry a shorter name and a single-line
+ * description; the service pages keep their own fuller wording. Keyed by slug
+ * so a renamed or removed service fails the type check.
+ */
+const CARD_COPY: Record<ServiceKey, { name: string; description: string }> = {
+  "business-websites": {
+    name: "Business websites",
+    description:
+      "Fast, responsive company websites that build credibility and generate qualified leads.",
+  },
+  "ecommerce-stores": {
+    name: "E-commerce stores",
+    description:
+      "Scalable online stores with secure payments, inventory and order management.",
+  },
+  "web-development": {
+    name: "Web applications",
+    description:
+      "Custom portals, dashboards and SaaS platforms engineered for scale.",
+  },
+  "app-development": {
+    name: "Mobile apps",
+    description:
+      "High-performance iOS and Android apps built on modern cross-platform frameworks.",
+  },
+  "product-design": {
+    name: "UI/UX & branding",
+    description:
+      "Brand identities and user experiences that are clear, consistent and memorable.",
+  },
+  "seo-marketing": {
+    name: "SEO & digital marketing",
+    description:
+      "Search, paid media and content strategies focused on measurable growth.",
+  },
+  "custom-software": {
+    name: "Custom software, ERP & CRM",
+    description:
+      "Bespoke business systems that streamline operations and reporting.",
+  },
+  "ai-integration": {
+    name: "AI & automation",
+    description:
+      "Intelligent assistants and workflow automation that improve efficiency.",
+  },
+  "managed-hosting": {
+    name: "Hosting & domains",
+    description:
+      "Secure managed hosting, domains and business email with proactive monitoring.",
+  },
+  "support-maintenance": {
+    name: "Maintenance & support",
+    description:
+      "Ongoing updates, security patches and technical support for your platforms.",
+  },
+};
+
+/**
+ * "All services under one roof"
  *
  * A peek carousel: the active card is centred and full-size, its neighbours
  * sit behind it scaled down and dimmed. Built on native scroll snapping, so
@@ -119,13 +179,12 @@ export function ServicesDark() {
               as="h2"
               className="font-display text-3xl font-semibold leading-tight text-white sm:text-[2.6rem]"
             >
-              {"Start with a website.\nAdd what comes next."}
+              All services under one roof
             </TextReveal>
             <FadeUp delay={0.25} y={20}>
               <p className="mt-4 text-[0.92rem] leading-relaxed text-white/60">
-                Stores, apps, branding, marketing and custom software come from
-                the team that built your site. Every service lists its starting
-                price and typical timeline.
+                End-to-end digital services, from your first website to
+                enterprise-grade software.
               </p>
             </FadeUp>
           </div>
@@ -135,7 +194,7 @@ export function ServicesDark() {
               href="/services"
               className="mr-2 inline-flex h-10 items-center rounded-full border border-white/20 px-5 text-xs font-medium text-white transition-colors hover:bg-white/10"
             >
-              Explore all {services.length} services
+              View all services
             </Link>
             <Magnetic strength={0.4}>
               <button
@@ -172,6 +231,7 @@ export function ServicesDark() {
         >
           {services.map((service, index) => {
             const isActive = index === active;
+            const copy = CARD_COPY[service.slug];
             return (
               <motion.li
                 key={service.slug}
@@ -240,22 +300,12 @@ export function ServicesDark() {
 
                       <div className="relative mt-auto pt-10">
                         <h3 className="font-display text-[1.6rem] font-semibold leading-tight [text-shadow:0_1px_12px_rgba(11,16,32,0.6)]">
-                          {service.name}
+                          {copy.name}
                         </h3>
-                        {/* Clamped: summaries vary in length and the cards are a
-                            fixed height in the carousel. */}
+                        {/* Clamped as a safeguard: the cards are a fixed
+                            height in the carousel. */}
                         <p className="mt-3 line-clamp-3 max-w-sm text-[0.88rem] leading-relaxed text-white/80">
-                          {service.summary}
-                        </p>
-                        {/* Price and timeline up front: the two things a buyer
-                            asks first. */}
-                        <p className="mt-4 text-[0.8rem] font-medium text-white/90">
-                          From {formatINR(serviceStartingPrice(service))}
-                          <span className="px-2 text-white/40" aria-hidden>
-                            |
-                          </span>
-                          <span className="sr-only">, </span>
-                          {service.typicalTimeline}
+                          {copy.description}
                         </p>
 
                         <span
@@ -264,7 +314,7 @@ export function ServicesDark() {
                             "group-hover:border-setu group-hover:bg-setu-dark",
                           )}
                         >
-                          See scope and pricing
+                          Learn more
                           <ArrowRight
                             className="size-3.5 transition-transform duration-300 group-hover:translate-x-1"
                             aria-hidden

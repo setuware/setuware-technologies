@@ -90,7 +90,7 @@ const SOCIALS = [
   { href: site.social.github, label: "GitHub", Icon: GitHubIcon },
 ] as const;
 
-const PROMISES = ["Fixed-price quotes", "You own the code", "3 months of support included"];
+const PROMISES = ["Fixed-price proposals", "Complete ownership", "Dedicated support"];
 
 /** Hairline that sweeps in from the left on hover / focus of the parent link. */
 const UNDERLINE =
@@ -198,12 +198,11 @@ export async function Footer() {
                   id="footer-cta-title"
                   className="text-[2rem] font-semibold leading-[1.08] tracking-[-0.035em] text-white sm:text-[2.5rem] lg:text-[3.25rem]"
                 >
-                  Have a project in mind?
-                  <span className="block text-white/55">Let&rsquo;s put a price on it.</span>
+                  Ready to start your project?
                 </h2>
                 <p className="mt-5 max-w-xl text-[0.975rem] leading-relaxed text-white/70">
-                  Book a free 30-minute call with the engineers who would build it. Afterwards you
-                  get a written, fixed-price quote, whether or not we work together.
+                  Talk to our team about your goals and we will recommend the right approach with a
+                  clear proposal.
                 </p>
               </div>
 
@@ -213,7 +212,7 @@ export async function Footer() {
                     href="/contact"
                     className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-white px-6 text-[0.95rem] font-semibold text-[#05070d] shadow-[0_8px_30px_-8px_rgba(34,184,219,0.55)] transition-[background-color,box-shadow] duration-300 hover:bg-[#e6f8fc] hover:shadow-[0_10px_40px_-6px_rgba(34,184,219,0.7)] sm:w-auto"
                   >
-                    Book a free call
+                    Start a project
                     <ArrowRight
                       className="size-4 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1"
                       aria-hidden
@@ -249,8 +248,8 @@ export async function Footer() {
           <FadeUp y={20} className="lg:col-span-5">
             <Logo inverted />
             <p className="mt-6 max-w-[26rem] text-[1.0625rem] leading-relaxed text-white/70">
-              Websites, stores, apps and custom software for growing businesses. Fixed prices,
-              and you own everything we build.
+              A Gurugram-based digital studio building websites, e-commerce, mobile apps and
+              custom software for growing businesses.
             </p>
           </FadeUp>
 
@@ -259,14 +258,11 @@ export async function Footer() {
               aria-labelledby="footer-newsletter-title"
               className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-6"
             >
-              <div className="flex items-baseline justify-between gap-4">
-                <h2 id="footer-newsletter-title" className="text-base font-semibold tracking-[-0.01em] text-white">
-                  One useful email a month
-                </h2>
-                <span className="hidden text-xs text-white/55 sm:inline">No sales pitches</span>
-              </div>
+              <h2 id="footer-newsletter-title" className="text-base font-semibold tracking-[-0.01em] text-white">
+                Insights, once a month
+              </h2>
               <p className="mt-1.5 text-sm leading-relaxed text-white/65">
-                What broke in production, how we fixed it and what we changed afterwards.
+                Practical articles on technology, design and digital growth.
               </p>
               <div className="mt-4">
                 <NewsletterForm source="footer" />

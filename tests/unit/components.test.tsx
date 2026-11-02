@@ -107,12 +107,18 @@ describe("Button and ButtonLink", () => {
 describe("Counter", () => {
   it("exposes the final value to assistive technology immediately", () => {
     render(<Counter to={120} suffix="+" />);
-    expect(screen.getByText("120+")).toBeInTheDocument();
+    expect(screen.getByText("120+", { selector: ".sr-only" })).toBeInTheDocument();
+  });
+
+  it("renders the final value before the count starts, never zero", () => {
+    render(<Counter to={10} suffix="+" />);
+    expect(screen.getByText("10+", { selector: "[aria-hidden]" })).toBeInTheDocument();
+    expect(screen.queryByText("0+")).not.toBeInTheDocument();
   });
 
   it("keeps the decimal precision of a fractional target", () => {
     render(<Counter to={99.95} suffix="%" />);
-    expect(screen.getByText("99.95%")).toBeInTheDocument();
+    expect(screen.getByText("99.95%", { selector: ".sr-only" })).toBeInTheDocument();
   });
 });
 

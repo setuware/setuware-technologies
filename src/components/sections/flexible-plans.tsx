@@ -23,51 +23,57 @@ import { TextReveal } from "@/components/motion/text-reveal";
  */
 
 /**
- * Card copy as it reads in the design. The shared plan data also feeds the
- * pricing page, so the wording differences are applied here rather than by
- * rewriting that data.
+ * Homepage card copy, from the approved copy deck. The shared plan data also
+ * feeds the pricing page, so the homepage wording is applied here rather than
+ * by rewriting that data. Durations and delivery detail stay on /pricing.
  */
-const DESIGN_COPY: Record<string, { tagline?: string; features?: readonly string[] }> = {
+const DESIGN_COPY: Record<
+  string,
+  { name?: string; tagline?: string; features?: readonly string[] }
+> = {
   "landing-page": {
-    tagline: "One page that brings in enquiries.",
+    name: "Landing Page",
+    tagline: "A focused single page to launch a campaign or product.",
     features: [
-      "Hero, services and enquiry form",
-      "WhatsApp and call buttons",
-      "Designed mobile-first",
-      "Basic SEO setup",
-      "Live in about a week",
-      "3 months of support after launch",
+      "Single-page design",
+      "Mobile-responsive design",
+      "Contact forms and WhatsApp integration",
+      "On-page SEO setup",
+      "3 months of support",
     ],
   },
   "website-build": {
-    tagline: "A full website for your business.",
+    name: "Business Website",
+    tagline: "A complete multi-page website for your company.",
     features: [
-      "Up to 8 pages, designed mobile-first",
-      "Edit text and photos yourself",
-      "WhatsApp, call and enquiry buttons",
-      "SEO setup and Google Analytics",
-      "Domain, hosting and launch handled",
-      "3 months of support after launch",
+      "Up to 8 pages",
+      "Mobile-responsive design",
+      "Content management system",
+      "On-page SEO setup",
+      "Contact forms and WhatsApp integration",
+      "3 months of support",
     ],
   },
   "full-application-build": {
+    name: "Full Application",
     tagline: "Online stores, web apps and mobile apps.",
     features: [
-      "Customer logins and an admin panel",
-      "UPI, card and net-banking payments",
-      "Order, booking and email alerts",
-      "Weekly progress on a preview link",
-      "6–8 months of support after launch",
+      "User accounts and admin dashboard",
+      "Secure payment integration",
+      "Automated email and order notifications",
+      "Cloud infrastructure setup",
+      "6–8 months of support",
     ],
   },
   "enterprise-engagement": {
-    tagline: "ERP, CRM and multi-team programmes.",
+    name: "Enterprise",
+    tagline: "ERP, CRM and large-scale platforms.",
     features: [
-      "Custom ERP, CRM or customer portal",
-      "Phased move off legacy software",
-      "Milestones fixed in the contract",
-      "One named project lead",
-      "Extended support and on-call cover",
+      "Custom ERP, CRM and customer portals",
+      "Phased migration from legacy systems",
+      "Milestone-based delivery",
+      "Dedicated project lead",
+      "Extended support",
     ],
   },
 };
@@ -134,7 +140,7 @@ function PlanCard({ plan }: { plan: Plan }) {
       <div className="flex flex-col gap-10 md:flex-1 lg:gap-[calc(var(--s)*40)]">
         <div className="flex flex-col gap-[5px] lg:gap-[calc(var(--s)*5)]">
           <h3 className="text-[22px] font-extrabold leading-[normal] tracking-[-0.02em] lg:text-[calc(var(--s)*24)]">
-            {plan.name}
+            {copy.name ?? plan.name}
           </h3>
           <p className="text-[15px] font-normal leading-[29px] tracking-[0.02em] opacity-70 lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*29)]">
             {tagline}
@@ -181,7 +187,7 @@ function PlanCard({ plan }: { plan: Plan }) {
             : "text-black hover:bg-setu hover:text-white dark:text-white",
         )}
       >
-        {quoted ? "Book a 30-minute call" : "Estimate your project"}
+        {quoted ? "Talk to us" : "Get started"}
       </Link>
     </SpotlightCard>
   );
@@ -228,7 +234,7 @@ function QuotedPlanStrip({ plan }: { plan: Plan }) {
       <div className="flex flex-col gap-3 lg:gap-[calc(var(--s)*12)]">
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <h3 className="text-[22px] font-extrabold leading-[normal] tracking-[-0.02em] lg:text-[calc(var(--s)*24)]">
-            {plan.name}
+            {copy.name ?? plan.name}
           </h3>
           <p className="text-[15px] font-normal tracking-[0.02em] opacity-70 lg:text-[calc(var(--s)*15)]">
             {copy.tagline ?? plan.tagline}
@@ -257,7 +263,7 @@ function QuotedPlanStrip({ plan }: { plan: Plan }) {
           href="/contact?intent=consultation"
           className="inline-flex h-10 w-full items-center justify-center rounded-[50px] border-[1.5px] border-setu px-8 text-[15px] font-semibold leading-[normal] text-black transition-[background-color,border-color,color] duration-200 hover:bg-setu hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu md:w-auto lg:h-[calc(var(--s)*40)] lg:px-[calc(var(--s)*34)] lg:text-[calc(var(--s)*15)] dark:text-white"
         >
-          Book a 30-minute call
+          Talk to us
         </Link>
       </div>
     </article>
@@ -278,16 +284,12 @@ export function FlexiblePlans() {
             id="flexible-plans-title"
             className="text-[40px] font-bold leading-[1.2] tracking-[-0.02em] text-black sm:text-[48px] lg:text-[calc(var(--s)*56)] lg:leading-[calc(var(--s)*72)] dark:text-white"
           >
-            Clear starting prices
+            Flexible plans
           </TextReveal>
           <FadeUp delay={0.25} y={18}>
             <p className="text-[15px] font-normal leading-[29px] tracking-[0.02em] text-black opacity-70 lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*29)] dark:text-white">
-              One fixed price, agreed in writing before work starts, with no
-              hourly billing. You own everything we build, and all prices
-              exclude GST.{" "}
-              <Link href="/pricing" className="font-medium text-setu underline-offset-4 hover:underline">
-                See full pricing
-              </Link>
+              Clear, upfront pricing for every stage of your business. All
+              prices exclude GST.
             </p>
           </FadeUp>
         </div>
