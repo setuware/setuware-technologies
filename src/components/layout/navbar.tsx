@@ -163,12 +163,30 @@ export function Navbar({ links }: NavbarProps) {
           <div className="flex items-center gap-2 lg:ml-auto lg:items-end lg:gap-[calc(var(--s)*34)]">
             <a
               href={site.phoneHref}
-              className="hidden flex-col items-end text-right leading-[normal] text-foreground lg:flex lg:w-[calc(var(--s)*139)]"
+              aria-label={`Call us on ${site.phone}`}
+              className="group/phone hidden items-center gap-[calc(var(--s)*10)] rounded-md text-foreground outline-none focus-visible:ring-2 focus-visible:ring-setu/60 focus-visible:ring-offset-4 lg:flex"
             >
-              <span className="text-[calc(var(--s)*11)] font-medium text-foreground/60">
-                Call us
+              {/* Rings on hover; purely decorative. */}
+              <span
+                aria-hidden
+                className="inline-flex size-[calc(var(--s)*34)] items-center justify-center rounded-full bg-setu/10 text-setu transition-colors duration-300 group-hover/phone:bg-setu group-hover/phone:text-white group-focus-visible/phone:bg-setu group-focus-visible/phone:text-white"
+              >
+                <Phone className="size-[calc(var(--s)*15)] motion-safe:group-hover/phone:animate-[phone-ring_0.9s_ease-in-out] motion-safe:group-focus-visible/phone:animate-[phone-ring_0.9s_ease-in-out]" />
               </span>
-              <span className="text-[calc(var(--s)*17)] font-bold">{site.phone}</span>
+              <span aria-hidden className="flex flex-col items-start leading-[normal]">
+                <span className="text-[calc(var(--s)*11)] font-medium text-foreground/60">Call us</span>
+                {/* Two stacked copies: on hover the dark one rolls up and the
+                    cyan one rolls in, with an underline sweeping across. */}
+                <span className="relative block overflow-hidden text-[calc(var(--s)*17)] font-bold">
+                  <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover/phone:-translate-y-full motion-safe:group-focus-visible/phone:-translate-y-full motion-reduce:group-hover/phone:text-setu">
+                    {site.phone}
+                  </span>
+                  <span className="absolute inset-0 block translate-y-full text-setu transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover/phone:translate-y-0 motion-safe:group-focus-visible/phone:translate-y-0">
+                    {site.phone}
+                  </span>
+                </span>
+                <span className="mt-[2px] block h-px w-full origin-left scale-x-0 bg-setu transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/phone:scale-x-100 group-focus-visible/phone:scale-x-100" />
+              </span>
             </a>
 
             <ThemeToggle className="hidden sm:inline-flex lg:hidden" />
