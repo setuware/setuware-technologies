@@ -1,18 +1,22 @@
 "use client";
 
 import { ThemeProvider as NextThemeProvider, useTheme } from "next-themes";
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 
 import { useHydrated } from "@/lib/hooks";
-
 import { cn } from "@/lib/utils";
 
+/**
+ * Light by default for every visitor; a choice made with the toggle is
+ * remembered. The storage key is new so earlier "system" choices reset.
+ */
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
     <NextThemeProvider
       attribute="class"
-      defaultTheme="system"
-      enableSystem
+      defaultTheme="light"
+      enableSystem={false}
+      storageKey="setuware-theme"
       disableTransitionOnChange
     >
       {children}
@@ -20,62 +24,34 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-const OPTIONS = [
-  { value: "light", label: "Light", Icon: Sun },
-  { value: "system", label: "System", Icon: Monitor },
-  { value: "dark", label: "Dark", Icon: Moon },
-] as const;
-
 /**
- * Three-way theme switch. Rendered as a placeholder until mounted, because the
- * resolved theme is unknown during SSR and guessing causes a visible flip.
+ * One button that switches between light and dark. Both icons are rendered and
+ * cross-fade, so nothing jumps while the stored theme is read after hydration.
  */
-export function ThemeToggle({
-  className,
-  inverted = false,
-}: {
-  className?: string;
-  /** Light treatment, for when the header sits over the dark hero. */
-  inverted?: boolean;
-}) {
-  const { theme, setTheme } = useTheme();
-  // The resolved theme is unknown during SSR; keeping the toggle inert until
-  // hydration is what prevents a visible flip on load.
+export function ThemeToggle({ className }: { className?: string }) {
+  const { resolvedTheme, setTheme } = useTheme();
   const mounted = useHydrated();
+  const dark = mounted && resolvedTheme === "dark";
 
   return (
-    <div
+    <button
+      type="button"
+      onClick={() => setTheme(dark ? "light" : "dark")}
+      aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+      title={dark ? "Light theme" : "Dark theme"}
       className={cn(
-        "inline-flex items-center gap-0.5 rounded-full border p-0.5",
-        inverted ? "border-white/20 bg-white/10" : "border-border bg-surface",
+        "relative inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-foreground/80 transition-colors hover:border-foreground/30 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-setu/60",
         className,
       )}
-      role="radiogroup"
-      aria-label="Colour theme"
     >
-      {OPTIONS.map(({ value, label, Icon }) => {
-        const active = mounted && theme === value;
-        return (
-          <button
-            key={value}
-            type="button"
-            role="radio"
-            aria-checked={active}
-            aria-label={`${label} theme`}
-            onClick={() => setTheme(value)}
-            className={cn(
-              "inline-flex size-7 items-center justify-center rounded-full transition-colors",
-              active
-                ? "bg-primary text-primary-foreground"
-                : inverted
-                  ? "text-white/65 hover:text-white"
-                  : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <Icon className="size-3.5" aria-hidden />
-          </button>
-        );
-      })}
-    </div>
+      <Sun
+        aria-hidden
+        className={cn("absolute size-4 transition-all duration-300", dark ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-50 opacity-0")}
+      />
+      <Moon
+        aria-hidden
+        className={cn("absolute size-4 transition-all duration-300", dark ? "rotate-90 scale-50 opacity-0" : "rotate-0 scale-100 opacity-100")}
+      />
+    </button>
   );
 }

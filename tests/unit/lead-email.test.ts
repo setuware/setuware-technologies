@@ -126,7 +126,8 @@ describe("e-mail templates", () => {
       receivedAt: "2026-11-03T06:12:00.000Z",
       payload: { name: "Asha Rao", email: "asha@example.com", quote: { low: 40000, high: 52000, weeks: 5 } },
     });
-    expect(ack?.subject).toContain("STW-3");
+    expect(ack?.subject).toBe("Your project estimate from Setuware Technologies");
+    expect(ack?.html).not.toContain("STW-3");
     expect(ack?.html).toContain("Thank you, Asha.");
     expect(ack?.html).toContain("₹40,000");
     expect(acknowledgementEmail({ kind: "newsletter", reference: "x", receivedAt: "2026-11-03T06:12:00.000Z", payload: { email: "a@b.co" } })).toBeNull();

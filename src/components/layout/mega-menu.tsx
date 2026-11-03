@@ -195,7 +195,7 @@ export function DesktopMenus({ entries, openId, onOpenChange, isActive }: Deskto
   return (
     <div
       ref={rootRef}
-      className="hidden items-center lg:ml-[calc(var(--s)*116)] lg:flex lg:h-[calc(var(--s)*40)] lg:gap-[calc(var(--s)*48)]"
+      className="hidden items-center lg:ml-[calc(var(--s)*64)] lg:flex lg:h-[calc(var(--s)*40)] lg:gap-[calc(var(--s)*48)]"
     >
       {entries.map((entry) => {
         if (entry.kind === "link") {

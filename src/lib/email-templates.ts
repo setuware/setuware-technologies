@@ -150,10 +150,15 @@ ${inner}
 </table></td></tr></table></body></html>`;
 }
 
+/**
+ * Text-only lockup in mid-tone colours that stay readable on white and on the
+ * dark backgrounds mail apps apply in dark mode (where dark text on a darkened
+ * card would vanish). The tile carries a teal outline for the same reason.
+ */
 function logo(onDark: boolean): string {
-  return `<table role="presentation"><tr>
-  <td style="width:40px;height:40px;background:#0b1020;${onDark ? "border:1px solid rgba(255,255,255,.18);" : ""}border-radius:10px;text-align:center;font:800 17px/40px Arial,sans-serif;"><span style="color:#5fe0f7;">S</span><span style="color:#ffffff;">T</span></td>
-  <td style="padding-left:12px;"><div style="font:800 17px/1 Arial,sans-serif;letter-spacing:.06em;color:${onDark ? "#ffffff" : "#0b1020"};">SETUWARE</div><div style="font:700 9px/1 Arial,sans-serif;letter-spacing:.38em;color:${onDark ? "rgba(255,255,255,.65)" : "#7a8396"};margin-top:5px;">TECHNOLOGIES</div></td>
+  return `<table role="presentation" cellpadding="0" cellspacing="0"><tr>
+  <td bgcolor="#0b1020" style="width:40px;height:40px;background:#0b1020;border:2px solid #0891b2;border-radius:10px;text-align:center;font:800 17px/40px Arial,sans-serif;"><span style="color:#22c3e6;">S</span><span style="color:#ffffff;">T</span></td>
+  <td style="padding-left:12px;"><div style="font:800 19px/1 Arial,sans-serif;letter-spacing:.06em;color:${onDark ? "#ffffff" : "#0891b2"};">SETUWARE</div><div style="font:700 10px/1 Arial,sans-serif;letter-spacing:.34em;color:${onDark ? "#cbd5e1" : "#64748b"};margin-top:6px;">TECHNOLOGIES</div></td>
 </tr></table>`;
 }
 
@@ -167,12 +172,12 @@ function button(href: string, label: string, tone: "primary" | "outline" | "what
 }
 
 function label(text: string): string {
-  return `<div style="font:700 11px/1 Arial,sans-serif;letter-spacing:.12em;color:#5b6478;margin:8px 0 12px;">${esc(text.toUpperCase())}</div>`;
+  return `<div style="font:700 11px/1 Arial,sans-serif;letter-spacing:.12em;color:#374151;margin:8px 0 12px;">${esc(text.toUpperCase())}</div>`;
 }
 
 function row(name: string, valueHtml: string, last: boolean): string {
   const border = last ? "" : "border-bottom:1px solid #e4e8f0;";
-  return `<tr><td style="padding:12px 16px;width:34%;background:#f6f9fc;font:600 13px Arial,sans-serif;color:#5b6478;${border}">${esc(name)}</td><td style="padding:12px 16px;font:400 14px Arial,sans-serif;${border}">${valueHtml}</td></tr>`;
+  return `<tr><td style="padding:12px 16px;width:34%;background:#f6f9fc;font:600 13px Arial,sans-serif;color:#374151;${border}">${esc(name)}</td><td style="padding:12px 16px;font:400 14px Arial,sans-serif;${border}">${valueHtml}</td></tr>`;
 }
 
 function quoteText(quote: NonNullable<LeadView["quote"]>): string {
@@ -207,28 +212,28 @@ export function teamEmail(lead: Lead): EmailContent {
   const tel = v.phone ? phoneDigits(v.phone) : "";
 
   const actions = [
-    v.email ? button(`mailto:${v.email}?subject=${encodeURIComponent(`Re: Your enquiry (${lead.reference})`)}`, "Reply by email", "primary") : "",
+    v.email ? button(`mailto:${v.email}?subject=${encodeURIComponent(`Re: Your enquiry with ${site.name}`)}`, "Reply by email", "primary") : "",
     tel ? button(`tel:+${tel}`, "Call", "outline") : "",
     tel ? button(`https://wa.me/${tel}`, "WhatsApp", "whatsapp") : "",
   ].join("");
 
   const rows: [string, string][] = [];
-  if (v.slot) rows.push(["When", `<strong>${esc(v.slot)}</strong>${v.mode ? `<br><span style="color:#5b6478;">${esc(v.mode)}, 30 minutes</span>` : ""}`]);
+  if (v.slot) rows.push(["When", `<strong>${esc(v.slot)}</strong>${v.mode ? `<br><span style="color:#374151;">${esc(v.mode)}, 30 minutes</span>` : ""}`]);
   if (v.name) rows.push(["Name", `<strong>${esc(v.name)}</strong>`]);
-  if (v.email) rows.push(["Email", `<a href="mailto:${esc(v.email)}" style="color:#0089a9;">${esc(v.email)}</a>`]);
-  if (v.phone) rows.push(["Phone", `<a href="tel:+${esc(tel)}" style="color:#0089a9;">${esc(v.phone)}</a>`]);
+  if (v.email) rows.push(["Email", `<a href="mailto:${esc(v.email)}" style="color:#00657d;">${esc(v.email)}</a>`]);
+  if (v.phone) rows.push(["Phone", `<a href="tel:+${esc(tel)}" style="color:#00657d;">${esc(v.phone)}</a>`]);
   if (v.company) rows.push(["Company", esc(v.company)]);
   if (v.service)
     rows.push([
       "Service",
-      `<span style="display:inline-block;background:#e6f7fb;color:#00718c;border-radius:999px;padding:4px 10px;font:700 12px Arial,sans-serif;">${esc(v.service)}</span>`,
+      `<span style="display:inline-block;background:#e6f7fb;color:#005a6f;border-radius:999px;padding:4px 10px;font:700 12px Arial,sans-serif;">${esc(v.service)}</span>`,
     ]);
   if (v.budget) rows.push(["Budget", esc(v.budget)]);
   if (v.quote) rows.push(["Estimate shown", esc(quoteText(v.quote))]);
   rows.push(["Source", esc(v.source)]);
 
   const inner = `
-<tr><td style="background:#0b1020;background-image:linear-gradient(135deg,#0b1020 0%,#0d2a3a 60%,#00718c 100%);padding:28px 32px;">
+<tr><td bgcolor="#0b1020" style="background-color:#0b1020;padding:28px 32px;">
   <table role="presentation" width="100%"><tr>
     <td style="vertical-align:middle;">${logo(true)}</td>
     <td align="right" style="vertical-align:middle;"><span style="display:inline-block;background:rgba(95,224,247,.15);color:#5fe0f7;border:1px solid rgba(95,224,247,.35);border-radius:999px;padding:6px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;">${lead.kind === "newsletter" ? "NEW SUBSCRIBER" : "NEW ENQUIRY"}</span></td>
@@ -253,7 +258,7 @@ ${
     ? `<tr><td style="padding:24px 32px 28px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fff8e6;border:1px solid #f5dfa3;border-radius:12px;"><tr><td style="padding:14px 16px;font:400 13px/1.5 Arial,sans-serif;color:#6b5310;"><strong>Next step:</strong> ${lead.kind === "booking" ? `accept the attached invite${v.mode?.startsWith("Video") ? " and reply with the Google Meet link" : ""}.` : "reply within one business day to book the free 30-minute consultation."}${v.email ? ` Replying to this email goes straight to ${esc(firstName(who))}.` : ""}</td></tr></table></td></tr>`
     : `<tr><td style="padding:0 0 28px;"></td></tr>`
 }
-<tr><td style="background:#f6f9fc;border-top:1px solid #e4e8f0;padding:18px 32px;font:400 12px/1.6 Arial,sans-serif;color:#7a8396;">
+<tr><td style="background:#f6f9fc;border-top:1px solid #e4e8f0;padding:18px 32px;font:400 12px/1.6 Arial,sans-serif;color:#4b5563;">
   Sent automatically by the ${esc(site.url.replace(/^https?:\/\//, ""))} website · ${esc(site.name)}, ${esc(site.address.street)}, ${esc(site.address.city)}${lead.payload.consent === true ? "<br>Consent to be contacted: given" : ""}
 </td></tr>`;
 
@@ -291,17 +296,47 @@ ${
  * buttons is what Gmail files under Promotions; a letter lands in Primary.
  */
 
-const P = "margin:0 0 16px;font:400 15px/1.65 Arial,sans-serif;color:#1f2937;";
+const P = "margin:0 0 16px;font:400 15px/1.65 Arial,sans-serif;color:#111827;";
 
-function letter(title: string, preheader: string, paragraphs: string[]): string {
+interface Highlight {
+  label: string;
+  value: string;
+  note?: string;
+}
+
+/** Light, letter-like layout: a text wordmark, plain paragraphs, one detail box. */
+function letter(
+  title: string,
+  preheader: string,
+  paragraphs: string[],
+  highlight: Highlight | null,
+  signature: string,
+): string {
+  const box = highlight
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 20px;background:#eef7fa;border:1px solid #b9dde7;border-radius:12px;"><tr><td style="padding:16px 18px;">
+  <div style="font:700 11px/1 Arial,sans-serif;letter-spacing:.12em;color:#005a6f;">${esc(highlight.label.toUpperCase())}</div>
+  <div style="margin-top:8px;font:700 18px/1.35 Arial,sans-serif;color:#0b1020;">${esc(highlight.value)}</div>
+  ${highlight.note ? `<div style="margin-top:4px;font:400 13px/1.5 Arial,sans-serif;color:#374151;">${esc(highlight.note)}</div>` : ""}
+</td></tr></table>`
+    : "";
+  const [first, ...rest] = paragraphs;
   return `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title></head>
-<body style="margin:0;padding:0;background:#ffffff;">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"><title>${esc(title)}</title></head>
+<body bgcolor="#f6f8fb" style="margin:0;padding:0;background:#f6f8fb;">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(preheader)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td style="padding:24px 16px;">
-<table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:560px;max-width:100%;"><tr><td>
-${paragraphs.map((html) => `<p style="${P}">${html}</p>`).join("\n")}
-</td></tr></table></td></tr></table></body></html>`;
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#f6f8fb" style="background:#f6f8fb;"><tr><td align="center" style="padding:28px 12px;">
+<table role="presentation" width="560" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="width:560px;max-width:100%;background:#ffffff;border:1px solid #e6eaf0;border-radius:14px;border-top:3px solid #00a1c6;">
+<tr><td style="padding:24px 28px 0;">${logo(false)}</td></tr>
+<tr><td style="padding:22px 28px 6px;">
+<h1 style="margin:0 0 14px;font:700 21px/1.35 Arial,sans-serif;color:#0b1020;">${first}</h1>
+${rest.length ? `<p style="${P}">${rest[0]}</p>` : ""}
+${box}
+${rest.slice(1).map((html) => `<p style="${P}">${html}</p>`).join("\n")}
+</td></tr>
+<tr><td style="padding:4px 28px 24px;"><p style="margin:0;padding-top:16px;border-top:1px solid #eef1f5;font:400 14px/1.6 Arial,sans-serif;color:#111827;">${signature}</p></td></tr>
+</table>
+<p style="margin:14px 0 0;font:400 12px/1.6 Arial,sans-serif;color:#4b5563;">${esc(site.name)} · ${esc(site.address.street)}, ${esc(site.address.city)} · <a href="${esc(site.url)}" style="color:#4b5563;">${esc(site.url.replace(/^https?:\/\//, ""))}</a></p>
+</td></tr></table></body></html>`;
 }
 
 function siteHost(): string {
@@ -318,6 +353,7 @@ export function acknowledgementEmail(lead: Lead): EmailContent | null {
   const bookUrl = `${site.url}/book`;
 
   let subject: string;
+  let highlight: Highlight | null = null;
   const body: { html: string; text: string }[] = [];
 
   if (lead.kind === "booking" && v.slot) {
@@ -326,8 +362,9 @@ export function acknowledgementEmail(lead: Lead): EmailContent | null {
       v.mode?.startsWith("Video")
         ? "We will send the Google Meet link before the call."
         : `We will call you${v.phone ? ` on ${v.phone}` : ""} at that time.`;
+    highlight = { label: "Your consultation", value: v.slot, note: `${v.mode ?? "Call"} · 30 minutes · ${how}` };
     body.push({
-      html: `Your free consultation with ${esc(site.name)} is booked for <strong>${esc(v.slot)}</strong> (30 minutes). ${esc(how)} The calendar invite is attached.`,
+      html: `Your free consultation with ${esc(site.name)} is booked. The calendar invite is attached.`,
       text: `Your free consultation with ${site.name} is booked for ${v.slot} (30 minutes). ${how} The calendar invite is attached.`,
     });
     body.push({
@@ -335,41 +372,51 @@ export function acknowledgementEmail(lead: Lead): EmailContent | null {
       text: "If the time no longer suits you, reply to this email and we will move it.",
     });
   } else if (lead.kind === "estimate" && v.quote) {
-    subject = `Your project estimate (${lead.reference})`;
+    subject = `Your project estimate from ${site.name}`;
+    highlight = {
+      label: "Indicative estimate",
+      value: quoteText(v.quote),
+      note: `${v.service ? `${v.service} · ` : ""}Excludes GST · fixed price confirmed after a short call`,
+    };
     body.push({
-      html: `Here is the estimate you requested${v.service ? ` for ${esc(v.service.toLowerCase())}` : ""}: <strong>${esc(quoteText(v.quote))}</strong>. It excludes GST, and we confirm a fixed price after a short call.`,
+      html: `Here is the estimate you requested${v.service ? ` for ${esc(v.service.toLowerCase())}` : ""}.`,
       text: `Here is the estimate you requested${v.service ? ` for ${v.service.toLowerCase()}` : ""}: ${quoteText(v.quote)}. It excludes GST, and we confirm a fixed price after a short call.`,
     });
     body.push({
-      html: `You can pick a time for that call here: <a href="${esc(bookUrl)}" style="color:#0089a9;">${esc(siteHost())}/book</a>. Otherwise we will contact you within one business day.`,
+      html: `We will contact you within one business day, or you can choose the time yourself: <a href="${esc(bookUrl)}" style="color:#00657d;font-weight:700;text-decoration:none;">Pick a slot that suits you &rarr;</a>`,
       text: `You can pick a time for that call here: ${bookUrl}. Otherwise we will contact you within one business day.`,
     });
   } else {
-    subject = `Your enquiry with ${site.name} (${lead.reference})`;
+    subject = `Thank you for contacting ${site.name}`;
+    highlight = {
+      label: "What happens next",
+      value: "A free 30-minute consultation",
+      note: `We will contact you within one business day${v.service ? ` to discuss your ${v.service.toLowerCase()} project` : ""}.`,
+    };
     body.push({
-      html: "We have received your enquiry and will get back to you within one business day to arrange a free 30-minute consultation.",
+      html: "We have received your enquiry and will be in touch shortly.",
       text: "We have received your enquiry and will get back to you within one business day to arrange a free 30-minute consultation.",
     });
     body.push({
-      html: `If you would rather choose the time yourself, you can book a slot here: <a href="${esc(bookUrl)}" style="color:#0089a9;">${esc(siteHost())}/book</a>.`,
+      html: `Prefer to choose the time yourself? <a href="${esc(bookUrl)}" style="color:#00657d;font-weight:700;text-decoration:none;">Pick a slot that suits you &rarr;</a>`,
       text: `If you would rather choose the time yourself, you can book a slot here: ${bookUrl}.`,
     });
   }
 
   body.push({
-    html: `Need anything sooner? Just reply to this email or call ${esc(site.phone)}. Your reference is ${esc(lead.reference)}.`,
-    text: `Need anything sooner? Just reply to this email or call ${site.phone}. Your reference is ${lead.reference}.`,
+    html: `Need anything sooner? Just reply to this email or call <a href="${esc(site.phoneHref)}" style="color:#00657d;text-decoration:none;">${esc(site.phone)}</a>.`,
+    text: `Need anything sooner? Just reply to this email or call ${site.phone}.`,
   });
 
   const signature = {
-    html: `Regards,<br>${esc(founder.name)}<br><span style="color:#6b7280;">Founder, ${esc(site.name)}<br>${esc(site.phone)} · <a href="${esc(site.url)}" style="color:#6b7280;">${esc(siteHost())}</a></span>`,
+    html: `Regards,<br>${esc(founder.name)}<br><span style="color:#4b5563;">Founder, ${esc(site.name)}<br>${esc(site.phone)} · <a href="${esc(site.url)}" style="color:#4b5563;">${esc(siteHost())}</a></span>`,
     text: `Regards,\n${founder.name}\nFounder, ${site.name}\n${site.phone} · ${siteHost()}`,
   };
 
-  const parts = [{ html: esc(greeting), text: greeting }, ...body, signature];
+  const parts = [{ html: esc(greeting), text: greeting }, ...body];
   return {
     subject,
-    html: letter(subject, body[0].text, parts.map((part) => part.html)),
-    text: parts.map((part) => part.text).join("\n\n"),
+    html: letter(subject, body[0].text, parts.map((part) => part.html), highlight, signature.html),
+    text: [...parts, signature].map((part) => part.text).join("\n\n"),
   };
 }
