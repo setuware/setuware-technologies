@@ -1,5 +1,6 @@
 import nodemailer, { type Transporter } from "nodemailer";
 
+import { acknowledgementEmail, teamEmail, type EmailContent } from "./email-templates";
 import type { Lead } from "./leads";
 
 /**
@@ -13,14 +14,12 @@ import type { Lead } from "./leads";
  *   SMTP_USER=no-reply@setuware.in
  *   SMTP_PASS=app-password
  *   LEAD_EMAIL_TO=sales@setuware.in        # comma-separated, optional
- *   LEAD_EMAIL_FROM="Setuware Website <no-reply@setuware.in>"  # optional
+ *   LEAD_EMAIL_FROM="Setuware Technologies <sales@setuware.in>"  # optional; must be the SMTP mailbox for Zoho
+ *   LEAD_SEND_ACK=true       # thank-you e-mail to the visitor (default on)
+ *
+ * Templates live in ./email-templates.ts. Test the settings on the server
+ * with `npm run mail:test`.
  */
-
-const SUBJECTS: Record<Lead["kind"], string> = {
-  contact: "New project enquiry",
-  estimate: "New estimate request",
-  newsletter: "New newsletter subscriber",
-};
 
 let transporter: Transporter | null = null;
 
@@ -28,7 +27,12 @@ export function emailConfigured(env: Record<string, string | undefined> = proces
   return Boolean(env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS);
 }
 
-function getTransporter(): Transporter {
+/** Thank-you e-mail to the visitor; on unless LEAD_SEND_ACK=false. */
+export function acknowledgementEnabled(env: Record<string, string | undefined> = process.env): boolean {
+  return (env.LEAD_SEND_ACK ?? "true").toLowerCase() !== "false";
+}
+
+export function getTransporter(): Transporter {
   if (transporter) return transporter;
   const port = Number(process.env.SMTP_PORT ?? 465);
   transporter = nodemailer.createTransport({
@@ -43,78 +47,41 @@ function getTransporter(): Transporter {
   return transporter;
 }
 
-const LABELS: Record<string, string> = {
-  name: "Name",
-  email: "Email",
-  phone: "Phone",
-  company: "Company",
-  service: "Service",
-  budget: "Budget",
-  message: "Message",
-  source: "Source",
-  notes: "Notes",
-};
-
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
+/** The team notification (kept for callers and tests). */
+export function formatLeadEmail(lead: Lead): EmailContent {
+  return teamEmail(lead);
 }
 
-function stringify(value: unknown): string {
-  if (value === undefined || value === null || value === "") return "";
-  if (typeof value === "string") return value;
-  return JSON.stringify(value, null, 2);
+function sender(): string {
+  return process.env.LEAD_EMAIL_FROM ?? `Setuware Technologies <${process.env.SMTP_USER}>`;
 }
 
-/** Visible rows, skipping internal fields. */
-function rows(payload: Record<string, unknown>): [string, string][] {
-  const hidden = new Set(["consent", "honeypot", "elapsedMs"]);
-  return Object.entries(payload)
-    .filter(([key, value]) => !hidden.has(key) && stringify(value) !== "")
-    .map(([key, value]) => [LABELS[key] ?? key, stringify(value)]);
+function inbox(): string {
+  return process.env.LEAD_EMAIL_TO ?? "sales@setuware.in";
 }
 
-export function formatLeadEmail(lead: Lead): { subject: string; text: string; html: string } {
-  const name = typeof lead.payload.name === "string" ? lead.payload.name : "";
-  const subject = `${SUBJECTS[lead.kind]}${name ? ` from ${name}` : ""} · ${lead.reference}`;
-  const list = rows(lead.payload);
-
-  const text = [
-    `${SUBJECTS[lead.kind]} (${lead.reference})`,
-    `Received: ${lead.receivedAt}`,
-    "",
-    ...list.map(([label, value]) => `${label}: ${value}`),
-  ].join("\n");
-
-  const html = `<!doctype html><html><body style="font-family:Arial,sans-serif;color:#0b1020">
-<h2 style="margin:0 0 4px">${escapeHtml(SUBJECTS[lead.kind])}</h2>
-<p style="margin:0 0 16px;color:#5b6478">Reference ${escapeHtml(lead.reference)} · ${escapeHtml(lead.receivedAt)}</p>
-<table cellpadding="8" style="border-collapse:collapse">
-${list
-  .map(
-    ([label, value]) =>
-      `<tr><td style="border:1px solid #e4e8f0;font-weight:bold;vertical-align:top">${escapeHtml(label)}</td><td style="border:1px solid #e4e8f0;white-space:pre-wrap">${escapeHtml(value)}</td></tr>`,
-  )
-  .join("\n")}
-</table></body></html>`;
-
-  return { subject, text, html };
-}
-
-/** Sends the lead by e-mail. Resolves to false (never throws) on failure. */
+/**
+ * Sends the team notification and, for contact and estimate requests, a
+ * thank-you e-mail to the visitor. Resolves to whether the team e-mail was
+ * sent; never throws.
+ */
 export async function emailLead(lead: Lead): Promise<boolean> {
   if (!emailConfigured()) return false;
-  const to = process.env.LEAD_EMAIL_TO ?? "sales@setuware.in";
-  const from = process.env.LEAD_EMAIL_FROM ?? `Setuware Website <${process.env.SMTP_USER}>`;
-  const replyTo = typeof lead.payload.email === "string" ? lead.payload.email : undefined;
-  const { subject, text, html } = formatLeadEmail(lead);
+  const visitor = typeof lead.payload.email === "string" ? lead.payload.email : undefined;
+  const team = teamEmail(lead);
 
+  let delivered = false;
   try {
-    await getTransporter().sendMail({ from, to, replyTo, subject, text, html });
-    return true;
+    await getTransporter().sendMail({
+      from: sender(),
+      to: inbox(),
+      replyTo: visitor,
+      subject: team.subject,
+      text: team.text,
+      html: team.html,
+    });
+    delivered = true;
+    console.info("[lead] email sent", lead.kind, lead.reference);
   } catch (error) {
     console.error(
       "[lead] email failed",
@@ -122,6 +89,29 @@ export async function emailLead(lead: Lead): Promise<boolean> {
       lead.reference,
       error instanceof Error ? error.message : error,
     );
-    return false;
   }
+
+  const ack = acknowledgementEnabled() ? acknowledgementEmail(lead) : null;
+  if (ack && visitor) {
+    try {
+      await getTransporter().sendMail({
+        from: sender(),
+        to: visitor,
+        replyTo: inbox(),
+        subject: ack.subject,
+        text: ack.text,
+        html: ack.html,
+      });
+      console.info("[lead] acknowledgement sent", lead.kind, lead.reference);
+    } catch (error) {
+      console.error(
+        "[lead] acknowledgement failed",
+        lead.kind,
+        lead.reference,
+        error instanceof Error ? error.message : error,
+      );
+    }
+  }
+
+  return delivered;
 }

@@ -90,3 +90,55 @@ describe("deliverLead e-mail channel", () => {
     expect(result.delivered).toBe(false);
   });
 });
+
+describe("e-mail templates", () => {
+  it("labels the source and strips internal markers from the message", async () => {
+    const { leadView, teamEmail } = await import("@/lib/email-templates");
+    const popup = leadView({
+      kind: "contact",
+      reference: "STW-1",
+      receivedAt: "2026-11-03T06:12:00.000Z",
+      payload: { name: "Priya", email: "p@example.com", message: "Service: Website.\n\nSix pages.\n\n(Sent from the website enquiry pop-up.)" },
+    });
+    expect(popup.source).toBe("Enquiry pop-up");
+    expect(popup.message).toBe("Six pages.");
+
+    const chat = leadView({
+      kind: "contact",
+      reference: "STW-2",
+      receivedAt: "2026-11-03T06:12:00.000Z",
+      payload: { name: "Ravi", email: "r@example.com", service: "business-websites", message: "Enquiry via the website assistant.\nRequirement: Business websites\n\nNeed a site." },
+    });
+    expect(chat.source).toBe("Website chat assistant");
+    expect(chat.message).toBe("Need a site.");
+    expect(chat.service).toBe("Business websites");
+
+    const email = teamEmail({ kind: "contact", reference: "STW-2", receivedAt: "2026-11-03T06:12:00.000Z", payload: { name: "Ravi", email: "r@example.com", phone: "98765 43210", message: "Hi there" } });
+    expect(email.html).toContain("https://wa.me/919876543210");
+    expect(email.html).toContain("IST");
+  });
+
+  it("sends a thank-you e-mail to the visitor with the estimate", async () => {
+    const { acknowledgementEmail } = await import("@/lib/email-templates");
+    const ack = acknowledgementEmail({
+      kind: "estimate",
+      reference: "STW-3",
+      receivedAt: "2026-11-03T06:12:00.000Z",
+      payload: { name: "Asha Rao", email: "asha@example.com", quote: { low: 40000, high: 52000, weeks: 5 } },
+    });
+    expect(ack?.subject).toContain("STW-3");
+    expect(ack?.html).toContain("Thank you, Asha.");
+    expect(ack?.html).toContain("₹40,000");
+    expect(acknowledgementEmail({ kind: "newsletter", reference: "x", receivedAt: "2026-11-03T06:12:00.000Z", payload: { email: "a@b.co" } })).toBeNull();
+  });
+
+  it("e-mails both the team and the visitor when SMTP is set", async () => {
+    for (const [key, value] of Object.entries(SMTP)) vi.stubEnv(key, value);
+    sendMail.mockReset().mockResolvedValue({ messageId: "1" });
+    vi.spyOn(console, "info").mockImplementation(() => {});
+    await deliverLead("contact", { name: "Priya", email: "priya@example.com", message: "Hello there" });
+    expect(sendMail).toHaveBeenCalledTimes(2);
+    expect(sendMail.mock.calls[1][0]).toMatchObject({ to: "priya@example.com", replyTo: "sales@setuware.in" });
+    vi.unstubAllEnvs();
+  });
+});
