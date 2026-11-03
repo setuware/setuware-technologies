@@ -13,7 +13,7 @@ export interface CtaBandProps {
 export function CtaBand({
   title = "Discuss your project with our team",
   description = "Book a free 30-minute consultation. We will review your requirements and follow up with a recommended approach and an indicative budget.",
-  primaryHref = "/contact",
+  primaryHref,
   primaryLabel = "Book a consultation",
 }: CtaBandProps) {
   return (
@@ -40,7 +40,7 @@ export function CtaBand({
 
               <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <ButtonLink
-                  href={primaryHref}
+                  href={primaryHref ?? (/consultation/i.test(primaryLabel) ? "/book" : "/contact")}
                   size="lg"
                   className="rounded-full bg-white text-[#055a70] shadow-none hover:bg-white/92"
                 >

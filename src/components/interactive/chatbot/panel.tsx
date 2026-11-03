@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowUpRight, RotateCcw, SendHorizontal, X } from "lucide-react";
+import { ArrowUpRight, RotateCcw, ArrowUp, X } from "lucide-react";
 
 import { LogoMark } from "@/components/layout/logo";
 import { EASE_OUT } from "@/components/motion/ease";
@@ -384,31 +384,21 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
       )}
     >
       {/* Header */}
-      <div className="relative flex shrink-0 items-center gap-3 overflow-hidden bg-[#0b1020] px-4 pb-3.5 pt-[calc(0.875rem+env(safe-area-inset-top))] text-white sm:pt-3.5">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-10 -top-16 size-44 rounded-full bg-[radial-gradient(circle,rgba(0,161,198,0.45),transparent_65%)]"
-        />
-        <span className="relative shrink-0">
-          <LogoMark className="size-10" />
-          <span
-            aria-hidden
-            className={cn(
-              "absolute -bottom-0.5 -right-0.5 size-3 rounded-full ring-2 ring-[#0b1020]",
-              online ? "bg-[#4ade80]" : "bg-amber-300",
-            )}
-          />
-        </span>
-        <div className="relative min-w-0 flex-1">
-          <h2 id={titleId} className="truncate text-[15px] font-semibold leading-tight">
+      <div className="flex shrink-0 items-center gap-3 border-b border-border bg-surface px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] sm:pt-3">
+        <LogoMark className="size-9 shrink-0" />
+        <div className="min-w-0 flex-1">
+          <h2 id={titleId} className="truncate text-[15px] font-semibold leading-tight text-foreground">
             {ASSISTANT_NAME}
           </h2>
-          <p className="mt-0.5 truncate text-xs text-white/70">{status}</p>
+          <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-muted-foreground">
+            <span aria-hidden className={cn("size-1.5 shrink-0 rounded-full", online ? "bg-emerald-500" : "bg-amber-400")} />
+            {status}
+          </p>
         </div>
         <button
           type="button"
           onClick={restart}
-          className="relative inline-flex size-9 items-center justify-center rounded-lg text-white/70 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#5fe0f7]"
+          className="inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-setu"
           aria-label="Start a new conversation"
           title="Start a new conversation"
         >
@@ -417,7 +407,7 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
         <button
           type="button"
           onClick={onClose}
-          className="relative inline-flex size-9 items-center justify-center rounded-lg text-white/70 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#5fe0f7]"
+          className="inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-setu"
           aria-label={`Close ${ASSISTANT_NAME}`}
         >
           <X className="size-5" aria-hidden />
@@ -427,9 +417,9 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
       {/* Messages */}
       <div
         ref={scrollRef}
-        className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain bg-background-subtle px-4 py-4"
+        className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain bg-surface px-4 py-5"
       >
-        <div role="log" aria-live="polite" aria-relevant="additions" aria-label="Conversation" className="flex flex-col gap-3">
+        <div role="log" aria-live="polite" aria-relevant="additions" aria-label="Conversation" className="flex flex-col gap-4">
           {messages.map((message, index) => (
             <Bubble
               key={message.id}
@@ -443,13 +433,13 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
         {typing ? <TypingIndicator reduce={reduce} /> : null}
 
         {chips.length > 0 ? (
-          <div role="group" aria-label="Suggested replies" className="mt-3 flex flex-wrap gap-2 pl-9">
+          <div role="group" aria-label="Suggested replies" className="mt-4 flex flex-wrap gap-1.5 pl-9">
             {chips.map((chip) => (
               <button
                 key={`${last.id}-${chip.label}`}
                 type="button"
                 onClick={() => handleChip(chip)}
-                className="rounded-full border border-setu/35 bg-surface px-3 py-1.5 text-[13px] font-medium text-setu-dark transition-colors hover:border-setu hover:bg-setu/8 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu dark:text-[#5fe0f7]"
+                className="rounded-full border border-border bg-background px-3 py-1.5 text-[13px] font-medium text-foreground/85 transition-colors hover:border-foreground/40 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu"
               >
                 {chip.label}
               </button>
@@ -464,9 +454,9 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
           event.preventDefault();
           handleText(draft);
         }}
-        className="shrink-0 border-t border-border bg-surface px-3 pb-[calc(0.625rem+env(safe-area-inset-bottom))] pt-3 sm:pb-2.5"
+        className="shrink-0 bg-surface px-3 pb-[calc(0.625rem+env(safe-area-inset-bottom))] pt-1 sm:pb-2.5"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 rounded-2xl border border-border bg-background-subtle py-1 pl-4 pr-1 transition-colors focus-within:border-foreground/30 focus-within:bg-surface">
           <label htmlFor="setuware-assistant-input" className="sr-only">
             Message {ASSISTANT_NAME}
           </label>
@@ -482,19 +472,19 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
             inputMode={lead?.step === "email" ? "email" : lead?.step === "phone" ? "tel" : "text"}
             maxLength={lead?.step === "message" ? 1500 : 200}
             enterKeyHint="send"
-            className="h-11 min-w-0 flex-1 rounded-full border border-border bg-surface-2 px-4 text-base text-foreground placeholder:text-muted-foreground focus:border-setu focus:outline-none focus:ring-2 focus:ring-setu/25 sm:text-sm"
+            className="h-10 min-w-0 flex-1 bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:outline-none sm:text-sm"
           />
           <button
             type="submit"
             disabled={busy || draft.trim().length === 0}
-            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-setu text-white transition-[background-color,opacity] hover:bg-setu-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu disabled:opacity-45"
+            className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl bg-foreground text-background transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu disabled:opacity-25"
             aria-label="Send message"
           >
-            <SendHorizontal className="size-[18px]" aria-hidden />
+            <ArrowUp className="size-[18px]" aria-hidden />
           </button>
         </div>
         <p className="mt-2 text-center text-[11px] text-muted-foreground">
-          Automated assistant. Our team replies {site.hours}.
+          Automated assistant · team replies {site.hours}
         </p>
       </form>
     </motion.div>
@@ -521,10 +511,10 @@ function Bubble({
     return (
       <div data-message="user" className="flex flex-col items-end">
         <span className="sr-only">You said:</span>
-        <p className="max-w-[85%] whitespace-pre-line break-words rounded-2xl rounded-br-md bg-setu px-3.5 py-2.5 text-sm leading-relaxed text-white">
+        <p className="max-w-[85%] whitespace-pre-line break-words rounded-2xl rounded-br-md bg-foreground px-3.5 py-2 text-sm leading-relaxed text-background">
           {message.text}
         </p>
-        <time className="mt-1 pr-1 text-[10.5px] text-muted-foreground" dateTime={new Date(message.at).toISOString()}>
+        <time className="sr-only" dateTime={new Date(message.at).toISOString()}>
           {time}
         </time>
       </div>
@@ -540,8 +530,8 @@ function Bubble({
         <span className="sr-only">{ASSISTANT_NAME}:</span>
         <div
           className={cn(
-            "rounded-2xl rounded-tl-md border bg-surface px-3.5 py-2.5 text-sm leading-relaxed text-foreground shadow-[0_1px_2px_rgba(15,23,42,0.05)]",
-            message.tone === "error" ? "border-amber-300/70" : "border-border",
+            "rounded-2xl rounded-tl-md bg-background-subtle px-3.5 py-2.5 text-sm leading-relaxed text-foreground",
+            message.tone === "error" && "ring-1 ring-amber-300/70",
           )}
         >
           <p className="whitespace-pre-line break-words">{message.text}</p>
@@ -553,7 +543,7 @@ function Bubble({
             </div>
           ) : null}
         </div>
-        <time className="mt-1 pl-1 text-[10.5px] text-muted-foreground" dateTime={new Date(message.at).toISOString()}>
+        <time className="sr-only" dateTime={new Date(message.at).toISOString()}>
           {time}
         </time>
       </div>
@@ -563,7 +553,7 @@ function Bubble({
 
 function MessageLink({ link, onNavigate }: { link: ChatLink; onNavigate?: () => void }) {
   const className =
-    "group inline-flex items-center gap-1 self-start text-[13px] font-semibold text-setu-dark underline-offset-4 hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu dark:text-[#5fe0f7]";
+    "group inline-flex items-center gap-1 self-start rounded-full border border-border bg-surface px-3 py-1.5 text-[13px] font-medium text-foreground transition-colors hover:border-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu";
   const icon = (
     <ArrowUpRight
       className="size-3.5 transition-transform duration-200 group-hover:-translate-y-px group-hover:translate-x-px"
@@ -598,7 +588,7 @@ function TypingIndicator({ reduce }: { reduce: boolean }) {
   return (
     <div className="mt-3 flex items-end gap-2">
       <span className="w-7 shrink-0" aria-hidden />
-      <div className="inline-flex items-center gap-1 rounded-2xl rounded-tl-md border border-border bg-surface px-3.5 py-3">
+      <div className="inline-flex items-center gap-1 rounded-2xl rounded-tl-md bg-background-subtle px-3.5 py-3">
         <span className="sr-only">{ASSISTANT_NAME} is typing</span>
         {[0, 1, 2].map((dot) => (
           <motion.span

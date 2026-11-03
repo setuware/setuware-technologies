@@ -12,7 +12,7 @@ import { referenceId } from "./utils";
  * contact details.
  */
 
-export type LeadKind = "contact" | "newsletter" | "estimate";
+export type LeadKind = "contact" | "newsletter" | "estimate" | "booking";
 
 export interface Lead {
   kind: LeadKind;

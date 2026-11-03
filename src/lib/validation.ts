@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { isBookableSlot } from "./booking";
 import {
   FEATURE_RATES,
   SCOPE_LIMITS,
@@ -84,6 +85,22 @@ export const estimateRequestSchema = z.object({
 });
 
 export type EstimateRequestInput = z.infer<typeof estimateRequestSchema>;
+
+export const bookingSchema = z.object({
+  slot: z.string().refine((value) => isBookableSlot(value), {
+    message: "That time is no longer available. Please pick another slot.",
+  }),
+  mode: z.enum(["video", "phone"]),
+  name: trimmed(80).min(2, "Tell us your name"),
+  email: emailSchema,
+  phone: trimmed(24).regex(/^[+]?[\d\s()-]{7,}$/, "Enter a phone number we can call"),
+  topic: z.string().trim().max(60).optional().or(z.literal("")),
+  notes: trimmed(1000).optional().or(z.literal("")),
+  honeypot: z.string().max(0).optional().or(z.literal("")),
+  elapsedMs: z.number().int().nonnegative().optional(),
+});
+
+export type BookingInput = z.infer<typeof bookingSchema>;
 
 /** Flattens a ZodError into `{ field: message }` for form rendering. */
 export function fieldErrors(error: z.ZodError): Record<string, string> {

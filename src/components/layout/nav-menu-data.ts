@@ -164,7 +164,7 @@ export const servicesMenu: NavMenu = {
     eyebrow: "Free consultation",
     title: "Not sure which service you need?",
     body: "A 30-minute call is usually enough to find out.",
-    primary: { label: "Book a consultation", href: "/contact?intent=consultation" },
+    primary: { label: "Book a consultation", href: "/book" },
     secondary: { label: "Get an instant estimate", href: "/estimate" },
     image: "/images/photos/service-web.jpg",
   },

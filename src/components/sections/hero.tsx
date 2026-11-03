@@ -117,7 +117,7 @@ export function Hero() {
                 </ButtonLink>
               </Magnetic>
               <ButtonLink
-                href="/contact?intent=consultation"
+                href="/book"
                 variant="ghost"
                 className="h-11 rounded-full border-[1.5px] border-white/60 px-6 font-semibold text-white hover:bg-white/12 lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*202)] lg:px-0 lg:text-[calc(var(--s)*15)] lg:leading-[normal]"
               >

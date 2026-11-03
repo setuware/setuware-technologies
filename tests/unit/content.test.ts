@@ -28,6 +28,7 @@ import { allNavHrefs } from "@/components/layout/nav-menu-data";
  */
 
 const routes = new Set<string>([
+  "/book",
   "/",
   "/services",
   "/work",

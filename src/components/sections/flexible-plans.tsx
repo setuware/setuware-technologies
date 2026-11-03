@@ -122,7 +122,7 @@ function PlanCard({ plan }: { plan: Plan }) {
       )}
 
       <Link
-        href={quoted ? "/contact?intent=consultation" : "/estimate"}
+        href={quoted ? "/book" : "/estimate"}
         className={cn(
           "mt-5 inline-flex h-10 w-full items-center justify-center rounded-[50px] border-[1.5px] border-setu text-[15px] font-semibold leading-[normal] transition-[background-color,border-color,color] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu lg:mt-[calc(var(--s)*22)] lg:h-[calc(var(--s)*40)] lg:text-[calc(var(--s)*15)]",
           plan.highlight
@@ -203,7 +203,7 @@ function QuotedPlanStrip({ plan }: { plan: Plan }) {
           Custom quote
         </p>
         <Link
-          href="/contact?intent=consultation"
+          href="/book"
           className="inline-flex h-10 w-full items-center justify-center rounded-[50px] border-[1.5px] border-setu px-8 text-[15px] font-semibold leading-[normal] text-black transition-[background-color,border-color,color] duration-200 hover:bg-setu hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu md:w-auto lg:h-[calc(var(--s)*40)] lg:px-[calc(var(--s)*34)] lg:text-[calc(var(--s)*15)] dark:text-white"
         >
           Talk to us

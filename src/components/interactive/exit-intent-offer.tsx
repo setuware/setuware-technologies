@@ -356,11 +356,17 @@ export function ExitIntentOffer() {
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-auto border-t border-white/10 pt-5 text-[0.8rem] text-white/60">
+                  <div className="mt-auto flex flex-col gap-1.5 border-t border-white/10 pt-5 text-[0.8rem] text-white/60">
+                    <Link href="/book" onClick={close} className="inline-flex items-center gap-1.5 font-medium text-white hover:underline underline-offset-4">
+                      Pick a time slot yourself
+                      <ArrowRight className="size-3.5" aria-hidden />
+                    </Link>
+                    <span>
                     Prefer to call?{" "}
                     <a href={site.phoneHref} className="font-medium text-white underline-offset-4 hover:underline">
                       {site.phone}
                     </a>
+                    </span>
                   </div>
                 </div>
 
@@ -375,7 +381,10 @@ export function ExitIntentOffer() {
                     Book a free consultation
                   </h2>
                   <p id="audit-offer-description" className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                    Leave your details and we will call you within one business day.
+                    Leave your details and we will call you within one business day.{" "}
+                    <Link href="/book" onClick={close} className="font-medium text-foreground underline underline-offset-4 md:hidden">
+                      Or pick a time
+                    </Link>
                   </p>
 
                   <form ref={formRef} onSubmit={onSubmit} noValidate className="mt-5 flex flex-col gap-3.5">
