@@ -293,15 +293,45 @@ ${
 
 const P = "margin:0 0 16px;font:400 15px/1.65 Arial,sans-serif;color:#1f2937;";
 
-function letter(title: string, preheader: string, paragraphs: string[]): string {
+interface Highlight {
+  label: string;
+  value: string;
+  note?: string;
+}
+
+/** Light, letter-like layout: a text wordmark, plain paragraphs, one detail box. */
+function letter(
+  title: string,
+  preheader: string,
+  paragraphs: string[],
+  highlight: Highlight | null,
+  signature: string,
+): string {
+  const box = highlight
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 20px;background:#f4fafc;border:1px solid #d9eef4;border-radius:12px;"><tr><td style="padding:16px 18px;">
+  <div style="font:700 11px/1 Arial,sans-serif;letter-spacing:.12em;color:#00718c;">${esc(highlight.label.toUpperCase())}</div>
+  <div style="margin-top:8px;font:700 18px/1.35 Arial,sans-serif;color:#0b1020;">${esc(highlight.value)}</div>
+  ${highlight.note ? `<div style="margin-top:4px;font:400 13px/1.5 Arial,sans-serif;color:#5b6478;">${esc(highlight.note)}</div>` : ""}
+</td></tr></table>`
+    : "";
+  const [first, ...rest] = paragraphs;
   return `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title></head>
-<body style="margin:0;padding:0;background:#ffffff;">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><title>${esc(title)}</title></head>
+<body style="margin:0;padding:0;background:#f6f8fb;">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(preheader)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td style="padding:24px 16px;">
-<table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:560px;max-width:100%;"><tr><td>
-${paragraphs.map((html) => `<p style="${P}">${html}</p>`).join("\n")}
-</td></tr></table></td></tr></table></body></html>`;
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f8fb;"><tr><td align="center" style="padding:28px 12px;">
+<table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:560px;max-width:100%;background:#ffffff;border:1px solid #e6eaf0;border-radius:14px;border-top:3px solid #00a1c6;">
+<tr><td style="padding:24px 28px 0;">${logo(false)}</td></tr>
+<tr><td style="padding:22px 28px 6px;">
+<h1 style="margin:0 0 14px;font:700 21px/1.35 Arial,sans-serif;color:#0b1020;">${first}</h1>
+${rest.length ? `<p style="${P}">${rest[0]}</p>` : ""}
+${box}
+${rest.slice(1).map((html) => `<p style="${P}">${html}</p>`).join("\n")}
+</td></tr>
+<tr><td style="padding:4px 28px 24px;"><p style="margin:0;padding-top:16px;border-top:1px solid #eef1f5;font:400 14px/1.6 Arial,sans-serif;color:#1f2937;">${signature}</p></td></tr>
+</table>
+<p style="margin:14px 0 0;font:400 12px/1.6 Arial,sans-serif;color:#8a93a6;">${esc(site.name)} · ${esc(site.address.street)}, ${esc(site.address.city)} · <a href="${esc(site.url)}" style="color:#8a93a6;">${esc(site.url.replace(/^https?:\/\//, ""))}</a></p>
+</td></tr></table></body></html>`;
 }
 
 function siteHost(): string {
@@ -318,6 +348,7 @@ export function acknowledgementEmail(lead: Lead): EmailContent | null {
   const bookUrl = `${site.url}/book`;
 
   let subject: string;
+  let highlight: Highlight | null = null;
   const body: { html: string; text: string }[] = [];
 
   if (lead.kind === "booking" && v.slot) {
@@ -326,8 +357,9 @@ export function acknowledgementEmail(lead: Lead): EmailContent | null {
       v.mode?.startsWith("Video")
         ? "We will send the Google Meet link before the call."
         : `We will call you${v.phone ? ` on ${v.phone}` : ""} at that time.`;
+    highlight = { label: "Your consultation", value: v.slot, note: `${v.mode ?? "Call"} · 30 minutes · ${how}` };
     body.push({
-      html: `Your free consultation with ${esc(site.name)} is booked for <strong>${esc(v.slot)}</strong> (30 minutes). ${esc(how)} The calendar invite is attached.`,
+      html: `Your free consultation with ${esc(site.name)} is booked. The calendar invite is attached.`,
       text: `Your free consultation with ${site.name} is booked for ${v.slot} (30 minutes). ${how} The calendar invite is attached.`,
     });
     body.push({
@@ -336,28 +368,34 @@ export function acknowledgementEmail(lead: Lead): EmailContent | null {
     });
   } else if (lead.kind === "estimate" && v.quote) {
     subject = `Your project estimate (${lead.reference})`;
+    highlight = {
+      label: "Indicative estimate",
+      value: quoteText(v.quote),
+      note: `${v.service ? `${v.service} · ` : ""}Excludes GST · fixed price confirmed after a short call`,
+    };
     body.push({
-      html: `Here is the estimate you requested${v.service ? ` for ${esc(v.service.toLowerCase())}` : ""}: <strong>${esc(quoteText(v.quote))}</strong>. It excludes GST, and we confirm a fixed price after a short call.`,
+      html: `Here is the estimate you requested${v.service ? ` for ${esc(v.service.toLowerCase())}` : ""}.`,
       text: `Here is the estimate you requested${v.service ? ` for ${v.service.toLowerCase()}` : ""}: ${quoteText(v.quote)}. It excludes GST, and we confirm a fixed price after a short call.`,
     });
     body.push({
-      html: `You can pick a time for that call here: <a href="${esc(bookUrl)}" style="color:#0089a9;">${esc(siteHost())}/book</a>. Otherwise we will contact you within one business day.`,
+      html: `We will contact you within one business day, or you can choose the time yourself: <a href="${esc(bookUrl)}" style="color:#0089a9;font-weight:700;text-decoration:none;">Pick a slot that suits you &rarr;</a>`,
       text: `You can pick a time for that call here: ${bookUrl}. Otherwise we will contact you within one business day.`,
     });
   } else {
     subject = `Your enquiry with ${site.name} (${lead.reference})`;
+    highlight = { label: "Your reference", value: lead.reference, note: v.service ? `${v.service} enquiry` : undefined };
     body.push({
       html: "We have received your enquiry and will get back to you within one business day to arrange a free 30-minute consultation.",
       text: "We have received your enquiry and will get back to you within one business day to arrange a free 30-minute consultation.",
     });
     body.push({
-      html: `If you would rather choose the time yourself, you can book a slot here: <a href="${esc(bookUrl)}" style="color:#0089a9;">${esc(siteHost())}/book</a>.`,
+      html: `Prefer to choose the time yourself? <a href="${esc(bookUrl)}" style="color:#0089a9;font-weight:700;text-decoration:none;">Pick a slot that suits you &rarr;</a>`,
       text: `If you would rather choose the time yourself, you can book a slot here: ${bookUrl}.`,
     });
   }
 
   body.push({
-    html: `Need anything sooner? Just reply to this email or call ${esc(site.phone)}. Your reference is ${esc(lead.reference)}.`,
+    html: `Need anything sooner? Just reply to this email or call <a href="${esc(site.phoneHref)}" style="color:#0089a9;text-decoration:none;">${esc(site.phone)}</a>.${lead.kind === "contact" ? "" : ` Your reference is ${esc(lead.reference)}.`}`,
     text: `Need anything sooner? Just reply to this email or call ${site.phone}. Your reference is ${lead.reference}.`,
   });
 
@@ -366,10 +404,10 @@ export function acknowledgementEmail(lead: Lead): EmailContent | null {
     text: `Regards,\n${founder.name}\nFounder, ${site.name}\n${site.phone} · ${siteHost()}`,
   };
 
-  const parts = [{ html: esc(greeting), text: greeting }, ...body, signature];
+  const parts = [{ html: esc(greeting), text: greeting }, ...body];
   return {
     subject,
-    html: letter(subject, body[0].text, parts.map((part) => part.html)),
-    text: parts.map((part) => part.text).join("\n\n"),
+    html: letter(subject, body[0].text, parts.map((part) => part.html), highlight, signature.html),
+    text: [...parts, signature].map((part) => part.text).join("\n\n"),
   };
 }
