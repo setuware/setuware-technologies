@@ -45,67 +45,60 @@ export default function StatusPage() {
         description="Service commitments for hosted and supported clients, and how to contact us about an incident."
       />
 
-      <Section className="py-14">
+      <Section surface="tint" className="py-14 md:py-20">
         <div className="container-page">
-          <ul className="divide-y divide-border overflow-hidden rounded-card border border-border bg-surface">
-            {COMPONENTS.map((component) => (
-              <li
-                key={component.name}
-                className="flex items-center justify-between gap-4 p-5"
-              >
-                <span>
-                  <span className="block text-sm font-medium text-foreground">
-                    {component.name}
+          <div className="mx-auto max-w-4xl">
+            <ul className="divide-y divide-border overflow-hidden rounded-card border border-border bg-surface shadow-ambient">
+              {COMPONENTS.map((component) => (
+                <li key={component.name} className="flex items-center justify-between gap-4 p-5">
+                  <span>
+                    <span className="block text-sm font-medium text-foreground">
+                      {component.name}
+                    </span>
+                    <span className="block text-xs text-muted-foreground">{component.detail}</span>
                   </span>
-                  <span className="block text-xs text-muted-foreground">
-                    {component.detail}
+                  <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-emerald-600/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-800 dark:text-emerald-300">
+                    <CheckCircle2 className="size-3.5" aria-hidden />
+                    Operational
                   </span>
-                </span>
-                <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-emerald-600/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-800 dark:text-emerald-300">
-                  <CheckCircle2 className="size-3.5" aria-hidden />
-                  Operational
-                </span>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
 
-          <dl className="mt-6 grid gap-4 sm:grid-cols-3">
-            {TARGETS.map(({ Icon, label, value, hint }) => (
-              <div key={label} className="rounded-card border border-border bg-surface p-5">
-                <dd className="font-display text-xl font-semibold text-foreground">
-                  <Icon className="mb-3 size-4 text-primary" aria-hidden />
-                  {value}
-                </dd>
-                <dt className="mt-0.5">
-                  <span className="block text-sm font-medium text-foreground">
-                    {label}
-                  </span>
-                  <span className="block text-xs text-muted-foreground">{hint}</span>
-                </dt>
-              </div>
-            ))}
-          </dl>
+            <dl className="mt-6 grid gap-4 sm:grid-cols-3">
+              {TARGETS.map(({ Icon, label, value, hint }) => (
+                <div
+                  key={label}
+                  className="rounded-card border border-border bg-surface p-5 shadow-ambient"
+                >
+                  <dd className="font-display text-xl font-semibold text-foreground">
+                    <Icon className="mb-3 size-4 text-primary" aria-hidden />
+                    {value}
+                  </dd>
+                  <dt className="mt-0.5">
+                    <span className="block text-sm font-medium text-foreground">{label}</span>
+                    <span className="block text-xs text-muted-foreground">{hint}</span>
+                  </dt>
+                </div>
+              ))}
+            </dl>
 
-          <div className="mt-8 rounded-card border border-border bg-background-subtle p-6">
-            <h2 className="text-base font-semibold text-foreground">
-              Reporting an incident
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Clients on a Business or Critical plan should use the shared incident
-              channel, which alerts the on-call engineer directly. All other clients
-              should email {site.supportEmail} with “URGENT” in the subject line or
-              call {site.phone}.
-            </p>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Automated monitors should probe{" "}
-              <code className="rounded bg-surface-2 px-1.5 py-0.5 font-mono">
-                /api/health
-              </code>{" "}
-              rather than this page.
-            </p>
-            <ButtonLink href="/contact" variant="secondary" className="mt-5">
-              Contact support
-            </ButtonLink>
+            <div className="mt-8 rounded-card border border-border bg-surface p-6 shadow-ambient md:p-7">
+              <h2 className="text-base font-semibold text-foreground">Reporting an incident</h2>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                Clients on a Business or Critical plan should use the shared incident channel, which
+                alerts the on-call engineer directly. All other clients should email{" "}
+                {site.supportEmail} with “URGENT” in the subject line or call {site.phone}.
+              </p>
+              <p className="mt-3 text-xs text-muted-foreground">
+                Automated monitors should probe{" "}
+                <code className="rounded bg-surface-2 px-1.5 py-0.5 font-mono">/api/health</code>{" "}
+                rather than this page.
+              </p>
+              <ButtonLink href="/contact" variant="secondary" className="mt-5">
+                Contact support
+              </ButtonLink>
+            </div>
           </div>
         </div>
       </Section>

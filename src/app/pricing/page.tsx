@@ -5,13 +5,13 @@ import {
   BadgeCheck,
   Calculator,
   CalendarCheck,
+  Check,
   ClipboardList,
   FileSignature,
   Globe,
   Hammer,
   LayoutTemplate,
   PenLine,
-  ReceiptIndianRupee,
   Rocket,
   Search,
   Server,
@@ -26,8 +26,9 @@ import { carePlans, LANDING_PAGE_FROM, WEBSITE_FROM } from "@/lib/plans";
 import { SERVICE_RATES } from "@/lib/pricing";
 import { formatINR } from "@/lib/utils";
 import { CarePlans, ProjectPackages } from "@/components/sections/pricing-plans";
-import { CARD, CARD_HOVER, FaqCards, IconTile, SectionIntro } from "@/components/sections/page-blocks";
+import { CARD, FaqCards, IconTile, SectionIntro } from "@/components/sections/page-blocks";
 import { DeferredSection } from "@/components/ui/deferred-section";
+import { AccordionRoot, AccordionRow } from "@/components/ui/accordion";
 import { PageHero } from "@/components/layout/page-hero";
 import { ButtonLink } from "@/components/ui/button";
 import { Section } from "@/components/ui/section";
@@ -95,22 +96,46 @@ const PAYMENT_STEPS = [
   {
     Icon: FileSignature,
     title: "Proposal",
-    body: "Fees are divided into milestones for discovery, design, development and launch. Each amount and date is set out in your proposal.",
+    body: "Milestones, amounts and dates are set out in writing.",
   },
   {
     Icon: CalendarCheck,
     title: "First milestone",
-    body: "The first payment confirms your start date and reserves the project team.",
+    body: "Confirms your start date and reserves the team.",
   },
   {
     Icon: BadgeCheck,
     title: "Payment on approval",
-    body: "Each subsequent milestone is invoiced once the preceding stage is delivered and approved.",
+    body: "Each stage is invoiced once it is delivered and approved.",
   },
   {
     Icon: Server,
     title: "Monthly plans",
-    body: "After launch, hosting, maintenance and marketing plans are billed monthly and can be adjusted as your needs change.",
+    body: "Hosting and maintenance are billed monthly after launch.",
+  },
+] as const;
+
+/** The detail behind the step strip, collapsed by default. */
+const PAYMENT_DETAILS = [
+  {
+    question: "How are milestones set?",
+    answer:
+      "Fees are divided into milestones for discovery, design, development and launch. Each amount and date is set out in your proposal before work begins.",
+  },
+  {
+    question: "When is each payment due?",
+    answer:
+      "The first payment confirms your start date. Each subsequent milestone is invoiced once the preceding stage is delivered and approved.",
+  },
+  {
+    question: "How are monthly plans billed?",
+    answer:
+      "Hosting, maintenance and marketing plans are billed monthly and can be adjusted as your needs change.",
+  },
+  {
+    question: "What about GST and third-party costs?",
+    answer:
+      "Prices exclude GST, which is added at the prevailing rate. Domains, cloud services, payment gateways and licences are billed to your accounts at cost.",
   },
 ] as const;
 
@@ -119,7 +144,7 @@ const PRICING_FAQS = [
     group: "Before you start" as const,
     question: "Why do starting prices differ between services?",
     answer:
-      "Each starting price reflects the minimum scope of that service. Landing pages start at ₹5,000 and complete business websites at ₹25,000, while applications involve user accounts, data, administration and more extensive testing.",
+      `Each starting price reflects the minimum scope of that service. Landing pages start at ${formatINR(LANDING_PAGE_FROM)} and complete business websites at ${formatINR(WEBSITE_FROM)}, while applications involve user accounts, data, administration and more extensive testing.`,
   },
   {
     group: "Before you start" as const,
@@ -241,50 +266,20 @@ export default function PricingPage() {
 
       <ProjectPackages surface="grid" />
 
-      {/* Included as standard */}
-      <Section surface="tint">
-        <div className="container-page">
-          <SectionIntro
-            eyebrow="Included in every project"
-            title="Standard with every engagement"
-            description="Every website, store and application includes the following at no additional cost."
-          />
-
-          <Stagger className="mt-14 grid gap-5 lg:grid-cols-3" stagger={0.08}>
-            {INCLUDED.map(({ Icon, title, items }) => (
-              <StaggerItem key={title} y={24} className={cn(CARD, "h-full p-6 md:p-7")}>
-                <IconTile>
-                  <Icon className="size-5" aria-hidden />
-                </IconTile>
-                <h3 className="mt-5 text-lg font-semibold text-foreground">{title}</h3>
-                <ul className="mt-4 flex flex-col gap-3">
-                  {items.map((item) => (
-                    <li
-                      key={item}
-                      className="flex gap-2.5 border-t border-border pt-3 text-[0.92rem] leading-snug text-foreground/85 first:border-t-0 first:pt-0"
-                    >
-                      <span className="mt-[0.45rem] size-1.5 shrink-0 rounded-full bg-setu" aria-hidden />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </StaggerItem>
-            ))}
-          </Stagger>
-        </div>
-      </Section>
+      <CarePlans surface="tint" />
 
       {/* Starting prices by service */}
-      <Section>
-        <div className="container-page grid gap-10 lg:grid-cols-[0.8fr_1.5fr] lg:gap-16">
+      <Section className="py-14 md:py-20">
+        <div className="container-page grid gap-8 lg:grid-cols-[0.75fr_1.5fr] lg:gap-14">
           <div className="lg:sticky lg:top-28 lg:self-start">
             <SectionIntro
+              compact
               align="left"
               eyebrow="By service"
               title="Starting prices by service"
               description="Indicative starting prices and typical timelines. Your quote reflects the pages, features and integrations you require."
             >
-              <ButtonLink href="/estimate" variant="secondary" className="mt-6 rounded-full">
+              <ButtonLink href="/estimate" variant="secondary" size="sm" className="mt-5 rounded-full">
                 <Calculator className="size-4" aria-hidden />
                 Open the estimator
               </ButtonLink>
@@ -296,26 +291,23 @@ export default function PricingPage() {
               <caption className="sr-only">Starting price and typical timeline for each service</caption>
               <thead className="bg-background-subtle text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
                 <tr>
-                  <th scope="col" className="px-4 py-3.5 font-semibold sm:px-6">
+                  <th scope="col" className="px-4 py-3 font-semibold sm:px-5">
                     Service
                   </th>
-                  <th scope="col" className="hidden px-4 py-3.5 font-semibold sm:table-cell">
+                  <th scope="col" className="hidden px-4 py-3 font-semibold sm:table-cell">
                     Typical timeline
                   </th>
-                  <th scope="col" className="px-4 py-3.5 text-right font-semibold sm:px-6">
-                    Starting at
+                  <th scope="col" className="px-4 py-3 text-right font-semibold sm:px-5">
+                    Starting from
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {buildServices.map((service) => (
                   <tr key={service.slug} className="group transition-colors hover:bg-setu/[0.03]">
-                    <th scope="row" className="px-4 py-4 font-normal sm:px-6">
-                      <Link
-                        href={`/services/${service.slug}`}
-                        className="flex items-center gap-3"
-                      >
-                        <ServiceIcon name={service.icon} accent={service.accent} size={16} className="size-9" />
+                    <th scope="row" className="px-4 py-3 font-normal sm:px-5">
+                      <Link href={`/services/${service.slug}`} className="flex items-center gap-3">
+                        <ServiceIcon name={service.icon} accent={service.accent} size={14} className="size-8" />
                         <span className="min-w-0">
                           <span className="flex items-center gap-1 font-medium text-foreground transition-colors group-hover:text-setu">
                             {service.name}
@@ -327,17 +319,17 @@ export default function PricingPage() {
                         </span>
                       </Link>
                     </th>
-                    <td className="hidden px-4 py-4 text-muted-foreground sm:table-cell">
+                    <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">
                       {service.typicalTimeline}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-right font-display text-base font-semibold tabular-nums text-foreground sm:px-6">
+                    <td className="whitespace-nowrap px-4 py-3 text-right font-display text-[0.95rem] font-semibold tabular-nums text-foreground sm:px-5">
                       {formatINR(serviceStartingPrice(service))}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <p className="border-t border-border bg-setu/[0.05] px-4 py-4 text-[0.85rem] leading-relaxed text-foreground/80 sm:px-6">
+            <p className="border-t border-border bg-setu/[0.05] px-4 py-3 text-[0.82rem] leading-relaxed text-foreground/80 sm:px-5">
               Combined services are quoted together in a single proposal. All
               prices exclude GST.
             </p>
@@ -345,38 +337,73 @@ export default function PricingPage() {
         </div>
       </Section>
 
-      <CarePlans surface="dots" />
-
       {/* Add-ons */}
-      <Section surface="subtle" id="add-ons">
+      <Section surface="subtle" id="add-ons" className="py-14 md:py-20">
         <div className="container-page">
           <SectionIntro
+            compact
             eyebrow="Add-ons"
             title="Optional services and add-ons"
             description="Extend any package with the services below. Each is quoted separately and can be added at any stage."
           />
 
-          <Stagger className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" stagger={0.06}>
-            {addOns.map(({ Icon, title, price, body, href }) => (
-              <StaggerItem key={title} y={24} className="h-full">
-                <Link href={href} className={cn(CARD, CARD_HOVER, "group flex h-full flex-col gap-3 p-6")}>
-                  <span className="flex items-start justify-between gap-3">
-                    <IconTile>
-                      <Icon className="size-5" aria-hidden />
+          <FadeUp y={24} blur={false} className={cn(CARD, "mx-auto mt-10 max-w-5xl overflow-hidden")}>
+            <ul className="grid divide-y divide-border md:grid-cols-2 md:divide-y-0 md:[&>li:nth-child(n+3)]:border-t md:[&>li:nth-child(odd)]:border-r">
+              {addOns.map(({ Icon, title, price, body, href }) => (
+                <li key={title} className="border-border">
+                  <Link
+                    href={href}
+                    className="group flex h-full items-start gap-3.5 px-5 py-4 transition-colors hover:bg-setu/[0.03]"
+                  >
+                    <IconTile className="size-9 rounded-lg">
+                      <Icon className="size-4" aria-hidden />
                     </IconTile>
-                    <span className="rounded-full bg-setu/10 px-3 py-1 text-xs font-semibold text-setu-dark dark:text-setu">
-                      {price}
+                    <span className="min-w-0 flex-1">
+                      <span className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+                        <span className="text-[0.92rem] font-semibold text-foreground transition-colors group-hover:text-setu">
+                          {title}
+                        </span>
+                        <span className="text-xs font-semibold text-[#00708c] dark:text-setu">{price}</span>
+                      </span>
+                      <span className="mt-0.5 block text-[0.83rem] leading-snug text-muted-foreground">
+                        {body}
+                      </span>
                     </span>
-                  </span>
-                  <span className="mt-2 flex items-center gap-1 font-semibold text-foreground">
-                    {title}
-                    <ArrowUpRight
-                      className="size-3.5 text-muted-foreground transition-[color,transform] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-setu"
-                      aria-hidden
-                    />
-                  </span>
-                  <span className="text-[0.9rem] leading-relaxed text-muted-foreground">{body}</span>
-                </Link>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </FadeUp>
+        </div>
+      </Section>
+
+      {/* Included as standard */}
+      <Section surface="dots" className="py-14 md:py-20">
+        <div className="container-page">
+          <SectionIntro
+            compact
+            eyebrow="Included in every project"
+            title="Standard with every engagement"
+            description="Every website, store and application includes the following at no additional cost."
+          />
+
+          <Stagger className="mx-auto mt-10 grid max-w-5xl gap-4 md:grid-cols-3" stagger={0.08}>
+            {INCLUDED.map(({ Icon, title, items }) => (
+              <StaggerItem key={title} y={24} className={cn(CARD, "h-full p-5")}>
+                <div className="flex items-center gap-3">
+                  <IconTile className="size-9 rounded-lg">
+                    <Icon className="size-4" aria-hidden />
+                  </IconTile>
+                  <h3 className="font-semibold text-foreground">{title}</h3>
+                </div>
+                <ul className="mt-4 flex flex-col gap-2">
+                  {items.map((item) => (
+                    <li key={item} className="flex gap-2.5 text-[0.86rem] leading-snug text-foreground/85">
+                      <Check className="mt-0.5 size-3.5 shrink-0 text-setu" strokeWidth={3} aria-hidden />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </StaggerItem>
             ))}
           </Stagger>
@@ -384,52 +411,63 @@ export default function PricingPage() {
       </Section>
 
       {/* Payment terms */}
-      <Section surface="ink" id="payment-terms">
+      <Section surface="ink" id="payment-terms" className="py-14 md:py-20">
         <div className="container-page">
           <SectionIntro
+            compact
             eyebrow="Payment terms"
             title="Milestone-based payments"
             description="Payments follow delivery. The estimator shows the milestone schedule for your scope."
           />
 
-          <Stagger as="ol" className="relative mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
+          <Stagger as="ol" className="relative mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
             <span
               aria-hidden
-              className="pointer-events-none absolute left-[12.5%] right-[12.5%] top-[2.1rem] hidden h-px bg-gradient-to-r from-setu/0 via-setu/60 to-setu/0 lg:block"
+              className="pointer-events-none absolute left-[12.5%] right-[12.5%] top-[1.85rem] hidden h-px bg-gradient-to-r from-setu/0 via-setu/60 to-setu/0 lg:block"
             />
             {PAYMENT_STEPS.map(({ Icon, title, body }, index) => (
               <StaggerItem
                 key={title}
                 as="li"
                 y={22}
-                className="relative flex flex-col items-start rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm lg:items-center lg:text-center"
+                className="relative flex items-start gap-3.5 rounded-2xl border border-white/10 bg-white/[0.04] p-4 lg:flex-col lg:items-center lg:text-center"
               >
-                <span className="relative inline-flex size-11 items-center justify-center rounded-full bg-setu text-white shadow-[0_0_0_6px_rgba(0,161,198,0.15)]">
-                  <Icon className="size-5" aria-hidden />
+                <span className="relative inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-setu text-white shadow-[0_0_0_5px_rgba(0,161,198,0.15)]">
+                  <Icon className="size-4" aria-hidden />
                 </span>
-                <span className="mt-5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-setu">
-                  Step {index + 1}
+                <span>
+                  <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-setu">
+                    Step {index + 1}
+                  </span>
+                  <span className="mt-0.5 block font-semibold text-white">{title}</span>
+                  <span className="mt-1 block text-[0.83rem] leading-snug text-white/65">{body}</span>
                 </span>
-                <h3 className="mt-1.5 text-lg font-semibold text-white">{title}</h3>
-                <p className="mt-2 text-[0.9rem] leading-relaxed text-white/65">{body}</p>
               </StaggerItem>
             ))}
           </Stagger>
 
-          <FadeUp y={16} className="mx-auto mt-10 flex max-w-3xl flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 text-center text-[0.85rem] leading-relaxed text-white/70 sm:flex-row sm:text-left">
-            <ReceiptIndianRupee className="size-5 shrink-0 text-setu" aria-hidden />
-            <span>
-              Prices exclude GST, which is added at the prevailing rate. Domains,
-              cloud services, payment gateways and licences are billed to your
-              accounts at cost.
-            </span>
+          <FadeUp y={16} className="mx-auto mt-8 max-w-3xl">
+            <AccordionRoot singleOpen name="payment-terms" className="flex flex-col gap-2">
+              {PAYMENT_DETAILS.map((item) => (
+                <AccordionRow
+                  key={item.question}
+                  id={item.question}
+                  question={item.question}
+                  answer={item.answer}
+                  className="rounded-xl border border-white/10 bg-white/[0.03] px-4 transition-colors open:border-setu/40"
+                  summaryClassName="py-3 text-[0.9rem] font-medium text-white"
+                  iconClassName="size-4 text-setu"
+                  answerClassName="pb-4 pr-8 text-[0.85rem] leading-relaxed text-white/65"
+                />
+              ))}
+            </AccordionRoot>
           </FadeUp>
         </div>
       </Section>
 
-      <DeferredSection minHeight={720}>
-        <Section surface="tint" id="faq">
-          <FaqCards items={PRICING_FAQS} />
+      <DeferredSection minHeight={600}>
+        <Section surface="tint" id="faq" className="py-14 md:py-20">
+          <FaqCards items={PRICING_FAQS} compact />
         </Section>
       </DeferredSection>
       <JsonLd data={breadcrumbJsonLd([{ name: "Pricing", path: "/pricing" }])} />

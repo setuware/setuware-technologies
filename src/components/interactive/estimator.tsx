@@ -192,7 +192,7 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
 
   return (
     <div className={cn("grid gap-6", compact ? "lg:grid-cols-1" : "lg:grid-cols-[1.35fr_1fr]")}>
-      <div className="flex flex-col gap-8 rounded-2xl border border-slate-200/80 bg-surface p-5 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_6px_16px_-8px_rgb(15_23_42/0.08),0_24px_48px_-24px_rgb(15_23_42/0.16)] dark:border-border md:p-8 [&>fieldset+fieldset]:border-t [&>fieldset+fieldset]:border-border [&>fieldset+fieldset]:pt-8">
+      <div className="flex flex-col gap-6 rounded-2xl border border-slate-200/80 bg-surface p-5 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_6px_16px_-8px_rgb(15_23_42/0.08),0_24px_48px_-24px_rgb(15_23_42/0.16)] dark:border-border md:p-6 [&>fieldset+fieldset]:border-t [&>fieldset+fieldset]:border-border [&>fieldset+fieldset]:pt-6">
         {/* Service */}
         <fieldset>
           <Legend step={1} label="Select a service" hint="Starting prices exclude GST." />
@@ -208,13 +208,13 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
                   /*
                    * No aria-label: the name is computed from the two spans
                    * below. Any label we write here is judged against the
-                   * visible text joined with no separator ("Appsfrom ₹2.2L"),
+                   * visible text joined with no separator ("Appsfrom ₹74,999"),
                    * so every readable phrasing registers as a
                    * label-content mismatch. Letting the content speak is both
                    * accurate and one less thing to keep in sync.
                    */
                   className={cn(
-                    "flex items-center gap-3 rounded-xl border p-3 text-left transition-all duration-200",
+                    "flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all duration-200",
                     active
                       ? "border-primary bg-primary/8 shadow-glow"
                       : "border-border bg-background hover:border-primary/35",
@@ -231,7 +231,7 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
                       {service.shortName}
                     </span>
                     <span className="block text-xs text-muted-foreground">
-                      from {formatINRCompact(service.priceFrom)}
+                      from {formatINR(service.priceFrom)}
                     </span>
                   </span>
                 </button>
@@ -308,7 +308,7 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
                 <label
                   key={feature}
                   className={cn(
-                    "flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors",
+                    "flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-2.5 transition-colors",
                     active
                       ? "border-primary/60 bg-primary/8"
                       : "border-border bg-background hover:border-primary/30",
@@ -335,7 +335,7 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
         </fieldset>
 
         {/* Design + timeline */}
-        <div className="grid gap-7 border-t border-border pt-8 sm:grid-cols-2">
+        <div className="grid gap-6 border-t border-border pt-6 sm:grid-cols-2">
           <fieldset>
             <Legend step={rate.supportsPlatforms ? 5 : 4} label="Design level" />
             <div className="mt-3 flex flex-col gap-2">
@@ -446,7 +446,7 @@ function RadioRow({
   return (
     <label
       className={cn(
-        "flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors",
+        "flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-2.5 transition-colors",
         checked ? "border-primary/60 bg-primary/8" : "border-border bg-background hover:border-primary/30",
       )}
     >

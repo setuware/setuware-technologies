@@ -276,7 +276,7 @@ export const services: readonly Service[] = [
       },
     ],
     priceNote:
-      "Landing pages start at ₹5,000 and are typically live within a week. Complete business websites start at ₹25,000 and take three to six weeks, with the final price set by page count, copywriting and additional features.",
+      "Landing pages start at ₹4,999 and are typically live within a week. Complete business websites start at ₹14,999 and take three to six weeks, with the final price set by page count, copywriting and additional features.",
     commitments: [
       "Lighthouse score of 90+ on mobile at launch",
       "Enquiry tracking from day one",
@@ -287,7 +287,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does a business website cost?",
         answer:
-          "Landing pages start at ₹5,000 and complete business websites at ₹25,000. The final price depends on page count, copywriting and features such as online booking or multilingual content.",
+          "Landing pages start at ₹4,999 and complete business websites at ₹14,999. The final price depends on page count, copywriting and features such as online booking or multilingual content.",
       },
       {
         question: "Should I choose WordPress or Next.js?",
@@ -326,7 +326,7 @@ export const services: readonly Service[] = [
       "Online stores on Shopify, WooCommerce or a custom Next.js build, with secure payments, GST invoicing and shipping integration. Each store is configured to take orders from launch and to scale with your catalogue.",
     icon: "cart",
     accent: ["#f97316", "#ec4899"],
-    priceFrom: 60_000,
+    priceFrom: 24_999,
     typicalTimeline: "4–10 weeks",
     outcomes: [
       "Secure UPI, card and wallet payments",
@@ -479,7 +479,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does an e-commerce store cost?",
         answer:
-          "E-commerce stores start at ₹60,000. The final price depends on the platform, catalogue size and integrations required.",
+          "E-commerce stores start at ₹24,999. The final price depends on the platform, catalogue size and integrations required.",
       },
       {
         question: "Do you offer marketing after launch?",
@@ -498,7 +498,7 @@ export const services: readonly Service[] = [
       "Custom web applications, including customer portals, dashboards and SaaS products, built on Next.js, TypeScript and PostgreSQL. Each application is developed in structured sprints with dedicated staging and production environments.",
     icon: "code",
     accent: ["#8b5cf6", "#6366f1"],
-    priceFrom: 120_000,
+    priceFrom: 49_999,
     typicalTimeline: "8–12 weeks",
     outcomes: [
       "Working software from the first sprint",
@@ -636,7 +636,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does a web application cost?",
         answer:
-          "Web applications start at ₹1,20,000 for a focused MVP. A fixed quote is provided after a scoping call.",
+          "Web applications start at ₹49,999 for a focused MVP. A fixed quote is provided after a scoping call.",
       },
       {
         question: "Do you work on a fixed-price or hourly basis?",
@@ -675,7 +675,7 @@ export const services: readonly Service[] = [
       "iOS and Android apps built from a single React Native or Flutter codebase. We manage the complete lifecycle, from design and development to offline support, push notifications and app store submission.",
     icon: "smartphone",
     accent: ["#8b5cf6", "#ec4899"],
-    priceFrom: 220_000,
+    priceFrom: 74_999,
     typicalTimeline: "8–16 weeks",
     outcomes: [
       "One codebase for iOS and Android",
@@ -812,7 +812,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does a mobile app cost?",
         answer:
-          "Mobile apps start at ₹2,20,000. The final price depends on the number of screens, integrations, offline requirements and the admin backend.",
+          "Mobile apps start at ₹74,999. The final price depends on the number of screens, integrations, offline requirements and the admin backend.",
       },
       {
         question: "Does the app need a backend?",
@@ -846,7 +846,7 @@ export const services: readonly Service[] = [
       "Brand identities, logos and digital product interfaces designed in Figma. Our designers work alongside our engineers, so every approved design translates accurately into the finished product.",
     icon: "palette",
     accent: ["#ec4899", "#6366f1"],
-    priceFrom: 90_000,
+    priceFrom: 9_999,
     typicalTimeline: "2–6 weeks",
     outcomes: [
       "A consistent brand across every channel",
@@ -984,7 +984,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does UI/UX design cost?",
         answer:
-          "Design projects start at ₹90,000. The price depends on the number of screens, the research required and whether branding is included.",
+          "Design projects start at ₹9,999. The price depends on the number of screens, the research required and whether branding is included.",
       },
       {
         question: "Do you test designs with users?",
@@ -1003,7 +1003,8 @@ export const services: readonly Service[] = [
       "Search engine optimisation, Google Ads and social media campaigns managed by one team. Conversion tracking is configured first, so every channel is measured against the enquiries it generates.",
     icon: "megaphone",
     accent: ["#f59e0b", "#10b981"],
-    priceFrom: 15_000,
+    priceFrom: 7_999,
+    priceLabel: "From ₹7,999 per month",
     typicalTimeline: "Ongoing, with monthly reporting",
     outcomes: [
       "Higher rankings for priority keywords",
@@ -1162,7 +1163,7 @@ export const services: readonly Service[] = [
       {
         question: "How much do SEO and marketing services cost?",
         answer:
-          "Monthly retainers start at ₹15,000, excluding advertising spend. The fee depends on the channels and the scope of work.",
+          "Monthly retainers start at ₹7,999, excluding advertising spend. The fee depends on the channels and the scope of work.",
       },
     ],
     related: ["business-websites", "ecommerce-stores", "product-design"],
@@ -1176,7 +1177,7 @@ export const services: readonly Service[] = [
       "Custom ERP, CRM and internal systems that bring orders, inventory, customers, staff and billing into one platform. Each system is designed around your processes and integrated with the accounting and payment tools you already use.",
     icon: "boxes",
     accent: ["#0ea5e9", "#6366f1"],
-    priceFrom: 150_000,
+    priceFrom: 59_999,
     typicalTimeline: "10–20 weeks",
     outcomes: [
       "A single source of truth for operations",
@@ -1322,7 +1323,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does custom software cost?",
         answer:
-          "Projects start at ₹1,50,000 for one or two modules. Larger ERP and CRM systems are delivered in phases and billed by milestone.",
+          "Projects start at ₹59,999 for one or two modules. Larger ERP and CRM systems are delivered in phases and billed by milestone.",
       },
       {
         question: "What happens to our existing data?",
@@ -1351,7 +1352,7 @@ export const services: readonly Service[] = [
       "AI assistants and workflow automation designed for specific business tasks, from answering customer queries to processing documents and routing leads. Each automation is tested for accuracy and cost before launch.",
     icon: "sparkles",
     accent: ["#f59e0b", "#ef4444"],
-    priceFrom: 180_000,
+    priceFrom: 29_999,
     typicalTimeline: "3–8 weeks",
     outcomes: [
       "Accurate answers from your own documents",
@@ -1490,7 +1491,7 @@ export const services: readonly Service[] = [
       {
         question: "What does it cost to build and run?",
         answer:
-          "Builds start at ₹1,80,000. Running costs depend on usage and are estimated and capped before launch.",
+          "Builds start at ₹29,999. Running costs depend on usage and are estimated and capped before launch.",
       },
       {
         question: "Is our data secure?",
@@ -1524,7 +1525,7 @@ export const services: readonly Service[] = [
       "Managed hosting, domain management, SSL, business email and backups for websites and applications. Our team monitors your infrastructure around the clock and responds promptly to any incident.",
     icon: "server",
     accent: ["#06b6d4", "#10b981"],
-    priceFrom: 25_000,
+    priceFrom: 2_999,
     typicalTimeline: "3–7 days to migrate",
     outcomes: [
       "Uptime backed by a written SLA",
@@ -1644,9 +1645,9 @@ export const services: readonly Service[] = [
         duration: "Ongoing",
       },
     ],
-    priceLabel: "Set-up from ₹25,000",
+    priceLabel: "Set-up from ₹2,999",
     priceNote:
-      "Monthly plans: Essential ₹8,000, Business ₹25,000 and Critical ₹65,000. Cloud, domain and email fees are billed at cost.",
+      "Monthly plans: Essential ₹1,999, Business ₹4,999 and Critical ₹14,999. Cloud, domain and email fees are billed at cost.",
     commitments: [
       "99.95% uptime SLA on Business, 99.99% on Critical",
       "Infrastructure billed at cost",
@@ -1676,7 +1677,7 @@ export const services: readonly Service[] = [
       },
       {
         question: "What do the monthly plans include?",
-        answer: `Essential (₹8,000 per month) covers managed deployments, CDN, nightly backups and uptime checks. Business (₹25,000) adds 24×7 on-call support, a web application firewall and a 99.95% SLA, while Critical (₹65,000) adds multi-region failover and a 15-minute response. Plan clients can email ${site.supportEmail} with any request.`,
+        answer: `Essential (₹1,999 per month) covers managed deployments, CDN, nightly backups and uptime checks. Business (₹4,999) adds 24×7 on-call support, a web application firewall and a 99.95% SLA, while Critical (₹14,999) adds multi-region failover and a 15-minute response. Plan clients can email ${site.supportEmail} with any request.`,
       },
       {
         question: "Do you set up business email?",
@@ -1695,7 +1696,7 @@ export const services: readonly Service[] = [
       "Ongoing maintenance for websites and applications, including updates, security patches, bug fixes and content changes. A dedicated team works to published response times for a fixed monthly fee.",
     icon: "shield",
     accent: ["#10b981", "#6366f1"],
-    priceFrom: 40_000,
+    priceFrom: 9_999,
     typicalTimeline: "One-week onboarding",
     outcomes: [
       "Fast response to critical issues",
@@ -1848,7 +1849,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does maintenance cost?",
         answer:
-          "Onboarding starts at ₹40,000, including the audit, stabilisation and the first month. A fixed monthly fee applies thereafter.",
+          "Onboarding starts at ₹9,999, including the audit, stabilisation and the first month. A fixed monthly fee applies thereafter.",
       },
     ],
     related: ["managed-hosting", "business-websites", "app-development"],
@@ -2199,7 +2200,7 @@ export const faqs: readonly Faq[] = [
     group: "Before you start",
     question: "How much does a website cost?",
     answer:
-      "Landing pages start at ₹5,000 and complete business websites at ₹25,000. Larger projects are quoted after a short discovery call.",
+      "Landing pages start at ₹4,999 and complete business websites at ₹14,999. Larger projects are quoted after a short discovery call.",
   },
   {
     group: "Before you start",

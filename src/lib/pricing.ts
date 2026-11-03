@@ -6,7 +6,7 @@
  * can never disagree. All money is in paise-free whole INR.
  */
 
-import { LANDING_PAGE_FROM, WEBSITE_FROM } from "./plans";
+import { carePlans, LANDING_PAGE_FROM, WEBSITE_FROM } from "./plans";
 import { formatINR } from "./utils";
 
 export type ServiceKey =
@@ -94,14 +94,14 @@ interface ServiceRate {
 // TODO(owner): confirm the per-page rate for business-websites and the base and
 // per-unit rates for ecommerce-stores, seo-marketing and custom-software.
 // Business websites is anchored to the published Website Build package (from
-// ₹25,000); the single-page Landing Page package (from ₹5,000) is a fixed
+// ₹14,999); the single-page Landing Page package (from ₹4,999) is a fixed
 // package outside the estimator. The other three are placeholders, not
 // published prices.
 export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   "business-websites": {
     label: "Business websites",
     base: WEBSITE_FROM,
-    perScope: 3_000,
+    perScope: 2_000,
     scopeNoun: "pages",
     baseWeeks: 2,
     throughput: 4,
@@ -109,8 +109,8 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "ecommerce-stores": {
     label: "E-commerce stores",
-    base: 60_000,
-    perScope: 5_000,
+    base: 24_999,
+    perScope: 2_000,
     scopeNoun: "product categories",
     baseWeeks: 3,
     throughput: 3,
@@ -118,8 +118,8 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "web-development": {
     label: "Web application development",
-    base: 120_000,
-    perScope: 18_000,
+    base: 49_999,
+    perScope: 7_500,
     scopeNoun: "pages",
     baseWeeks: 3,
     throughput: 2.5,
@@ -127,8 +127,8 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "app-development": {
     label: "Mobile app development",
-    base: 220_000,
-    perScope: 26_000,
+    base: 74_999,
+    perScope: 9_000,
     scopeNoun: "screens",
     baseWeeks: 4,
     throughput: 2,
@@ -136,8 +136,8 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "managed-hosting": {
     label: "Hosting & domains",
-    base: 25_000,
-    perScope: 2_000,
+    base: 2_999,
+    perScope: 500,
     scopeNoun: "environments",
     baseWeeks: 1,
     throughput: 6,
@@ -145,8 +145,8 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "seo-marketing": {
     label: "SEO & digital marketing",
-    base: 15_000,
-    perScope: 1_500,
+    base: 7_999,
+    perScope: 1_000,
     scopeNoun: "pages",
     baseWeeks: 1,
     throughput: 8,
@@ -154,8 +154,8 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "custom-software": {
     label: "Custom software, ERP & CRM",
-    base: 150_000,
-    perScope: 25_000,
+    base: 59_999,
+    perScope: 10_000,
     scopeNoun: "modules",
     baseWeeks: 4,
     throughput: 1,
@@ -163,8 +163,8 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "ai-integration": {
     label: "AI & automation",
-    base: 180_000,
-    perScope: 24_000,
+    base: 29_999,
+    perScope: 4_000,
     scopeNoun: "workflows",
     baseWeeks: 3,
     throughput: 1.5,
@@ -172,8 +172,8 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "product-design": {
     label: "UI/UX & branding",
-    base: 90_000,
-    perScope: 12_000,
+    base: 9_999,
+    perScope: 1_500,
     scopeNoun: "screens",
     baseWeeks: 2,
     throughput: 3.5,
@@ -181,8 +181,8 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "support-maintenance": {
     label: "Maintenance & support",
-    base: 40_000,
-    perScope: 4_000,
+    base: 9_999,
+    perScope: 1_000,
     scopeNoun: "applications",
     baseWeeks: 1,
     throughput: 5,
@@ -309,7 +309,10 @@ const MILESTONE_PLAN = [
 ] as const;
 
 const CONFIDENCE_BAND = 0.12;
-const MIN_RETAINER = 15_000;
+/** The retainer never quotes below the cheapest published maintenance plan. */
+const MIN_RETAINER = Math.min(
+  ...carePlans.map((plan) => plan.monthly ?? Number.POSITIVE_INFINITY),
+);
 const RETAINER_RATE = 0.08;
 
 function roundTo(value: number, step: number): number {

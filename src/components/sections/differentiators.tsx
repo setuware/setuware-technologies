@@ -1,7 +1,9 @@
 import { Code2, FileCheck2, Gauge, HeartHandshake, KeyRound, Timer } from "lucide-react";
 
 import { Reveal } from "@/components/ui/reveal";
-import { Section, SectionHeading } from "@/components/ui/section";
+import { Section, SectionHeading, type SectionSurface } from "@/components/ui/section";
+import { CARD } from "@/components/sections/page-blocks";
+import { cn } from "@/lib/utils";
 
 const POINTS = [
   {
@@ -36,20 +38,20 @@ const POINTS = [
   },
 ] as const;
 
-export function Differentiators() {
+export function Differentiators({ surface = "subtle" }: { surface?: SectionSurface }) {
   return (
-    <Section id="why-us">
+    <Section id="why-us" surface={surface}>
       <div className="container-page">
         <SectionHeading
           eyebrow="Why Setuware Technologies"
           title="A dependable partner for every project"
-          description="Six principles that keep every engagement on time, on budget and fully transparent."
+          description="Six commitments that keep every engagement on time, on budget and fully transparent."
         />
 
-        <div className="mt-14 grid gap-x-10 gap-y-9 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {POINTS.map(({ Icon, title, body }, index) => (
-            <Reveal key={title} delay={index * 60} className="flex gap-4">
-              <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/8 text-primary">
+            <Reveal key={title} delay={index * 60} className={cn(CARD, "flex gap-4 p-6")}>
+              <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-setu/10 text-setu ring-1 ring-inset ring-setu/20">
                 <Icon className="size-[18px]" aria-hidden />
               </span>
               <div>

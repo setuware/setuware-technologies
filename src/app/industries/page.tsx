@@ -129,7 +129,7 @@ export default function IndustriesPage() {
                     <span className="mt-2 block text-[0.92rem] leading-relaxed text-muted-foreground">
                       {industry.summary}.
                     </span>
-                    <span className="mt-4 flex flex-col gap-1.5">
+                    <span className="mb-6 mt-4 flex flex-col gap-1.5">
                       {industry.builds.slice(0, 3).map((build) => (
                         <span key={build.title} className="flex gap-2 text-[0.86rem] text-foreground/80">
                           <Check className="mt-0.5 size-3.5 shrink-0 text-setu" aria-hidden />
@@ -137,7 +137,7 @@ export default function IndustriesPage() {
                         </span>
                       ))}
                     </span>
-                    <span className="mt-auto inline-flex items-center gap-1.5 border-t border-border pt-4 text-sm font-semibold text-setu [margin-top:max(1.5rem,auto)]">
+                    <span className="mt-auto inline-flex items-center gap-1.5 border-t border-border pt-4 text-sm font-semibold text-setu">
                       View solutions
                       <ArrowRight
                         className="size-3.5 transition-transform group-hover:translate-x-1"

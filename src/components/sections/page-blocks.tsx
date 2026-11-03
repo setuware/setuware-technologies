@@ -47,6 +47,8 @@ export interface SectionIntroProps {
   id?: string;
   className?: string;
   children?: React.ReactNode;
+  /** Smaller heading and lead, for dense pages such as pricing. */
+  compact?: boolean;
 }
 
 /** Eyebrow, animated H2 and an optional lead paragraph. */
@@ -58,6 +60,7 @@ export function SectionIntro({
   id,
   className,
   children,
+  compact = false,
 }: SectionIntroProps) {
   return (
     <div
@@ -73,14 +76,22 @@ export function SectionIntro({
       <TextReveal
         as="h2"
         id={id}
-        className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
+        className={cn(
+          "font-display font-semibold leading-tight text-foreground",
+          compact ? "mt-3 text-[1.7rem] sm:text-[2rem]" : "mt-4 text-3xl sm:text-[2.4rem]",
+        )}
       >
         {title}
       </TextReveal>
       {description || children ? (
         <FadeUp delay={0.2} y={20}>
           {description ? (
-            <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
+            <p
+              className={cn(
+                "leading-relaxed text-muted-foreground",
+                compact ? "mt-3 text-[0.95rem]" : "mt-4 text-[1.02rem]",
+              )}
+            >
               {description}
             </p>
           ) : null}
@@ -98,9 +109,11 @@ export function SectionIntro({
 export function FaqCards({
   items,
   description = "Answers to common questions. For anything else, our team responds within one business day.",
+  compact = false,
 }: {
   items: readonly FaqItem[];
   description?: string;
+  compact?: boolean;
 }) {
   const grouped = faqGroups
     .map((group) => ({ group, questions: items.filter((item) => item.group === group) }))
@@ -110,6 +123,7 @@ export function FaqCards({
     <div className="container-page grid gap-10 lg:grid-cols-[0.8fr_1.4fr] lg:gap-16">
       <div className="lg:sticky lg:top-28 lg:self-start">
         <SectionIntro
+          compact={compact}
           align="left"
           eyebrow="FAQ"
           title="Frequently asked questions"
@@ -123,7 +137,7 @@ export function FaqCards({
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {group}
             </h3>
-            <div className="mt-3 flex flex-col gap-3">
+            <div className={cn("mt-3 flex flex-col", compact ? "gap-2" : "gap-3")}>
               {questions.map((item) => (
                 <AccordionRow
                   key={item.question}
@@ -131,7 +145,10 @@ export function FaqCards({
                   question={item.question}
                   answer={item.answer}
                   className={cn(CARD, "px-5 transition-colors open:border-setu/40 md:px-6")}
-                  summaryClassName="py-4 text-[0.95rem] font-medium text-foreground"
+                  summaryClassName={cn(
+                    "font-medium text-foreground",
+                    compact ? "py-3 text-[0.9rem]" : "py-4 text-[0.95rem]",
+                  )}
                   iconClassName="size-4 text-setu"
                   answerClassName="pb-5 pr-8 text-[0.9rem] leading-relaxed text-muted-foreground"
                 />

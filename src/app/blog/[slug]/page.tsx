@@ -18,15 +18,16 @@ export function generateStaticParams() {
   return posts.map((post) => ({ slug: post.slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = getPost(slug);
   if (!post) {
-    return pageMetadata({ title: "Not found", description: "", path: "/blog", noIndex: true });
+    return pageMetadata({
+      title: "Not found",
+      description: "",
+      path: "/blog",
+      noIndex: true,
+    });
   }
 
   return pageMetadata({
@@ -49,11 +50,7 @@ export async function generateMetadata({
  * instantly. Every known slug is prerendered by `generateStaticParams`, so the
  * fallback only ever shows on the way to a 404.
  */
-export default function PostPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
     <Suspense fallback={<div className="min-h-[70vh]" aria-busy="true" />}>
       <PostArticle params={params} />
@@ -77,52 +74,51 @@ async function PostArticle({ params }: { params: Promise<{ slug: string }> }) {
             <div className="absolute -right-[10%] top-[10%] h-[50%] w-[45%] rounded-full bg-[#3b82f6]/[0.08] blur-3xl" />
           </div>
 
-          <div className="container-page relative max-w-3xl">
-            <Link
-              href="/blog"
-              className="flex w-fit items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <ArrowLeft className="size-3" aria-hidden />
-              All articles
-            </Link>
-
-            <Badge className="mt-5">{post.category}</Badge>
-
-            <h1 className="mt-4 text-3xl font-semibold leading-[1.14] text-foreground sm:text-[2.6rem]">
-              {post.title}
-            </h1>
-            <p className="mt-4 text-[1.05rem] leading-relaxed text-muted-foreground">
-              {post.excerpt}
-            </p>
-
-            <div className="mt-7 flex items-center gap-3 border-t border-border pt-6">
-              <span
-                aria-hidden
-                className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#00a1c6,#3b82f6)] text-xs font-semibold text-white"
+          <div className="container-page relative">
+            <div className="mx-auto max-w-[44rem]">
+              <Link
+                href="/blog"
+                className="flex w-fit items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
-                {post.author.initials}
-              </span>
-              <span className="text-sm">
-                <span className="block font-medium text-foreground">
-                  {post.author.name}
+                <ArrowLeft className="size-3" aria-hidden />
+                All articles
+              </Link>
+
+              <Badge className="mt-5">{post.category}</Badge>
+
+              <h1 className="mt-4 text-3xl font-semibold leading-[1.14] text-foreground sm:text-[2.6rem]">
+                {post.title}
+              </h1>
+              <p className="mt-4 text-[1.05rem] leading-relaxed text-muted-foreground">
+                {post.excerpt}
+              </p>
+
+              <div className="mt-7 flex items-center gap-3 border-t border-border pt-6">
+                <span
+                  aria-hidden
+                  className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#00a1c6,#3b82f6)] text-xs font-semibold text-white"
+                >
+                  {post.author.initials}
                 </span>
-                <span className="block text-xs text-muted-foreground">
-                  {post.author.role} ·{" "}
-                  <time dateTime={post.date}>{formatDate(post.date)}</time> ·{" "}
-                  {post.readingMinutes} min read
+                <span className="text-sm">
+                  <span className="block font-medium text-foreground">{post.author.name}</span>
+                  <span className="block text-xs text-muted-foreground">
+                    {post.author.role} · <time dateTime={post.date}>{formatDate(post.date)}</time> ·{" "}
+                    {post.readingMinutes} min read
+                  </span>
                 </span>
-              </span>
+              </div>
             </div>
           </div>
 
-          <div className="container-page relative mt-10 max-w-5xl md:mt-12">
-            <div className="relative aspect-[3/2] overflow-hidden rounded-card border border-border bg-background-subtle shadow-ambient sm:aspect-[16/9] lg:aspect-[2/1]">
+          <div className="container-page relative mt-10 md:mt-12">
+            <div className="relative mx-auto aspect-[3/2] max-w-5xl overflow-hidden rounded-card border border-border bg-background-subtle shadow-ambient sm:aspect-[16/9] lg:aspect-[2/1]">
               <Image
                 src={post.cover.src}
                 alt={post.cover.alt}
                 fill
                 fetchPriority="high"
-                sizes="(min-width: 1024px) 76rem, 100vw"
+                sizes="(min-width: 1024px) 64rem, 100vw"
                 className="object-cover object-[50%_35%]"
               />
             </div>
@@ -130,9 +126,9 @@ async function PostArticle({ params }: { params: Promise<{ slug: string }> }) {
         </header>
 
         <Section className="py-14 md:py-20">
-          {/* Same column as the header; at the body size this is roughly 68ch. */}
-          <div className="container-page max-w-3xl">
-            <div>
+          {/* Same column as the header: 44rem is roughly 68ch at the body size. */}
+          <div className="container-page">
+            <div className="mx-auto max-w-[44rem]">
               <PostBody blocks={getPostBody(post.slug)} />
 
               <div className="mt-14 flex flex-col gap-5 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
@@ -182,8 +178,7 @@ async function PostArticle({ params }: { params: Promise<{ slug: string }> }) {
               Insights, once a month
             </h2>
             <p className="mt-3 max-w-md text-base leading-relaxed text-muted-foreground">
-              Practical articles on technology, design and digital growth, delivered to your
-              inbox.
+              Practical articles on technology, design and digital growth, delivered to your inbox.
             </p>
           </div>
           <NewsletterForm source={`post:${post.slug}`} />

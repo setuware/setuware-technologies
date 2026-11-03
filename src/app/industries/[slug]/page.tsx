@@ -257,6 +257,29 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
                 </Reveal>
               );
             })}
+            {industry.builds.length % 3 !== 0 ? (
+              // Completes the last row on wide screens with a route for other needs.
+              <Reveal delay={140} className="h-full">
+                <Link
+                  href="/contact"
+                  className="group flex h-full flex-col justify-between gap-6 rounded-2xl border border-dashed border-setu/40 bg-setu/[0.04] p-6 transition-colors duration-300 hover:border-setu hover:bg-setu/[0.07] md:p-7"
+                >
+                  <div>
+                    <h3 className="text-[1.1rem] font-semibold leading-snug text-foreground">
+                      Need something else?
+                    </h3>
+                    <p className="mt-2 text-[0.93rem] leading-relaxed text-muted-foreground">
+                      Describe the process you want to improve, and we will recommend a solution
+                      with a fixed-price proposal.
+                    </p>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-setu">
+                    Discuss your requirements
+                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden />
+                  </span>
+                </Link>
+              </Reveal>
+            ) : null}
           </div>
         </div>
       </Section>

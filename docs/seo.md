@@ -36,7 +36,7 @@ Canonical domain: **https://setuware.in** (override with `NEXT_PUBLIC_SITE_URL`)
 | --- | --- |
 | Every page (root layout) | One `@graph` with two nodes. `ProfessionalService` (`#organization`, which is both an Organization and a LocalBusiness) carries the logo, NAP, geo, opening hours (Mon–Sat 10:00–19:00), `priceRange` "₹₹", area served (India), contact points, `sameAs` and the founder (Satyam Raj). `WebSite` is the second node. There is no URL-based site search, so it has no `SearchAction`. |
 | All inner pages | `BreadcrumbList`, starting at Home |
-| `/services/[slug]` | `Service` with an `Offer` and an INR `PriceSpecification` from the starting price. For example, business websites start at ₹5,000 for a landing page. Also `FAQPage`. |
+| `/services/[slug]` | `Service` with an `Offer` and an INR `PriceSpecification` from the starting price. For example, business websites start at ₹4,999 for a landing page. Also `FAQPage`. |
 | Home, `/pricing`, `/process`, `/careers` | `FAQPage`, matching the FAQs shown on the page |
 | `/blog/[slug]` | `BlogPosting` with headline, dates, cover image and publisher. The author is the person named in the visible byline, linked to the organization with `worksFor`. Google expects the author to match the byline. |
 | `/careers/[slug]` | `JobPosting`: title, HTML description, `datePosted`, `validThrough`, employment type, Gurugram address and hiring organization with logo |

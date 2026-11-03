@@ -102,7 +102,7 @@ Corporate-professional, like an established digital agency (think Infosys/TCS di
 **Articles:** H2: Articles & insights · Sub: Perspectives on technology, design and digital growth from our team. · CTA: View all articles
 
 **FAQ:** H2: Frequently asked questions · Sub: Answers to common questions about our services and process. Questions (answers 1–2 formal sentences each):
-1. How much does a website cost? — Landing pages start at ₹5,000 and complete business websites at ₹25,000. Larger projects are quoted after a short discovery call.
+1. How much does a website cost? — Landing pages start at ₹4,999 and complete business websites at ₹14,999. Larger projects are quoted after a short discovery call.
 2. How long does a project take? — A business website typically takes three to six weeks. Applications and custom software are scheduled in the proposal.
 3. What is included in the discovery call? — A free 30-minute consultation to understand your goals, followed by a written proposal.
 4. How are payments structured? — Payments are milestone-based and set out in the proposal before work begins.

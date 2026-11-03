@@ -135,7 +135,7 @@ export default function ContactPage() {
                           aria-hidden
                         />
                       </span>
-                      <span className="mt-0.5 block break-all text-sm font-medium text-setu-dark dark:text-setu">
+                      <span className="mt-0.5 block break-all text-sm font-medium text-[#00708c] dark:text-setu">
                         {email}
                       </span>
                       <span className="mt-1.5 block text-[0.85rem] leading-relaxed text-muted-foreground">
@@ -231,11 +231,11 @@ export default function ContactPage() {
                 <Calculator className="mt-0.5 size-4 shrink-0 text-setu" aria-hidden />
                 <span>
                   For an indicative budget, use the{" "}
-                  <Link href="/estimate" className="font-medium text-setu-dark underline underline-offset-2 dark:text-setu">
+                  <Link href="/estimate" className="font-medium text-[#00708c] underline underline-offset-2 dark:text-setu">
                     instant estimator
                   </Link>{" "}
                   or review our{" "}
-                  <Link href="/pricing" className="font-medium text-setu-dark underline underline-offset-2 dark:text-setu">
+                  <Link href="/pricing" className="font-medium text-[#00708c] underline underline-offset-2 dark:text-setu">
                     pricing
                   </Link>
                   .
@@ -282,7 +282,7 @@ export default function ContactPage() {
           <FadeUp y={16} className="mt-10 flex justify-center">
             <Link
               href="/process"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-setu-dark transition-colors hover:text-setu dark:text-setu"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00708c] transition-colors hover:text-setu dark:text-setu"
             >
               See our full delivery process
               <ArrowRight className="size-4" aria-hidden />

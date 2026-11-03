@@ -13,21 +13,21 @@ const POINTS = [
   {
     Icon: Clock,
     title: "Timeline and team size",
-    body: "The expected duration and team required for your scope.",
+    body: "The expected duration and team size for your scope.",
   },
   {
     Icon: FileText,
     title: "Payment milestones",
-    body: "A payment schedule divided across discovery, design, development and launch.",
+    body: "A payment schedule across discovery, design, development and launch.",
   },
 ] as const;
 
 /** Home-page bridge into the estimator, the site's main conversion path. */
 export function EstimatorTeaser() {
   return (
-    <Section surface="subtle">
+    <Section surface="dots">
       <div className="container-page">
-        <div className="relative overflow-hidden rounded-[1.75rem] border border-border bg-surface p-7 shadow-ambient md:p-12">
+        <div className="relative overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-surface p-7 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_24px_48px_-24px_rgb(15_23_42/0.18)] dark:border-border md:p-12">
           <div
             className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--primary)_28%,transparent),transparent_70%)] blur-2xl"
             aria-hidden
@@ -36,11 +36,11 @@ export function EstimatorTeaser() {
           <div className="relative grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center">
             <div>
               <span className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-                Instant quote
+                Instant estimate
               </span>
               <h2 className="mt-3 text-3xl font-semibold leading-tight text-foreground sm:text-4xl">
-                Estimate your project investment
-                <span className="text-gradient"> before you talk to anyone</span>
+                Estimate your
+                <span className="text-gradient"> project investment</span>
               </h2>
               <p className="mt-4 max-w-lg text-[1.02rem] leading-relaxed text-muted-foreground">
                 Select a service, scope and timeline to receive an indicative price
@@ -64,7 +64,7 @@ export function EstimatorTeaser() {
                   key={title}
                   as="li"
                   delay={index * 80}
-                  className="flex gap-4 rounded-xl border border-border bg-background p-4"
+                  className="flex gap-4 rounded-2xl border border-border bg-background-subtle p-4"
                 >
                   <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                     <Icon className="size-4" aria-hidden />

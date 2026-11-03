@@ -8,7 +8,7 @@ import { cn, formatINR } from "@/lib/utils";
 import { SpotlightCard } from "@/components/motion/primitives";
 import { ServiceIcon } from "@/components/ui/service-icon";
 
-/** "From ₹5,000", or the service's own label when the price needs a unit. */
+/** "From ₹4,999", or the service's own label when the price needs a unit. */
 export function servicePriceLabel(
   service: Pick<Service, "priceFrom" | "entryPriceFrom" | "priceLabel">,
 ): string {

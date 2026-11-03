@@ -60,7 +60,7 @@ export function CaseStudyGrid({ studies }: { studies: readonly CaseStudyCard[] }
     <>
       <Section surface="tint" className="py-10 md:py-12">
         <div className="container-page">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-5">
             <div className="flex min-w-0 flex-col gap-5">
               <FilterRow label="Service">
                 <Chip active={isActive({ kind: "all" })} onClick={() => setFilter({ kind: "all" })}>
@@ -89,7 +89,7 @@ export function CaseStudyGrid({ studies }: { studies: readonly CaseStudyCard[] }
               </FilterRow>
             </div>
             <p
-              className="shrink-0 text-sm text-muted-foreground lg:pb-2.5"
+              className="text-sm text-muted-foreground md:pl-24"
               aria-live="polite"
             >
               Showing{" "}
