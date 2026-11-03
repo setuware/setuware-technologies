@@ -44,7 +44,7 @@ export function RoleBoard({
       <div
         role="group"
         aria-label="Filter roles by team"
-        className="-mx-1 flex flex-wrap gap-2 px-1"
+        className="inline-flex max-w-full flex-wrap gap-1 rounded-[1.4rem] border border-border bg-background-subtle p-1"
       >
         {options.map((option) => {
           const count =
@@ -57,10 +57,10 @@ export function RoleBoard({
               aria-pressed={active}
               onClick={() => setFilter(option)}
               className={cn(
-                "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[0.86rem] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu",
+                "inline-flex items-center gap-2 rounded-full px-4 py-2 text-[0.86rem] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu",
                 active
-                  ? "border-setu bg-setu text-white"
-                  : "border-border bg-surface text-foreground hover:border-setu/50",
+                  ? "bg-setu text-white shadow-sm"
+                  : "text-foreground/75 hover:bg-surface hover:text-foreground",
               )}
             >
               {option}
@@ -107,8 +107,12 @@ function RoleCardView({ role }: { role: RoleCard }) {
   return (
     <Link
       href={`/careers/${role.slug}`}
-      className="group flex h-full flex-col rounded-card border border-border bg-surface p-6 shadow-ambient transition-[transform,border-color,box-shadow] duration-300 hover:border-setu/50 hover:shadow-glow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu motion-safe:hover:-translate-y-1 md:p-7"
+      className="group relative flex h-full flex-col overflow-hidden rounded-card border border-border bg-surface p-6 shadow-ambient transition-[transform,border-color,box-shadow] duration-300 hover:border-setu/50 hover:shadow-glow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu motion-safe:hover:-translate-y-1 md:p-7"
     >
+      <span
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-[linear-gradient(90deg,#00a1c6,#3b82f6)] transition-transform duration-500 group-hover:scale-x-100"
+      />
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded-full border border-setu/25 bg-setu/8 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-setu">
           {role.team}
@@ -136,7 +140,7 @@ function RoleCardView({ role }: { role: RoleCard }) {
         ))}
       </ul>
 
-      <dl className="mt-6 flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-5 text-[0.84rem] text-muted-foreground sm:grid-cols-3">
+      <dl className="mt-6 flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-5 text-[0.84rem] text-muted-foreground">
         <div className="flex items-center gap-1.5">
           <dt className="sr-only">Location</dt>
           <MapPin className="size-3.5 shrink-0 text-setu" aria-hidden />

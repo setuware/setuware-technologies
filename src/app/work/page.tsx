@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { caseStudies, getService } from "@/lib/content";
@@ -6,6 +5,8 @@ import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { PageHero } from "@/components/layout/page-hero";
 import { FadeUp } from "@/components/motion/primitives";
+import { ButtonLink } from "@/components/ui/button";
+import { Section } from "@/components/ui/section";
 import { CaseStudyGrid, type CaseStudyCard } from "./case-study-grid";
 
 export const metadata = pageMetadata({
@@ -37,36 +38,42 @@ export default function WorkPage() {
         video="work"
         eyebrow="Our work"
         title="Selected work"
-        description="Each case study outlines the business challenge, our approach and the results achieved. Filter by service or industry."
+        description="Case studies across e-commerce, mobile apps, AI, dashboards and hosting. Each sets out the business challenge, our approach and the measurable results."
       />
 
-      <div className="container-page py-14 md:py-16">
-        <FadeUp y={20} blur={false} immediate>
-          <CaseStudyGrid studies={cards} />
-        </FadeUp>
+      <CaseStudyGrid studies={cards} />
 
-        <FadeUp
-          y={20}
-          className="mt-12 flex flex-col items-start justify-between gap-4 rounded-card border border-border bg-background-subtle p-6 md:flex-row md:items-center md:p-7"
-        >
-          <div>
-            <h2 className="font-display text-lg font-semibold text-foreground">
-              Explore by sector
-            </h2>
-            <p className="mt-1 text-[0.92rem] leading-relaxed text-muted-foreground">
-              Discover how we support retail, healthcare, education,
-              manufacturing, logistics and other industries.
-            </p>
+      <Section surface="dots" className="py-16 md:py-20">
+        <FadeUp y={20} className="container-page">
+          <div className="mx-auto flex max-w-4xl flex-col items-start gap-8 rounded-card border border-border bg-surface/90 p-7 shadow-ambient backdrop-blur md:flex-row md:items-center md:justify-between md:p-10">
+            <div className="max-w-xl">
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
+                Industries
+              </span>
+              <h2 className="mt-3 font-display text-2xl font-semibold leading-snug text-foreground sm:text-[1.75rem]">
+                Explore our work by sector
+              </h2>
+              <p className="mt-3 text-[0.97rem] leading-relaxed text-muted-foreground">
+                See how we support retail, healthcare, education, manufacturing, logistics and
+                professional services, with the solutions each sector needs most.
+              </p>
+            </div>
+            <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto">
+              <ButtonLink
+                href="/industries"
+                variant="ghost"
+                className="rounded-full bg-setu font-semibold text-white hover:bg-setu-dark dark:hover:bg-setu-dark"
+              >
+                View industries
+                <ArrowRight className="size-4" aria-hidden />
+              </ButtonLink>
+              <ButtonLink href="/contact" variant="secondary" className="rounded-full">
+                Start a project
+              </ButtonLink>
+            </div>
           </div>
-          <Link
-            href="/industries"
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-setu px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-setu hover:text-white"
-          >
-            View industries
-            <ArrowRight className="size-4" aria-hidden />
-          </Link>
         </FadeUp>
-      </div>
+      </Section>
       <JsonLd data={breadcrumbJsonLd([{ name: "Our work", path: "/work" }])} />
     </>
   );

@@ -26,25 +26,25 @@ export const serviceGroups: readonly ServiceGroupInfo[] = [
     id: "build",
     label: "Build",
     title: "Websites, stores and apps",
-    description: "Digital platforms that represent your business and serve your customers.",
+    description: "Company websites, online stores, customer portals and mobile apps that present your business and serve your customers.",
   },
   {
     id: "grow",
     label: "Grow",
     title: "Brand, design and marketing",
-    description: "Visual identity, user experience and marketing that build recognition and trust.",
+    description: "Brand identity, interface design, SEO and paid campaigns that attract the right customers and turn visits into enquiries.",
   },
   {
     id: "scale",
     label: "Scale",
     title: "Systems and automation",
-    description: "Software that streamlines operations, reporting and repetitive tasks.",
+    description: "ERP, CRM and AI automation that replace spreadsheets and manual data entry with one dependable system.",
   },
   {
     id: "run",
     label: "Run",
     title: "Hosting and support",
-    description: "Ongoing care that keeps your platforms secure, current and available.",
+    description: "Managed hosting, domains and maintenance plans that keep your platforms secure, current and available.",
   },
 ];
 
@@ -252,22 +252,22 @@ export const services: readonly Service[] = [
       {
         title: "Content and wireframes",
         body: "We structure the content for each page and prepare wireframes. Copywriting is available as an option.",
-        duration: "Week 1–2",
+        duration: "Weeks 1–2",
       },
       {
         title: "Design",
         body: "Visual designs for the home page and inner pages on mobile and desktop, with two rounds of revisions.",
-        duration: "Week 2–3",
+        duration: "Weeks 2–3",
       },
       {
         title: "Development and CMS",
         body: "We build the site, configure the CMS and load your content for review on a staging link.",
-        duration: "Week 3–5",
+        duration: "Weeks 3–5",
       },
       {
         title: "Launch",
         body: "Performance and SEO checks, redirects, analytics configuration and domain go-live.",
-        duration: "Week 5–6",
+        duration: "Weeks 5–6",
       },
       {
         title: "Post-launch support",
@@ -423,28 +423,28 @@ export const services: readonly Service[] = [
     process: [
       {
         title: "Store planning",
-        body: "We confirm the catalogue, payment and courier partners, and the recommended platform.",
+        body: "We review your catalogue, confirm payment and courier partners and recommend a platform.",
         duration: "Week 1",
       },
       {
         title: "Design",
         body: "Home, category, product, cart and checkout pages, designed for mobile first.",
-        duration: "Week 1–3",
+        duration: "Weeks 1–3",
       },
       {
         title: "Development and integrations",
         body: "Store development with payment, courier, invoicing and inventory integrations.",
-        duration: "Week 3–7",
+        duration: "Weeks 3–7",
       },
       {
         title: "Catalogue and testing",
         body: "Product import, followed by test orders across every payment method and courier.",
-        duration: "Week 7–9",
+        duration: "Weeks 7–9",
       },
       {
         title: "Launch and optimisation",
         body: "Go-live, monitoring of the first orders and checkout optimisation over the following two weeks.",
-        duration: "Week 9–10",
+        duration: "Weeks 9–10",
       },
     ],
     priceNote:
@@ -601,17 +601,17 @@ export const services: readonly Service[] = [
       {
         title: "UX and prototype",
         body: "Wireframes and a clickable Figma prototype, reviewed with you before development begins.",
-        duration: "Week 1–3",
+        duration: "Weeks 1–3",
       },
       {
         title: "Sprint development",
         body: "Two-week sprints with a weekly demonstration on a live staging environment.",
-        duration: "Week 3–10",
+        duration: "Weeks 3–10",
       },
       {
         title: "Quality assurance",
         body: "Automated tests, manual testing on real devices, security checks and load testing.",
-        duration: "Week 10–11",
+        duration: "Weeks 10–11",
       },
       {
         title: "Launch and handover",
@@ -772,27 +772,27 @@ export const services: readonly Service[] = [
       {
         title: "Product scoping",
         body: "We define users, core workflows and device features, and recommend React Native or Flutter.",
-        duration: "Week 1–2",
+        duration: "Weeks 1–2",
       },
       {
         title: "Design and prototype",
         body: "Interface designs for both platforms and a clickable prototype to review on your own device.",
-        duration: "Week 2–4",
+        duration: "Weeks 2–4",
       },
       {
         title: "Development sprints",
         body: "Two-week sprints with test builds distributed through TestFlight and Google Play internal testing.",
-        duration: "Week 4–12",
+        duration: "Weeks 4–12",
       },
       {
         title: "Beta and quality assurance",
         body: "Testing across a range of iOS and Android devices, followed by a beta with real users.",
-        duration: "Week 12–14",
+        duration: "Weeks 12–14",
       },
       {
         title: "Store submission",
         body: "Preparation and submission of store listings, screenshots and privacy declarations.",
-        duration: "Week 14–16",
+        duration: "Weeks 14–16",
       },
     ],
     priceNote:
@@ -891,7 +891,7 @@ export const services: readonly Service[] = [
           "Brand guidelines covering logo usage, colours and typography, with ready-to-use templates.",
       },
       {
-        problem: "Complex user journeys",
+        problem: "Confusing user flows",
         solution: "Mapped user flows and prototypes tested with real users before development.",
       },
       {
@@ -939,22 +939,22 @@ export const services: readonly Service[] = [
       {
         title: "Concepts",
         body: "Two or three creative directions, each presented with its rationale.",
-        duration: "Week 1–2",
+        duration: "Weeks 1–2",
       },
       {
         title: "Refinement",
         body: "The selected direction is developed across your website, app, packaging and social channels.",
-        duration: "Week 2–4",
+        duration: "Weeks 2–4",
       },
       {
         title: "Prototype and testing",
         body: "For digital products, a clickable prototype is tested with five users and refined.",
-        duration: "Week 3–5",
+        duration: "Weeks 3–5",
       },
       {
         title: "Handover",
         body: "Final files, brand guidelines, a Figma library and a walkthrough with your developers.",
-        duration: "Week 5–6",
+        duration: "Weeks 5–6",
       },
     ],
     priceNote:
@@ -1102,7 +1102,7 @@ export const services: readonly Service[] = [
       {
         title: "Audit and tracking",
         body: "We audit your website, campaigns and Business Profile, then configure GA4, Tag Manager and call tracking.",
-        duration: "Week 1–2",
+        duration: "Weeks 1–2",
       },
       {
         title: "Strategy",
@@ -1112,7 +1112,7 @@ export const services: readonly Service[] = [
       {
         title: "Implementation",
         body: "Technical fixes, on-page improvements and the launch of the first campaigns.",
-        duration: "Week 3–4",
+        duration: "Weeks 3–4",
       },
       {
         title: "Optimisation",
@@ -1277,27 +1277,27 @@ export const services: readonly Service[] = [
       {
         title: "Process mapping",
         body: "We work with your team to document each process as it operates today.",
-        duration: "Week 1–2",
+        duration: "Weeks 1–2",
       },
       {
         title: "System design",
         body: "We agree modules, roles, reports and integrations, with key screens prototyped in Figma.",
-        duration: "Week 2–4",
+        duration: "Weeks 2–4",
       },
       {
         title: "Phased development",
         body: "The highest-priority module is released first, followed by the remaining modules in two-week sprints.",
-        duration: "Week 4–16",
+        duration: "Weeks 4–16",
       },
       {
         title: "Migration and training",
         body: "Existing data is imported and reconciled, followed by hands-on training for each team.",
-        duration: "Week 16–18",
+        duration: "Weeks 16–18",
       },
       {
         title: "Go-live",
         body: "A parallel run alongside existing processes, followed by a supported cut-over.",
-        duration: "Week 18–20",
+        duration: "Weeks 18–20",
       },
     ],
     priceNote:
@@ -1455,22 +1455,22 @@ export const services: readonly Service[] = [
       {
         title: "Proof of concept",
         body: "A working prototype tested on your own documents and questions.",
-        duration: "Week 2–3",
+        duration: "Weeks 2–3",
       },
       {
         title: "Build and integration",
         body: "Integration with your website, WhatsApp, CRM or ERP, with safeguards and logging.",
-        duration: "Week 3–6",
+        duration: "Weeks 3–6",
       },
       {
         title: "Evaluation",
         body: "We test against the evaluation set, review the results with your team and refine until the target is met.",
-        duration: "Week 6–7",
+        duration: "Weeks 6–7",
       },
       {
         title: "Launch and monitoring",
         body: "Go-live with spending limits and weekly accuracy reviews during the first month.",
-        duration: "Week 7–8",
+        duration: "Weeks 7–8",
       },
     ],
     priceNote:
@@ -1621,17 +1621,17 @@ export const services: readonly Service[] = [
       {
         title: "Audit",
         body: "We document every domain, server, login and renewal date in your current set-up.",
-        duration: "Day 1–2",
+        duration: "Days 1–2",
       },
       {
         title: "Planning",
         body: "We recommend the right plan and hosting, and schedule the migration for a low-traffic period.",
-        duration: "Day 2–3",
+        duration: "Days 2–3",
       },
       {
         title: "Migration",
         body: "Your site is copied and tested on a staging URL before DNS is switched without downtime.",
-        duration: "Day 3–6",
+        duration: "Days 3–6",
       },
       {
         title: "Monitoring",
@@ -1644,7 +1644,7 @@ export const services: readonly Service[] = [
         duration: "Ongoing",
       },
     ],
-    priceLabel: "Setup from ₹25,000",
+    priceLabel: "Set-up from ₹25,000",
     priceNote:
       "Monthly plans: Essential ₹8,000, Business ₹25,000 and Critical ₹65,000. Cloud, domain and email fees are billed at cost.",
     commitments: [
@@ -1662,7 +1662,7 @@ export const services: readonly Service[] = [
       {
         question: "Will the migration cause downtime?",
         answer:
-          "No. We test a full copy on a staging URL and switch DNS during a low-traffic period, and email continues uninterrupted.",
+          "No. We test a full copy on a staging URL and switch DNS during a low-traffic period. Email continues without interruption.",
       },
       {
         question: "Who owns the domain and hosting?",
@@ -1790,12 +1790,12 @@ export const services: readonly Service[] = [
       {
         title: "Onboarding",
         body: "We gather access to code, hosting, domains and accounts, and document everything.",
-        duration: "Day 1–3",
+        duration: "Days 1–3",
       },
       {
         title: "Audit",
         body: "A review of code, plugins, security and performance, with risks ranked by priority.",
-        duration: "Day 3–7",
+        duration: "Days 3–7",
       },
       {
         title: "Stabilisation",
@@ -1911,10 +1911,10 @@ export const caseStudies: readonly CaseStudy[] = [
     challenge:
       "Orders arrived by WhatsApp, inventory lived in spreadsheets, and every store quoted different prices. Peak evening traffic took the old site down roughly twice a week.",
     approach: [
-      "Mapped the real fulfilment flow with store managers before designing anything",
+      "Mapped the actual fulfilment process with store managers before design began",
       "Built a Next.js storefront with per-store catalogues and slot-based delivery",
-      "Modelled inventory once, synced to the existing billing software",
-      "Load-tested to 4× the forecast peak before going live",
+      "Created a single inventory model synchronised with the existing billing software",
+      "Load-tested the platform to four times the forecast peak before launch",
     ],
     results: [
       { label: "Orders / month", value: "40k" },
@@ -1937,9 +1937,9 @@ export const caseStudies: readonly CaseStudy[] = [
       "A React Native field service app for 400 engineers that works offline in basements and tunnels, then syncs cleanly when the signal returns.",
     client: "Arcline Utilities",
     sector: "Field services",
-    title: "400 field engineers working offline, syncing when they surface",
+    title: "An offline-first field service app for 400 engineers",
     summary:
-      "A React Native app that keeps working in basements and tunnels, then reconciles cleanly when the signal returns.",
+      "A React Native app that works without connectivity in basements and tunnels, and synchronises job data when the connection returns.",
     year: "2025",
     services: ["app-development", "product-design"],
     accent: ["#8b5cf6", "#ec4899"],
@@ -1949,7 +1949,7 @@ export const caseStudies: readonly CaseStudy[] = [
       "Observed field engineers on site to identify where connectivity failed",
       "Designed an offline-first data model with deterministic conflict rules",
       "Built one React Native codebase for the mixed iOS and Android fleet",
-      "Shipped over-the-air updates so fixes land without a store review",
+      "Enabled over-the-air updates so fixes reach engineers without an app store review",
     ],
     results: [
       { label: "Paper job cards", value: "0" },
@@ -1972,14 +1972,14 @@ export const caseStudies: readonly CaseStudy[] = [
       "An AI support assistant for a clinic chain that answers 68% of patient questions from its own policies, with citations, and escalates the rest to staff.",
     client: "Medinest Clinics",
     sector: "Healthcare",
-    title: "An assistant that answers patients from the clinic's own policies",
+    title: "An AI assistant that answers patients from approved clinic policies",
     summary:
-      "Retrieval-based support assistant handling 68% of inbound questions with citations, escalating the rest to staff.",
+      "A retrieval-based support assistant that resolves 68% of inbound questions with citations and escalates the rest to staff.",
     year: "2026",
     services: ["ai-integration", "web-development"],
     accent: ["#f59e0b", "#ef4444"],
     challenge:
-      "Front-desk staff answered the same forty questions all day, and a generic chatbot had already lost the clinic trust by inventing appointment policies.",
+      "Front-desk staff answered the same forty questions throughout the day. An earlier generic chatbot had damaged patient trust by inventing appointment policies.",
     approach: [
       "Grounded every answer in the clinic's own approved documents",
       "Built an evaluation set of 300 real questions with staff-written answers",
@@ -2002,14 +2002,14 @@ export const caseStudies: readonly CaseStudy[] = [
       "How we re-architected queries and caching for a fintech reporting dashboard, taking its heaviest report from 48 seconds to under one second.",
     client: "Ledgerloop",
     sector: "Fintech / SaaS",
-    title: "A reporting dashboard that stopped timing out at month end",
+    title: "A fintech reporting dashboard rebuilt for month-end volumes",
     summary:
-      "Re-architected queries and caching so the heaviest report went from 48 seconds to under a second.",
+      "Re-architected queries and caching to reduce the heaviest report from 48 seconds to under one second.",
     year: "2025",
     services: ["web-development", "support-maintenance"],
     accent: ["#06b6d4", "#10b981"],
     challenge:
-      "Month-end reporting ran unindexed aggregates over four years of ledger rows. Customers learned to export to Excel instead.",
+      "Month-end reporting ran unindexed aggregates over four years of ledger rows. Reports timed out, and customers had begun exporting data to Excel instead.",
     approach: [
       "Profiled the slowest ten queries against a production-sized dataset",
       "Introduced materialised rollups with incremental refresh",
@@ -2032,16 +2032,16 @@ export const caseStudies: readonly CaseStudy[] = [
       "Migrating an online exam platform to managed hosting and load-testing it to four times its worst day: 1,200 concurrent students, no incident.",
     client: "Shiksha Bridge",
     sector: "Education",
-    title: "Exam day traffic: 1,200 concurrent students, no incident",
+    title: "An exam platform scaled for 1,200 concurrent students",
     summary:
-      "Migrated an exam platform onto managed infrastructure and load-tested it to four times its worst day.",
+      "Migrated an online exam platform to managed infrastructure and load-tested it to four times its previous peak.",
     year: "2026",
     services: ["managed-hosting", "support-maintenance"],
     accent: ["#10b981", "#6366f1"],
     challenge:
-      "Every exam window produced a partial outage. Nobody could say what the platform's actual ceiling was.",
+      "Every exam window produced a partial outage, and the platform's actual capacity had never been measured.",
     approach: [
-      "Established the real ceiling with a staged load test to 5,000 virtual users",
+      "Measured actual capacity with a staged load test to 5,000 virtual users",
       "Moved static and cacheable responses to the CDN edge",
       "Separated the exam write path onto its own autoscaling pool",
       "Wrote an incident runbook and rehearsed it with the client's team",
@@ -2064,12 +2064,12 @@ export const caseStudies: readonly CaseStudy[] = [
     sector: "Logistics",
     title: "One design system across a website, portal and driver app",
     summary:
-      "Replaced three visual languages with a single token-driven system three teams now share.",
+      "Replaced three inconsistent visual languages with a single token-driven design system shared by three teams.",
     year: "2025",
     services: ["product-design", "web-development"],
     accent: ["#ec4899", "#6366f1"],
     challenge:
-      "Website, customer portal and driver app had drifted so far apart that customers did not believe they came from the same company.",
+      "The website, customer portal and driver app had diverged so far that they no longer appeared to come from the same company.",
     approach: [
       "Audited every existing screen and catalogued the real component set",
       "Defined tokens for colour, type, spacing and motion",

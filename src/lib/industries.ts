@@ -28,13 +28,22 @@ export interface IndustryProblem {
 export interface IndustryBuild {
   /** Links the card to `/services/[service]`. */
   service: ServiceKey;
+  /** A concrete solution for the sector, e.g. "Online appointment booking". */
   title: string;
   body: string;
+}
+
+export interface IndustryImage {
+  /** Path under /public, cropped to 3:2 (1200 × 800). */
+  src: string;
+  alt: string;
 }
 
 export interface Industry {
   slug: string;
   name: string;
+  /** Plural noun for the people we build for, used in headings ("Solutions for clinics"). */
+  sector: string;
   /** One line used on cards and in the nav. */
   summary: string;
   /** Hero H1: what we build for the sector. The name sits above it as the eyebrow. */
@@ -45,6 +54,12 @@ export interface Industry {
   seoTitle: string;
   seoDescription: string;
   icon: IndustryIconName;
+  /** Photograph shown beside the overview and on industry cards. */
+  image: IndustryImage;
+  /** Overview beside the photograph: what we change for the sector. */
+  overview: { title: string; body: string };
+  /** Three outcomes the client can expect, listed under the overview. */
+  outcomes: readonly string[];
   problems: readonly IndustryProblem[];
   builds: readonly IndustryBuild[];
   features: readonly string[];
@@ -55,6 +70,7 @@ export const industries: readonly Industry[] = [
   {
     slug: "retail-ecommerce",
     name: "Retail & e-commerce",
+    sector: "retailers and D2C brands",
     summary: "Online stores and order management for retailers and D2C brands",
     headline: "Websites and software for retail and e-commerce",
     intro:
@@ -63,6 +79,19 @@ export const industries: readonly Industry[] = [
     seoDescription:
       "Online stores, inventory synchronisation and order management for retailers and D2C brands, with UPI checkout, GST invoicing and courier integration.",
     icon: "store",
+    image: {
+      src: "/images/industries/retail-ecommerce.jpg",
+      alt: "Two colleagues packing customer orders into cardboard boxes",
+    },
+    overview: {
+      title: "One stock record across every sales channel",
+      body: "Most retailers sell through a shop, a website and at least one marketplace, with stock and orders tracked separately for each. We connect these channels to one inventory and order system, so every sale updates stock everywhere and every order follows the same fulfilment process.",
+    },
+    outcomes: [
+      "Fewer cancellations caused by overselling",
+      "Less dependence on marketplace commissions",
+      "A checkout that stays fast during festive sales",
+    ],
     problems: [
       {
         title: "Orders across multiple channels",
@@ -85,22 +114,32 @@ export const industries: readonly Industry[] = [
       {
         service: "ecommerce-stores",
         title: "Online store",
-        body: "Shopify, WooCommerce or a custom build, with UPI and card payments, GST invoicing and courier integration.",
+        body: "A Shopify, WooCommerce or custom Next.js store with UPI, card and cash-on-delivery checkout.",
       },
       {
         service: "custom-software",
         title: "Inventory and order management",
-        body: "A single stock record across your stores, website and marketplaces, with low-stock alerts and daily sales reports.",
+        body: "One stock record for your shops, website and marketplaces, with low-stock alerts and daily sales reports.",
+      },
+      {
+        service: "ecommerce-stores",
+        title: "GST invoicing and courier integration",
+        body: "Tax invoices for every order and shipping labels through Shiprocket or Delhivery, generated automatically.",
+      },
+      {
+        service: "ai-integration",
+        title: "WhatsApp order updates",
+        body: "Order confirmations, dispatch notifications and abandoned-cart reminders sent on WhatsApp.",
       },
       {
         service: "seo-marketing",
-        title: "Search and performance marketing",
-        body: "Product page SEO, Google Shopping feeds and Meta campaigns measured against orders.",
+        title: "Google Shopping and Meta campaigns",
+        body: "Product feeds, product page SEO and catalogue campaigns measured against completed orders.",
       },
       {
         service: "managed-hosting",
-        title: "Scalable hosting",
-        body: "Caching, a CDN and load testing ahead of major campaigns to keep the store available.",
+        title: "Hosting for peak sales",
+        body: "Caching, a CDN and load testing ahead of major campaigns, so the store stays available.",
       },
     ],
     features: [
@@ -121,6 +160,7 @@ export const industries: readonly Industry[] = [
   {
     slug: "healthcare-clinics",
     name: "Healthcare & clinics",
+    sector: "clinics and diagnostic centres",
     summary: "Clinic websites, appointment booking and patient records",
     headline: "Websites and software for healthcare and clinics",
     intro:
@@ -129,6 +169,19 @@ export const industries: readonly Industry[] = [
     seoDescription:
       "Clinic websites, online appointment booking, WhatsApp reminders and patient record systems for clinics, diagnostic laboratories and specialist practices.",
     icon: "stethoscope",
+    image: {
+      src: "/images/industries/healthcare-clinics.jpg",
+      alt: "A doctor reviewing notes on a tablet with a patient at a clinic desk",
+    },
+    overview: {
+      title: "Online booking and records for busy practices",
+      body: "Clinics usually come to us when reception spends most of the day on calls and patient records sit in paper registers. We move booking, reminders and records online, with access controlled by role and data encrypted at rest.",
+    },
+    outcomes: [
+      "Appointments booked online at any hour",
+      "Fewer missed appointments through automated reminders",
+      "Patient records stored securely and backed up daily",
+    ],
     problems: [
       {
         title: "Telephone-only booking",
@@ -155,18 +208,23 @@ export const industries: readonly Industry[] = [
       },
       {
         service: "custom-software",
-        title: "Appointments and patient records",
-        body: "Online booking by doctor and time slot, digital prescriptions and visit history, with role-based access.",
+        title: "Online appointment booking",
+        body: "Booking by doctor, branch and time slot, with advance payment for online consultations.",
       },
       {
         service: "ai-integration",
-        title: "Reminders and front-desk assistant",
-        body: "WhatsApp reminders, follow-up messages and an assistant that answers questions about timings and fees.",
+        title: "WhatsApp appointment reminders",
+        body: "Automated reminders, follow-up messages and a front-desk assistant that answers questions on timings and fees.",
+      },
+      {
+        service: "custom-software",
+        title: "Patient records portal",
+        body: "Digital prescriptions, visit history and lab reports, with role-based access for doctors and reception.",
       },
       {
         service: "seo-marketing",
-        title: "Local search",
-        body: "Google Business Profile optimisation, local landing pages and review requests for patients in your area.",
+        title: "Google Business Profile optimisation",
+        body: "A complete profile, local landing pages and review requests that help nearby patients find the practice.",
       },
     ],
     features: [
@@ -187,6 +245,7 @@ export const industries: readonly Industry[] = [
   {
     slug: "education-coaching",
     name: "Education & coaching",
+    sector: "schools and coaching institutes",
     summary: "Admissions websites, learning portals and fee management",
     headline: "Websites and software for education and coaching",
     intro:
@@ -195,6 +254,19 @@ export const industries: readonly Industry[] = [
     seoDescription:
       "Admissions websites, learning portals, online fee collection and parent apps for schools, coaching institutes and online educators across India.",
     icon: "graduation",
+    image: {
+      src: "/images/industries/education-coaching.jpg",
+      alt: "A tutor and a student working through an assignment with a laptop",
+    },
+    overview: {
+      title: "Admissions, fees and learning in one place",
+      body: "Schools and institutes often manage enquiries, fee instalments and study material across phone calls, spreadsheets and messaging groups. We bring them into one website and portal, organised around your academic calendar.",
+    },
+    outcomes: [
+      "Every admission enquiry assigned and followed up",
+      "Fees collected online, with receipts issued automatically",
+      "Course content available only to enrolled students",
+    ],
     problems: [
       {
         title: "Unmanaged admission enquiries",
@@ -217,17 +289,27 @@ export const industries: readonly Industry[] = [
       {
         service: "business-websites",
         title: "Admissions website",
-        body: "Courses, faculty, results and fees on one fast website, with enquiry forms linked to a lead list.",
+        body: "Courses, faculty, results and fees on one fast website, with enquiry forms linked to your counsellors.",
+      },
+      {
+        service: "custom-software",
+        title: "Enquiry and counselling CRM",
+        body: "Every admission enquiry captured, assigned to a counsellor and tracked through to enrolment.",
+      },
+      {
+        service: "web-development",
+        title: "Online fee collection",
+        body: "Instalment plans, UPI and card payments, automatic receipts and reminders for overdue fees.",
       },
       {
         service: "web-development",
         title: "Learning portal",
-        body: "Batches, recorded lectures, notes, online tests and progress reports behind a secure student login.",
+        body: "Recorded lectures, notes and online tests with automatic scoring, behind a secure student login.",
       },
       {
         service: "app-development",
         title: "Student and parent app",
-        body: "Timetables, attendance, fee reminders and announcements on Android and iOS.",
+        body: "Timetables, attendance, results and announcements on Android and iOS.",
       },
       {
         service: "seo-marketing",
@@ -253,6 +335,7 @@ export const industries: readonly Industry[] = [
   {
     slug: "real-estate-construction",
     name: "Real estate & construction",
+    sector: "developers, brokers and contractors",
     summary: "Project websites, lead management and CRM for developers",
     headline: "Websites and software for real estate and construction",
     intro:
@@ -261,6 +344,19 @@ export const industries: readonly Industry[] = [
     seoDescription:
       "Project websites, lead capture and sales CRM for developers and brokers, with site-progress tools for contractors and RERA details on every listing.",
     icon: "building",
+    image: {
+      src: "/images/industries/real-estate-construction.jpg",
+      alt: "An agent showing a couple around an apartment under construction",
+    },
+    overview: {
+      title: "From project launch to buyer handover",
+      body: "Developers and brokers need each project online quickly and every lead contacted promptly, while contractors need daily visibility of every site. We build the websites, CRM and site tools that support each stage, from launch to handover.",
+    },
+    outcomes: [
+      "Project websites ready for launch day",
+      "Every lead contacted and tracked to a site visit",
+      "Daily progress reports from every site",
+    ],
     problems: [
       {
         title: "Delayed lead follow-up",
@@ -282,18 +378,23 @@ export const industries: readonly Industry[] = [
     builds: [
       {
         service: "business-websites",
-        title: "Project and listing websites",
-        body: "Launch pages with floor plans, price sheets, RERA details, maps and brochure downloads.",
+        title: "Project launch websites",
+        body: "Floor plans, price sheets, RERA details, maps and brochure downloads on a fast landing page.",
       },
       {
         service: "custom-software",
-        title: "Sales CRM and site tracking",
-        body: "A single sales pipeline with call reminders, plus daily progress and material logs from each site.",
+        title: "Sales CRM",
+        body: "Leads from property portals, advertising and WhatsApp in one pipeline, with call reminders and site-visit scheduling.",
+      },
+      {
+        service: "custom-software",
+        title: "Site progress tracking",
+        body: "Daily progress, material and labour logs with photographs, submitted from each site.",
       },
       {
         service: "app-development",
-        title: "Buyer and site-team app",
-        body: "Construction updates and payment schedules for buyers, and photo reports for site supervisors.",
+        title: "Buyer app",
+        body: "Construction updates, payment schedules and documents shared with each buyer in one place.",
       },
       {
         service: "seo-marketing",
@@ -319,6 +420,7 @@ export const industries: readonly Industry[] = [
   {
     slug: "manufacturing-distribution",
     name: "Manufacturing & distribution",
+    sector: "manufacturers and distributors",
     summary: "Catalogue websites, dealer portals and ERP systems",
     headline: "Websites and software for manufacturing and distribution",
     intro:
@@ -327,6 +429,19 @@ export const industries: readonly Industry[] = [
     seoDescription:
       "Catalogue websites, dealer ordering portals and ERP modules for manufacturers and distributors, integrated with Tally and GST e-invoicing.",
     icon: "factory",
+    image: {
+      src: "/images/industries/manufacturing-distribution.jpg",
+      alt: "A technician checking a CNC machine with a handheld controller",
+    },
+    overview: {
+      title: "Orders, inventory and dispatch in one system",
+      body: "Manufacturers and distributors often run dealer orders, stock and production across separate spreadsheets and messaging threads. We replace them with one system integrated with Tally, so management sees orders, stock and receivables in a single daily report.",
+    },
+    outcomes: [
+      "Dealer orders placed and approved online",
+      "One inventory record from raw material to dispatch",
+      "Daily management reports without manual compilation",
+    ],
     problems: [
       {
         title: "Informal dealer ordering",
@@ -352,9 +467,14 @@ export const industries: readonly Industry[] = [
         body: "Product ranges, specifications, certifications and enquiry forms designed for B2B buyers.",
       },
       {
+        service: "web-development",
+        title: "Dealer ordering portal",
+        body: "Dealers log in to view tiered prices, place orders and track dispatch and outstanding payments.",
+      },
+      {
         service: "custom-software",
-        title: "ERP and dealer portal",
-        body: "Dealer orders, price tiers, inventory, production and dispatch in one system integrated with Tally.",
+        title: "ERP with Tally integration",
+        body: "Inventory, production planning and dispatch in one system, synchronised with Tally and GST e-invoicing.",
       },
       {
         service: "ai-integration",
@@ -363,7 +483,7 @@ export const industries: readonly Industry[] = [
       },
       {
         service: "support-maintenance",
-        title: "Post-launch support",
+        title: "Ongoing support",
         body: "Fixes, enhancements and new reports on a monthly plan, delivered by the team that built the system.",
       },
     ],
@@ -385,6 +505,7 @@ export const industries: readonly Industry[] = [
   {
     slug: "logistics-transport",
     name: "Logistics & transport",
+    sector: "transporters, couriers and warehouses",
     summary: "Shipment tracking, dispatch and driver apps",
     headline: "Websites and software for logistics and transport",
     intro:
@@ -393,6 +514,19 @@ export const industries: readonly Industry[] = [
     seoDescription:
       "Shipment tracking portals, dispatch tools and offline-ready driver apps for transporters, couriers and 3PLs, with proof of delivery and trip billing.",
     icon: "truck",
+    image: {
+      src: "/images/industries/logistics-transport.jpg",
+      alt: "Two warehouse workers carrying boxes between stocked shelves",
+    },
+    overview: {
+      title: "Every shipment recorded from booking to invoice",
+      body: "Logistics teams lose hours to status calls, paper delivery slips and manual freight calculations. We build the customer portal, driver app and dispatch system that record each shipment from booking to invoice.",
+    },
+    outcomes: [
+      "Customers track shipments without calling",
+      "Proof of delivery captured on site",
+      "Invoices raised for every completed trip",
+    ],
     problems: [
       {
         title: "High volume of tracking enquiries",
@@ -414,18 +548,28 @@ export const industries: readonly Industry[] = [
     builds: [
       {
         service: "web-development",
-        title: "Booking and tracking portal",
-        body: "Customers book shipments, track them live and download invoices and proof of delivery.",
+        title: "Shipment tracking portal",
+        body: "Customers book shipments, track them by AWB or LR number and download invoices and proof of delivery.",
       },
       {
         service: "app-development",
         title: "Driver app",
-        body: "Trip assignments, navigation, photo and signature proof of delivery, and offline synchronisation.",
+        body: "Trip assignments, navigation and proof of delivery by photo or e-signature, with offline synchronisation.",
       },
       {
         service: "custom-software",
         title: "Dispatch and fleet management",
-        body: "Vehicle allocation, trip sheets, fuel logs, maintenance schedules and trip-based billing.",
+        body: "Vehicle allocation, trip sheets, fuel logs and maintenance schedules on one dispatch board.",
+      },
+      {
+        service: "custom-software",
+        title: "Freight billing",
+        body: "Freight, detention and toll charges calculated for each trip, with invoices generated on delivery.",
+      },
+      {
+        service: "ai-integration",
+        title: "WhatsApp status updates",
+        body: "Pickup, transit and delivery updates sent automatically to consignees by WhatsApp and SMS.",
       },
       {
         service: "business-websites",
@@ -451,6 +595,7 @@ export const industries: readonly Industry[] = [
   {
     slug: "hospitality-restaurants",
     name: "Hospitality & restaurants",
+    sector: "hotels, cafés and restaurants",
     summary: "Websites, direct booking and online ordering",
     headline: "Websites and software for hospitality and restaurants",
     intro:
@@ -459,6 +604,19 @@ export const industries: readonly Industry[] = [
     seoDescription:
       "Hotel and restaurant websites with direct booking, online ordering and QR menus that increase direct revenue and reduce aggregator commissions.",
     icon: "utensils",
+    image: {
+      src: "/images/industries/hospitality-restaurants.jpg",
+      alt: "A waiter serving drinks to guests at a restaurant table",
+    },
+    overview: {
+      title: "Direct bookings and orders, without aggregator commissions",
+      body: "Hotels and restaurants pay commission on many bookings and orders that begin with a search for their own name. We build direct booking and ordering channels, and keep menus, photographs and reviews current on your website and Google listing.",
+    },
+    outcomes: [
+      "A direct channel for bookings and orders",
+      "Menus and prices updated in one place",
+      "Guest reviews requested and answered consistently",
+    ],
     problems: [
       {
         title: "Rising platform commissions",
@@ -481,17 +639,27 @@ export const industries: readonly Industry[] = [
       {
         service: "business-websites",
         title: "Hospitality website",
-        body: "Rooms or menus, photography, location and offers on a website that performs well on any device.",
+        body: "Rooms or menus, photography, location and offers on a website that performs well on mobile.",
       },
       {
         service: "ecommerce-stores",
-        title: "Direct ordering and booking",
-        body: "Table reservations, room bookings or online ordering with payment, free of per-order commission.",
+        title: "Direct booking engine",
+        body: "Room bookings and table reservations with online payment, free of per-booking commission.",
+      },
+      {
+        service: "ecommerce-stores",
+        title: "Online ordering",
+        body: "Takeaway and delivery orders with UPI and card payments, sent directly to your kitchen.",
+      },
+      {
+        service: "web-development",
+        title: "QR code menus",
+        body: "Digital menus managed from one dashboard and updated instantly on every table.",
       },
       {
         service: "seo-marketing",
-        title: "Local search and reviews",
-        body: "Google Business Profile management, menu and photo updates, and regular review requests.",
+        title: "Google Business Profile and reviews",
+        body: "Profile management and regular menu and photo updates, with review requests sent after each visit or stay.",
       },
       {
         service: "product-design",
@@ -517,6 +685,7 @@ export const industries: readonly Industry[] = [
   {
     slug: "professional-services",
     name: "Professional services",
+    sector: "CA firms, law practices and consultancies",
     summary: "Practice websites and secure client portals",
     headline: "Websites and software for professional services",
     intro:
@@ -525,6 +694,19 @@ export const industries: readonly Industry[] = [
     seoDescription:
       "Practice websites and secure client portals for CA firms, law practices and consultancies, with document collection, compliance calendars and invoicing.",
     icon: "briefcase",
+    image: {
+      src: "/images/industries/professional-services.jpg",
+      alt: "Advisers and clients shaking hands across a meeting table",
+    },
+    overview: {
+      title: "A credible practice website and a secure client portal",
+      body: "Firms often collect client documents by email and messaging apps and track filing deadlines in spreadsheets. We build a practice website that reflects your expertise and a secure portal where clients upload documents, follow progress and pay invoices.",
+    },
+    outcomes: [
+      "Client documents collected in one secure place",
+      "Filing deadlines tracked with automated reminders",
+      "Enquiries routed promptly to the right partner",
+    ],
     problems: [
       {
         title: "An online presence that undersells expertise",
@@ -551,18 +733,23 @@ export const industries: readonly Industry[] = [
       },
       {
         service: "custom-software",
-        title: "Client portal",
-        body: "Secure document upload, task status, compliance calendars and invoices behind one login.",
+        title: "Secure client portal",
+        body: "Document upload, task status and invoices behind one login, with access controlled for each client.",
+      },
+      {
+        service: "custom-software",
+        title: "Compliance calendar",
+        body: "GST, TDS and ROC deadlines tracked for each client, with automated document requests.",
       },
       {
         service: "ai-integration",
-        title: "Reminders and document sorting",
-        body: "Automated deadline reminders for clients and initial classification of uploaded documents.",
+        title: "Document classification",
+        body: "Uploaded statements, notices and invoices sorted and tagged automatically for review.",
       },
       {
         service: "seo-marketing",
-        title: "Search visibility",
-        body: "Practice-area pages and articles that address the questions clients search for.",
+        title: "Practice-area search visibility",
+        body: "Practice-area pages and articles that answer the questions clients search for.",
       },
     ],
     features: [
@@ -583,6 +770,7 @@ export const industries: readonly Industry[] = [
   {
     slug: "startups-saas",
     name: "Startups & SaaS",
+    sector: "founders and SaaS companies",
     summary: "MVPs, SaaS products and launch websites",
     headline: "Product development for startups and SaaS companies",
     intro:
@@ -591,6 +779,19 @@ export const industries: readonly Industry[] = [
     seoDescription:
       "MVP and SaaS development for founders, with sign-up, billing, dashboards and mobile apps on Next.js and PostgreSQL, at a fixed price and launch date.",
     icon: "rocket",
+    image: {
+      src: "/images/industries/startups-saas.jpg",
+      alt: "A product team planning at a whiteboard in a bright office",
+    },
+    overview: {
+      title: "A focused first release on a codebase built to grow",
+      body: "Founders need a product in users' hands by a fixed date, on a codebase that will not need rebuilding as usage grows. We agree a focused scope, build on Next.js and PostgreSQL and continue to support the product after launch.",
+    },
+    outcomes: [
+      "A launch date agreed in the proposal",
+      "Architecture that supports growth without a rebuild",
+      "Hosting, monitoring and backups configured from the start",
+    ],
     problems: [
       {
         title: "Expanding scope",
@@ -612,8 +813,13 @@ export const industries: readonly Industry[] = [
     builds: [
       {
         service: "web-development",
-        title: "MVP or SaaS product",
-        body: "Authentication, billing, dashboards and administration on Next.js and PostgreSQL, scoped to a fixed launch date.",
+        title: "MVP development",
+        body: "Sign-up, core workflows and an admin panel, scoped to a fixed launch date.",
+      },
+      {
+        service: "web-development",
+        title: "SaaS platform",
+        body: "Team accounts, subscription billing with Razorpay or Stripe, usage dashboards and a public API.",
       },
       {
         service: "app-development",
@@ -624,6 +830,11 @@ export const industries: readonly Industry[] = [
         service: "product-design",
         title: "Product and brand design",
         body: "User flows, interface design and a brand identity that builds credibility with users and investors.",
+      },
+      {
+        service: "business-websites",
+        title: "Launch website",
+        body: "A marketing website with pricing, documentation and sign-up pages, built to convert visitors.",
       },
       {
         service: "managed-hosting",

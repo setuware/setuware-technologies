@@ -75,7 +75,7 @@ const APPLICATION_CHECKLIST = [
     detail: "Links to your work, with a note on your contribution.",
   },
   { Icon: Timer, label: "Notice period", detail: "Including your earliest available start date." },
-  { Icon: MapPin, label: "Current location", detail: "Please indicate whether you would relocate to Gurugram." },
+  { Icon: MapPin, label: "Current location", detail: "And whether you would relocate to Gurugram." },
 ] as const;
 
 async function Role({ params }: { params: Promise<{ slug: string }> }) {
@@ -163,7 +163,7 @@ async function Role({ params }: { params: Promise<{ slug: string }> }) {
             <RoleList title="Preferred qualifications" items={job.niceToHaves} marker="plus" />
 
             <FadeUp y={24}>
-              <div className="rounded-card border border-border bg-background-subtle p-6 md:p-8">
+              <div className="rounded-card border border-border bg-[linear-gradient(180deg,#f6f9fc_0%,#ffffff_100%)] p-6 dark:bg-[linear-gradient(180deg,#0b0e18_0%,#070910_100%)] md:p-8">
                 <h2 className="text-2xl font-semibold text-foreground">What we offer</h2>
                 <ul className="mt-6 grid gap-4 sm:grid-cols-2">
                   {whatWeOffer.map((item) => (
@@ -181,12 +181,23 @@ async function Role({ params }: { params: Promise<{ slug: string }> }) {
           </div>
 
           <aside className="lg:sticky lg:top-24 lg:self-start" aria-labelledby="apply-heading">
-            <div className="rounded-card border border-border bg-surface p-6 shadow-ambient md:p-7">
+            <div className="relative overflow-hidden rounded-card border border-border bg-surface p-6 shadow-ambient md:p-7">
+              <span
+                aria-hidden
+                className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#00a1c6,#3b82f6)]"
+              />
               <h2 id="apply-heading" className="text-xl font-semibold text-foreground">
                 Apply for this role
               </h2>
               <p className="mt-2 text-[0.92rem] leading-relaxed text-muted-foreground">
-                Email {site.hrEmail} with the role in the subject line. Please include:
+                Email{" "}
+                <a
+                  href={applyHref(job)}
+                  className="font-medium text-foreground underline decoration-setu/50 underline-offset-4 hover:text-setu"
+                >
+                  {site.hrEmail}
+                </a>{" "}
+                with the role in the subject line. Please include:
               </p>
 
               <ul className="mt-5 flex flex-col gap-4">
@@ -239,7 +250,7 @@ async function Role({ params }: { params: Promise<{ slug: string }> }) {
       </Section>
 
       {others.length > 0 ? (
-        <Section surface="subtle" className="py-16 md:py-20">
+        <Section surface="tint" className="py-16 md:py-20">
           <div className="container-page">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">Other open roles</h2>

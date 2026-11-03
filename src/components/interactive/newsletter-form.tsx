@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { Check, Loader2, Send } from "lucide-react";
 
 import { postJson } from "@/lib/client-api";
@@ -14,6 +14,10 @@ export function NewsletterForm({ source = "site" }: { source?: string }) {
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
+  // Unique per instance: the footer and an article can both render this form.
+  const uid = useId();
+  const emailId = `${uid}-email`;
+  const errorId = `${uid}-error`;
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -60,11 +64,11 @@ export function NewsletterForm({ source = "site" }: { source?: string }) {
     <form ref={formRef} onSubmit={onSubmit} className="relative flex flex-col gap-1.5" noValidate>
       {/* One pill on wider screens: the field and the button share a border. */}
       <div className="flex flex-col gap-2 rounded-2xl sm:flex-row sm:items-center sm:gap-1 sm:rounded-full sm:border sm:border-border sm:bg-surface sm:p-1 sm:transition-[border-color,box-shadow] sm:focus-within:border-primary sm:focus-within:ring-4 sm:focus-within:ring-primary/15 sm:has-[[aria-invalid=true]]:border-red-500">
-        <label htmlFor="newsletter-email" className="sr-only">
+        <label htmlFor={emailId} className="sr-only">
           Email address
         </label>
         <Input
-          id="newsletter-email"
+          id={emailId}
           name="email"
           type="email"
           inputMode="email"
@@ -74,7 +78,7 @@ export function NewsletterForm({ source = "site" }: { source?: string }) {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           aria-invalid={status === "error"}
-          aria-describedby={status === "error" ? "newsletter-error" : undefined}
+          aria-describedby={status === "error" ? errorId : undefined}
           disabled={status === "sending"}
           className="h-12 rounded-full px-5 sm:h-10 sm:border-0 sm:bg-transparent sm:px-4 sm:shadow-none! sm:focus:ring-0 sm:focus-visible:outline-none"
         />
@@ -100,7 +104,7 @@ export function NewsletterForm({ source = "site" }: { source?: string }) {
 
       <p aria-live="polite" className="min-h-[1rem] px-1">
         {status === "error" ? (
-          <span id="newsletter-error" className="text-xs font-medium text-red-600 dark:text-red-400">
+          <span id={errorId} className="text-xs font-medium text-red-600 dark:text-red-400">
             {message}
           </span>
         ) : (

@@ -1,11 +1,13 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, CircleAlert } from "lucide-react";
 
 import { getService } from "@/lib/content";
 import { getIndustry, industries } from "@/lib/industries";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ButtonLink } from "@/components/ui/button";
 import { IndustryIcon } from "@/components/ui/industry-icon";
@@ -42,13 +44,17 @@ const START_STEPS = [
   },
   {
     title: "Proposal",
-    body: "A written proposal setting out the scope, timeline and fixed price before work begins.",
+    body: "A written scope, timeline and fixed price, agreed before any work begins.",
   },
   {
     title: "Delivery",
-    body: "Regular progress reviews on a live preview, so your team can test the system before launch.",
+    body: "Regular reviews on a live preview, so your team can test the system before launch.",
   },
 ] as const;
+
+/** White card with a thin border and a layered, soft shadow. */
+const CARD =
+  "rounded-2xl border border-border bg-surface shadow-[0_1px_2px_rgb(15_23_42/0.04),0_10px_28px_-14px_rgb(15_23_42/0.14),0_28px_56px_-32px_rgb(15_23_42/0.12)]";
 
 /**
  * `params` is read inside a Suspense boundary so navigations render the shell
@@ -69,6 +75,11 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
   if (!industry) notFound();
 
   const others = industries.filter((item) => item.slug !== industry.slug);
+  // The distinct services behind this sector's solutions, in first-mention order.
+  const serviceKeys = [...new Set(industry.builds.map((build) => build.service))];
+  const linkedServices = serviceKeys
+    .map((key) => getService(key))
+    .filter((service): service is NonNullable<typeof service> => Boolean(service));
 
   return (
     <>
@@ -109,68 +120,139 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
         </div>
       </PageHero>
 
-      <Section>
+      {/* Overview beside a large photograph. */}
+      <Section surface="grid" aria-labelledby="overview-heading">
+        <div className="container-page grid items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
+          <div className="min-w-0">
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+              Overview
+            </span>
+            <h2
+              id="overview-heading"
+              className="mt-4 text-3xl font-semibold leading-[1.15] text-foreground sm:text-4xl"
+            >
+              {industry.overview.title}
+            </h2>
+            <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-[1.05rem]">
+              {industry.overview.body}
+            </p>
+            <ul className="mt-8 flex flex-col gap-3" aria-label="What you can expect">
+              {industry.outcomes.map((outcome) => (
+                <li key={outcome} className={cn(CARD, "flex items-center gap-3.5 px-4 py-3.5")}>
+                  <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-setu/10 text-setu ring-1 ring-inset ring-setu/20">
+                    <Check className="size-4" aria-hidden />
+                  </span>
+                  <span className="text-[0.95rem] font-medium text-foreground">{outcome}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <Reveal className="relative min-w-0">
+            <div
+              aria-hidden
+              className="absolute -inset-3 -z-10 rounded-[2rem] bg-[linear-gradient(135deg,rgba(0,161,198,0.18),rgba(59,130,246,0.08)_60%,transparent)] blur-xl"
+            />
+            <figure className="relative aspect-[3/2] overflow-hidden rounded-[1.6rem] bg-[#0b1020] shadow-2xl ring-1 ring-black/5">
+              <Image
+                src={industry.image.src}
+                alt={industry.image.alt}
+                fill
+                sizes="(min-width: 1280px) 38rem, (min-width: 1024px) 48vw, 100vw"
+                className="object-cover"
+              />
+              <span
+                aria-hidden
+                className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,16,32,0.55)_0%,rgba(11,16,32,0)_45%)]"
+              />
+              <figcaption className="absolute bottom-4 left-4 right-4 flex items-center gap-3 rounded-xl border border-white/20 bg-[#0b1020]/55 px-4 py-3 text-white backdrop-blur-md sm:right-auto">
+                <IndustryIcon
+                  name={industry.icon}
+                  className="size-9 bg-white/15 text-white ring-white/20"
+                  size={17}
+                />
+                <span className="text-sm font-semibold">{industry.name}</span>
+              </figcaption>
+            </figure>
+          </Reveal>
+        </div>
+      </Section>
+
+      <Section surface="tint" aria-labelledby="challenges-heading">
         <div className="container-page">
           <SectionHeading
             align="left"
             eyebrow="Challenges we solve"
-            title="Common challenges in your sector"
+            title={<span id="challenges-heading">Common challenges for {industry.sector}</span>}
+            description="The operational issues that most often prompt a new website or system in this sector."
           />
-          <div className="mt-10 grid gap-5 sm:grid-cols-2">
+          <div className="mt-12 grid gap-5 sm:grid-cols-2">
             {industry.problems.map((problem, index) => (
               <Reveal
                 key={problem.title}
                 delay={(index % 2) * 70}
-                className="rounded-card border border-border bg-surface p-6"
+                className={cn(CARD, "flex gap-4 p-6 md:p-7")}
               >
-                <span className="font-mono text-xs font-semibold text-setu">
-                  {String(index + 1).padStart(2, "0")}
+                <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-setu/10 text-setu ring-1 ring-inset ring-setu/20">
+                  <CircleAlert className="size-5" aria-hidden />
                 </span>
-                <h3 className="mt-3 text-[1.05rem] font-semibold text-foreground">{problem.title}</h3>
-                <p className="mt-2 text-[0.93rem] leading-relaxed text-muted-foreground">
-                  {problem.body}
-                </p>
+                <div className="min-w-0">
+                  <h3 className="text-[1.05rem] font-semibold text-foreground">{problem.title}</h3>
+                  <p className="mt-2 text-[0.93rem] leading-relaxed text-muted-foreground">
+                    {problem.body}
+                  </p>
+                </div>
               </Reveal>
             ))}
           </div>
         </div>
       </Section>
 
-      <Section surface="subtle">
+      <Section aria-labelledby="solutions-heading">
         <div className="container-page">
           <SectionHeading
             align="left"
-            eyebrow="What we deliver"
-            title={`Services for ${industry.name.toLowerCase()}`}
-            description="Each capability is delivered through one of our core services."
+            eyebrow="What we build"
+            title={<span id="solutions-heading">Solutions for {industry.sector}</span>}
+            description="Each solution is delivered through one of our core services, with the scope and price fixed in a written proposal."
           />
-          <div className="mt-10 grid gap-5 md:grid-cols-2">
+          <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {industry.builds.map((build, index) => {
               const service = getService(build.service);
               return (
-                <Reveal key={build.title} delay={(index % 2) * 70}>
+                <Reveal key={build.title} delay={(index % 3) * 70} className="h-full">
                   <Link
                     href={`/services/${build.service}`}
-                    className="group flex h-full gap-4 rounded-card border border-border bg-surface p-6 transition-[transform,border-color] duration-300 hover:border-setu/40 motion-safe:hover:-translate-y-1"
+                    className={cn(
+                      CARD,
+                      "group flex h-full flex-col p-6 transition-[transform,border-color] duration-300 hover:border-setu/40 motion-safe:hover:-translate-y-1 md:p-7",
+                    )}
                   >
-                    {service ? (
-                      <ServiceIcon name={service.icon} accent={service.accent} className="size-11" size={20} />
-                    ) : null}
-                    <div className="flex min-w-0 flex-col">
-                      <h3 className="text-[1.05rem] font-semibold text-foreground">{build.title}</h3>
-                      <p className="mt-1.5 text-[0.93rem] leading-relaxed text-muted-foreground">
-                        {build.body}
-                      </p>
+                    <div className="flex items-start justify-between gap-4">
                       {service ? (
-                        <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-semibold text-setu">
-                          {service.name}
-                          <ArrowRight
-                            className="size-3.5 transition-transform group-hover:translate-x-1"
-                            aria-hidden
-                          />
-                        </span>
+                        <ServiceIcon name={service.icon} accent={service.accent} className="size-11" size={20} />
                       ) : null}
+                      <span className="font-mono text-xs font-semibold text-setu">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
                     </div>
+                    <h3 className="mt-5 text-[1.1rem] font-semibold leading-snug text-foreground">
+                      {build.title}
+                    </h3>
+                    <p className="mt-2 text-[0.93rem] leading-relaxed text-muted-foreground">
+                      {build.body}
+                    </p>
+                    {service ? (
+                      <span className="mt-auto flex items-center justify-between gap-3 border-t border-border pt-4 text-sm">
+                        <span className="text-muted-foreground">
+                          Service: <span className="font-semibold text-setu">{service.name}</span>
+                        </span>
+                        <ArrowRight
+                          className="size-4 shrink-0 text-setu transition-transform group-hover:translate-x-1"
+                          aria-hidden
+                        />
+                      </span>
+                    ) : null}
                   </Link>
                 </Reveal>
               );
@@ -179,18 +261,27 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
         </div>
       </Section>
 
-      <Section>
-        <div className="container-page grid gap-12 lg:grid-cols-[1.3fr_1fr] lg:gap-16">
-          <div>
-            <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">Typical features</h2>
-            <p className="mt-3 max-w-xl text-[0.98rem] leading-relaxed text-muted-foreground">
-              Every project is scoped to your requirements. These features are commonly included.
+      <Section surface="ink" aria-labelledby="features-heading">
+        <div className="container-page grid gap-12 lg:grid-cols-[1.35fr_1fr] lg:gap-16">
+          <div className="min-w-0">
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
+              Typical features
+            </span>
+            <h2
+              id="features-heading"
+              className="mt-4 text-3xl font-semibold leading-[1.15] text-foreground sm:text-4xl"
+            >
+              Features commonly included
+            </h2>
+            <p className="mt-4 max-w-xl text-[0.98rem] leading-relaxed text-muted-foreground">
+              Every project is scoped to your requirements. These features are commonly
+              requested by {industry.sector}.
             </p>
             <ul className="mt-8 grid gap-3 sm:grid-cols-2">
               {industry.features.map((feature) => (
                 <li
                   key={feature}
-                  className="flex gap-3 rounded-xl border border-border bg-surface p-3.5 text-[0.93rem] text-foreground/85"
+                  className="flex gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-4 text-[0.93rem] leading-snug text-foreground/90"
                 >
                   <Check className="mt-0.5 size-4 shrink-0 text-setu" aria-hidden />
                   {feature}
@@ -199,47 +290,95 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
             </ul>
           </div>
 
-          <div className="rounded-card border border-border bg-surface p-7 lg:self-start">
-            <h2 className="text-lg font-semibold text-foreground">How we begin</h2>
-            <ol className="mt-6 flex flex-col gap-5">
-              {START_STEPS.map((step, index) => (
-                <li key={step.title} className="flex gap-4">
-                  <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-setu/12 font-mono text-xs font-semibold text-setu">
-                    {index + 1}
-                  </span>
-                  <div>
-                    <p className="font-semibold text-foreground">{step.title}</p>
-                    <p className="mt-1 text-[0.9rem] leading-relaxed text-muted-foreground">{step.body}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <Link
-              href="/process"
-              className="mt-7 inline-flex items-center gap-1.5 text-sm font-semibold text-setu"
-            >
-              View our process
-              <ArrowRight className="size-3.5" aria-hidden />
-            </Link>
+          <div className="flex min-w-0 flex-col gap-5 lg:self-start">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-7 backdrop-blur-sm">
+              <h2 className="text-lg font-semibold text-foreground">How we begin</h2>
+              <ol className="mt-6 flex flex-col gap-5">
+                {START_STEPS.map((step, index) => (
+                  <li key={step.title} className="flex gap-4">
+                    <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-setu/50 font-mono text-xs font-semibold text-setu">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <div>
+                      <p className="font-semibold text-foreground">{step.title}</p>
+                      <p className="mt-1 text-[0.9rem] leading-relaxed text-muted-foreground">
+                        {step.body}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+              <Link
+                href="/process"
+                className="mt-7 inline-flex items-center gap-1.5 text-sm font-semibold text-setu hover:text-foreground"
+              >
+                View our delivery process
+                <ArrowUpRight className="size-4" aria-hidden />
+              </Link>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-7">
+              <h2 className="text-lg font-semibold text-foreground">Services involved</h2>
+              <ul className="mt-4 flex flex-wrap gap-2">
+                {linkedServices.map((service) => (
+                  <li key={service.slug}>
+                    <Link
+                      href={`/services/${service.slug}`}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-setu hover:text-setu"
+                    >
+                      {service.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </Section>
 
-      <Section className="pt-0 md:pt-0">
+      <Section surface="dots" aria-labelledby="other-industries-heading">
         <div className="container-page">
-          <h2 className="text-xl font-semibold text-foreground">Other industries</h2>
-          <div className="mt-6 flex flex-wrap gap-2.5">
-            {others.map((item) => (
-              <Link
-                key={item.slug}
-                href={`/industries/${item.slug}`}
-                className="inline-flex items-center gap-2.5 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-setu/40 hover:text-setu"
-              >
-                <IndustryIcon name={item.icon} className="size-7 rounded-lg" size={14} />
-                {item.name}
-              </Link>
-            ))}
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <SectionHeading
+              align="left"
+              eyebrow="Other sectors"
+              title={<span id="other-industries-heading">Explore other industries</span>}
+            />
+            <Link
+              href="/industries"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-setu hover:text-setu-dark"
+            >
+              All industries
+              <ArrowRight className="size-4" aria-hidden />
+            </Link>
           </div>
+          <ul className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">
+            {others.map((item) => (
+              <li key={item.slug}>
+                <Link
+                  href={`/industries/${item.slug}`}
+                  className={cn(
+                    CARD,
+                    "group flex h-full flex-col overflow-hidden transition-[transform,border-color] duration-300 hover:border-setu/40 motion-safe:hover:-translate-y-1",
+                  )}
+                >
+                  <span className="relative block aspect-[3/2] overflow-hidden" aria-hidden>
+                    <Image
+                      src={item.image.src}
+                      alt=""
+                      fill
+                      sizes="(min-width: 1024px) 18rem, (min-width: 768px) 25vw, 50vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.05] motion-reduce:transition-none"
+                    />
+                  </span>
+                  <span className="flex flex-1 items-center gap-2.5 p-3.5 sm:p-4">
+                    <IndustryIcon name={item.icon} className="hidden size-8 rounded-lg sm:inline-flex" size={15} />
+                    <span className="text-sm font-semibold leading-snug text-foreground">{item.name}</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </Section>
 

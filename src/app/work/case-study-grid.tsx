@@ -8,6 +8,7 @@ import { ArrowUpRight } from "lucide-react";
 
 import { caseStudyPhoto } from "@/lib/case-study-photos";
 import { cn } from "@/lib/utils";
+import { Section } from "@/components/ui/section";
 
 export interface CaseStudyCard {
   slug: string;
@@ -56,66 +57,82 @@ export function CaseStudyGrid({ studies }: { studies: readonly CaseStudyCard[] }
     (candidate.kind === "all" || (filter.kind !== "all" && candidate.value === filter.value));
 
   return (
-    <div>
-      <div className="flex flex-col gap-4 rounded-card border border-border bg-surface p-4 md:p-5">
-        <FilterRow label="By service">
-          <Chip active={isActive({ kind: "all" })} onClick={() => setFilter({ kind: "all" })}>
-            All projects
-          </Chip>
-          {serviceOptions.map((option) => (
-            <Chip
-              key={option.slug}
-              active={isActive({ kind: "service", value: option.slug })}
-              onClick={() => setFilter({ kind: "service", value: option.slug })}
+    <>
+      <Section surface="tint" className="py-10 md:py-12">
+        <div className="container-page">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="flex min-w-0 flex-col gap-5">
+              <FilterRow label="Service">
+                <Chip active={isActive({ kind: "all" })} onClick={() => setFilter({ kind: "all" })}>
+                  All projects
+                </Chip>
+                {serviceOptions.map((option) => (
+                  <Chip
+                    key={option.slug}
+                    active={isActive({ kind: "service", value: option.slug })}
+                    onClick={() => setFilter({ kind: "service", value: option.slug })}
+                  >
+                    {option.name}
+                  </Chip>
+                ))}
+              </FilterRow>
+              <FilterRow label="Industry">
+                {sectorOptions.map((sector) => (
+                  <Chip
+                    key={sector}
+                    active={isActive({ kind: "sector", value: sector })}
+                    onClick={() => setFilter({ kind: "sector", value: sector })}
+                  >
+                    {sector}
+                  </Chip>
+                ))}
+              </FilterRow>
+            </div>
+            <p
+              className="shrink-0 text-sm text-muted-foreground lg:pb-2.5"
+              aria-live="polite"
             >
-              {option.name}
-            </Chip>
-          ))}
-        </FilterRow>
-        <FilterRow label="By industry">
-          {sectorOptions.map((sector) => (
-            <Chip
-              key={sector}
-              active={isActive({ kind: "sector", value: sector })}
-              onClick={() => setFilter({ kind: "sector", value: sector })}
-            >
-              {sector}
-            </Chip>
-          ))}
-        </FilterRow>
-      </div>
+              Showing{" "}
+              <span className="font-semibold text-foreground tabular-nums">{visible.length}</span> of{" "}
+              {studies.length} case studies
+            </p>
+          </div>
+        </div>
+      </Section>
 
-      <p className="mt-6 text-sm text-muted-foreground" aria-live="polite">
-        Showing {visible.length} of {studies.length} case studies
-      </p>
-
-      <motion.div layout className="mt-4 grid gap-6 md:grid-cols-2">
-        <AnimatePresence mode="popLayout" initial={false}>
-          {visible.map((study) => (
-            <motion.div
-              key={study.slug}
-              layout
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.97 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <StudyCard study={study} />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </motion.div>
-    </div>
+      <Section className="pt-12 md:pt-16">
+        <div className="container-page">
+          <motion.div layout className="grid gap-6 md:grid-cols-2 lg:gap-8">
+            <AnimatePresence mode="popLayout" initial={false}>
+              {visible.map((study) => (
+                <motion.div
+                  key={study.slug}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <StudyCard study={study} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+      </Section>
+    </>
   );
 }
 
 function FilterRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
-      <span className="w-24 shrink-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+    <div role="group" aria-label={`Filter by ${label.toLowerCase()}`} className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
+      <span className="w-20 shrink-0 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
         {label}
       </span>
-      <div className="flex flex-wrap gap-2">{children}</div>
+      <div className="flex flex-wrap gap-1 rounded-[1.4rem] border border-border bg-surface/90 p-1 shadow-ambient backdrop-blur">
+        {children}
+      </div>
     </div>
   );
 }
@@ -135,10 +152,10 @@ function Chip({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "rounded-full border px-3.5 py-1.5 text-[0.82rem] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu",
+        "rounded-full px-3.5 py-1.5 text-[0.84rem] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu",
         active
-          ? "border-setu bg-setu text-white"
-          : "border-border bg-background text-foreground hover:border-setu/50",
+          ? "bg-setu text-white shadow-sm"
+          : "text-foreground/75 hover:bg-foreground/[0.05] hover:text-foreground",
       )}
     >
       {children}
@@ -164,7 +181,7 @@ function StudyCard({ study }: { study: CaseStudyCard }) {
             src={photo.src}
             alt={photo.alt}
             fill
-            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            sizes="(min-width: 768px) 50vw, 100vw"
             className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05]"
           />
         ) : (
@@ -201,10 +218,10 @@ function StudyCard({ study }: { study: CaseStudyCard }) {
         <h2 className="text-xl font-semibold leading-snug text-foreground">{study.title}</h2>
         <p className="text-[0.95rem] leading-relaxed text-muted-foreground">{study.summary}</p>
 
-        <dl className="mt-auto grid grid-cols-2 gap-4 border-t border-border pt-5 sm:grid-cols-4">
+        <dl className="mt-auto grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-4">
           {study.results.map((metric) => (
-            <div key={metric.label} className="flex flex-col-reverse">
-              <dt className="text-[11px] leading-tight text-muted-foreground">{metric.label}</dt>
+            <div key={metric.label} className="flex flex-col-reverse justify-end bg-background-subtle px-3.5 py-3">
+              <dt className="mt-0.5 text-[11px] leading-tight text-muted-foreground">{metric.label}</dt>
               <dd className="font-display text-base font-semibold text-foreground">
                 {metric.value}
               </dd>
@@ -212,7 +229,7 @@ function StudyCard({ study }: { study: CaseStudyCard }) {
           ))}
         </dl>
 
-        <span className="inline-flex items-center gap-1 text-sm font-medium text-setu">
+        <span className="inline-flex items-center gap-1 text-sm font-semibold text-setu">
           View case study
           <ArrowUpRight
             className="size-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"

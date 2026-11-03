@@ -2,16 +2,16 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Quote } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Quote } from "lucide-react";
 
-import { caseStudyPhoto } from "@/lib/case-study-photos";
+import { caseStudyPhoto, caseStudyPhotos } from "@/lib/case-study-photos";
 import { caseStudies, getCaseStudy, getService } from "@/lib/content";
-import { caseStudyPhotos } from "@/lib/case-study-photos";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Section } from "@/components/ui/section";
+import { FadeUp, Stagger, StaggerItem } from "@/components/motion/primitives";
 
 export function generateStaticParams() {
   return caseStudies.map((study) => ({ slug: study.slug }));
@@ -140,143 +140,233 @@ async function CaseStudy({ params }: { params: Promise<{ slug: string }> }) {
             {study.summary}
           </p>
 
-          <h2 className="mt-10 border-t border-border pt-8 text-xs font-semibold uppercase tracking-[0.16em] text-setu">
-            Results
-          </h2>
-          <dl className="mt-4 grid grid-cols-2 gap-6 sm:grid-cols-4">
+          {studyServices.length > 0 ? (
+            <ul className="mt-8 flex flex-wrap gap-2" aria-label="Services delivered">
+              {studyServices.map((service) => (
+                <li key={service.slug}>
+                  <Link
+                    href={`/services/${service.slug}`}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface/70 px-3.5 py-1.5 text-[0.84rem] font-medium text-foreground backdrop-blur transition-colors hover:border-setu/60"
+                  >
+                    {service.name}
+                    <ArrowUpRight className="size-3.5 text-setu" aria-hidden />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      </section>
+
+      <Section aria-labelledby="challenge-heading">
+        <div className="container-page grid gap-12 lg:grid-cols-[1.45fr_1fr] lg:gap-16">
+          <FadeUp y={20}>
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
+              01 · The challenge
+            </span>
+            <h2
+              id="challenge-heading"
+              className="mt-4 font-display text-3xl font-semibold leading-[1.15] text-foreground sm:text-4xl"
+            >
+              The business problem
+            </h2>
+            <p className="mt-6 max-w-[62ch] text-lg leading-relaxed text-foreground/80 md:text-xl md:leading-relaxed">
+              {study.challenge}
+            </p>
+          </FadeUp>
+
+          <FadeUp y={20} delay={0.1}>
+            <dl className="rounded-card border border-border bg-background-subtle p-6 md:p-7">
+              <div className="flex justify-between gap-4 border-b border-border pb-4">
+                <dt className="text-sm text-muted-foreground">Client</dt>
+                <dd className="text-right text-sm font-semibold text-foreground">{study.client}</dd>
+              </div>
+              <div className="flex justify-between gap-4 border-b border-border py-4">
+                <dt className="text-sm text-muted-foreground">Industry</dt>
+                <dd className="text-right text-sm font-semibold text-foreground">{study.sector}</dd>
+              </div>
+              <div className="flex justify-between gap-4 border-b border-border py-4">
+                <dt className="text-sm text-muted-foreground">Year</dt>
+                <dd className="text-right text-sm font-semibold text-foreground">{study.year}</dd>
+              </div>
+              <div className="pt-4">
+                <dt className="text-sm text-muted-foreground">Technology</dt>
+                <dd className="mt-3 flex flex-wrap gap-1.5">
+                  {study.stack.map((tool) => (
+                    <Badge key={tool} tone="neutral">
+                      {tool}
+                    </Badge>
+                  ))}
+                </dd>
+              </div>
+            </dl>
+          </FadeUp>
+        </div>
+      </Section>
+
+      <Section surface="dots" aria-labelledby="approach-heading">
+        <div className="container-page">
+          <div className="max-w-2xl">
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
+              02 · Our approach
+            </span>
+            <h2
+              id="approach-heading"
+              className="mt-4 font-display text-3xl font-semibold leading-[1.15] text-foreground sm:text-4xl"
+            >
+              How we delivered it
+            </h2>
+          </div>
+          <Stagger as="ol" className="mt-12 grid gap-5 sm:grid-cols-2">
+            {study.approach.map((step, index) => (
+              <StaggerItem
+                as="li"
+                key={step}
+                className="flex h-full gap-5 rounded-card border border-border bg-surface p-6 shadow-ambient md:p-7"
+              >
+                <span className="font-display text-3xl font-semibold leading-none text-setu/35 tabular-nums">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="text-[1rem] leading-relaxed text-foreground/85">{step}</span>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
+      </Section>
+
+      <Section surface="ink" aria-labelledby="results-heading">
+        <div className="container-page">
+          <div className="max-w-2xl">
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
+              03 · Results
+            </span>
+            <h2
+              id="results-heading"
+              className="mt-4 font-display text-3xl font-semibold leading-[1.15] text-foreground sm:text-4xl"
+            >
+              Measurable outcomes
+            </h2>
+          </div>
+          <dl className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {study.results.map((metric) => (
-              <div key={metric.label} className="flex flex-col-reverse">
-                <dt className="mt-1 text-xs text-muted-foreground">{metric.label}</dt>
-                <dd className="font-display text-2xl font-semibold text-foreground sm:text-3xl">
+              <div
+                key={metric.label}
+                className="flex flex-col-reverse justify-end rounded-card border border-white/10 bg-white/[0.04] p-6 backdrop-blur md:p-7"
+              >
+                <dt className="mt-3 text-sm leading-snug text-muted-foreground">{metric.label}</dt>
+                <dd className="font-display text-4xl font-semibold tracking-tight text-foreground md:text-[2.75rem]">
                   {metric.value}
                 </dd>
               </div>
             ))}
           </dl>
-        </div>
-      </section>
 
-      <Section>
-        <div className="container-page grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
-          <div className="lg:sticky lg:top-24 lg:self-start">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">
-              The challenge
-            </h2>
-            <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
-              {study.challenge}
-            </p>
-
-            {studyServices.length > 0 ? (
-              <>
-                <h2 className="mt-9 text-sm font-semibold uppercase tracking-[0.16em] text-primary">
-                  Services
-                </h2>
-                <ul className="mt-3 flex flex-col gap-2">
-                  {studyServices.map((service) => (
-                    <li key={service.slug}>
-                      <Link
-                        href={`/services/${service.slug}`}
-                        className="group inline-flex items-center gap-1.5 text-[0.95rem] font-medium text-foreground transition-colors hover:text-setu"
-                      >
-                        {service.name}
-                        <ArrowRight
-                          className="size-3.5 text-setu transition-transform group-hover:translate-x-0.5"
-                          aria-hidden
-                        />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            ) : null}
-
-            <h2 className="mt-9 text-sm font-semibold uppercase tracking-[0.16em] text-primary">
-              Built with
-            </h2>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {study.stack.map((tool) => (
-                <Badge key={tool} tone="neutral">
-                  {tool}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-semibold text-foreground">What we did</h2>
-            <ol className="mt-6 flex flex-col gap-4">
-              {study.approach.map((step, index) => (
-                <li
-                  key={step}
-                  className="flex gap-4 rounded-card border border-border bg-surface p-5"
-                >
-                  <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/12 font-mono text-xs font-semibold text-primary">
-                    {index + 1}
-                  </span>
-                  <span className="text-[0.98rem] leading-relaxed text-foreground/85">
-                    {step}
-                  </span>
-                </li>
-              ))}
-            </ol>
-
-            {study.quote ? (
-              <figure className="mt-10 rounded-card border border-primary/25 bg-primary/5 p-7">
-                <Quote className="size-6 text-primary/70" aria-hidden />
-                <blockquote className="mt-4 text-lg leading-relaxed text-foreground">
+          {study.quote ? (
+            <FadeUp y={20}>
+              <figure className="mt-12 max-w-3xl border-l-2 border-setu pl-6 md:pl-8">
+                <Quote className="size-6 text-setu" aria-hidden />
+                <blockquote className="mt-4 text-xl leading-relaxed text-foreground md:text-2xl md:leading-relaxed">
                   {study.quote.text}
                 </blockquote>
-                <figcaption className="mt-4 text-sm text-muted-foreground">
-                  <span className="font-medium text-foreground">
-                    {study.quote.author}
-                  </span>
-                  , {study.quote.role}
+                <figcaption className="mt-5 text-sm text-muted-foreground">
+                  <span className="font-semibold text-foreground">{study.quote.author}</span>,{" "}
+                  {study.quote.role}
                 </figcaption>
               </figure>
-            ) : null}
-          </div>
+            </FadeUp>
+          ) : null}
         </div>
       </Section>
 
-      <Section surface="subtle">
+      <Section surface="subtle" aria-labelledby="related-heading">
         <div className="container-page">
-          <h2 className="text-xl font-semibold text-foreground">Related work</h2>
-          <div className="mt-6 grid gap-5 md:grid-cols-2">
-            {others.map((item) => (
-              <Link
-                key={item.slug}
-                href={`/work/${item.slug}`}
-                className="group flex items-center justify-between gap-4 rounded-card border border-border bg-surface p-6 transition-colors hover:border-primary/40"
-              >
-                <span>
-                  <span className="block text-xs text-muted-foreground">
-                    {item.client} · {item.sector}
-                  </span>
-                  <span className="mt-1 block font-medium text-foreground">
-                    {item.title}
-                  </span>
-                </span>
-                <ArrowRight
-                  className="size-4 shrink-0 text-primary transition-transform group-hover:translate-x-1"
-                  aria-hidden
-                />
-              </Link>
-            ))}
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <h2
+              id="related-heading"
+              className="font-display text-2xl font-semibold text-foreground sm:text-3xl"
+            >
+              Related work
+            </h2>
+            <Link
+              href="/work"
+              className="group inline-flex items-center gap-1.5 text-sm font-semibold text-setu"
+            >
+              All case studies
+              <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
+            </Link>
           </div>
+          <ul className="mt-8 grid gap-6 md:grid-cols-2">
+            {others.map((item) => {
+              const itemPhoto = caseStudyPhoto(item.slug);
+              return (
+                <li key={item.slug}>
+                  <Link
+                    href={`/work/${item.slug}`}
+                    className="group flex h-full flex-col overflow-hidden rounded-card border border-border bg-surface shadow-ambient transition-[transform,border-color,box-shadow] duration-300 hover:border-setu/50 hover:shadow-glow motion-safe:hover:-translate-y-1"
+                  >
+                    <div
+                      className="relative aspect-[16/9] overflow-hidden"
+                      style={{
+                        backgroundImage: `linear-gradient(135deg, ${item.accent[0]}, ${item.accent[1]})`,
+                      }}
+                    >
+                      {itemPhoto ? (
+                        <Image
+                          src={itemPhoto.src}
+                          alt={itemPhoto.alt}
+                          fill
+                          sizes="(min-width: 768px) 50vw, 100vw"
+                          className="object-cover transition-transform duration-700 motion-safe:group-hover:scale-[1.04]"
+                        />
+                      ) : null}
+                    </div>
+                    <div className="flex flex-1 flex-col gap-2 p-6">
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {item.client} · {item.sector}
+                      </span>
+                      <span className="text-lg font-semibold leading-snug text-foreground">
+                        {item.title}
+                      </span>
+                      <span className="mt-auto inline-flex items-center gap-1 pt-3 text-sm font-semibold text-setu">
+                        View case study
+                        <ArrowUpRight
+                          className="size-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                          aria-hidden
+                        />
+                      </span>
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </Section>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+      <Section surface="grid" className="py-16 md:py-24">
+        <FadeUp y={20} className="container-page mx-auto max-w-2xl text-center">
+          <h2 className="font-display text-3xl font-semibold leading-[1.15] text-foreground sm:text-4xl">
+            Discuss a similar project
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground md:text-lg">
+            Share your requirements and our team will respond within one business day with
+            recommendations and next steps.
+          </p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <ButtonLink
               href={primaryService ? `/contact?service=${primaryService.slug}` : "/contact"}
-              className="rounded-full bg-setu text-white shadow-none hover:bg-setu-dark"
+              size="lg"
+              variant="ghost"
+              className="rounded-full bg-setu font-semibold text-white hover:bg-setu-dark dark:hover:bg-setu-dark"
             >
               Start a similar project
               <ArrowRight className="size-4" aria-hidden />
             </ButtonLink>
-            <ButtonLink href="/work" variant="secondary" className="rounded-full">
-              All case studies
+            <ButtonLink href="/work" size="lg" variant="secondary" className="rounded-full">
+              View all case studies
             </ButtonLink>
           </div>
-        </div>
+        </FadeUp>
       </Section>
 
       <JsonLd
