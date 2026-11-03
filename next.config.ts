@@ -41,6 +41,10 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // The deploy workflow type-checks in GitHub Actions before the server
+  // builds, so the server skips the (slow, memory-hungry) second check.
+  typescript: { ignoreBuildErrors: process.env.SKIP_BUILD_TYPECHECK === "1" },
+
   cacheComponents: true,
   partialPrefetching: true,
 

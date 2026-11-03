@@ -15,8 +15,25 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Runs on GitHub's machines (fast, free) so the 1 GB server only builds.
+  # A failing check stops the deploy before it touches production.
+  check:
+    name: Type check, lint and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+
   deploy:
     name: Deploy to Ubuntu Server
+    needs: check
     runs-on: ubuntu-latest
 
     steps:
@@ -42,4 +59,4 @@ jobs:
             -o IdentitiesOnly=yes \
             -o BatchMode=yes \
             "$SERVER_USER@$SERVER_HOST" \
-            "bash /home/ubuntu/deploy-setuware.sh"
+            'set -e; cd /home/ubuntu/setuware-technologies && git fetch --quiet origin main && git reset --hard --quiet origin/main && bash deploy/deploy-pm2.sh'

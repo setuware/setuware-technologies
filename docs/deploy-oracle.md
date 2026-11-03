@@ -92,6 +92,8 @@ channel is configured in `/etc/setuware.env`:
 - **E-mail:** set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` (an app
   password) and `LEAD_EMAIL_TO=sales@setuware.in`. Zoho Mail India uses
   `smtp.zoho.in:465`; Google Workspace uses `smtp.gmail.com:465`.
+- **Zoho CRM:** set `ZOHO_CLIENT_ID`, `ZOHO_CLIENT_SECRET` and `ZOHO_REFRESH_TOKEN`
+  and every enquiry becomes a Lead. Step-by-step: [`docs/zoho-crm.md`](./zoho-crm.md).
 - **Webhook (optional):** `LEAD_WEBHOOK_URL` receives each enquiry as JSON.
 
 Without either, enquiries are only written (redacted) to the server log.

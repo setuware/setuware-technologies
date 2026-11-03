@@ -28,32 +28,47 @@ export function Logo({
   /** Light wordmark, for use on dark backgrounds. */
   inverted?: boolean;
 }) {
-  const [first, ...rest] = site.shortName.split(" ");
+  const [first = "Setuware", ...rest] = site.shortName.split(" ");
   const second = rest.join(" ");
+  const name = first.toUpperCase();
+  // "SETU" + "WARE": the second half takes the W's blue-to-teal gradient.
+  const split = Math.ceil(name.length / 2);
 
   return (
     <Link
       href={href}
-      className={cn(
-        "group inline-flex items-center gap-2.5 transition-colors lg:gap-[calc(var(--s)*12)]",
-        inverted ? "text-white" : "text-foreground",
-        className,
-      )}
+      className={cn("group inline-flex items-center gap-2.5 lg:gap-[calc(var(--s)*12)]", className)}
       aria-label={`${site.name} — home`}
     >
-      <LogoMark className="size-9 shrink-0 transition-transform duration-500 group-hover:rotate-[-8deg] lg:size-[calc(var(--s)*44)]" />
-      <span className="flex flex-col leading-none">
-        <span className="font-[family-name:var(--font-brand)] text-[1.2rem] font-semibold uppercase tracking-[0.02em] lg:text-[calc(var(--s)*22)]">
-          {first}
-        </span>
-        {second ? (
+      <LogoMark className="size-10 shrink-0 transition-transform duration-500 group-hover:rotate-[-8deg] lg:size-[calc(var(--s)*46)]" />
+      <span className="inline-flex flex-col leading-none" aria-hidden>
+        <span className="font-[family-name:var(--font-brand)] text-[1.25rem] font-bold tracking-[0.045em] lg:text-[calc(var(--s)*23)]">
+          <span className={inverted ? "text-white" : "text-[#0b1020] dark:text-white"}>{name.slice(0, split)}</span>
           <span
             className={cn(
-              "mt-[0.3rem] text-[0.74rem] font-bold uppercase tracking-[0.2em] lg:mt-[calc(var(--s)*5)] lg:text-[calc(var(--s)*13)]",
-              inverted ? "text-white/65" : "text-foreground/60",
+              "bg-clip-text text-transparent",
+              inverted
+                ? "bg-[linear-gradient(90deg,#8aa6ff,#22c3e6)]"
+                : "bg-[linear-gradient(90deg,#1d3fae,#0a8ea6)] dark:bg-[linear-gradient(90deg,#8aa6ff,#22c3e6)]",
             )}
           >
-            {second}
+            {name.slice(split)}
+          </span>
+        </span>
+        {second ? (
+          // Letters spread across the full width of the name above.
+          <span
+            className={cn(
+              "mt-[0.32rem] flex justify-between text-[0.66rem] font-semibold lg:mt-[calc(var(--s)*6)] lg:text-[calc(var(--s)*11.5)]",
+              inverted ? "text-white/60" : "text-slate-500 dark:text-white/60",
+            )}
+          >
+            {second
+              .toUpperCase()
+              .split("")
+              .map((letter, index) => (
+                <span key={index}>{letter}</span>
+              ))}
           </span>
         ) : null}
       </span>
