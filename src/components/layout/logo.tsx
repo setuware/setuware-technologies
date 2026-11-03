@@ -1,4 +1,7 @@
+import { useId } from "react";
 import Link from "next/link";
+
+import { MARK_PATHS } from "@/lib/brand-mark";
 
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -6,7 +9,7 @@ import { cn } from "@/lib/utils";
 /**
  * Wordmark, as drawn in the Figma header (nodes 24:2620 and 24:2618).
  *
- * "ST" monogram tile + two-line wordmark: "Setuware" in Sora SemiBold (brand
+ * SW monogram + two-line wordmark: "Setuware" in Sora SemiBold (brand
  * face), "TECHNOLOGIES" in widely tracked Manrope Bold caps spanning the
  * same width. (The Figma ® is omitted at the
  * owner's request.)
@@ -38,7 +41,7 @@ export function Logo({
       )}
       aria-label={`${site.name} — home`}
     >
-      <LogoMark className="size-9 shrink-0 transition-transform duration-500 group-hover:-rotate-6 lg:size-[calc(var(--s)*44)]" />
+      <LogoMark className="size-9 shrink-0 transition-transform duration-500 group-hover:rotate-[-8deg] lg:size-[calc(var(--s)*44)]" />
       <span className="flex flex-col leading-none">
         <span className="font-[family-name:var(--font-brand)] text-[1.2rem] font-semibold uppercase tracking-[0.02em] lg:text-[calc(var(--s)*22)]">
           {first}
@@ -46,7 +49,7 @@ export function Logo({
         {second ? (
           <span
             className={cn(
-              "mt-[0.32rem] text-[0.6rem] font-bold uppercase tracking-[0.31em] lg:mt-[calc(var(--s)*6)] lg:text-[calc(var(--s)*10.6)]",
+              "mt-[0.3rem] text-[0.74rem] font-bold uppercase tracking-[0.2em] lg:mt-[calc(var(--s)*5)] lg:text-[calc(var(--s)*13)]",
               inverted ? "text-white/65" : "text-foreground/60",
             )}
           >
@@ -59,29 +62,32 @@ export function Logo({
 }
 
 /**
- * Brand mark: "ST" monogram on an ink tile — the S in the brand cyan
- * gradient, the T in white — with a hairline edge so the tile still reads on
- * dark backgrounds. Decorative — the link carries the name.
+ * Brand mark: the SW monogram in its ring. Colours come from CSS variables so
+ * the same SVG switches to brighter blues in dark mode (and inside the
+ * always-dark footer). Decorative — the link carries the name.
  */
 export function LogoMark({ className }: { className?: string }) {
+  const gradient = `sw-${useId().replace(/:/g, "")}`;
   return (
-    <svg viewBox="0 0 40 40" aria-hidden className={className}>
+    <svg
+      viewBox="0 0 100 100"
+      aria-hidden
+      className={cn(
+        "[--sw-ring:#1d3fae] [--sw-w0:#1d3fae] [--sw-w1:#1468ad] [--sw-w2:#0a8ea6] dark:[--sw-ring:#6a8cff] dark:[--sw-w0:#6a8cff] dark:[--sw-w1:#3fa9e8] dark:[--sw-w2:#22c3e6]",
+        className,
+      )}
+    >
       <defs>
-        <linearGradient id="setu-mark" x1="6" y1="8" x2="34" y2="32" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#5fe0f7" />
-          <stop offset="1" stopColor="#00a1c6" />
+        <linearGradient id={gradient} x1="40" y1="0" x2="92" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0" style={{ stopColor: "var(--sw-w0)" }} />
+          <stop offset=".55" style={{ stopColor: "var(--sw-w1)" }} />
+          <stop offset="1" style={{ stopColor: "var(--sw-w2)" }} />
         </linearGradient>
       </defs>
-      <rect width="40" height="40" rx="12" fill="#0b1020" />
-      <rect x=".5" y=".5" width="39" height="39" rx="11.5" fill="none" stroke="#fff" strokeOpacity=".12" />
-      <path
-        d="M18.6 13.4C17.4 11.4 15.5 10.4 13.3 10.4 10.3 10.4 8.3 12.2 8.3 14.5c0 5.3 10.6 3.5 10.6 9.3 0 2.4-2.2 4.3-5.4 4.3-2.4 0-4.4-1.1-5.6-3.1"
-        fill="none"
-        stroke="url(#setu-mark)"
-        strokeWidth="3.6"
-        strokeLinecap="round"
-      />
-      <path d="M22 11.2h10.6M27.3 11.2v16.9" fill="none" stroke="#fff" strokeWidth="3.6" strokeLinecap="round" />
+      <path d={MARK_PATHS.ring} fill="none" style={{ stroke: "var(--sw-ring)" }} strokeWidth="9" />
+      <path d={MARK_PATHS.nodes} fillRule="evenodd" style={{ fill: "var(--sw-ring)" }} />
+      <path d={MARK_PATHS.s} fill="none" style={{ stroke: "var(--sw-ring)" }} strokeWidth="9.4" />
+      <path d={MARK_PATHS.w} fill={`url(#${gradient})`} />
     </svg>
   );
 }

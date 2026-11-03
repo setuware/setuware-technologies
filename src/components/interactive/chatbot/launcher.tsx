@@ -4,6 +4,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion";
 import { MessageCircle, X } from "lucide-react";
 
+import { LogoMark } from "@/components/layout/logo";
 import { EASE_OUT } from "@/components/motion/ease";
 import { useReducedMotionSafe } from "@/components/motion/primitives";
 import { cn } from "@/lib/utils";
@@ -99,8 +100,8 @@ export function ChatLauncher() {
                 {open ? (
                   <X className="size-6" strokeWidth={2.2} />
                 ) : (
-                  <span className="font-[family-name:var(--font-brand,inherit)] text-[17px] font-extrabold leading-none tracking-[-0.02em] sm:text-lg">
-                    <span className="text-[#22c3e6]">S</span>T
+                  <span className="dark">
+                    <LogoMark className="size-8 sm:size-9" />
                   </span>
                 )}
               </motion.span>
