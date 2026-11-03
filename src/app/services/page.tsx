@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Calculator, MessageCircle } from "lucide-react";
+import { ArrowRight, Calculator, Check, MessageCircle } from "lucide-react";
 
 import { serviceGroups, services } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
@@ -10,6 +10,7 @@ import { TextReveal } from "@/components/motion/text-reveal";
 import { ServiceCard } from "@/components/services/service-card";
 import { ProcessDark } from "@/components/sections/process-dark";
 import { DeferredSection } from "@/components/ui/deferred-section";
+import { Section, type SectionSurface } from "@/components/ui/section";
 import { cn } from "@/lib/utils";
 
 export const metadata = pageMetadata({
@@ -18,6 +19,20 @@ export const metadata = pageMetadata({
     "Web and app development services from Gurugram: business websites, e-commerce, mobile apps, branding, SEO, custom ERP and CRM, AI automation and hosting.",
   path: "/services",
 });
+
+/** Alternating backgrounds for the group sections, so neighbours never match. */
+const GROUP_SURFACES: readonly SectionSurface[] = ["grid", "tint", "default", "dots"];
+
+/** Sentence-initial numbers are written as words. */
+const COUNT_WORDS: Record<number, string> = { 1: "One", 2: "Two", 3: "Three", 4: "Four", 5: "Five" };
+
+/** What every engagement includes, whichever services it combines. */
+const INCLUDED = [
+  "Free 30-minute consultation",
+  "Fixed-price written proposal",
+  "Dedicated project manager",
+  "Three months of post-launch support",
+] as const;
 
 export default function ServicesPage() {
   const groups = serviceGroups
@@ -50,91 +65,99 @@ export default function ServicesPage() {
         </nav>
       </PageHero>
 
-      {groups.map((group, index) => (
-        <section
-          key={group.id}
-          id={group.id}
-          aria-labelledby={`${group.id}-heading`}
-          className={cn(
-            "scroll-mt-24 py-16 md:py-24",
-            index % 2 === 1 && "bg-background-subtle",
-          )}
-        >
-          <div className="container-page grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,2fr)] lg:gap-14">
-            <FadeUp className="lg:sticky lg:top-28 lg:self-start">
-              <span className="font-mono text-sm text-setu">
-                0{index + 1} / {group.label}
-              </span>
-              <h2
-                id={`${group.id}-heading`}
-                className="mt-3 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.2rem]"
-              >
-                {group.title}
-              </h2>
-              <p className="mt-3 max-w-sm text-[0.98rem] leading-relaxed text-muted-foreground">
-                {group.description}
-              </p>
-            </FadeUp>
-
-            <Stagger className="grid gap-5 sm:grid-cols-2">
-              {group.items.map((service) => (
-                <StaggerItem key={service.slug} className="h-full">
-                  <ServiceCard service={service} />
-                </StaggerItem>
-              ))}
-            </Stagger>
-          </div>
-        </section>
-      ))}
-
-      <section className="py-16 md:py-24" aria-labelledby="not-sure-heading">
-        <div className="container-page">
-          <div className="relative overflow-hidden rounded-[1.6rem] bg-black px-6 py-12 text-white sm:px-10 md:px-14 md:py-16">
-            <div
-              className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-setu/25 blur-3xl"
-              aria-hidden
-            />
-            <div className="relative grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">
-              <div>
-                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
-                  Expert guidance
+      {groups.map((group, index) => {
+        const count = group.items.length;
+        return (
+          <Section
+            key={group.id}
+            id={group.id}
+            surface={GROUP_SURFACES[index % GROUP_SURFACES.length]}
+            aria-labelledby={`${group.id}-heading`}
+            // `overflow-clip` instead of the decorated surfaces' `overflow-hidden`,
+            // so the sticky group intro still sticks to the viewport.
+            className="scroll-mt-24 overflow-clip"
+          >
+            <div className="container-page grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,2fr)] lg:gap-14">
+              <FadeUp className="lg:sticky lg:top-28 lg:self-start">
+                <span className="inline-flex items-center rounded-full border border-setu/25 bg-setu/[0.08] px-3 py-1 font-mono text-xs font-semibold text-setu">
+                  0{index + 1} / {group.label}
                 </span>
-                <TextReveal
-                  as="h2"
-                  id="not-sure-heading"
-                  className="mt-4 font-display text-3xl font-semibold leading-tight sm:text-[2.4rem]"
+                <h2
+                  id={`${group.id}-heading`}
+                  className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.2rem]"
                 >
-                  {"Not sure which service is right for you?"}
-                </TextReveal>
-                <p className="mt-4 max-w-lg text-[1rem] leading-relaxed text-white/70">
-                  Our consultants will assess your requirements and recommend the most
-                  effective approach for your goals and budget.
+                  {group.title}
+                </h2>
+                <p className="mt-3 max-w-sm text-[0.98rem] leading-relaxed text-muted-foreground">
+                  {group.description}
                 </p>
-              </div>
+                <p className="mt-5 border-t border-border pt-4 text-sm text-muted-foreground lg:max-w-sm">
+                  {COUNT_WORDS[count] ?? count} {count === 1 ? "service" : "services"}, delivered by
+                  the same team.
+                </p>
+              </FadeUp>
 
-              <div className="grid gap-3">
-                <NotSureLink
-                  href="/contact"
-                  icon={<MessageCircle className="size-5" aria-hidden />}
-                  title="Book a free consultation"
-                  body="A 30-minute call with a senior member of our team."
-                  primary
-                />
-                <NotSureLink
-                  href="/estimate"
-                  icon={<Calculator className="size-5" aria-hidden />}
-                  title="Get an instant estimate"
-                  body="Select a service and features to see an indicative price range."
-                />
-              </div>
+              <Stagger className="grid gap-5 sm:grid-cols-2">
+                {group.items.map((service) => (
+                  <StaggerItem key={service.slug} className="h-full">
+                    <ServiceCard service={service} />
+                  </StaggerItem>
+                ))}
+              </Stagger>
             </div>
+          </Section>
+        );
+      })}
+
+      <Section surface="ink" aria-labelledby="not-sure-heading">
+        <div className="container-page grid gap-12 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-16">
+          <div>
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
+              Expert guidance
+            </span>
+            <TextReveal
+              as="h2"
+              id="not-sure-heading"
+              className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
+            >
+              {"Not sure which service is right for you?"}
+            </TextReveal>
+            <p className="mt-4 max-w-lg text-[1rem] leading-relaxed text-muted-foreground">
+              Many projects combine two or three services. A short consultation is the quickest
+              way to agree the right combination for your goals and budget.
+            </p>
+            <ul className="mt-8 grid gap-3 sm:grid-cols-2" aria-label="Included in every engagement">
+              {INCLUDED.map((item) => (
+                <li key={item} className="flex gap-3 text-[0.95rem] text-foreground/85">
+                  <Check className="mt-0.5 size-4 shrink-0 text-setu" aria-hidden />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="grid gap-3">
+            <NotSureLink
+              href="/contact"
+              icon={<MessageCircle className="size-5" aria-hidden />}
+              title="Book a free consultation"
+              body="A 30-minute call with a senior member of our team."
+              primary
+            />
+            <NotSureLink
+              href="/estimate"
+              icon={<Calculator className="size-5" aria-hidden />}
+              title="Get an instant estimate"
+              body="Select a service and features to see an indicative price range."
+            />
           </div>
         </div>
-      </section>
+      </Section>
 
       <DeferredSection minHeight={820}>
         <ProcessDark />
       </DeferredSection>
+
       <JsonLd data={breadcrumbJsonLd([{ name: "Services", path: "/services" }])} />
     </>
   );
@@ -161,7 +184,7 @@ function NotSureLink({
           "group flex items-center gap-4 rounded-2xl border p-5 transition-colors duration-300",
           primary
             ? "border-setu bg-setu text-white hover:bg-setu-dark"
-            : "border-white/15 bg-white/5 text-white hover:border-setu/70 hover:bg-white/10",
+            : "border-white/15 bg-white/5 text-white backdrop-blur-sm hover:border-setu/70 hover:bg-white/10",
         )}
       >
         <span

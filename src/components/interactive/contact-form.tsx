@@ -27,11 +27,11 @@ const BUDGETS = [
 const SERVICE_OPTIONS: readonly { value: ServiceKey; label: string }[] = [
   { value: "business-websites", label: "Business website" },
   { value: "ecommerce-stores", label: "E-commerce store" },
-  { value: "web-development", label: "Web app" },
+  { value: "web-development", label: "Web application" },
   { value: "app-development", label: "Mobile app" },
   { value: "product-design", label: "UI/UX & branding" },
-  { value: "seo-marketing", label: "SEO & marketing" },
-  { value: "custom-software", label: "Custom software / ERP / CRM" },
+  { value: "seo-marketing", label: "SEO & digital marketing" },
+  { value: "custom-software", label: "Custom software, ERP & CRM" },
   { value: "ai-integration", label: "AI & automation" },
   { value: "managed-hosting", label: "Hosting & domains" },
   { value: "support-maintenance", label: "Maintenance & support" },
@@ -138,7 +138,7 @@ export function ContactForm() {
   if (status === "done") {
     return (
       <div
-        className="rounded-card border border-emerald-500/25 bg-emerald-500/10 p-7 text-center"
+        className="rounded-2xl border border-emerald-500/25 bg-emerald-500/10 p-7 text-center"
         role="status"
       >
         <span className="mx-auto inline-flex size-12 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
@@ -253,14 +253,14 @@ export function ContactForm() {
         htmlFor="contact-message"
         required
         error={errors.message}
-        hint="Briefly describe your business, your requirements and your preferred timeline."
+        hint="Briefly describe your business, what you need and your preferred timeline."
       >
         <Textarea
           id="contact-message"
           name="message"
           required
           rows={6}
-          placeholder="We run a chain of clinics and need a new website with online booking…"
+          placeholder="For example: we run a chain of clinics and need a new website with online appointment booking."
           value={draft.message}
           onChange={(event) => set({ message: event.target.value })}
           aria-invalid={Boolean(errors.message)}

@@ -1,17 +1,33 @@
 import Link from "next/link";
-import { ArrowRight, Check, Clock, Hand, PackageCheck } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  Clock,
+  FileText,
+  FileCheck2,
+  KeyRound,
+  LifeBuoy,
+  MessageSquareText,
+  Palette,
+  RefreshCw,
+  Server,
+  TrendingUp,
+  UserCheck,
+} from "lucide-react";
 
 import { breadcrumbJsonLd, faqJsonLd, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { services } from "@/lib/content";
 import { projectPackages } from "@/lib/plans";
-import { Faq } from "@/components/sections/faq";
+import { CARD, CARD_HOVER, FaqCards, IconTile, SectionIntro } from "@/components/sections/page-blocks";
 import { PageHero } from "@/components/layout/page-hero";
 import { ButtonLink } from "@/components/ui/button";
 import { DeferredSection } from "@/components/ui/deferred-section";
 import { Section } from "@/components/ui/section";
-import { TextReveal } from "@/components/motion/text-reveal";
+import { ServiceIcon } from "@/components/ui/service-icon";
 import { FadeUp, Stagger, StaggerItem } from "@/components/motion/primitives";
+import { cn } from "@/lib/utils";
 
 export const metadata = pageMetadata({
   title: "Our Website & App Development Process",
@@ -26,8 +42,7 @@ interface Stage {
   summary: string;
   website: string;
   app: string;
-  youGet: readonly string[];
-  weNeed: readonly string[];
+  deliverables: readonly string[];
 }
 
 const STAGES: readonly Stage[] = [
@@ -35,100 +50,117 @@ const STAGES: readonly Stage[] = [
     step: "01",
     title: "Discovery",
     summary:
-      "We develop a clear understanding of your business, audience and objectives, and confirm the timeline your project must meet.",
-    website: "2–5 days",
+      "We establish a clear understanding of your business, audience and objectives, and confirm the date your project must meet.",
+    website: "2–5 working days",
     app: "1–2 weeks",
-    youGet: [
+    deliverables: [
       "A free 30-minute consultation with our team",
       "A written summary of goals, audience and constraints",
       "A sitemap for a website or a feature list for an app",
-    ],
-    weNeed: [
-      "A designated decision-maker",
-      "Access to your current website or tools, where available",
-      "Two or three reference websites or competitors",
     ],
   },
   {
     step: "02",
     title: "Strategy and proposal",
     summary:
-      "A written proposal that defines the scope, exclusions, timeline and fixed price, with payment milestones linked to each stage.",
+      "A written proposal that defines the scope, exclusions, timeline and fixed price, with payments linked to each stage.",
     website: "3–5 working days",
     app: "3–5 working days",
-    youGet: [
+    deliverables: [
       "A written scope listing every page, screen or feature",
       "A fixed price and a dated timeline",
-      "Milestone-based payment schedule",
+      "A milestone-based payment schedule",
     ],
-    weNeed: ["Approval of the scope", "The first milestone payment to schedule the team"],
   },
   {
     step: "03",
     title: "Design",
     summary:
-      "Wireframes, visual designs and an interactive prototype of key pages or screens, reviewed and approved before development.",
+      "Wireframes, visual designs and an interactive prototype of the key pages or screens, approved before development begins.",
     website: "1–2 weeks",
     app: "2–3 weeks",
-    youGet: [
+    deliverables: [
       "Wireframes for the main pages or screens",
       "An interactive prototype for desktop and mobile",
-      "Final designs approved before development",
-    ],
-    weNeed: [
-      "Logo, brand colours and imagery, or approval for us to create them",
-      "Feedback within two to three business days",
+      "Final designs, approved before development",
     ],
   },
   {
     step: "04",
     title: "Development",
     summary:
-      "Engineering, integrations and quality assurance, with progress available on a live preview from the first week of development and reviewed in a weekly demonstration.",
+      "Engineering, integrations and quality assurance, with a live preview from the first week and a weekly demonstration of progress.",
     website: "1–3 weeks",
     app: "4–10 weeks",
-    youGet: [
+    deliverables: [
       "A live preview available on any device",
       "A weekly demonstration and written progress summary",
       "Direct access to your project team",
-    ],
-    weNeed: [
-      "Final page content or a brief for our copywriters",
-      "Access to any systems we integrate with",
-      "Business KYC documents for payment integrations",
     ],
   },
   {
     step: "05",
     title: "Launch",
     summary:
-      "Comprehensive testing across devices and browsers, performance, SEO and security reviews, and a planned go-live with rollback procedures in place.",
-    website: "2–4 days",
+      "Testing across devices and browsers, performance, SEO and security reviews, and a planned go-live with a rollback plan in place.",
+    website: "2–4 working days",
     app: "1–2 weeks",
-    youGet: [
+    deliverables: [
       "Device testing on Android, iPhone and desktop",
       "Performance, SEO and accessibility checks",
-      "Go-live and app store submission for mobile apps",
+      "Go-live, and app store submission for mobile apps",
       "Handover documentation and team training",
     ],
-    weNeed: ["Final review and approval to launch", "Access to domain and app store accounts"],
   },
   {
     step: "06",
     title: "Support and growth",
     summary:
-      "Every project includes a post-launch support period, followed by optional maintenance plans for hosting, updates, backups and continuous improvement.",
+      "Every project includes a post-launch support period, followed by optional plans for hosting, updates, backups and improvements.",
     website: "Ongoing",
     app: "Ongoing",
-    youGet: [
+    deliverables: [
       "Bug fixes and security updates",
       "Uptime monitoring and backups",
-      "A clear monthly performance report",
+      "A monthly performance report",
       "Quotations for new features before work begins",
     ],
-    weNeed: ["Advance notice of major launches or campaigns"],
   },
 ];
+
+/** What the client provides, consolidated from every stage. */
+const CLIENT_INPUTS = [
+  {
+    Icon: UserCheck,
+    title: "A decision-maker",
+    body: "One person who can approve the scope, designs and launch, and attend weekly reviews.",
+  },
+  {
+    Icon: Palette,
+    title: "Brand assets",
+    body: "Your logo, brand colours and imagery, or approval for us to create them.",
+  },
+  {
+    Icon: FileText,
+    title: "Content",
+    body: "Final page content, or a brief for our copywriters to work from.",
+  },
+  {
+    Icon: KeyRound,
+    title: "Access to systems",
+    body: "Your current website, domain, app store accounts and any tools we integrate with.",
+  },
+  {
+    Icon: MessageSquareText,
+    title: "Timely feedback",
+    body: "Feedback on designs and previews within two to three business days.",
+  },
+  {
+    Icon: FileCheck2,
+    title: "Business documents",
+    body: "KYC documents for payment gateway activation, where payments are in scope.",
+  },
+] as const;
 
 const PROCESS_FAQS = [
   {
@@ -173,10 +205,36 @@ export default function ProcessPage() {
   const websitePackage = projectPackages.find((plan) => plan.id === "website-build");
   const appPackage = projectPackages.find((plan) => plan.id === "full-application-build");
   const timelines = services.filter((service) =>
-    ["business-websites", "ecommerce-stores", "web-development", "app-development", "custom-software"].includes(
+    ["business-websites", "ecommerce-stores", "web-development", "app-development", "custom-software", "ai-integration"].includes(
       service.slug,
     ),
   );
+
+  const afterLaunch = [
+    {
+      Icon: LifeBuoy,
+      title: "Included support",
+      body:
+        websitePackage && appPackage
+          ? `${supportTerm(websitePackage.features)} on Landing Page and Website Build projects, and ${supportTerm(appPackage.features)} on Full Application Build projects.`
+          : "Every project includes a post-launch support period.",
+    },
+    {
+      Icon: RefreshCw,
+      title: "Updates and fixes",
+      body: "Security patches, plugin and framework updates, and bug fixes.",
+    },
+    {
+      Icon: Server,
+      title: "Hosting and backups",
+      body: "Managed hosting, SSL, nightly backups and uptime monitoring.",
+    },
+    {
+      Icon: TrendingUp,
+      title: "Continuous improvement",
+      body: "SEO, marketing and new features, each quoted before work begins.",
+    },
+  ] as const;
 
   return (
     <>
@@ -184,7 +242,7 @@ export default function ProcessPage() {
         video="process"
         eyebrow="Our process"
         title="How we deliver every project"
-        description="Six structured stages, each with defined outputs, timelines and responsibilities. You have full visibility of progress and costs throughout."
+        description="Six structured stages, each with defined deliverables, durations and responsibilities. Progress and costs remain visible to you throughout."
       >
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <ButtonLink
@@ -201,31 +259,33 @@ export default function ProcessPage() {
         </div>
       </PageHero>
 
-      {/* Stage by stage */}
-      <Section>
+      {/* Timeline */}
+      <Section surface="grid">
         <div className="container-page">
-          <div className="mx-auto max-w-2xl text-center">
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
-              Stage by stage
-            </span>
-            <TextReveal
-              as="h2"
-              className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
-            >
-              Activities, deliverables and requirements
-            </TextReveal>
-          </div>
+          <SectionIntro
+            eyebrow="Stage by stage"
+            title="Six stages from discovery to growth"
+            description="Each stage ends with a defined deliverable and your approval before the next begins."
+          />
 
-          <ol className="relative mx-auto mt-14 flex max-w-5xl flex-col gap-6">
+          <ol className="relative mx-auto mt-16 flex max-w-5xl flex-col gap-8 md:gap-10">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute bottom-8 left-[1.4rem] top-8 w-px bg-gradient-to-b from-setu/70 via-setu/40 to-setu/10 md:left-[1.9rem]"
+            />
             {STAGES.map((stage) => (
-              <li key={stage.step}>
+              <li key={stage.step} className="relative grid grid-cols-[2.8rem_1fr] gap-4 md:grid-cols-[3.8rem_1fr] md:gap-8">
+                <span className="relative z-10 inline-flex size-11 items-center justify-center rounded-full bg-setu font-mono text-sm font-semibold text-white shadow-[0_0_0_6px_var(--background),0_8px_20px_-6px_rgb(0_161_198/0.6)] md:size-[3.8rem] md:text-base">
+                  {stage.step}
+                </span>
+
                 <FadeUp
                   y={28}
                   blur={false}
-                  className="grid gap-6 rounded-card border border-border bg-surface p-6 shadow-ambient md:p-8 lg:grid-cols-[1fr_1.35fr] lg:gap-10"
+                  className={cn(CARD, "grid gap-6 p-6 md:p-8 lg:grid-cols-[1.1fr_1fr] lg:gap-10")}
                 >
                   <div className="flex flex-col gap-3">
-                    <span className="font-mono text-xs font-semibold text-setu">
+                    <span className="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-setu">
                       Stage {stage.step}
                     </span>
                     <h3 className="font-display text-2xl font-semibold text-foreground">
@@ -234,57 +294,26 @@ export default function ProcessPage() {
                     <p className="text-[0.95rem] leading-relaxed text-muted-foreground">
                       {stage.summary}
                     </p>
-                    <dl className="mt-2 grid grid-cols-2 gap-3">
-                      <div className="rounded-xl bg-background-subtle px-3.5 py-2.5">
-                        <dt className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground">
-                          <Clock className="size-3" aria-hidden />
-                          Website
-                        </dt>
-                        <dd className="mt-0.5 text-sm font-semibold text-foreground">
-                          {stage.website}
-                        </dd>
-                      </div>
-                      <div className="rounded-xl bg-background-subtle px-3.5 py-2.5">
-                        <dt className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground">
-                          <Clock className="size-3" aria-hidden />
-                          App or software
-                        </dt>
-                        <dd className="mt-0.5 text-sm font-semibold text-foreground">
-                          {stage.app}
-                        </dd>
-                      </div>
+                    <dl className="mt-2 flex flex-wrap gap-2">
+                      <Duration label="Website" value={stage.website} />
+                      <Duration label="App or software" value={stage.app} />
                     </dl>
                   </div>
 
-                  <div className="grid gap-6 sm:grid-cols-2">
-                    <div>
-                      <h4 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                        <PackageCheck className="size-4 text-setu" aria-hidden />
-                        Deliverables
-                      </h4>
-                      <ul className="mt-3 flex flex-col gap-2.5">
-                        {stage.youGet.map((item) => (
-                          <li key={item} className="flex gap-2.5 text-[0.9rem] leading-snug text-foreground/85">
-                            <Check className="mt-0.5 size-4 shrink-0 text-setu" aria-hidden />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                        <Hand className="size-4 text-setu" aria-hidden />
-                        Client requirements
-                      </h4>
-                      <ul className="mt-3 flex flex-col gap-2.5">
-                        {stage.weNeed.map((item) => (
-                          <li key={item} className="flex gap-2.5 text-[0.9rem] leading-snug text-muted-foreground">
-                            <span className="mt-[0.45rem] size-1.5 shrink-0 rounded-full bg-setu/60" aria-hidden />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                  <div className="rounded-xl bg-background-subtle p-5 ring-1 ring-inset ring-border">
+                    <h4 className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      Deliverables
+                    </h4>
+                    <ul className="mt-3.5 flex flex-col gap-2.5">
+                      {stage.deliverables.map((item) => (
+                        <li key={item} className="flex gap-2.5 text-[0.9rem] leading-snug text-foreground/85">
+                          <span className="mt-0.5 inline-flex size-[18px] shrink-0 items-center justify-center rounded-full bg-setu/12 text-setu">
+                            <Check className="size-3" strokeWidth={3} aria-hidden />
+                          </span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </FadeUp>
               </li>
@@ -293,129 +322,136 @@ export default function ProcessPage() {
         </div>
       </Section>
 
-      {/* Typical timelines */}
+      {/* What we need from you */}
       <Section surface="subtle">
-        <div className="container-page grid gap-10 lg:grid-cols-[1fr_1.3fr] lg:gap-16">
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
-              Typical timelines
-            </span>
-            <TextReveal
-              as="h2"
-              className="mt-4 font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]"
-            >
-              Typical project durations
-            </TextReveal>
-            <FadeUp delay={0.2} y={20}>
-              <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
-                Durations are measured from approved scope to launch. Exact dates
-                are confirmed in your proposal, and the instant estimator provides
-                an indicative figure for your scope.
-              </p>
-              <ButtonLink href="/estimate" variant="secondary" className="mt-6 rounded-full">
-                Get an estimate
-                <ArrowRight className="size-4" aria-hidden />
-              </ButtonLink>
-            </FadeUp>
-          </div>
+        <div className="container-page">
+          <SectionIntro
+            eyebrow="Your role"
+            title="What we need from you"
+            description="Projects stay on schedule when these inputs are ready at the right stage. We confirm each one in your proposal."
+          />
 
-          <Stagger as="ul" className="divide-y divide-border border-y border-border" stagger={0.06}>
-            {timelines.map((service) => (
-              <StaggerItem key={service.slug} as="li" y={16}>
-                <Link
-                  href={`/services/${service.slug}`}
-                  className="group flex items-center justify-between gap-4 py-4"
-                >
-                  <span className="font-medium text-foreground transition-colors group-hover:text-setu">
-                    {service.name}
-                  </span>
-                  <span className="shrink-0 font-display text-sm font-semibold text-foreground sm:text-base">
-                    {service.typicalTimeline}
-                  </span>
-                </Link>
+          <Stagger className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" stagger={0.06}>
+            {CLIENT_INPUTS.map(({ Icon, title, body }) => (
+              <StaggerItem key={title} y={22} className={cn(CARD, "h-full p-6")}>
+                <IconTile>
+                  <Icon className="size-5" aria-hidden />
+                </IconTile>
+                <h3 className="mt-5 font-semibold text-foreground">{title}</h3>
+                <p className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">{body}</p>
               </StaggerItem>
             ))}
           </Stagger>
         </div>
       </Section>
 
-      {/* After launch */}
-      <Section>
+      {/* Typical timelines */}
+      <Section surface="dots">
         <div className="container-page">
-          <div className="relative overflow-hidden rounded-[1.75rem] bg-black p-7 text-white md:p-12">
-            <div
-              className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-[radial-gradient(circle,rgba(0,161,198,0.45),transparent_70%)] blur-2xl"
-              aria-hidden
-            />
-            <div className="relative grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center">
-              <div>
-                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
-                  After launch
-                </span>
-                <TextReveal
-                  as="h2"
-                  className="mt-4 font-display text-3xl font-semibold leading-tight text-white sm:text-[2.4rem]"
-                >
-                  Ongoing support after handover
-                </TextReveal>
-                <FadeUp delay={0.2} y={20}>
-                  <p className="mt-4 max-w-lg text-[1.02rem] leading-relaxed text-white/70">
-                    Every project includes a post-launch support period. Monthly
-                    maintenance plans then keep your platform fast, secure and
-                    backed up, with published response times.
-                  </p>
-                  <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                    <ButtonLink
-                      href="/pricing#care"
-                      className="rounded-full bg-setu text-white shadow-none hover:bg-setu-dark"
-                    >
-                      View maintenance plans
-                    </ButtonLink>
-                    <ButtonLink
-                      href="/services/support-maintenance"
-                      variant="ghost"
-                      className="rounded-full border border-white/25 text-white hover:bg-white/10"
-                    >
-                      Maintenance and support
-                    </ButtonLink>
-                  </div>
-                </FadeUp>
-              </div>
+          <SectionIntro
+            eyebrow="Typical timelines"
+            title="Typical project durations"
+            description="Measured from approved scope to launch. Exact dates are confirmed in your proposal."
+          />
 
-              <Stagger as="ul" className="grid gap-3 sm:grid-cols-2" stagger={0.07}>
-                {[
-                  {
-                    title: "Included support",
-                    body: websitePackage && appPackage
-                      ? `${supportTerm(websitePackage.features)} on Landing Page and Website Build, ${supportTerm(appPackage.features)} on Full Application Build.`
-                      : "Every project includes a post-launch support period.",
-                  },
-                  { title: "Updates and fixes", body: "Security patches, plugin and framework updates, and bug fixes." },
-                  { title: "Hosting and backups", body: "Managed hosting, SSL, nightly backups and uptime checks." },
-                  { title: "Continuous improvement", body: "SEO, marketing and new features, each quoted before work begins." },
-                ].map((item) => (
-                  <StaggerItem
-                    key={item.title}
-                    as="li"
-                    y={20}
-                    className="rounded-2xl border border-white/12 bg-white/[0.04] p-5"
-                  >
-                    <h3 className="font-semibold text-white">{item.title}</h3>
-                    <p className="mt-1.5 text-[0.88rem] leading-relaxed text-white/65">{item.body}</p>
-                  </StaggerItem>
-                ))}
-              </Stagger>
+          <Stagger className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" stagger={0.06}>
+            {timelines.map((service) => (
+              <StaggerItem key={service.slug} y={18} className="h-full">
+                <Link
+                  href={`/services/${service.slug}`}
+                  className={cn(CARD, CARD_HOVER, "group flex h-full items-center gap-4 p-5")}
+                >
+                  <ServiceIcon name={service.icon} accent={service.accent} size={18} className="size-11" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-medium text-muted-foreground transition-colors group-hover:text-setu">
+                      {service.name}
+                    </span>
+                    <span className="mt-0.5 block font-display text-xl font-semibold text-foreground">
+                      {service.typicalTimeline}
+                    </span>
+                  </span>
+                  <ArrowUpRight
+                    className="size-4 shrink-0 text-muted-foreground transition-[color,transform] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-setu"
+                    aria-hidden
+                  />
+                </Link>
+              </StaggerItem>
+            ))}
+          </Stagger>
+
+          <FadeUp y={16} className="mt-10 flex justify-center">
+            <ButtonLink href="/estimate" variant="secondary" className="rounded-full">
+              Estimate your timeline
+              <ArrowRight className="size-4" aria-hidden />
+            </ButtonLink>
+          </FadeUp>
+        </div>
+      </Section>
+
+      {/* After launch */}
+      <Section surface="ink">
+        <div className="container-page grid gap-12 lg:grid-cols-[0.9fr_1.2fr] lg:items-center lg:gap-16">
+          <SectionIntro
+            align="left"
+            eyebrow="After launch"
+            title="Ongoing support after handover"
+            description="Every project includes a post-launch support period. Monthly maintenance plans then keep your platform fast, secure and backed up, with published response times."
+          >
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <ButtonLink
+                href="/pricing#care"
+                className="rounded-full bg-setu text-white shadow-none hover:bg-setu-dark"
+              >
+                View maintenance plans
+                <ArrowRight className="size-4" aria-hidden />
+              </ButtonLink>
+              <ButtonLink
+                href="/services/support-maintenance"
+                variant="ghost"
+                className="rounded-full border border-white/25 text-white hover:bg-white/10"
+              >
+                Maintenance and support
+              </ButtonLink>
             </div>
-          </div>
+          </SectionIntro>
+
+          <Stagger as="ul" className="grid gap-4 sm:grid-cols-2" stagger={0.07}>
+            {afterLaunch.map(({ Icon, title, body }) => (
+              <StaggerItem
+                key={title}
+                as="li"
+                y={20}
+                className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm"
+              >
+                <span className="inline-flex size-11 items-center justify-center rounded-xl bg-setu/15 text-setu ring-1 ring-inset ring-setu/30">
+                  <Icon className="size-5" aria-hidden />
+                </span>
+                <h3 className="mt-5 font-semibold text-white">{title}</h3>
+                <p className="mt-1.5 text-[0.9rem] leading-relaxed text-white/65">{body}</p>
+              </StaggerItem>
+            ))}
+          </Stagger>
         </div>
       </Section>
 
       <DeferredSection minHeight={720}>
-        <Faq items={PROCESS_FAQS} />
+        <Section surface="tint" id="faq">
+          <FaqCards items={PROCESS_FAQS} />
+        </Section>
       </DeferredSection>
       <JsonLd data={breadcrumbJsonLd([{ name: "How it works", path: "/process" }])} />
       <JsonLd data={faqJsonLd(PROCESS_FAQS)} />
     </>
+  );
+}
+
+function Duration({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5">
+      <Clock className="size-3.5 text-setu" aria-hidden />
+      <dt className="text-xs text-muted-foreground">{label}</dt>
+      <dd className="text-xs font-semibold text-foreground">{value}</dd>
+    </div>
   );
 }
 

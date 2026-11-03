@@ -27,6 +27,7 @@ import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Accordion } from "@/components/ui/accordion";
+import { Section } from "@/components/ui/section";
 import { ServiceIcon } from "@/components/ui/service-icon";
 import { ServiceVisual } from "@/components/interactive/service-visual";
 import {
@@ -59,6 +60,10 @@ export async function generateMetadata({
     path: `/services/${service.slug}`,
   });
 }
+
+/** Thin border plus a layered, soft shadow for cards on light surfaces. */
+const CARD_SHADOW =
+  "shadow-[0_1px_2px_rgb(15_23_42/0.04),0_10px_28px_-14px_rgb(15_23_42/0.14),0_28px_56px_-32px_rgb(15_23_42/0.12)]";
 
 const primaryCta =
   "inline-flex h-12 items-center justify-center gap-2 rounded-full bg-setu px-7 text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-setu-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu";
@@ -101,18 +106,20 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
       <Hero service={service} groupLabel={group?.label} contactHref={contactHref} estimateHref={estimateHref} />
 
       {service.audience?.length ? (
-        <section className="py-16 md:py-24" aria-labelledby="audience-heading">
+        <Section surface="grid" aria-labelledby="audience-heading">
           <div className="container-page">
             <SectionIntro
               id="audience-heading"
-              eyebrow="Who it's for"
-              title="Designed for organisations like yours"
+              eyebrow="Who it is for"
+              title="Organisations we typically work with"
             />
             <Stagger className="mt-10 grid gap-5 md:grid-cols-3">
               {service.audience.map((item, index) => (
                 <StaggerItem key={item.title} className="h-full">
-                  <div className="flex h-full flex-col rounded-[1.4rem] border border-border bg-surface p-6 md:p-7">
-                    <span className="font-mono text-sm text-setu">0{index + 1}</span>
+                  <div className={cn("flex h-full flex-col rounded-2xl border border-border bg-surface p-6 md:p-7", CARD_SHADOW)}>
+                    <span className="inline-flex size-10 items-center justify-center rounded-xl bg-setu/10 font-mono text-sm font-semibold text-setu ring-1 ring-inset ring-setu/20">
+                      0{index + 1}
+                    </span>
                     <h3 className="mt-4 font-display text-[1.2rem] font-semibold leading-snug text-foreground">
                       {item.title}
                     </h3>
@@ -124,11 +131,11 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
               ))}
             </Stagger>
           </div>
-        </section>
+        </Section>
       ) : null}
 
       {service.problems?.length ? (
-        <section className="bg-background-subtle py-16 md:py-24" aria-labelledby="problems-heading">
+        <Section surface="tint" aria-labelledby="problems-heading">
           <div className="container-page">
             <SectionIntro
               id="problems-heading"
@@ -144,7 +151,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
               {service.problems.map((item) => (
                 <StaggerItem key={item.problem} y={24}>
                   <div className="grid gap-3 md:grid-cols-[1fr_2.5rem_1.3fr] md:items-stretch md:gap-4">
-                    <div className="flex items-start gap-3 rounded-2xl border border-border bg-surface p-5">
+                    <div className={cn("flex items-start gap-3 rounded-2xl border border-border bg-surface p-5", CARD_SHADOW)}>
                       <span className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-red-500/10 text-red-500">
                         <X className="size-3.5" aria-hidden />
                       </span>
@@ -156,7 +163,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                     <span className="hidden items-center justify-center text-setu md:flex" aria-hidden>
                       <ArrowRight className="size-5" />
                     </span>
-                    <div className="flex items-start gap-3 rounded-2xl border border-setu/30 bg-setu/[0.06] p-5">
+                    <div className={cn("flex items-start gap-3 rounded-2xl border border-setu/30 bg-surface p-5 [background-image:linear-gradient(135deg,rgba(0,161,198,0.09),rgba(0,161,198,0.02))]", CARD_SHADOW)}>
                       <span className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-setu text-white">
                         <Check className="size-3.5" aria-hidden />
                       </span>
@@ -170,15 +177,16 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
               ))}
             </Stagger>
           </div>
-        </section>
+        </Section>
       ) : null}
 
-      <section className="py-16 md:py-24" aria-labelledby="included-heading">
+      <Section aria-labelledby="included-heading">
         <div className="container-page">
           <SectionIntro
             id="included-heading"
-            eyebrow="What's included"
+            eyebrow="What is included"
             title="What we deliver"
+            description="Every engagement includes the following, confirmed in your written proposal."
           />
 
           {service.features?.length ? (
@@ -187,7 +195,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                 <StaggerItem key={feature.title} className="h-full">
                   <SpotlightCard
                     tilt={3}
-                    className="h-full rounded-[1.4rem] border border-border bg-surface p-6 transition-colors duration-300 hover:border-setu/40 md:p-7"
+                    className={cn("h-full rounded-2xl border border-border bg-surface p-6 transition-colors duration-300 hover:border-setu/40 md:p-7", CARD_SHADOW)}
                   >
                     <span
                       className="inline-flex size-10 items-center justify-center rounded-xl font-mono text-sm font-semibold text-white"
@@ -210,7 +218,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
             </Stagger>
           ) : null}
 
-          <FadeUp className="mt-8 rounded-[1.4rem] border border-border bg-background-subtle p-6 md:p-8">
+          <FadeUp className="mt-8 rounded-2xl border border-setu/20 bg-[linear-gradient(135deg,rgba(0,161,198,0.07),rgba(59,130,246,0.03))] p-6 md:p-8">
             <div className="flex flex-col gap-6 lg:flex-row lg:gap-12">
               <div className="lg:w-64 lg:shrink-0">
                 <h3 className="font-display text-[1.15rem] font-semibold text-foreground">
@@ -231,15 +239,15 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
             </div>
           </FadeUp>
         </div>
-      </section>
+      </Section>
 
       {service.process?.length ? (
         <ProcessTimeline service={service} />
       ) : null}
 
-      <section className="py-16 md:py-24" aria-labelledby="pricing-heading">
+      <Section surface="dots" aria-labelledby="pricing-heading">
         <div className="container-page grid gap-6 lg:grid-cols-[1.3fr_1fr]">
-          <FadeUp className="flex flex-col gap-8 rounded-[1.4rem] border border-border bg-surface p-6 md:p-8">
+          <FadeUp className={cn("flex flex-col gap-8 rounded-2xl border border-border bg-surface p-6 md:p-8", CARD_SHADOW)}>
             <div>
               <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
                 Technologies
@@ -329,13 +337,13 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                 </p>
               ) : null}
               <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row lg:flex-col">
-                <Link href={estimateHref} className={cn(primaryCta, "flex-1")}>
+                <Link href={estimateHref} className={cn(primaryCta, "sm:flex-1 lg:flex-none")}>
                   <Calculator className="size-4" aria-hidden />
                   Get an instant estimate
                 </Link>
                 <Link
                   href={contactHref}
-                  className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border-[1.5px] border-white/30 px-6 text-[15px] font-semibold text-white transition-colors hover:border-white hover:bg-white/10"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-full border-[1.5px] border-white/30 sm:flex-1 lg:flex-none px-6 text-[15px] font-semibold text-white transition-colors hover:border-white hover:bg-white/10"
                 >
                   Request a quote
                 </Link>
@@ -343,10 +351,10 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
             </div>
           </FadeUp>
         </div>
-      </section>
+      </Section>
 
       {studies.length > 0 ? (
-        <section className="bg-background-subtle py-16 md:py-24" aria-labelledby="work-heading">
+        <Section surface="grid" aria-labelledby="work-heading">
           <div className="container-page">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <SectionIntro id="work-heading" eyebrow="Our work" title="Related projects" />
@@ -363,7 +371,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                 <StaggerItem key={study.slug} className="h-full">
                   <Link
                     href={`/work/${study.slug}`}
-                    className="group flex h-full flex-col overflow-hidden rounded-[1.4rem] border border-border bg-surface transition-colors duration-300 hover:border-setu/50"
+                    className={cn("group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface transition-colors duration-300 hover:border-setu/50", CARD_SHADOW)}
                   >
                     <span
                       className="block h-1.5"
@@ -395,7 +403,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                         </dl>
                       ) : null}
                       <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-setu">
-                        Read the case study
+                        View case study
                         <ArrowRight
                           className="size-4 transition-transform group-hover:translate-x-1"
                           aria-hidden
@@ -407,11 +415,11 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
               ))}
             </Stagger>
           </div>
-        </section>
+        </Section>
       ) : null}
 
       {faqs.length > 0 ? (
-        <section className="py-16 md:py-24" aria-labelledby="faq-heading">
+        <Section aria-labelledby="faq-heading">
           <div className="container-page grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
             <FadeUp className="lg:sticky lg:top-28 lg:self-start">
               <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">FAQ</span>
@@ -422,7 +430,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
                 Frequently asked questions
               </h2>
               <p className="mt-4 max-w-sm text-[0.98rem] leading-relaxed text-muted-foreground">
-                Our team is available to answer any further questions about this service.
+                If your question is not covered here, our team will reply within one business day.
               </p>
               <Link
                 href={contactHref}
@@ -434,11 +442,11 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
             </FadeUp>
             <Accordion items={faqs} defaultOpen={0} />
           </div>
-        </section>
+        </Section>
       ) : null}
 
       {related.length > 0 ? (
-        <section className="bg-background-subtle py-16 md:py-24" aria-labelledby="related-heading">
+        <Section surface="tint" aria-labelledby="related-heading">
           <div className="container-page">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <SectionIntro
@@ -465,10 +473,10 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
               ))}
             </Stagger>
           </div>
-        </section>
+        </Section>
       ) : null}
 
-      <section className="py-16 md:py-24" aria-labelledby="final-cta-heading">
+      <Section aria-labelledby="final-cta-heading">
         <div className="container-page">
           <div className="relative overflow-hidden rounded-[1.6rem] bg-setu px-6 py-12 text-white sm:px-10 md:px-14 md:py-16">
             <div className="pointer-events-none absolute inset-0 bg-grid opacity-20" aria-hidden />
@@ -509,7 +517,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
             </div>
           </div>
         </div>
-      </section>
+      </Section>
 
       <JsonLd
         data={serviceJsonLd({
@@ -530,7 +538,17 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
   );
 }
 
-function SectionIntro({ id, eyebrow, title }: { id: string; eyebrow: string; title: string }) {
+function SectionIntro({
+  id,
+  eyebrow,
+  title,
+  description,
+}: {
+  id: string;
+  eyebrow: string;
+  title: string;
+  description?: string;
+}) {
   return (
     <FadeUp className="max-w-2xl">
       <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">{eyebrow}</span>
@@ -540,6 +558,11 @@ function SectionIntro({ id, eyebrow, title }: { id: string; eyebrow: string; tit
       >
         {title}
       </h2>
+      {description ? (
+        <p className="mt-3 text-[0.98rem] leading-relaxed text-muted-foreground md:text-[1.05rem]">
+          {description}
+        </p>
+      ) : null}
     </FadeUp>
   );
 }
@@ -687,11 +710,7 @@ const STAGE_COUNT: Record<number, string> = { 3: "Three", 4: "Four", 5: "Five", 
 function ProcessTimeline({ service }: { service: Service }) {
   const steps = service.process ?? [];
   return (
-    <section className="relative overflow-hidden bg-black py-16 text-white md:py-24" aria-labelledby="process-heading">
-      <div
-        className="pointer-events-none absolute -left-40 top-1/3 size-[28rem] rounded-full bg-setu/15 blur-3xl"
-        aria-hidden
-      />
+    <Section surface="ink" aria-labelledby="process-heading">
       <div className="container-page relative grid gap-12 lg:grid-cols-[1fr_1.7fr] lg:gap-16">
         <div className="lg:sticky lg:top-28 lg:self-start">
           <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
@@ -723,7 +742,7 @@ function ProcessTimeline({ service }: { service: Service }) {
               {index < steps.length - 1 ? (
                 <span className="absolute left-[1.1875rem] top-11 bottom-0 w-px bg-white/15" aria-hidden />
               ) : null}
-              <span className="relative inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-setu/60 bg-black font-mono text-sm text-setu">
+              <span className="relative inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-setu/60 bg-[#05070d] font-mono text-sm text-setu">
                 {String(index + 1).padStart(2, "0")}
               </span>
               <div className="flex-1 rounded-2xl border border-white/10 bg-white/[0.04] p-5">
@@ -739,6 +758,6 @@ function ProcessTimeline({ service }: { service: Service }) {
           ))}
         </Stagger>
       </div>
-    </section>
+    </Section>
   );
 }

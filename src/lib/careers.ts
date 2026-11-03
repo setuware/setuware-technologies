@@ -48,7 +48,8 @@ export const whatWeOffer = [
   "Direct collaboration with clients to understand their requirements first-hand.",
 ] as const;
 
-export const compensationNote = "Compensation: competitive, based on experience and discussed at interview.";
+export const compensationNote =
+  "Compensation is competitive, based on experience and discussed during the interview process.";
 
 export const jobs: readonly Job[] = [
   {
@@ -66,7 +67,7 @@ export const jobs: readonly Job[] = [
       "Build client websites and web apps in Next.js and TypeScript, from first commit to production.",
       "Design APIs and database schemas in Node.js and PostgreSQL for portals, dashboards and admin panels.",
       "Integrate payment gateways, CRMs, WhatsApp and email providers used by Indian businesses.",
-      "Join client calls to clarify scope, demo progress and agree on changes.",
+      "Join client calls to clarify scope, demonstrate progress and agree on changes.",
       "Review pull requests from teammates and keep tests and documentation current.",
       "Manage deployments, monitoring and fixes for projects after launch.",
     ],
@@ -92,7 +93,7 @@ export const jobs: readonly Job[] = [
     type: "Full-time",
     experience: "1–3 years",
     summary:
-      "Develop and maintain business websites on WordPress and online stores on Shopify, with custom themes, integrations and high performance.",
+      "Build and maintain WordPress business websites and Shopify stores, including custom themes, third-party integrations and performance optimisation.",
     skills: ["WordPress", "Shopify", "PHP", "Liquid"],
     responsibilities: [
       "Build lightweight custom WordPress themes and blocks from Figma designs.",
@@ -123,13 +124,13 @@ export const jobs: readonly Job[] = [
     type: "Full-time",
     experience: "2–4 years",
     summary:
-      "Develop Android and iOS apps in React Native or Flutter, from initial build through to app store release.",
+      "Develop Android and iOS apps in React Native or Flutter, from the initial build through to release on Google Play and the App Store.",
     skills: ["React Native", "Flutter", "TypeScript", "Firebase"],
     responsibilities: [
       "Build cross-platform apps in React Native or Flutter from Figma designs.",
       "Connect apps to REST APIs, authentication, push notifications and payments.",
       "Manage builds, signing and releases on Google Play and the App Store.",
-      "Monitor crashes and performance after release and resolve the issues identified.",
+      "Monitor crashes and performance after release, and resolve the issues identified.",
       "Work with the web team when an app shares a backend with a website or portal.",
       "Present weekly progress to clients using test builds.",
     ],
@@ -221,7 +222,7 @@ export const jobs: readonly Job[] = [
     skills: ["Website sales", "Software sales", "CRM", "Proposals"],
     responsibilities: [
       "Respond to inbound enquiries from the website, WhatsApp and referrals.",
-      "Run discovery calls to understand what a business needs and what it can spend.",
+      "Run discovery calls to understand each business's requirements and budget.",
       "Work with the project team to scope work and prepare written proposals and quotes.",
       "Follow up with prospects and keep every conversation logged in the CRM.",
       "Build relationships with business owners in Gurugram and Delhi NCR.",
@@ -251,7 +252,7 @@ export const jobs: readonly Job[] = [
     skills: ["Planning", "Client communication", "Jira or Linear", "Documentation"],
     responsibilities: [
       "Turn signed scopes into project plans with milestones and owners.",
-      "Schedule and run weekly client demos, and share notes the same day.",
+      "Schedule and run weekly client demonstrations, and share notes the same day.",
       "Track feedback, change requests and approvals in one place.",
       "Flag risks to scope, budget or timeline early, with options to resolve them.",
       "Coordinate content, assets and access that clients need to provide.",
@@ -262,7 +263,7 @@ export const jobs: readonly Job[] = [
       "Strong written English for updates, meeting notes and summaries.",
       "Experience with a project tool such as Jira, Linear, Trello or ClickUp.",
       "Confidence in technical discussions without needing to write code.",
-      "Calm, organised management of several concurrent projects.",
+      "Ability to manage several concurrent projects calmly and methodically.",
     ],
     niceToHaves: [
       "Familiarity with Agile or Scrum ceremonies.",
@@ -347,16 +348,16 @@ export function jobsValidThrough(): string {
 export function applyHref(job?: Pick<Job, "title">): string {
   const subject = job ? `Application: ${job.title}` : "Open application";
   const body = [
-    "Hi Setuware team,",
+    "Dear Setuware Technologies team,",
     "",
-    `I'd like to apply${job ? ` for the ${job.title} role` : ""}.`,
+    `I would like to apply${job ? ` for the ${job.title} role` : ""}.`,
     "",
     "CV: (attached)",
     "Portfolio / GitHub / LinkedIn:",
     "Current location:",
     "Notice period:",
     "",
-    "Thanks,",
+    "Kind regards,",
   ].join("\n");
   return `mailto:${site.hrEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }

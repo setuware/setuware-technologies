@@ -17,9 +17,9 @@ export interface Plan {
 }
 
 /** Cheapest published build package: a single-page site. */
-export const LANDING_PAGE_FROM = 5_000;
+export const LANDING_PAGE_FROM = 4_999;
 /** The full business website package. The estimator's business-websites base matches it. */
-export const WEBSITE_FROM = 25_000;
+export const WEBSITE_FROM = 14_999;
 
 export const projectPackages: readonly Plan[] = [
   {
@@ -61,7 +61,7 @@ export const projectPackages: readonly Plan[] = [
     name: "Full Application Build",
     tagline: "Online stores, web apps and mobile apps.",
     monthly: null,
-    setupFrom: 50_000,
+    setupFrom: 34_999,
     highlight: true,
     bestFor: "Portals, SaaS products, mobile apps and stores with accounts and payments",
     features: [
@@ -97,7 +97,7 @@ export const carePlans: readonly Plan[] = [
     id: "host-essential",
     name: "Essential",
     tagline: "Hosting and maintenance for business websites",
-    monthly: 8_000,
+    monthly: 1_999,
     highlight: false,
     bestFor: "Marketing sites and small web apps",
     features: [
@@ -113,7 +113,7 @@ export const carePlans: readonly Plan[] = [
     id: "host-business",
     name: "Business",
     tagline: "For revenue-generating stores, portals and apps",
-    monthly: 25_000,
+    monthly: 4_999,
     highlight: true,
     bestFor: "Commerce, portals and customer-facing apps",
     features: [
@@ -131,7 +131,7 @@ export const carePlans: readonly Plan[] = [
     id: "host-critical",
     name: "Critical",
     tagline: "For mission-critical systems that require maximum availability",
-    monthly: 65_000,
+    monthly: 14_999,
     highlight: false,
     bestFor: "High-traffic events, product launches and regulated workloads",
     features: [

@@ -12,6 +12,7 @@ import {
   type FeatureKey,
   type ServiceKey,
 } from "@/lib/pricing";
+import { carePlans } from "@/lib/plans";
 
 const base: EstimateInput = {
   service: "web-development",
@@ -30,7 +31,8 @@ describe("estimateProject", () => {
 
     expect(result.breakdown.base).toBe(rate.base);
     expect(result.breakdown.scope).toBe(10 * rate.perScope);
-    expect(result.total).toBe(rate.base + 10 * rate.perScope);
+    // Totals are rounded to the nearest ₹1,000; bases such as ₹49,999 are not.
+    expect(result.total).toBe(Math.round((rate.base + 10 * rate.perScope) / 1_000) * 1_000);
     expect(result.currency).toBe("INR");
   });
 
@@ -58,11 +60,13 @@ describe("estimateProject", () => {
     const premium = estimateProject({ ...base, design: "premium" });
 
     expect(premium.total).toBeGreaterThan(starter.total);
-    // Allow for the ₹1,000 rounding step.
-    expect(premium.total).toBeCloseTo(
-      starter.total * DESIGN_TIERS.premium.multiplier,
-      -3,
-    );
+    // Both totals are rounded to the nearest ₹1,000, so compare against the
+    // unrounded build cost and allow one rounding step.
+    const rate = SERVICE_RATES[base.service];
+    const buildCost = rate.base + base.scope * rate.perScope;
+    expect(
+      Math.abs(premium.total - buildCost * DESIGN_TIERS.premium.multiplier),
+    ).toBeLessThanOrEqual(500);
   });
 
   it("charges more and delivers sooner on an accelerated timeline", () => {
@@ -164,7 +168,7 @@ describe("estimateProject", () => {
       scope: 1,
       retainer: true,
     });
-    expect(cheapest.monthlyRetainer).toBeGreaterThanOrEqual(15_000);
+    expect(cheapest.monthlyRetainer).toBeGreaterThanOrEqual(carePlans[0].monthly ?? 0);
   });
 
   it("keeps the team size within a staffable range", () => {

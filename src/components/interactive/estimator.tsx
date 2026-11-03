@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
   Clock,
-  Copy,
+  Info,
   Link2,
   Loader2,
   Mail,
@@ -192,10 +192,10 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
 
   return (
     <div className={cn("grid gap-6", compact ? "lg:grid-cols-1" : "lg:grid-cols-[1.35fr_1fr]")}>
-      <div className="flex flex-col gap-7 rounded-card border border-border bg-surface p-5 md:p-7">
+      <div className="flex flex-col gap-7 rounded-2xl border border-slate-200/80 bg-surface p-5 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_6px_16px_-8px_rgb(15_23_42/0.08),0_24px_48px_-24px_rgb(15_23_42/0.16)] dark:border-border md:p-6">
         {/* Service */}
         <fieldset>
-          <Legend step={1} label="What do you need built?" />
+          <Legend step={1} label="Select a service" hint="Starting prices exclude GST." />
           <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
             {services.map((service) => {
               const active = input.service === service.slug;
@@ -208,13 +208,13 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
                   /*
                    * No aria-label: the name is computed from the two spans
                    * below. Any label we write here is judged against the
-                   * visible text joined with no separator ("Appsfrom ₹2.2L"),
+                   * visible text joined with no separator ("Appsfrom ₹74,999"),
                    * so every readable phrasing registers as a
                    * label-content mismatch. Letting the content speak is both
                    * accurate and one less thing to keep in sync.
                    */
                   className={cn(
-                    "flex items-center gap-3 rounded-xl border p-3 text-left transition-all duration-200",
+                    "flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all duration-200",
                     active
                       ? "border-primary bg-primary/8 shadow-glow"
                       : "border-border bg-background hover:border-primary/35",
@@ -231,7 +231,7 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
                       {service.shortName}
                     </span>
                     <span className="block text-xs text-muted-foreground">
-                      from {formatINRCompact(service.priceFrom)}
+                      from {formatINR(service.priceFrom)}
                     </span>
                   </span>
                 </button>
@@ -244,8 +244,8 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
         <fieldset>
           <Legend
             step={2}
-            label={`How many ${rate.scopeNoun}?`}
-            hint="A rough number is fine — we refine it on the call."
+            label={`Approximate number of ${rate.scopeNoun}`}
+            hint="An estimate is sufficient. We confirm the scope during the consultation."
           />
           <div className="mt-4 flex items-center gap-4">
             <input
@@ -268,7 +268,7 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
         {/* Platforms — only meaningful for app builds */}
         {rate.supportsPlatforms ? (
           <fieldset>
-            <Legend step={3} label="Which platforms?" />
+            <Legend step={3} label="Select platforms" />
             <div className="mt-3 flex flex-wrap gap-2">
               {(Object.keys(PLATFORM_LABELS) as PlatformKey[]).map((platform) => {
                 const active = input.platforms.includes(platform);
@@ -297,8 +297,8 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
         <fieldset>
           <Legend
             step={rate.supportsPlatforms ? 4 : 3}
-            label="What should it do?"
-            hint="Pick everything you know you need. Leave the rest for phase two."
+            label="Select features"
+            hint="Choose the features you need at launch. Others can follow in a later phase."
           />
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
             {FEATURE_ORDER.map((feature) => {
@@ -308,7 +308,7 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
                 <label
                   key={feature}
                   className={cn(
-                    "flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors",
+                    "flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-2.5 transition-colors",
                     active
                       ? "border-primary/60 bg-primary/8"
                       : "border-border bg-background hover:border-primary/30",
@@ -335,7 +335,7 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
         </fieldset>
 
         {/* Design + timeline */}
-        <div className="grid gap-7 sm:grid-cols-2">
+        <div className="grid gap-6 border-t border-border pt-6 sm:grid-cols-2">
           <fieldset>
             <Legend step={rate.supportsPlatforms ? 5 : 4} label="Design level" />
             <div className="mt-3 flex flex-col gap-2">
@@ -369,7 +369,14 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
           </fieldset>
         </div>
 
-        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-background p-4">
+        <label
+          className={cn(
+            "flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors",
+            input.retainer
+              ? "border-primary/60 bg-primary/8"
+              : "border-border bg-background-subtle hover:border-primary/30",
+          )}
+        >
           <input
             type="checkbox"
             checked={input.retainer}
@@ -378,10 +385,10 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
           />
           <span>
             <span className="block text-sm font-medium text-foreground">
-              Add a monthly care plan after launch
+              Add a monthly maintenance plan after launch
             </span>
             <span className="block text-xs text-muted-foreground">
-              Monitoring, patches, backups and a named engineer on call.
+              Hosting, monitoring, security updates and backups.
             </span>
           </span>
         </label>
@@ -413,12 +420,12 @@ function Legend({
   return (
     <legend className="flex flex-col gap-1">
       <span className="flex items-center gap-2.5">
-        <span className="inline-flex size-6 items-center justify-center rounded-full bg-primary/12 font-mono text-[11px] font-semibold text-primary">
+        <span className="inline-flex size-7 items-center justify-center rounded-full bg-setu font-mono text-xs font-semibold text-white shadow-[0_0_0_4px_rgb(0_161_198/0.12)]">
           {step}
         </span>
-        <span className="text-[0.95rem] font-semibold text-foreground">{label}</span>
+        <span className="text-base font-semibold text-foreground">{label}</span>
       </span>
-      {hint ? <span className="text-xs text-muted-foreground">{hint}</span> : null}
+      {hint ? <span className="pl-[2.375rem] text-xs text-muted-foreground">{hint}</span> : null}
     </legend>
   );
 }
@@ -439,7 +446,7 @@ function RadioRow({
   return (
     <label
       className={cn(
-        "flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors",
+        "flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-2.5 transition-colors",
         checked ? "border-primary/60 bg-primary/8" : "border-border bg-background hover:border-primary/30",
       )}
     >
@@ -518,30 +525,39 @@ function QuoteSummary({
 
   return (
     <aside className="lg:sticky lg:top-24 lg:self-start">
-      <div className="overflow-hidden rounded-card border border-border bg-surface shadow-ambient">
-        <div className="bg-[linear-gradient(135deg,var(--color-brand-600),var(--color-accent-500))] p-5 text-white md:p-6">
-          <p className="text-xs font-medium uppercase tracking-[0.16em] text-white/80">
+      <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-surface shadow-[0_1px_2px_rgb(15_23_42/0.05),0_12px_28px_-12px_rgb(15_23_42/0.18),0_40px_80px_-40px_rgb(0_161_198/0.35)] dark:border-border">
+        <div className="relative isolate overflow-hidden bg-[#05070d] p-5 text-white md:p-6">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-16 -top-20 -z-10 size-64 rounded-full bg-[#00a1c6]/35 blur-3xl"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-24 -left-10 -z-10 size-56 rounded-full bg-[#3b82f6]/25 blur-3xl"
+          />
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/75">
+            <span className="size-1.5 rounded-full bg-[#00a1c6]" aria-hidden />
             Estimated investment
           </p>
           <p className="mt-2 font-display text-3xl font-semibold tabular-nums md:text-4xl">
             {formatINRCompact(result.low)} – {formatINRCompact(result.high)}
           </p>
           <p className="mt-1 text-sm text-white/85">
-            Mid-point {formatINR(result.total)} · fixed price after discovery
+            Mid-point {formatINR(result.total)} · Fixed price confirmed after discovery
           </p>
 
           <div className="mt-5 grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-white/12 px-3 py-2.5 backdrop-blur">
+            <div className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2.5">
               <span className="flex items-center gap-1.5 text-[11px] text-white/80">
-                <Clock className="size-3" aria-hidden /> Timeline
+                <Clock className="size-3 text-[#22c3e6]" aria-hidden /> Timeline
               </span>
               <span className="mt-0.5 block text-sm font-semibold">
                 ~{result.weeks} weeks
               </span>
             </div>
-            <div className="rounded-xl bg-white/12 px-3 py-2.5 backdrop-blur">
+            <div className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2.5">
               <span className="flex items-center gap-1.5 text-[11px] text-white/80">
-                <Users className="size-3" aria-hidden /> Squad
+                <Users className="size-3 text-[#22c3e6]" aria-hidden /> Team size
               </span>
               <span className="mt-0.5 block text-sm font-semibold">
                 {result.teamSize} people
@@ -567,7 +583,7 @@ function QuoteSummary({
               ))}
               {result.monthlyRetainer > 0 ? (
                 <li className="flex items-center justify-between gap-3 border-t border-border pt-2 text-sm">
-                  <span className="text-muted-foreground">Care plan / month</span>
+                  <span className="text-muted-foreground">Maintenance plan (monthly)</span>
                   <span className="shrink-0 font-mono text-[0.8rem] font-medium tabular-nums text-primary">
                     {formatINR(result.monthlyRetainer)}
                   </span>
@@ -599,13 +615,13 @@ function QuoteSummary({
               <p className="mt-1.5 text-xs text-muted-foreground">
                 Your reference is{" "}
                 <span className="font-mono font-semibold text-foreground">{reference}</span>
-                . Quote it when we speak and we&apos;ll pull this exact configuration up.
+                . Please quote it when you speak to our team.
               </p>
             </div>
           ) : (
             <form ref={formRef} onSubmit={onSubmit} className="relative flex flex-col gap-3" noValidate>
               <h2 className="text-sm font-semibold text-foreground">
-                Email me this quote
+                Receive this estimate by email
               </h2>
 
               <Field label="Name" htmlFor="quote-name" required error={errors.name}>
@@ -643,12 +659,12 @@ function QuoteSummary({
                 />
               </Field>
 
-              <Field label="Anything specific?" htmlFor="quote-notes" error={errors.notes}>
+              <Field label="Additional details" htmlFor="quote-notes" error={errors.notes}>
                 <Textarea
                   id="quote-notes"
                   name="quote-notes"
                   rows={3}
-                  placeholder="Deadline, existing stack, integrations…"
+                  placeholder="Deadline, existing systems or integrations"
                 />
               </Field>
 
@@ -673,8 +689,8 @@ function QuoteSummary({
                   <span className="text-xs font-medium text-red-500">{message}</span>
                 ) : (
                   <span className="text-[11px] text-muted-foreground">
-                    No sales sequence. One email with the breakdown, and a reply
-                    from an engineer if you want one.
+                    You will receive one email with the full breakdown. Our
+                    team follows up only if you request it.
                   </span>
                 )}
               </p>
@@ -700,9 +716,9 @@ function QuoteSummary({
       </div>
 
       <p className="mt-3 flex items-start gap-2 px-1 text-[11px] leading-relaxed text-muted-foreground">
-        <Copy className="mt-0.5 size-3 shrink-0" aria-hidden />
-        This is a real estimate from our rate card, not a lead-capture
-        placeholder. The written proposal after discovery is fixed-price.
+        <Info className="mt-0.5 size-3 shrink-0 text-setu" aria-hidden />
+        Calculated from the rate card used for our proposals. Your written
+        proposal confirms a fixed price after discovery.
       </p>
     </aside>
   );

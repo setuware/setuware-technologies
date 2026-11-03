@@ -94,8 +94,21 @@ channel is configured in `/etc/setuware.env`:
   `smtp.zoho.in:465`; Google Workspace uses `smtp.gmail.com:465`.
 - **Webhook (optional):** `LEAD_WEBHOOK_URL` receives each enquiry as JSON.
 
-Without either, enquiries are only written (redacted) to the server log. After
-changing the file: `sudo systemctl restart setuware`.
+Without either, enquiries are only written (redacted) to the server log.
+
+Each enquiry sends two e-mails: a notification to `LEAD_EMAIL_TO` (reply goes
+straight to the visitor) and a thank-you e-mail to the visitor
+(`LEAD_SEND_ACK=false` turns that off). Templates: `src/lib/email-templates.ts`.
+
+Check the settings from the project folder on the server — it logs in to the
+mail server, sends one test e-mail and explains any error:
+
+```bash
+npm run mail:test
+```
+
+After changing settings: `pm2 restart setuware --update-env` (pm2) or
+`sudo systemctl restart setuware` (systemd).
 
 ## 5. Google search
 
