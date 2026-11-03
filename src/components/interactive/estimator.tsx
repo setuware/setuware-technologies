@@ -192,7 +192,7 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
 
   return (
     <div className={cn("grid gap-6", compact ? "lg:grid-cols-1" : "lg:grid-cols-[1.35fr_1fr]")}>
-      <div className="flex flex-col gap-6 rounded-2xl border border-slate-200/80 bg-surface p-5 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_6px_16px_-8px_rgb(15_23_42/0.08),0_24px_48px_-24px_rgb(15_23_42/0.16)] dark:border-border md:p-6 [&>fieldset+fieldset]:border-t [&>fieldset+fieldset]:border-border [&>fieldset+fieldset]:pt-6">
+      <div className="flex flex-col gap-7 rounded-2xl border border-slate-200/80 bg-surface p-5 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_6px_16px_-8px_rgb(15_23_42/0.08),0_24px_48px_-24px_rgb(15_23_42/0.16)] dark:border-border md:p-6">
         {/* Service */}
         <fieldset>
           <Legend step={1} label="Select a service" hint="Starting prices exclude GST." />
