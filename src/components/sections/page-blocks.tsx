@@ -1,10 +1,10 @@
 import * as React from "react";
 
-import { type Faq as FaqItem, faqGroups } from "@/lib/content";
+import { type Faq as FaqItem } from "@/lib/content";
 import { cn } from "@/lib/utils";
-import { AccordionRoot, AccordionRow } from "@/components/ui/accordion";
 import { TextReveal } from "@/components/motion/text-reveal";
 import { FadeUp } from "@/components/motion/primitives";
+import { FaqColumns, FaqContactLink } from "@/components/sections/faq";
 
 /**
  * Shared building blocks for the inner pages (process, pricing, estimate and
@@ -103,8 +103,8 @@ export function SectionIntro({
 }
 
 /**
- * FAQ block for inner pages: heading on the left, questions as individual
- * cards on the right. Sits inside a `Section`, so the page chooses the surface.
+ * FAQ block for inner pages: a heading row above two columns of questions.
+ * Sits inside a `Section`, so the page chooses the surface.
  */
 export function FaqCards({
   items,
@@ -115,13 +115,9 @@ export function FaqCards({
   description?: string;
   compact?: boolean;
 }) {
-  const grouped = faqGroups
-    .map((group) => ({ group, questions: items.filter((item) => item.group === group) }))
-    .filter((entry) => entry.questions.length > 0);
-
   return (
-    <div className="container-page grid gap-10 lg:grid-cols-[0.8fr_1.4fr] lg:gap-16">
-      <div className="lg:sticky lg:top-28 lg:self-start">
+    <div className="container-page">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-10">
         <SectionIntro
           compact={compact}
           align="left"
@@ -129,34 +125,9 @@ export function FaqCards({
           title="Frequently asked questions"
           description={description}
         />
+        <FaqContactLink />
       </div>
-
-      <AccordionRoot singleOpen name="faq" className="flex flex-col gap-8">
-        {grouped.map(({ group, questions }) => (
-          <div key={group}>
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              {group}
-            </h3>
-            <div className={cn("mt-3 flex flex-col", compact ? "gap-2" : "gap-3")}>
-              {questions.map((item) => (
-                <AccordionRow
-                  key={item.question}
-                  id={item.question}
-                  question={item.question}
-                  answer={item.answer}
-                  className={cn(CARD, "px-5 transition-colors open:border-setu/40 md:px-6")}
-                  summaryClassName={cn(
-                    "font-medium text-foreground",
-                    compact ? "py-3 text-[0.9rem]" : "py-4 text-[0.95rem]",
-                  )}
-                  iconClassName="size-4 text-setu"
-                  answerClassName="pb-5 pr-8 text-[0.9rem] leading-relaxed text-muted-foreground"
-                />
-              ))}
-            </div>
-          </div>
-        ))}
-      </AccordionRoot>
+      <FaqColumns items={items} className="mt-8" />
     </div>
   );
 }

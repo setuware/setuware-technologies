@@ -48,6 +48,8 @@ export interface NavFeature {
   body: string;
   primary: { label: string; href: string };
   secondary?: { label: string; href: string };
+  /** Real photograph behind the card (path under /public). */
+  image?: string;
 }
 
 export interface NavMenu {
@@ -160,10 +162,11 @@ export const servicesMenu: NavMenu = {
   columns: [{ groups: [build] }, { groups: [grow, scale] }, { groups: [runWithExtras] }],
   feature: {
     eyebrow: "Free consultation",
-    title: "Find the right service for your goals",
-    body: "Book a 30-minute consultation and our team will recommend the most effective approach for your business.",
-    primary: { label: "Book a consultation", href: "/contact" },
+    title: "Not sure which service you need?",
+    body: "A 30-minute call is usually enough to find out.",
+    primary: { label: "Book a consultation", href: "/book" },
     secondary: { label: "Get an instant estimate", href: "/estimate" },
+    image: "/images/photos/service-web.jpg",
   },
   footer: {
     label: "All services",
@@ -227,15 +230,16 @@ export const industriesMenu: NavMenu = {
   })),
   feature: {
     eyebrow: "Other sectors",
-    title: "Expertise that extends across industries",
-    body: "Our team builds websites and business software for organisations in many other sectors.",
+    title: "Your industry is not listed?",
+    body: "We work with businesses in many other sectors too.",
     primary: { label: "Discuss your project", href: "/contact" },
     secondary: { label: "View our work", href: "/work" },
+    image: "/images/photos/case-study-feature.jpg",
   },
   footer: {
     label: "All industries",
     href: "/industries",
-    hint: "Websites and software for growing businesses across India",
+    hint: "Websites and software for growing businesses",
   },
 };
 
@@ -297,7 +301,7 @@ export const companyMenu: NavMenu = {
             {
               label: "Contact",
               href: "/contact",
-              description: "Contact our team in Gurugram",
+              description: "Phone, email and WhatsApp",
               icon: { kind: "page", name: "mail" },
             },
           ],

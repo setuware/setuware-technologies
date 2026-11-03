@@ -1,7 +1,10 @@
 import nodemailer, { type Transporter } from "nodemailer";
 
+import { buildInvite, MEETING_MODES, type MeetingMode } from "./booking";
 import { acknowledgementEmail, teamEmail, type EmailContent } from "./email-templates";
 import type { Lead } from "./leads";
+import { site } from "./site";
+import { founder } from "./team";
 
 /**
  * Optional e-mail delivery for website enquiries.
@@ -56,6 +59,54 @@ function sender(): string {
   return process.env.LEAD_EMAIL_FROM ?? `Setuware Technologies <${process.env.SMTP_USER}>`;
 }
 
+/** Bare address of the sending mailbox (from LEAD_EMAIL_FROM or SMTP_USER). */
+function senderAddress(): string {
+  const from = process.env.LEAD_EMAIL_FROM ?? "";
+  return from.match(/<([^>]+)>/)?.[1] ?? (from.includes("@") ? from.trim() : (process.env.SMTP_USER ?? ""));
+}
+
+/**
+ * The visitor's copy comes from a person, not a brand: mail from a named
+ * sender reads as correspondence and is less likely to be filed as promotion.
+ */
+function personalSender() {
+  return { name: `${founder.name} | ${site.name}`, address: senderAddress() };
+}
+
+/** Calendar invite for a consultation booking, attached to both e-mails. */
+function bookingInvite(lead: Lead): { method: string; content: string } | undefined {
+  if (lead.kind !== "booking") return undefined;
+  const p = lead.payload;
+  const slot = typeof p.slot === "string" ? p.slot : "";
+  const email = typeof p.email === "string" ? p.email : "";
+  if (!slot || !email) return undefined;
+  const name = typeof p.name === "string" ? p.name : email;
+  const mode = typeof p.mode === "string" && p.mode in MEETING_MODES ? MEETING_MODES[p.mode as MeetingMode] : "";
+  const phone = typeof p.phone === "string" ? p.phone : "";
+  const topic = typeof p.topic === "string" ? p.topic : "";
+  const notes = typeof p.notes === "string" ? p.notes : "";
+  return {
+    method: "REQUEST",
+    content: buildInvite({
+      uid: `${lead.reference}@${site.url.replace(/^https?:\/\//, "")}`,
+      startIso: slot,
+      summary: `Consultation: ${site.name} and ${name}`,
+      description: [
+        `Free 30-minute consultation (${lead.reference}).`,
+        mode ? `Format: ${mode}.` : "",
+        phone ? `Phone: ${phone}` : "",
+        topic ? `Topic: ${topic}` : "",
+        notes ? `Notes: ${notes}` : "",
+      ]
+        .filter(Boolean)
+        .join("\n"),
+      location: mode.startsWith("Video") ? "Google Meet (link to follow)" : `Phone call${phone ? ` to ${phone}` : ""}`,
+      organizer: { name: site.name, email: senderAddress() },
+      attendee: { name, email },
+    }),
+  };
+}
+
 function inbox(): string {
   return process.env.LEAD_EMAIL_TO ?? "sales@setuware.in";
 }
@@ -69,6 +120,7 @@ export async function emailLead(lead: Lead): Promise<boolean> {
   if (!emailConfigured()) return false;
   const visitor = typeof lead.payload.email === "string" ? lead.payload.email : undefined;
   const team = teamEmail(lead);
+  const invite = bookingInvite(lead);
 
   let delivered = false;
   try {
@@ -79,6 +131,7 @@ export async function emailLead(lead: Lead): Promise<boolean> {
       subject: team.subject,
       text: team.text,
       html: team.html,
+      ...(invite ? { icalEvent: invite } : {}),
     });
     delivered = true;
     console.info("[lead] email sent", lead.kind, lead.reference);
@@ -95,12 +148,13 @@ export async function emailLead(lead: Lead): Promise<boolean> {
   if (ack && visitor) {
     try {
       await getTransporter().sendMail({
-        from: sender(),
+        from: personalSender(),
         to: visitor,
         replyTo: inbox(),
         subject: ack.subject,
         text: ack.text,
         html: ack.html,
+        ...(invite ? { icalEvent: invite } : {}),
       });
       console.info("[lead] acknowledgement sent", lead.kind, lead.reference);
     } catch (error) {

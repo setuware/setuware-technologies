@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle2, Loader2, MessageSquareText, Phone, X } from "lucide-react";
+import { ArrowRight, Check, Loader2, X } from "lucide-react";
 
 import { EASE_OUT } from "@/components/motion/ease";
 import { useReducedMotionSafe } from "@/components/motion/primitives";
 import { Field, Honeypot, Input } from "@/components/ui/field";
 import { postJson } from "@/lib/client-api";
 import { usePersistentState, useScrollLock } from "@/lib/hooks";
+import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { contactSchema, fieldErrors } from "@/lib/validation";
 
@@ -49,7 +50,12 @@ const SERVICES = [
   "Not sure yet",
 ] as const;
 
-const TRUST = ["Free consultation", "Fixed-price quote", "Reply within one business day"] as const;
+/** What the free call covers; shown beside the form on wider screens. */
+const INCLUDED = [
+  { title: "Your goals and requirements", body: "We listen first, then suggest the simplest way to build it." },
+  { title: "An honest recommendation", body: "Platform, features to launch with and what can wait." },
+  { title: "A fixed-price proposal", body: "Written scope, timeline and price within a few working days." },
+] as const;
 
 /**
  * Invites visitors who are about to leave to send a project enquiry.
@@ -266,7 +272,7 @@ export function ExitIntentOffer() {
           className="fixed inset-0 z-[80] flex items-end justify-center sm:items-center sm:p-6"
         >
           <motion.div
-            className="absolute inset-0 bg-[#0b1020]/50 backdrop-blur-[3px]"
+            className="absolute inset-0 bg-[#05070d]/55 backdrop-blur-[4px]"
             onClick={dismiss}
             aria-hidden
             initial={{ opacity: 0 }}
@@ -286,18 +292,12 @@ export function ExitIntentOffer() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reduce ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.98 }}
             transition={{ duration: reduce ? 0.15 : 0.5, ease: EASE_OUT }}
-            className="relative max-h-[92dvh] w-full overflow-y-auto rounded-t-3xl border border-border bg-surface pb-[env(safe-area-inset-bottom)] shadow-[0_32px_80px_-20px_rgba(11,16,32,0.45)] outline-none sm:max-w-[460px] sm:rounded-3xl sm:pb-0"
+            className={cn(
+              "relative grid max-h-[92dvh] w-full overflow-y-auto rounded-t-[1.75rem] bg-surface pb-[env(safe-area-inset-bottom)] shadow-[0_40px_100px_-30px_rgba(5,7,13,0.6)] outline-none ring-1 ring-black/5 dark:ring-white/10 sm:rounded-[1.75rem] sm:pb-0",
+              status === "sent" ? "sm:max-w-[440px]" : "sm:max-w-[840px] md:grid-cols-[0.85fr_1fr]",
+            )}
           >
-            {/* Brand accent: hairline gradient plus a soft wash behind the header. */}
-            <div
-              aria-hidden
-              className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#00a1c6,var(--color-accent-400),var(--color-brand-500))]"
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-[radial-gradient(120%_100%_at_0%_0%,rgba(0,161,198,0.14),transparent_60%),radial-gradient(90%_90%_at_100%_0%,rgba(59,130,246,0.10),transparent_60%)]"
-            />
-            <div aria-hidden className="mx-auto mt-2.5 h-1 w-10 rounded-full bg-border sm:hidden" />
+            <div aria-hidden className="mx-auto mt-2.5 h-1 w-10 rounded-full bg-border sm:hidden md:col-span-2" />
 
             <button
               type="button"
@@ -308,64 +308,101 @@ export function ExitIntentOffer() {
               <X className="size-4" aria-hidden />
             </button>
 
-            <div className="relative px-5 pb-5 pt-4 sm:px-7 sm:pb-6 sm:pt-7">
-              {status === "sent" ? (
-                <div className="py-4 text-center" role="status">
-                  <span className="mx-auto inline-flex size-12 items-center justify-center rounded-full bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
-                    <CheckCircle2 className="size-6" aria-hidden />
-                  </span>
-                  <h2 id="audit-offer-title" className="mt-4 text-xl font-semibold tracking-tight text-foreground">
-                    Thank you{firstName ? `, ${firstName}` : ""}
-                  </h2>
-                  <p id="audit-offer-description" className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
-                    Your enquiry has been received. Our team will contact you within one business day to arrange a free consultation.
+            {status === "sent" ? (
+              <div className="px-6 py-10 text-center sm:px-8" role="status">
+                <span className="mx-auto inline-flex size-12 items-center justify-center rounded-full bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
+                  <Check className="size-6" aria-hidden />
+                </span>
+                <h2 id="audit-offer-title" className="mt-4 text-xl font-semibold tracking-tight text-foreground">
+                  Thank you{firstName ? `, ${firstName}` : ""}
+                </h2>
+                <p id="audit-offer-description" className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+                  We have your enquiry and will contact you within one business day to arrange your free consultation.
+                </p>
+                <button
+                  type="button"
+                  onClick={dismiss}
+                  className="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-foreground px-7 text-sm font-medium text-background transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu"
+                >
+                  Close
+                </button>
+              </div>
+            ) : (
+              <>
+                {/* What the call includes: dark panel on wider screens. */}
+                <div className="relative isolate hidden overflow-hidden bg-[#05070d] p-8 text-white md:flex md:flex-col">
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute -right-20 -top-24 -z-10 size-72 rounded-full bg-[#00a1c6]/30 blur-3xl"
+                  />
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute -bottom-28 -left-16 -z-10 size-64 rounded-full bg-[#3b82f6]/20 blur-3xl"
+                  />
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5fe0f7]">
+                    Free consultation · 30 min
                   </p>
-                  <button
-                    type="button"
-                    onClick={dismiss}
-                    className="mt-6 inline-flex h-11 items-center justify-center rounded-xl border border-border px-6 text-sm font-medium text-foreground transition-colors hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu"
-                  >
-                    Close
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-center gap-3 pr-10">
-                    <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#00a1c6,var(--color-brand-600))] text-white shadow-[0_8px_20px_-8px_rgba(0,161,198,0.8)]">
-                      <MessageSquareText className="size-5" aria-hidden />
-                    </span>
-                    <span className="inline-flex items-center rounded-full border border-setu/25 bg-setu/8 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-setu-dark dark:text-[#5fe0f7]">
-                      Free consultation
+                  <p className="mt-6 font-display text-[1.65rem] font-semibold leading-[1.15] tracking-[-0.03em]">
+                    Talk your idea through with us.
+                  </p>
+                  <ul className="mt-6 flex flex-col gap-4">
+                    {INCLUDED.map((item, index) => (
+                      <li key={item.title} className="flex gap-4 border-t border-white/10 pt-4 first:border-t-0 first:pt-0">
+                        <span className="font-mono text-xs text-white/40">0{index + 1}</span>
+                        <span>
+                          <span className="block text-sm font-medium text-white">{item.title}</span>
+                          <span className="mt-0.5 block text-[0.8rem] leading-relaxed text-white/60">{item.body}</span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-auto flex flex-col gap-1.5 border-t border-white/10 pt-5 text-[0.8rem] text-white/60">
+                    <Link href="/book" onClick={close} className="inline-flex items-center gap-1.5 font-medium text-white hover:underline underline-offset-4">
+                      Pick a time slot yourself
+                      <ArrowRight className="size-3.5" aria-hidden />
+                    </Link>
+                    <span>
+                    Prefer to call?{" "}
+                    <a href={site.phoneHref} className="font-medium text-white underline-offset-4 hover:underline">
+                      {site.phone}
+                    </a>
                     </span>
                   </div>
+                </div>
 
+                <div className="px-5 pb-5 pt-4 sm:px-8 sm:pb-7 sm:pt-8">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-setu-dark dark:text-[#5fe0f7] md:hidden">
+                    Free 30-minute consultation
+                  </p>
                   <h2
                     id="audit-offer-title"
-                    className="mt-4 text-[1.4rem] font-semibold leading-tight tracking-tight text-foreground sm:text-2xl"
+                    className="mt-2 pr-10 text-[1.4rem] font-semibold leading-tight tracking-[-0.02em] text-foreground md:mt-0 md:text-2xl"
                   >
-                    Planning a new project?
+                    Book a free consultation
                   </h2>
-                  <p id="audit-offer-description" className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    Share a few details and our team will respond within one business day with recommendations and a fixed quote.
+                  <p id="audit-offer-description" className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                    Leave your details and we will call you within one business day.{" "}
+                    <Link href="/book" onClick={close} className="font-medium text-foreground underline underline-offset-4 md:hidden">
+                      Or pick a time
+                    </Link>
                   </p>
 
-                  <form ref={formRef} onSubmit={onSubmit} noValidate className="relative mt-5 flex flex-col gap-3.5">
+                  <form ref={formRef} onSubmit={onSubmit} noValidate className="mt-5 flex flex-col gap-3.5">
                     <Honeypot name={HONEYPOT} />
+                    <Field label="Name" htmlFor="audit-name" error={errors.name} required>
+                      <Input
+                        ref={nameRef}
+                        id="audit-name"
+                        name="name"
+                        autoComplete="name"
+                        value={draft.name}
+                        onChange={(event) => set({ name: event.target.value })}
+                        aria-invalid={Boolean(errors.name)}
+                        aria-describedby={errors.name ? "audit-name-error" : undefined}
+                        className="py-2.5 text-[0.95rem] shadow-none"
+                      />
+                    </Field>
                     <div className="grid gap-3.5 sm:grid-cols-2">
-                      <Field label="Name" htmlFor="audit-name" error={errors.name} required>
-                        <Input
-                          ref={nameRef}
-                          id="audit-name"
-                          name="name"
-                          autoComplete="name"
-                          value={draft.name}
-                          onChange={(event) => set({ name: event.target.value })}
-                          aria-invalid={Boolean(errors.name)}
-                          aria-describedby={errors.name ? "audit-name-error" : undefined}
-                          className="py-2.5 text-[0.95rem] shadow-none"
-                          placeholder="Your name"
-                        />
-                      </Field>
                       <Field label="Email" htmlFor="audit-email" error={errors.email} required>
                         <Input
                           id="audit-email"
@@ -378,16 +415,9 @@ export function ExitIntentOffer() {
                           aria-invalid={Boolean(errors.email)}
                           aria-describedby={errors.email ? "audit-email-error" : undefined}
                           className="py-2.5 text-[0.95rem] shadow-none"
-                          placeholder="name@company.com"
                         />
                       </Field>
-                    </div>
-                    <Field label="Phone" htmlFor="audit-phone" error={errors.phone}>
-                      <div className="relative">
-                        <Phone
-                          className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                          aria-hidden
-                        />
+                      <Field label="Phone" htmlFor="audit-phone" error={errors.phone}>
                         <Input
                           id="audit-phone"
                           name="phone"
@@ -398,15 +428,14 @@ export function ExitIntentOffer() {
                           onChange={(event) => set({ phone: event.target.value })}
                           aria-invalid={Boolean(errors.phone)}
                           aria-describedby={errors.phone ? "audit-phone-error" : undefined}
-                          className="py-2.5 pl-10 text-[0.95rem] shadow-none"
-                          placeholder="+91 98765 43210"
+                          className="py-2.5 text-[0.95rem] shadow-none"
                         />
-                      </div>
-                    </Field>
+                      </Field>
+                    </div>
 
                     <fieldset>
-                      <legend className="mb-2 text-sm font-medium text-foreground">What do you need?</legend>
-                      <div className="flex flex-wrap gap-2">
+                      <legend className="mb-2 text-sm font-medium text-foreground">Topic</legend>
+                      <div className="flex flex-wrap gap-1.5">
                         {SERVICES.map((service) => {
                           const selected = draft.service === service;
                           return (
@@ -416,10 +445,10 @@ export function ExitIntentOffer() {
                               aria-pressed={selected}
                               onClick={() => set({ service: selected ? "" : service })}
                               className={cn(
-                                "rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu",
+                                "rounded-full border px-3 py-1.5 text-[0.8125rem] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu",
                                 selected
-                                  ? "border-setu bg-setu text-white"
-                                  : "border-border bg-surface text-foreground hover:border-setu/50 hover:text-setu",
+                                  ? "border-foreground bg-foreground text-background"
+                                  : "border-border bg-background text-foreground/80 hover:border-foreground/40 hover:text-foreground",
                               )}
                             >
                               {service}
@@ -429,15 +458,14 @@ export function ExitIntentOffer() {
                       </div>
                     </fieldset>
 
-                    <Field label="Project details" htmlFor="audit-message">
+                    <Field label="Anything we should know?" htmlFor="audit-message">
                       <textarea
                         id="audit-message"
                         name="message"
-                        rows={3}
+                        rows={2}
                         value={draft.message}
                         onChange={(event) => set({ message: event.target.value })}
                         className="w-full resize-none rounded-xl border border-border bg-surface px-3.5 py-2.5 text-[0.95rem] text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-setu focus:ring-2 focus:ring-setu/20"
-                        placeholder="A few lines about your business and what you would like to build."
                       />
                     </Field>
 
@@ -450,48 +478,38 @@ export function ExitIntentOffer() {
                     <button
                       type="submit"
                       disabled={status === "sending"}
-                      className={cn(
-                        "mt-1 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[0.95rem] font-semibold text-white",
-                        "bg-[linear-gradient(100deg,#00a1c6,var(--color-accent-500)_50%,var(--color-brand-600))] shadow-[0_10px_24px_-10px_rgba(0,161,198,0.85)]",
-                        "transition-[filter,translate] duration-200 hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu motion-safe:hover:-translate-y-px disabled:opacity-70",
-                      )}
+                      className="mt-1 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground text-[0.95rem] font-semibold text-background transition-opacity duration-200 hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu disabled:opacity-60"
                     >
                       {status === "sending" ? (
                         <>
                           <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden />
-                          Sending enquiry
+                          Sending
                         </>
                       ) : (
-                        "Send enquiry"
+                        <>
+                          Request a call back
+                          <ArrowRight className="size-4" aria-hidden />
+                        </>
                       )}
                     </button>
-                    <button
-                      type="button"
-                      onClick={dismiss}
-                      className="mx-auto -mt-1 rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-setu"
-                    >
-                      No thanks
-                    </button>
+                    <p className="text-center text-[11px] leading-relaxed text-muted-foreground">
+                      No obligation. See our{" "}
+                      <Link href="/privacy" onClick={dismiss} className="underline underline-offset-2 hover:text-foreground">
+                        privacy policy
+                      </Link>
+                      .{" "}
+                      <button
+                        type="button"
+                        onClick={dismiss}
+                        className="font-medium text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-setu"
+                      >
+                        No thanks
+                      </button>
+                    </p>
                   </form>
-
-                  <ul className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 border-t border-border pt-4 text-xs font-medium text-muted-foreground">
-                    {TRUST.map((item) => (
-                      <li key={item} className="inline-flex items-center gap-1.5">
-                        <CheckCircle2 className="size-3.5 text-emerald-500" aria-hidden />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="mt-3 text-center text-[11px] leading-relaxed text-muted-foreground/90">
-                    By sending an enquiry you agree to our{" "}
-                    <Link href="/privacy" onClick={dismiss} className="underline underline-offset-2 hover:text-foreground">
-                      privacy policy
-                    </Link>
-                    .
-                  </p>
-                </>
-              )}
-            </div>
+                </div>
+              </>
+            )}
           </motion.div>
         </div>
       ) : null}

@@ -106,7 +106,7 @@ async function IndustryContent({ params }: { params: Promise<{ slug: string }> }
       >
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <ButtonLink
-            href="/contact"
+            href="/book"
             size="lg"
             variant="ghost"
             className="rounded-full bg-setu font-semibold text-white hover:bg-setu-dark dark:hover:bg-setu-dark"

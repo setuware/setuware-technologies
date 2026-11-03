@@ -98,7 +98,7 @@ const FOLLOW_UP_CHIPS: readonly Chip[] = [
 ];
 
 export const GREETING: BotReply = {
-  text: `Hello, I am the ${ASSISTANT_NAME}. I can answer questions about our services, pricing and timelines, or arrange a free consultation with our team. What would you like to know?`,
+  text: "Hi there. Ask me about our services, prices or timelines, or book a free 30-minute call with our team.",
   chips: [...MENU_CHIPS],
 };
 
@@ -510,7 +510,8 @@ export function intentReply(intent: IntentId): BotReply {
       return timelinesReply();
     case "book-call":
       return {
-        text: "Certainly. Our free 30-minute consultation covers your goals, scope and budget, followed by a written proposal. I will take a few details so the right person can contact you.",
+        text: "Our free 30-minute consultation covers your goals, scope and budget, followed by a written proposal. You can pick a time yourself, or leave a few details here and we will call you.",
+        links: [{ label: "Pick a time slot", href: "/book" }],
         startLead: true,
       };
     case "whatsapp":

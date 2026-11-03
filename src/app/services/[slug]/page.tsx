@@ -642,7 +642,7 @@ function Hero({
                     <ArrowRight className="size-4" aria-hidden />
                   </Link>
                 </Magnetic>
-                <Link href={contactHref} className={secondaryCta}>
+                <Link href="/book" className={secondaryCta}>
                   Book a consultation
                 </Link>
               </div>

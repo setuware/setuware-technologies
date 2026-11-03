@@ -1,6 +1,8 @@
+import { formatSlot, MEETING_MODES, type MeetingMode } from "./booking";
 import { getService } from "./content";
 import type { Lead } from "./leads";
 import { site } from "./site";
+import { founder } from "./team";
 import { formatINR } from "./utils";
 
 /**
@@ -73,6 +75,9 @@ export interface LeadView {
   message: string;
   source: string;
   quote?: { low: number; high: number; weeks: number };
+  /** Consultation bookings only. */
+  slot?: string;
+  mode?: string;
 }
 
 /** Normalises the different enquiry payloads into one shape for display. */
@@ -80,7 +85,13 @@ export function leadView(lead: Lead): LeadView {
   const p = lead.payload;
   let message = str(p.message) || str(p.notes);
   let source =
-    lead.kind === "estimate" ? "Instant estimator" : lead.kind === "newsletter" ? "Newsletter sign-up" : "Contact form";
+    lead.kind === "estimate"
+      ? "Instant estimator"
+      : lead.kind === "newsletter"
+        ? "Newsletter sign-up"
+        : lead.kind === "booking"
+          ? "Consultation booking"
+          : "Contact form";
 
   if (message.includes(POPUP_MARKER)) {
     source = "Enquiry pop-up";
@@ -92,7 +103,7 @@ export function leadView(lead: Lead): LeadView {
   }
   message = message.replace(/\n{3,}/g, "\n\n").trim();
 
-  const rawService = str(p.service);
+  const rawService = str(p.service) || str(p.topic);
   const service = rawService ? (getService(rawService)?.name ?? rawService) : "";
 
   const quote =
@@ -117,6 +128,8 @@ export function leadView(lead: Lead): LeadView {
       quote && typeof quote.low === "number" && typeof quote.high === "number"
         ? { low: quote.low, high: quote.high, weeks: typeof quote.weeks === "number" ? quote.weeks : 0 }
         : undefined,
+    slot: str(p.slot) ? formatSlot(str(p.slot)) : undefined,
+    mode: str(p.mode) in MEETING_MODES ? MEETING_MODES[str(p.mode) as MeetingMode] : undefined,
   };
 }
 
@@ -175,6 +188,7 @@ const TEAM_SUBJECT: Record<Lead["kind"], string> = {
   contact: "New project enquiry",
   estimate: "New estimate request",
   newsletter: "New newsletter subscriber",
+  booking: "Consultation booked",
 };
 
 export function teamEmail(lead: Lead): EmailContent {
@@ -186,7 +200,9 @@ export function teamEmail(lead: Lead): EmailContent {
       ? `${who} subscribed to the newsletter`
       : lead.kind === "estimate"
         ? `${who} requested an estimate${v.service ? ` for ${v.service.toLowerCase()}` : ""}`
-        : `New enquiry from ${who}`;
+        : lead.kind === "booking"
+          ? `${who} booked a consultation`
+          : `New enquiry from ${who}`;
   const when = receivedAt(lead.receivedAt);
   const tel = v.phone ? phoneDigits(v.phone) : "";
 
@@ -197,6 +213,7 @@ export function teamEmail(lead: Lead): EmailContent {
   ].join("");
 
   const rows: [string, string][] = [];
+  if (v.slot) rows.push(["When", `<strong>${esc(v.slot)}</strong>${v.mode ? `<br><span style="color:#5b6478;">${esc(v.mode)}, 30 minutes</span>` : ""}`]);
   if (v.name) rows.push(["Name", `<strong>${esc(v.name)}</strong>`]);
   if (v.email) rows.push(["Email", `<a href="mailto:${esc(v.email)}" style="color:#0089a9;">${esc(v.email)}</a>`]);
   if (v.phone) rows.push(["Phone", `<a href="tel:+${esc(tel)}" style="color:#0089a9;">${esc(v.phone)}</a>`]);
@@ -233,7 +250,7 @@ ${
 }
 ${
   lead.kind !== "newsletter"
-    ? `<tr><td style="padding:24px 32px 28px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fff8e6;border:1px solid #f5dfa3;border-radius:12px;"><tr><td style="padding:14px 16px;font:400 13px/1.5 Arial,sans-serif;color:#6b5310;"><strong>Next step:</strong> reply within one business day to book the free 30-minute consultation.${v.email ? ` Replying to this email goes straight to ${esc(firstName(who))}.` : ""}</td></tr></table></td></tr>`
+    ? `<tr><td style="padding:24px 32px 28px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fff8e6;border:1px solid #f5dfa3;border-radius:12px;"><tr><td style="padding:14px 16px;font:400 13px/1.5 Arial,sans-serif;color:#6b5310;"><strong>Next step:</strong> ${lead.kind === "booking" ? `accept the attached invite${v.mode?.startsWith("Video") ? " and reply with the Google Meet link" : ""}.` : "reply within one business day to book the free 30-minute consultation."}${v.email ? ` Replying to this email goes straight to ${esc(firstName(who))}.` : ""}</td></tr></table></td></tr>`
     : `<tr><td style="padding:0 0 28px;"></td></tr>`
 }
 <tr><td style="background:#f6f9fc;border-top:1px solid #e4e8f0;padding:18px 32px;font:400 12px/1.6 Arial,sans-serif;color:#7a8396;">
@@ -253,6 +270,7 @@ ${
         Service: v.service,
         Budget: v.budget,
         "Estimate shown": v.quote ? quoteText(v.quote) : "",
+        When: v.slot ? `${v.slot}${v.mode ? ` (${v.mode})` : ""}` : "",
         Source: v.source,
       };
       return `${name}: ${plain[name] ?? ""}`;
@@ -267,83 +285,91 @@ ${
 /* Visitor acknowledgement                                                     */
 /* -------------------------------------------------------------------------- */
 
+/*
+ * Written and laid out like a personal reply: plain paragraphs, two links, no
+ * images, banners or buttons. Heavily designed mail with call-to-action
+ * buttons is what Gmail files under Promotions; a letter lands in Primary.
+ */
+
+const P = "margin:0 0 16px;font:400 15px/1.65 Arial,sans-serif;color:#1f2937;";
+
+function letter(title: string, preheader: string, paragraphs: string[]): string {
+  return `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title></head>
+<body style="margin:0;padding:0;background:#ffffff;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(preheader)}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td style="padding:24px 16px;">
+<table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:560px;max-width:100%;"><tr><td>
+${paragraphs.map((html) => `<p style="${P}">${html}</p>`).join("\n")}
+</td></tr></table></td></tr></table></body></html>`;
+}
+
+function siteHost(): string {
+  return site.url.replace(/^https?:\/\//, "");
+}
+
 export function acknowledgementEmail(lead: Lead): EmailContent | null {
   if (lead.kind === "newsletter") return null;
   const v = leadView(lead);
   if (!v.email) return null;
 
-  const name = firstName(v.name) || "there";
-  const isEstimate = lead.kind === "estimate";
-  const subject = isEstimate
-    ? `Your project estimate from ${site.name} (${lead.reference})`
-    : `We have received your enquiry (${lead.reference})`;
-  const whatsappDigits = site.whatsapp.replace(/\D/g, "");
+  const name = firstName(v.name);
+  const greeting = `Thank you${name ? `, ${name}` : ""}.`;
+  const bookUrl = `${site.url}/book`;
 
-  const steps = [
-    ["Consultation call", "We discuss your goals, audience and timeline."],
-    ["Written proposal", "A clear scope, timeline and fixed quote within two to five days."],
-    ["Project kick-off", "Design starts once you approve the proposal."],
-  ];
+  let subject: string;
+  const body: { html: string; text: string }[] = [];
 
-  const summary = [
-    v.service ? `<span style="color:#5b6478;">Service:</span> ${esc(v.service)}` : "",
-    v.quote ? `<span style="color:#5b6478;">Indicative estimate:</span> <strong>${esc(quoteText(v.quote))}</strong>` : "",
-    v.message ? `<span style="color:#5b6478;">Details:</span> ${esc(v.message.length > 400 ? `${v.message.slice(0, 400)}…` : v.message)}` : "",
-  ].filter(Boolean);
+  if (lead.kind === "booking" && v.slot) {
+    subject = `Consultation confirmed: ${v.slot}`;
+    const how =
+      v.mode?.startsWith("Video")
+        ? "We will send the Google Meet link before the call."
+        : `We will call you${v.phone ? ` on ${v.phone}` : ""} at that time.`;
+    body.push({
+      html: `Your free consultation with ${esc(site.name)} is booked for <strong>${esc(v.slot)}</strong> (30 minutes). ${esc(how)} The calendar invite is attached.`,
+      text: `Your free consultation with ${site.name} is booked for ${v.slot} (30 minutes). ${how} The calendar invite is attached.`,
+    });
+    body.push({
+      html: "If the time no longer suits you, reply to this email and we will move it.",
+      text: "If the time no longer suits you, reply to this email and we will move it.",
+    });
+  } else if (lead.kind === "estimate" && v.quote) {
+    subject = `Your project estimate (${lead.reference})`;
+    body.push({
+      html: `Here is the estimate you requested${v.service ? ` for ${esc(v.service.toLowerCase())}` : ""}: <strong>${esc(quoteText(v.quote))}</strong>. It excludes GST, and we confirm a fixed price after a short call.`,
+      text: `Here is the estimate you requested${v.service ? ` for ${v.service.toLowerCase()}` : ""}: ${quoteText(v.quote)}. It excludes GST, and we confirm a fixed price after a short call.`,
+    });
+    body.push({
+      html: `You can pick a time for that call here: <a href="${esc(bookUrl)}" style="color:#0089a9;">${esc(siteHost())}/book</a>. Otherwise we will contact you within one business day.`,
+      text: `You can pick a time for that call here: ${bookUrl}. Otherwise we will contact you within one business day.`,
+    });
+  } else {
+    subject = `Your enquiry with ${site.name} (${lead.reference})`;
+    body.push({
+      html: "We have received your enquiry and will get back to you within one business day to arrange a free 30-minute consultation.",
+      text: "We have received your enquiry and will get back to you within one business day to arrange a free 30-minute consultation.",
+    });
+    body.push({
+      html: `If you would rather choose the time yourself, you can book a slot here: <a href="${esc(bookUrl)}" style="color:#0089a9;">${esc(siteHost())}/book</a>.`,
+      text: `If you would rather choose the time yourself, you can book a slot here: ${bookUrl}.`,
+    });
+  }
 
-  const inner = `
-<tr><td style="padding:28px 32px 0;">${logo(false)}</td></tr>
-<tr><td style="padding:28px 32px 0;">
-  <div style="width:48px;height:48px;border-radius:999px;background:#e6f7fb;text-align:center;font:700 24px/48px Arial,sans-serif;color:#00a1c6;">&#10003;</div>
-  <h1 style="margin:18px 0 8px;font:700 24px/1.3 Arial,sans-serif;">Thank you, ${esc(name)}. ${isEstimate ? "Here is your project estimate." : "We have received your enquiry."}</h1>
-  <p style="margin:0;font:400 15px/1.6 Arial,sans-serif;color:#5b6478;">A member of our team will contact you within one business day to arrange a free 30-minute consultation. Your reference is <strong style="color:#0b1020;">${esc(lead.reference)}</strong>.</p>
-</td></tr>
-${
-  v.quote
-    ? `<tr><td style="padding:24px 32px 0;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0b1020;border-radius:12px;"><tr><td style="padding:18px 20px;"><div style="font:700 11px/1 Arial,sans-serif;letter-spacing:.12em;color:#5fe0f7;">INDICATIVE ESTIMATE</div><div style="margin-top:8px;font:800 26px/1.2 Arial,sans-serif;color:#ffffff;">${esc(v.quote.low === v.quote.high ? formatINR(v.quote.low) : `${formatINR(v.quote.low)} – ${formatINR(v.quote.high)}`)}</div>${v.quote.weeks ? `<div style="margin-top:4px;font:400 13px/1.5 Arial,sans-serif;color:rgba(255,255,255,.7);">About ${v.quote.weeks} weeks · excludes GST · confirmed as a fixed quote after the consultation</div>` : ""}</td></tr></table></td></tr>`
-    : ""
-}
-<tr><td style="padding:24px 32px 0;">
-  ${label("What happens next")}
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-    ${steps
-      .map(
-        ([title, body], index) =>
-          `<tr><td style="width:36px;vertical-align:top;padding:0 0 ${index === steps.length - 1 ? 0 : 14}px;"><div style="width:26px;height:26px;border-radius:999px;background:#00a1c6;color:#fff;text-align:center;font:700 13px/26px Arial,sans-serif;">${index + 1}</div></td><td style="padding:2px 0 ${index === steps.length - 1 ? 0 : 14}px;font:400 14px/1.5 Arial,sans-serif;"><strong>${esc(title)}</strong><br><span style="color:#5b6478;">${esc(body)}</span></td></tr>`,
-      )
-      .join("\n")}
-  </table>
-</td></tr>
-${
-  summary.length
-    ? `<tr><td style="padding:24px 32px 0;">${label(isEstimate ? "Your request" : "Your enquiry")}<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f9fc;border:1px solid #e4e8f0;border-radius:12px;"><tr><td style="padding:14px 16px;font:400 14px/1.6 Arial,sans-serif;white-space:pre-wrap;">${summary.join("<br>")}</td></tr></table></td></tr>`
-    : ""
-}
-<tr><td style="padding:24px 32px 28px;">
-  <p style="margin:0 0 14px;font:400 14px/1.6 Arial,sans-serif;color:#5b6478;">Need to speak sooner? Reply to this email, call us or message us on WhatsApp.</p>
-  <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-    ${button(site.phoneHref, `Call ${site.phone}`, "primary")}
-    ${button(`https://wa.me/${whatsappDigits}`, "WhatsApp us", "whatsapp")}
-  </tr></table>
-</td></tr>
-<tr><td style="background:#0b1020;padding:22px 32px;font:400 12px/1.7 Arial,sans-serif;color:rgba(255,255,255,.7);">
-  <strong style="color:#ffffff;">${esc(site.name)}</strong> · ${esc(site.address.street)}, ${esc(site.address.city)}, ${esc(site.address.region)} ${esc(site.address.postalCode)}<br>
-  <a href="${esc(site.url)}" style="color:#5fe0f7;text-decoration:none;">${esc(site.url.replace(/^https?:\/\//, ""))}</a> · ${esc(site.salesEmail)} · ${esc(site.hours)}<br>
-  You are receiving this because you submitted ${isEstimate ? "an estimate request" : "an enquiry"} on ${esc(site.url.replace(/^https?:\/\//, ""))}.
-</td></tr>`;
+  body.push({
+    html: `Need anything sooner? Just reply to this email or call ${esc(site.phone)}. Your reference is ${esc(lead.reference)}.`,
+    text: `Need anything sooner? Just reply to this email or call ${site.phone}. Your reference is ${lead.reference}.`,
+  });
 
-  const text = [
-    `Thank you, ${name}. ${isEstimate ? "Here is your project estimate." : "We have received your enquiry."}`,
-    "",
-    `A member of our team will contact you within one business day to arrange a free 30-minute consultation. Your reference is ${lead.reference}.`,
-    ...(v.quote ? ["", `Indicative estimate: ${quoteText(v.quote)} (excludes GST; confirmed as a fixed quote after the consultation).`] : []),
-    "",
-    "What happens next:",
-    ...steps.map(([title, body], index) => `${index + 1}. ${title}: ${body}`),
-    "",
-    `Call ${site.phone} · WhatsApp ${site.whatsapp} · ${site.salesEmail}`,
-    `${site.name}, ${site.address.street}, ${site.address.city}`,
-  ].join("\n");
+  const signature = {
+    html: `Regards,<br>${esc(founder.name)}<br><span style="color:#6b7280;">Founder, ${esc(site.name)}<br>${esc(site.phone)} · <a href="${esc(site.url)}" style="color:#6b7280;">${esc(siteHost())}</a></span>`,
+    text: `Regards,\n${founder.name}\nFounder, ${site.name}\n${site.phone} · ${siteHost()}`,
+  };
 
-  return { subject, html: shell(subject, `Reference ${lead.reference} · we will contact you within one business day`, inner), text };
+  const parts = [{ html: esc(greeting), text: greeting }, ...body, signature];
+  return {
+    subject,
+    html: letter(subject, body[0].text, parts.map((part) => part.html)),
+    text: parts.map((part) => part.text).join("\n\n"),
+  };
 }

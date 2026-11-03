@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 
 import { faqs } from "@/lib/content";
-import { faqJsonLd, HOME_DESCRIPTION, HOME_KEYWORD_TITLE, pageMetadata } from "@/lib/seo";
+import { faqJsonLd, HOME_DESCRIPTION, HOME_TITLE, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Hero } from "@/components/sections/hero";
 import { CapabilityTicker } from "@/components/sections/capability-ticker";
@@ -12,9 +12,9 @@ import { DeferredSection } from "@/components/ui/deferred-section";
 /**
  * Home page.
  *
- * Section order follows the approved design: hero → capability ticker →
- * about → services → process → industry → projects → tools → plans → CTA →
- * skills gap → testimonials → articles → FAQ.
+ * Section order: hero → capability ticker → about → services → process →
+ * projects → tools → plans → team → articles → FAQ. The footer carries the
+ * closing call to action.
  *
  * Load strategy:
  *  - Every section's markup is in the static HTML, so the full page is
@@ -32,16 +32,14 @@ import { DeferredSection } from "@/components/ui/deferred-section";
  */
 
 export const metadata = pageMetadata({
-  title: HOME_KEYWORD_TITLE,
+  title: HOME_TITLE,
+  exactTitle: true,
   description: HOME_DESCRIPTION,
   path: "/",
 });
 
 const ProcessDark = dynamic(() =>
   import("@/components/sections/process-dark").then((mod) => mod.ProcessDark),
-);
-const IndustryBento = dynamic(() =>
-  import("@/components/sections/industry-bento").then((mod) => mod.IndustryBento),
 );
 const SelectedProjects = dynamic(() =>
   import("@/components/sections/selected-projects").then((mod) => mod.SelectedProjects),
@@ -52,14 +50,8 @@ const ToolsRow = dynamic(() =>
 const FlexiblePlans = dynamic(() =>
   import("@/components/sections/flexible-plans").then((mod) => mod.FlexiblePlans),
 );
-const ChallengeCta = dynamic(() =>
-  import("@/components/sections/challenge-cta").then((mod) => mod.ChallengeCta),
-);
 const SkillsGap = dynamic(() =>
   import("@/components/sections/skills-gap").then((mod) => mod.SkillsGap),
-);
-const Testimonials = dynamic(() =>
-  import("@/components/sections/testimonials").then((mod) => mod.Testimonials),
 );
 const Articles = dynamic(() =>
   import("@/components/sections/articles").then((mod) => mod.Articles),
@@ -79,10 +71,6 @@ export default function HomePage() {
       </DeferredSection>
 
       <DeferredSection minHeight={760}>
-        <IndustryBento />
-      </DeferredSection>
-
-      <DeferredSection minHeight={760}>
         <SelectedProjects />
       </DeferredSection>
 
@@ -94,16 +82,8 @@ export default function HomePage() {
         <FlexiblePlans />
       </DeferredSection>
 
-      <DeferredSection minHeight={360}>
-        <ChallengeCta />
-      </DeferredSection>
-
       <DeferredSection minHeight={520}>
         <SkillsGap />
-      </DeferredSection>
-
-      <DeferredSection minHeight={720}>
-        <Testimonials />
       </DeferredSection>
 
       <DeferredSection minHeight={720}>

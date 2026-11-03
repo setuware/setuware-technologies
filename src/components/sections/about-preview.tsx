@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ArrowRight, MapPin } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { images } from "@/lib/images";
 import { ButtonLink } from "@/components/ui/button";
@@ -41,20 +41,15 @@ export function AboutPreview() {
           </TextReveal>
           <Stagger className="flex flex-col gap-4" delay={0.15}>
             <StaggerItem y={24}>
-              <p className="text-[1.05rem] font-semibold text-foreground">
-                A digital studio for growing businesses.
+              <p className="text-[0.97rem] leading-relaxed text-muted-foreground">
+                We work with startups, small businesses and established companies to plan,
+                design and build the software they run on.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
               <p className="text-[0.97rem] leading-relaxed text-muted-foreground">
-                We partner with startups, SMEs and established companies across India to plan,
-                design and build digital products that perform.
-              </p>
-            </StaggerItem>
-            <StaggerItem y={24}>
-              <p className="text-[0.97rem] leading-relaxed text-muted-foreground">
-                Product strategy, design, engineering and marketing work together in one
-                accountable team, from your first website to enterprise software.
+                Strategy, design, engineering and marketing sit with one accountable team,
+                from a first website to enterprise software.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
@@ -98,11 +93,6 @@ export function AboutPreview() {
                 />
               </Parallax>
             </ImageReveal>
-
-            <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1.5 text-xs font-semibold text-[#0b1020] shadow-sm ring-1 ring-white/70 backdrop-blur-md sm:left-5 sm:top-5 sm:text-[0.8rem]">
-              <MapPin className="size-3.5 text-setu" aria-hidden />
-              Gurugram studio
-            </span>
           </FadeUp>
 
           {/* Second photograph, overlapping the lower-right corner. */}

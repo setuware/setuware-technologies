@@ -244,8 +244,7 @@ export async function Footer() {
           <FadeUp y={20} className="lg:col-span-5">
             <Logo inverted />
             <p className="mt-6 max-w-[26rem] text-[1.0625rem] leading-relaxed text-white/70">
-              A Gurugram-based digital studio building websites, e-commerce, mobile apps and
-              custom software for growing businesses.
+              {site.slogan}
             </p>
           </FadeUp>
 
@@ -343,10 +342,6 @@ export async function Footer() {
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 md:justify-end">
-            <p className="inline-flex items-center gap-2">
-              <span aria-hidden className="size-1.5 rounded-full bg-[#22b8db]" />
-              Made in Gurugram, India
-            </p>
             <ul className="-mx-2 flex items-center md:mx-0 md:gap-1">
               {SOCIALS.map(({ href, label, Icon }) => (
                 <li key={label}>

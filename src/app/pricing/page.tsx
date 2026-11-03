@@ -258,7 +258,7 @@ export default function PricingPage() {
             Get an instant estimate
             <ArrowRight className="size-4" aria-hidden />
           </ButtonLink>
-          <ButtonLink href="/contact" size="lg" variant="secondary" className="rounded-full">
+          <ButtonLink href="/book" size="lg" variant="secondary" className="rounded-full">
             Book a consultation
           </ButtonLink>
         </div>
