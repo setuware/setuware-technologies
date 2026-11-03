@@ -150,10 +150,15 @@ ${inner}
 </table></td></tr></table></body></html>`;
 }
 
+/**
+ * Text-only lockup in mid-tone colours that stay readable on white and on the
+ * dark backgrounds mail apps apply in dark mode (where dark text on a darkened
+ * card would vanish). The tile carries a teal outline for the same reason.
+ */
 function logo(onDark: boolean): string {
-  return `<table role="presentation"><tr>
-  <td bgcolor="#0b1020" style="width:40px;height:40px;background:#0b1020;${onDark ? "border:1px solid rgba(255,255,255,.18);" : ""}border-radius:10px;text-align:center;font:800 17px/40px Arial,sans-serif;"><span style="color:#5fe0f7;">S</span><span style="color:#ffffff;">T</span></td>
-  <td style="padding-left:12px;"><div style="font:800 17px/1 Arial,sans-serif;letter-spacing:.06em;color:${onDark ? "#ffffff" : "#0b1020"};">SETUWARE</div><div style="font:700 9px/1 Arial,sans-serif;letter-spacing:.38em;color:${onDark ? "rgba(255,255,255,.65)" : "#7a8396"};margin-top:5px;">TECHNOLOGIES</div></td>
+  return `<table role="presentation" cellpadding="0" cellspacing="0"><tr>
+  <td bgcolor="#0b1020" style="width:40px;height:40px;background:#0b1020;border:2px solid #0891b2;border-radius:10px;text-align:center;font:800 17px/40px Arial,sans-serif;"><span style="color:#22c3e6;">S</span><span style="color:#ffffff;">T</span></td>
+  <td style="padding-left:12px;"><div style="font:800 19px/1 Arial,sans-serif;letter-spacing:.06em;color:${onDark ? "#ffffff" : "#0891b2"};">SETUWARE</div><div style="font:700 10px/1 Arial,sans-serif;letter-spacing:.34em;color:${onDark ? "#cbd5e1" : "#64748b"};margin-top:6px;">TECHNOLOGIES</div></td>
 </tr></table>`;
 }
 
@@ -228,7 +233,7 @@ export function teamEmail(lead: Lead): EmailContent {
   rows.push(["Source", esc(v.source)]);
 
   const inner = `
-<tr><td bgcolor="#0b1020" style="background:#0b1020;background-image:linear-gradient(135deg,#0b1020 0%,#0d2a3a 60%,#00718c 100%);padding:28px 32px;">
+<tr><td bgcolor="#0b1020" style="background-color:#0b1020;padding:28px 32px;">
   <table role="presentation" width="100%"><tr>
     <td style="vertical-align:middle;">${logo(true)}</td>
     <td align="right" style="vertical-align:middle;"><span style="display:inline-block;background:rgba(95,224,247,.15);color:#5fe0f7;border:1px solid rgba(95,224,247,.35);border-radius:999px;padding:6px 12px;font:700 11px/1 Arial,sans-serif;letter-spacing:.08em;">${lead.kind === "newsletter" ? "NEW SUBSCRIBER" : "NEW ENQUIRY"}</span></td>
