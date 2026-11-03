@@ -44,8 +44,8 @@
  * dark stay in sync from one place.
  */
 :root {
-  --background: #ffffff;
-  --background-subtle: #f8fafc;
+  --background: #f6f8fc;
+  --background-subtle: #eef2f8;
   --surface: #ffffff;
   --surface-2: #f1f5f9;
   --foreground: #0b1020;
