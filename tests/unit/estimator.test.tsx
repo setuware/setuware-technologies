@@ -40,6 +40,7 @@ describe("Estimator", () => {
     render(<Estimator />);
 
     const before = headline();
+    await user.click(screen.getByLabelText("Features"));
     await user.click(screen.getByLabelText(/Payments & billing/i));
 
     await waitFor(() => expect(headline()).not.toBe(before));
@@ -49,23 +50,22 @@ describe("Estimator", () => {
     const user = userEvent.setup();
     render(<Estimator />);
 
-    expect(screen.queryByRole("button", { name: "Android" })).not.toBeInTheDocument();
-
-    await user.click(screen.getByRole("button", { name: /^Apps\s*from/ }));
-
-    expect(await screen.findByRole("button", { name: "Android" })).toBeInTheDocument();
+    expect(screen.queryByLabelText("Platforms")).not.toBeInTheDocument();
+    await user.selectOptions(screen.getByLabelText("Service"), "app-development");
+    expect(await screen.findByLabelText("Platforms")).toBeInTheDocument();
   });
 
   it("never lets every platform be deselected", async () => {
     const user = userEvent.setup();
     render(<Estimator />);
 
-    await user.click(screen.getByRole("button", { name: /^Apps\s*from/ }));
-    const web = await screen.findByRole("button", { name: "Web" });
+    await user.selectOptions(screen.getByLabelText("Service"), "app-development");
+    await user.click(await screen.findByLabelText("Platforms"));
+    const web = screen.getByRole("checkbox", { name: "Web" });
 
     // Deselecting the only selected platform must keep it selected.
     await user.click(web);
-    expect(web).toHaveAttribute("aria-pressed", "true");
+    expect(web).toBeChecked();
   });
 
   it("shortens the timeline when delivery is accelerated", async () => {
@@ -73,7 +73,7 @@ describe("Estimator", () => {
     render(<Estimator />);
 
     const weeksBefore = screen.getByText(/~\d+ weeks/).textContent;
-    await user.click(screen.getByRole("radio", { name: /Accelerated/ }));
+    await user.selectOptions(screen.getByLabelText("Timeline"), "accelerated");
 
     await waitFor(() => {
       expect(screen.getByText(/~\d+ weeks/).textContent).not.toBe(weeksBefore);
@@ -84,7 +84,7 @@ describe("Estimator", () => {
     const user = userEvent.setup();
     render(<Estimator />);
 
-    await user.click(screen.getByRole("button", { name: /^Hosting\s*from/ }));
+    await user.selectOptions(screen.getByLabelText("Service"), "managed-hosting");
 
     await waitFor(() => {
       expect(window.location.search).toContain("s=managed-hosting");
@@ -101,13 +101,10 @@ describe("Estimator", () => {
     render(<Estimator />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /^Apps\s*from/ })).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
+      expect(screen.getByLabelText("Service")).toHaveValue("app-development");
     });
     expect(screen.getByLabelText(/Payments & billing/i)).toBeChecked();
-    expect(screen.getByRole("radio", { name: /Signature & animated/ })).toBeChecked();
+    expect(screen.getByLabelText("Design")).toHaveValue("premium");
   });
 
   it("ignores junk in the URL rather than breaking", async () => {
@@ -125,11 +122,9 @@ describe("Estimator", () => {
     const user = userEvent.setup();
     const { unmount } = render(<Estimator />);
 
-    await user.click(screen.getByRole("button", { name: /^Design\s*from/ }));
+    await user.selectOptions(screen.getByLabelText("Service"), "product-design");
     await waitFor(() => {
-      expect(window.localStorage.getItem("setuware.estimate.v1")).toContain(
-        "product-design",
-      );
+      expect(window.localStorage.getItem("setuware.estimate.v1")).toContain("product-design");
     });
 
     unmount();
@@ -137,10 +132,7 @@ describe("Estimator", () => {
     render(<Estimator />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /^Design\s*from/ })).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
+      expect(screen.getByLabelText("Service")).toHaveValue("product-design");
     });
   });
 
@@ -148,14 +140,11 @@ describe("Estimator", () => {
     const user = userEvent.setup();
     render(<Estimator />);
 
-    await user.click(screen.getByRole("button", { name: /^Hosting\s*from/ }));
+    await user.selectOptions(screen.getByLabelText("Service"), "managed-hosting");
     await user.click(screen.getByRole("button", { name: /start over/i }));
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /^Web app\s*from/ })).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
+      expect(screen.getByLabelText("Service")).toHaveValue("web-development");
     });
     expect(window.location.search).toBe("");
   });

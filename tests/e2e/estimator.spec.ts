@@ -9,7 +9,7 @@ test.describe("instant quote estimator", () => {
 
     const before = await headline.textContent();
 
-    await page.getByRole("button", { name: /^Apps\s*from/ }).click();
+    await page.getByLabel("Service").selectOption("app-development");
     await expect(headline).not.toHaveText(before ?? "");
   });
 
@@ -27,21 +27,19 @@ test.describe("instant quote estimator", () => {
     context,
   }) => {
     await page.goto("/estimate");
-    await page.getByRole("button", { name: /^Hosting\s*from/ }).click();
+    await page.getByLabel("Service").selectOption("managed-hosting");
     await expect(page).toHaveURL(/s=managed-hosting/);
 
     // Open the same URL in a fresh tab: the configuration must survive.
     const shared = await context.newPage();
     await shared.goto(page.url());
-    await expect(
-      shared.getByRole("button", { name: /^Hosting\s*from/ }),
-    ).toHaveAttribute("aria-pressed", "true");
+    await expect(shared.getByLabel("Service")).toHaveValue("managed-hosting");
     await shared.close();
   });
 
   test("survives a reload with the configuration intact", async ({ page }) => {
     await page.goto("/estimate");
-    // The checkbox is visually hidden inside its chip; click the chip.
+    await page.getByLabel("Features").click();
     await page.getByText("Realtime chat / notifications").click();
 
     await page.reload();
