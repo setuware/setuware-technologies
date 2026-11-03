@@ -134,7 +134,9 @@ export function Navbar({ links }: NavbarProps) {
           "fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,box-shadow] duration-300",
           scrolled
             ? "glass border-b border-border shadow-ambient"
-            : "border-b border-transparent bg-background",
+            : "border-b border-border/60 bg-background",
+          // Brand hairline along the top edge, in the logo's blue-to-teal.
+          "before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-[linear-gradient(90deg,#1d3fae,#1468ad_50%,#0a8ea6)]",
         )}
         initial={false}
         animate={{ y: hidden ? "-100%" : "0%" }}
@@ -169,7 +171,7 @@ export function Navbar({ links }: NavbarProps) {
               {/* Rings on hover; purely decorative. */}
               <span
                 aria-hidden
-                className="inline-flex size-[calc(var(--s)*34)] items-center justify-center rounded-full bg-setu/10 text-setu transition-colors duration-300 group-hover/phone:bg-setu group-hover/phone:text-white group-focus-visible/phone:bg-setu group-focus-visible/phone:text-white"
+                className="inline-flex size-[calc(var(--s)*34)] items-center justify-center rounded-full bg-[#1d3fae]/[0.08] text-[#1d3fae] transition-colors duration-300 group-hover/phone:bg-[#1d3fae] group-hover/phone:text-white group-focus-visible/phone:bg-[#1d3fae] group-focus-visible/phone:text-white dark:bg-white/10 dark:text-[#8aa6ff]"
               >
                 <Phone className="size-[calc(var(--s)*15)] motion-safe:group-hover/phone:animate-[phone-ring_0.9s_ease-in-out] motion-safe:group-focus-visible/phone:animate-[phone-ring_0.9s_ease-in-out]" />
               </span>
@@ -178,14 +180,14 @@ export function Navbar({ links }: NavbarProps) {
                 {/* Two stacked copies: on hover the dark one rolls up and the
                     cyan one rolls in, with an underline sweeping across. */}
                 <span className="relative block overflow-hidden whitespace-nowrap text-[calc(var(--s)*17)] font-bold">
-                  <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover/phone:-translate-y-full motion-safe:group-focus-visible/phone:-translate-y-full motion-reduce:group-hover/phone:text-setu">
+                  <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover/phone:-translate-y-full motion-safe:group-focus-visible/phone:-translate-y-full motion-reduce:group-hover/phone:text-[#1d3fae]">
                     {site.phone}
                   </span>
-                  <span className="absolute inset-0 block translate-y-full text-setu transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover/phone:translate-y-0 motion-safe:group-focus-visible/phone:translate-y-0">
+                  <span className="absolute inset-0 block translate-y-full text-[#1d3fae] dark:text-[#8aa6ff] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover/phone:translate-y-0 motion-safe:group-focus-visible/phone:translate-y-0">
                     {site.phone}
                   </span>
                 </span>
-                <span className="mt-[2px] block h-px w-full origin-left scale-x-0 bg-setu transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/phone:scale-x-100 group-focus-visible/phone:scale-x-100" />
+                <span className="mt-[2px] block h-px w-full origin-left scale-x-0 bg-[#1d3fae] dark:bg-[#8aa6ff] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/phone:scale-x-100 group-focus-visible/phone:scale-x-100" />
               </span>
             </a>
 
@@ -196,7 +198,7 @@ export function Navbar({ links }: NavbarProps) {
                 href="/contact"
                 size="sm"
                 variant="ghost"
-                className="hidden rounded-full bg-setu font-semibold text-white hover:bg-setu-dark sm:inline-flex lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*202)] lg:justify-start lg:gap-[calc(var(--s)*10)] lg:pl-[calc(var(--s)*39)] lg:pr-0 lg:text-[calc(var(--s)*15)] lg:leading-[normal] dark:hover:bg-setu-dark"
+                className="hidden rounded-full bg-[linear-gradient(100deg,#1d3fae,#1468ad_55%,#0a8ea6)] font-semibold text-white shadow-[0_8px_20px_-10px_rgba(29,63,174,0.8)] transition-[filter,box-shadow] hover:brightness-110 hover:shadow-[0_10px_24px_-10px_rgba(29,63,174,0.9)] sm:inline-flex lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*202)] lg:justify-start lg:gap-[calc(var(--s)*10)] lg:pl-[calc(var(--s)*39)] lg:pr-0 lg:text-[calc(var(--s)*15)] lg:leading-[normal]"
               >
                 Start A Project
                 <ArrowRight

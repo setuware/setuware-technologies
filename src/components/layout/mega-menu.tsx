@@ -195,7 +195,7 @@ export function DesktopMenus({ entries, openId, onOpenChange, isActive }: Deskto
   return (
     <div
       ref={rootRef}
-      className="hidden items-center lg:ml-[calc(var(--s)*64)] lg:flex lg:h-[calc(var(--s)*40)] lg:gap-[calc(var(--s)*48)]"
+      className="hidden items-center lg:ml-[calc(var(--s)*64)] lg:flex lg:h-[calc(var(--s)*40)] lg:gap-[calc(var(--s)*14)]"
     >
       {entries.map((entry) => {
         if (entry.kind === "link") {
@@ -210,8 +210,10 @@ export function DesktopMenus({ entries, openId, onOpenChange, isActive }: Deskto
                 if (event.pointerType === "mouse" && openId) hoverClose();
               }}
               className={cn(
-                "inline-flex h-full items-center text-[calc(var(--s)*15)] font-medium leading-[normal] whitespace-nowrap transition-colors",
-                isActive(entry.href) ? "text-setu" : "text-foreground hover:text-setu",
+                "inline-flex items-center rounded-full px-[calc(var(--s)*14)] py-[calc(var(--s)*8)] text-[calc(var(--s)*15)] font-medium leading-[normal] whitespace-nowrap transition-colors",
+                isActive(entry.href)
+                  ? "bg-[#1d3fae]/[0.07] text-[#1d3fae] dark:bg-white/10 dark:text-white"
+                  : "text-foreground/70 hover:bg-foreground/[0.05] hover:text-foreground",
               )}
             >
               {entry.label}
@@ -271,8 +273,12 @@ export function DesktopMenus({ entries, openId, onOpenChange, isActive }: Deskto
                 }
               }}
               className={cn(
-                "group/nav inline-flex items-center gap-[calc(var(--s)*8)] rounded-sm text-[calc(var(--s)*15)] font-medium leading-[normal] whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-setu/60 focus-visible:ring-offset-4 focus-visible:ring-offset-background",
-                active || open ? "text-setu" : "text-foreground hover:text-setu",
+                "group/nav inline-flex items-center gap-[calc(var(--s)*8)] rounded-full px-[calc(var(--s)*14)] py-[calc(var(--s)*8)] text-[calc(var(--s)*15)] font-medium leading-[normal] whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-setu/60",
+                open
+                  ? "bg-foreground/[0.06] text-foreground"
+                  : active
+                    ? "bg-[#1d3fae]/[0.07] text-[#1d3fae] dark:bg-white/10 dark:text-white"
+                    : "text-foreground/70 hover:bg-foreground/[0.05] hover:text-foreground",
               )}
             >
               {entry.label}
