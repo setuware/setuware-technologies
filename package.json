@@ -20,7 +20,9 @@
     "media:fetch": "node scripts/fetch-media.mjs",
     "media:mockups": "node scripts/render-mockups.mjs",
     "media:render": "node scripts/render-backdrops.mjs",
-    "mail:test": "node scripts/mail-test.mjs"
+    "mail:test": "node scripts/mail-test.mjs",
+    "crm:token": "node scripts/zoho-crm.mjs token",
+    "crm:test": "node scripts/zoho-crm.mjs test"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.2",
