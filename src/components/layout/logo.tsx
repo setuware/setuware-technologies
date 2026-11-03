@@ -31,8 +31,6 @@ export function Logo({
   const [first = "Setuware", ...rest] = site.shortName.split(" ");
   const second = rest.join(" ");
   const name = first.toUpperCase();
-  // "SETU" + "WARE": the second half takes the W's blue-to-teal gradient.
-  const split = Math.ceil(name.length / 2);
 
   return (
     <Link
@@ -42,33 +40,22 @@ export function Logo({
     >
       <LogoMark className="size-10 shrink-0 transition-transform duration-500 group-hover:rotate-[-8deg] lg:size-[calc(var(--s)*46)]" />
       <span className="inline-flex flex-col leading-none" aria-hidden>
-        <span className="font-[family-name:var(--font-brand)] text-[1.25rem] font-bold tracking-[0.045em] lg:text-[calc(var(--s)*23)]">
-          <span className={inverted ? "text-white" : "text-[#0b1020] dark:text-white"}>{name.slice(0, split)}</span>
-          <span
-            className={cn(
-              "bg-clip-text text-transparent",
-              inverted
-                ? "bg-[linear-gradient(90deg,#8aa6ff,#22c3e6)]"
-                : "bg-[linear-gradient(90deg,#1d3fae,#0a8ea6)] dark:bg-[linear-gradient(90deg,#8aa6ff,#22c3e6)]",
-            )}
-          >
-            {name.slice(split)}
-          </span>
+        <span
+          className={cn(
+            "font-[family-name:var(--font-brand)] text-[1.25rem] font-bold tracking-[0.06em] lg:text-[calc(var(--s)*23)]",
+            inverted ? "text-white" : "text-[#0b1020] dark:text-white",
+          )}
+        >
+          {name}
         </span>
         {second ? (
-          // Letters spread across the full width of the name above.
           <span
             className={cn(
-              "mt-[0.32rem] flex justify-between text-[0.66rem] font-semibold lg:mt-[calc(var(--s)*6)] lg:text-[calc(var(--s)*11.5)]",
-              inverted ? "text-white/60" : "text-slate-500 dark:text-white/60",
+              "mt-[0.36rem] pl-[0.06em] text-[0.64rem] font-semibold uppercase tracking-[0.36em] lg:mt-[calc(var(--s)*7)] lg:text-[calc(var(--s)*11.5)]",
+              inverted ? "text-[#5fd0ec]" : "text-[#0a8ea6] dark:text-[#5fd0ec]",
             )}
           >
-            {second
-              .toUpperCase()
-              .split("")
-              .map((letter, index) => (
-                <span key={index}>{letter}</span>
-              ))}
+            {second}
           </span>
         ) : null}
       </span>
