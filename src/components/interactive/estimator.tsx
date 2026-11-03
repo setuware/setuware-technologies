@@ -1,16 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  Check,
-  Clock,
-  Info,
-  Link2,
-  Loader2,
-  Mail,
-  RotateCcw,
-  Users,
-} from "lucide-react";
+import { Check, Link2, Loader2, RotateCcw } from "lucide-react";
 
 import {
   DEFAULT_ESTIMATE_INPUT,
@@ -31,8 +22,7 @@ import { postJson } from "@/lib/client-api";
 import { services } from "@/lib/content";
 import { cn, formatINR, formatINRCompact } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Field, Honeypot, Input, Textarea } from "@/components/ui/field";
-import { ServiceIcon } from "@/components/ui/service-icon";
+import { Field, Honeypot, Input } from "@/components/ui/field";
 
 const STORAGE_KEY = "setuware.estimate.v1";
 
@@ -190,217 +180,152 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
     window.history.replaceState(null, "", window.location.pathname);
   };
 
+  const service = services.find((entry) => entry.slug === input.service);
+  let step = 0;
+  const next = () => String(++step).padStart(2, "0");
+
   return (
-    <div className={cn("grid gap-6", compact ? "lg:grid-cols-1" : "lg:grid-cols-[1.35fr_1fr]")}>
-      <div className="flex flex-col gap-7 rounded-2xl border border-slate-200/80 bg-surface p-5 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_6px_16px_-8px_rgb(15_23_42/0.08),0_24px_48px_-24px_rgb(15_23_42/0.16)] dark:border-border md:p-6">
+    <div
+      className={cn(
+        "grid gap-10 lg:gap-14",
+        compact ? "lg:grid-cols-1" : "lg:grid-cols-[minmax(0,1fr)_22rem] xl:grid-cols-[minmax(0,1fr)_24rem]",
+      )}
+    >
+      <div className="flex min-w-0 flex-col divide-y divide-border border-y border-border">
         {/* Service */}
-        <fieldset>
-          <Legend step={1} label="Select a service" hint="Starting prices exclude GST." />
-          <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
-            {services.map((service) => {
-              const active = input.service === service.slug;
-              return (
-                <button
-                  key={service.slug}
-                  type="button"
-                  onClick={() => update({ service: service.slug })}
-                  aria-pressed={active}
-                  /*
-                   * No aria-label: the name is computed from the two spans
-                   * below. Any label we write here is judged against the
-                   * visible text joined with no separator ("Appsfrom ₹74,999"),
-                   * so every readable phrasing registers as a
-                   * label-content mismatch. Letting the content speak is both
-                   * accurate and one less thing to keep in sync.
-                   */
-                  className={cn(
-                    "flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all duration-200",
-                    active
-                      ? "border-primary bg-primary/8 shadow-glow"
-                      : "border-border bg-background hover:border-primary/35",
-                  )}
-                >
-                  <ServiceIcon
-                    name={service.icon}
-                    accent={service.accent}
-                    className="size-9"
-                    size={17}
-                  />
-                  <span className="min-w-0">
-                    <span className="block text-sm font-medium text-foreground">
-                      {service.shortName}
-                    </span>
-                    <span className="block text-xs text-muted-foreground">
-                      from {formatINR(service.priceFrom)}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
+        <Group
+          step={next()}
+          label="Service"
+          detail={service ? `from ${formatINR(service.priceFrom)} + GST` : undefined}
+        >
+          <div className="flex flex-wrap gap-2">
+            {services.map((entry) => (
+              <Chip
+                key={entry.slug}
+                active={input.service === entry.slug}
+                onClick={() => update({ service: entry.slug })}
+              >
+                {entry.shortName}
+                {/* Read with the name ("Apps from ₹74,999"); shown once above. */}
+                <span className="sr-only"> from {formatINR(entry.priceFrom)}</span>
+              </Chip>
+            ))}
           </div>
-        </fieldset>
+        </Group>
 
         {/* Scope */}
-        <fieldset>
-          <Legend
-            step={2}
-            label={`Approximate number of ${rate.scopeNoun}`}
-            hint="An estimate is sufficient. We confirm the scope during the consultation."
+        <Group step={next()} label={`Number of ${rate.scopeNoun}`} detail={String(input.scope)}>
+          <input
+            type="range"
+            min={SCOPE_LIMITS.min}
+            max={SCOPE_LIMITS.max}
+            step={1}
+            value={input.scope}
+            onChange={(event) => update({ scope: Number(event.target.value) })}
+            className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-border accent-[var(--color-setu,#00a1c6)]"
+            aria-label={`Number of ${rate.scopeNoun}`}
+            aria-valuetext={`${input.scope} ${rate.scopeNoun}`}
           />
-          <div className="mt-4 flex items-center gap-4">
-            <input
-              type="range"
-              min={SCOPE_LIMITS.min}
-              max={SCOPE_LIMITS.max}
-              step={1}
-              value={input.scope}
-              onChange={(event) => update({ scope: Number(event.target.value) })}
-              className="h-2 w-full cursor-pointer appearance-none rounded-full bg-surface-2 accent-[var(--primary)]"
-              aria-label={`Number of ${rate.scopeNoun}`}
-              aria-valuetext={`${input.scope} ${rate.scopeNoun}`}
-            />
-            <output className="w-16 shrink-0 rounded-lg border border-border bg-background py-1.5 text-center font-mono text-sm font-semibold text-foreground">
-              {input.scope}
-            </output>
+          <div className="mt-2 flex justify-between font-mono text-[11px] text-muted-foreground">
+            <span>{SCOPE_LIMITS.min}</span>
+            <span>{SCOPE_LIMITS.max}</span>
           </div>
-        </fieldset>
+        </Group>
 
-        {/* Platforms — only meaningful for app builds */}
+        {/* Platforms: only meaningful for app builds */}
         {rate.supportsPlatforms ? (
-          <fieldset>
-            <Legend step={3} label="Select platforms" />
-            <div className="mt-3 flex flex-wrap gap-2">
-              {(Object.keys(PLATFORM_LABELS) as PlatformKey[]).map((platform) => {
-                const active = input.platforms.includes(platform);
-                return (
-                  <button
-                    key={platform}
-                    type="button"
-                    onClick={() => togglePlatform(platform)}
-                    aria-pressed={active}
-                    className={cn(
-                      "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
-                      active
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    {PLATFORM_LABELS[platform]}
-                  </button>
-                );
-              })}
+          <Group step={next()} label="Platforms">
+            <div className="flex flex-wrap gap-2">
+              {(Object.keys(PLATFORM_LABELS) as PlatformKey[]).map((platform) => (
+                <Chip
+                  key={platform}
+                  active={input.platforms.includes(platform)}
+                  onClick={() => togglePlatform(platform)}
+                >
+                  {PLATFORM_LABELS[platform]}
+                </Chip>
+              ))}
             </div>
-          </fieldset>
+          </Group>
         ) : null}
 
         {/* Features */}
-        <fieldset>
-          <Legend
-            step={rate.supportsPlatforms ? 4 : 3}
-            label="Select features"
-            hint="Choose the features you need at launch. Others can follow in a later phase."
-          />
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        <Group
+          step={next()}
+          label="Features"
+          detail={input.features.length > 0 ? `${input.features.length} selected` : "Optional"}
+        >
+          <div className="flex flex-wrap gap-2">
             {FEATURE_ORDER.map((feature) => {
               const meta = FEATURE_RATES[feature];
               const active = input.features.includes(feature);
               return (
-                <label
-                  key={feature}
-                  className={cn(
-                    "flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-2.5 transition-colors",
-                    active
-                      ? "border-primary/60 bg-primary/8"
-                      : "border-border bg-background hover:border-primary/30",
-                  )}
-                >
+                <label key={feature} title={meta.hint} className={chipClass(active, "cursor-pointer")}>
                   <input
                     type="checkbox"
                     checked={active}
                     onChange={() => toggleFeature(feature)}
-                    className="mt-0.5 size-4 shrink-0 accent-[var(--primary)]"
+                    className="sr-only"
                   />
-                  <span className="min-w-0">
-                    <span className="block text-sm font-medium text-foreground">
-                      {meta.label}
-                    </span>
-                    <span className="block text-xs leading-snug text-muted-foreground">
-                      {meta.hint}
-                    </span>
-                  </span>
+                  {active ? <Check className="size-3.5" aria-hidden /> : null}
+                  {meta.label}
                 </label>
               );
             })}
           </div>
-        </fieldset>
+        </Group>
 
         {/* Design + timeline */}
-        <div className="grid gap-6 border-t border-border pt-6 sm:grid-cols-2">
-          <fieldset>
-            <Legend step={rate.supportsPlatforms ? 5 : 4} label="Design level" />
-            <div className="mt-3 flex flex-col gap-2">
-              {(Object.keys(DESIGN_TIERS) as DesignTier[]).map((tier) => (
-                <RadioRow
-                  key={tier}
-                  name="design"
-                  checked={input.design === tier}
-                  onChange={() => update({ design: tier })}
-                  label={DESIGN_TIERS[tier].label}
-                  hint={DESIGN_TIERS[tier].hint}
-                />
-              ))}
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <Legend step={rate.supportsPlatforms ? 6 : 5} label="Timeline" />
-            <div className="mt-3 flex flex-col gap-2">
-              {(Object.keys(TIMELINES) as TimelineKey[]).map((key) => (
-                <RadioRow
-                  key={key}
-                  name="timeline"
-                  checked={input.timeline === key}
-                  onChange={() => update({ timeline: key })}
-                  label={TIMELINES[key].label}
-                  hint={TIMELINES[key].hint}
-                />
-              ))}
-            </div>
-          </fieldset>
-        </div>
-
-        <label
-          className={cn(
-            "flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors",
-            input.retainer
-              ? "border-primary/60 bg-primary/8"
-              : "border-border bg-background-subtle hover:border-primary/30",
-          )}
-        >
-          <input
-            type="checkbox"
-            checked={input.retainer}
-            onChange={(event) => update({ retainer: event.target.checked })}
-            className="mt-0.5 size-4 shrink-0 accent-[var(--primary)]"
+        <Group step={next()} label="Design" detail={DESIGN_TIERS[input.design].hint}>
+          <Segmented
+            name="design"
+            options={(Object.keys(DESIGN_TIERS) as DesignTier[]).map((tier) => ({
+              value: tier,
+              label: DESIGN_TIERS[tier].label,
+            }))}
+            value={input.design}
+            onChange={(design) => update({ design })}
           />
-          <span>
-            <span className="block text-sm font-medium text-foreground">
-              Add a monthly maintenance plan after launch
-            </span>
-            <span className="block text-xs text-muted-foreground">
-              Hosting, monitoring, security updates and backups.
-            </span>
-          </span>
-        </label>
+        </Group>
 
-        <button
-          type="button"
-          onClick={reset}
-          className="inline-flex items-center gap-1.5 self-start text-xs text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <RotateCcw className="size-3" aria-hidden />
-          Start over
-        </button>
+        <Group step={next()} label="Timeline" detail={TIMELINES[input.timeline].hint}>
+          <Segmented
+            name="timeline"
+            options={(Object.keys(TIMELINES) as TimelineKey[]).map((key) => ({
+              value: key,
+              label: TIMELINES[key].label,
+            }))}
+            value={input.timeline}
+            onChange={(timeline) => update({ timeline })}
+          />
+        </Group>
+
+        <div className="flex flex-wrap items-center justify-between gap-4 py-6">
+          <label className="flex cursor-pointer items-center gap-3">
+            <input
+              type="checkbox"
+              checked={input.retainer}
+              onChange={(event) => update({ retainer: event.target.checked })}
+              className="peer sr-only"
+            />
+            <span
+              aria-hidden
+              className="relative h-5 w-9 shrink-0 rounded-full bg-border transition-colors after:absolute after:left-0.5 after:top-0.5 after:size-4 after:rounded-full after:bg-white after:shadow-sm after:transition-transform peer-checked:bg-setu peer-checked:after:translate-x-4 peer-focus-visible:ring-2 peer-focus-visible:ring-ring"
+            />
+            <span className="text-sm text-foreground">
+              Monthly maintenance after launch
+            </span>
+          </label>
+
+          <button
+            type="button"
+            onClick={reset}
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <RotateCcw className="size-3" aria-hidden />
+            Start over
+          </button>
+        </div>
       </div>
 
       <QuoteSummary input={input} result={result} />
@@ -408,60 +333,92 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
   );
 }
 
-function Legend({
-  step,
-  label,
-  hint,
-}: {
-  step: number;
-  label: string;
-  hint?: string;
-}) {
-  return (
-    <legend className="flex flex-col gap-1">
-      <span className="flex items-center gap-2.5">
-        <span className="inline-flex size-7 items-center justify-center rounded-full bg-setu font-mono text-xs font-semibold text-white shadow-[0_0_0_4px_rgb(0_161_198/0.12)]">
-          {step}
-        </span>
-        <span className="text-base font-semibold text-foreground">{label}</span>
-      </span>
-      {hint ? <span className="pl-[2.375rem] text-xs text-muted-foreground">{hint}</span> : null}
-    </legend>
+function chipClass(active: boolean, extra?: string) {
+  return cn(
+    "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[0.8125rem] font-medium transition-colors duration-200 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+    active
+      ? "border-foreground bg-foreground text-background"
+      : "border-border bg-background text-foreground/80 hover:border-foreground/40 hover:text-foreground",
+    extra,
   );
 }
 
-function RadioRow({
-  name,
-  checked,
-  onChange,
-  label,
-  hint,
+function Chip({
+  active,
+  onClick,
+  children,
 }: {
-  name: string;
-  checked: boolean;
-  onChange: () => void;
-  label: string;
-  hint: string;
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
 }) {
   return (
-    <label
-      className={cn(
-        "flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-2.5 transition-colors",
-        checked ? "border-primary/60 bg-primary/8" : "border-border bg-background hover:border-primary/30",
-      )}
-    >
-      <input
-        type="radio"
-        name={name}
-        checked={checked}
-        onChange={onChange}
-        className="mt-0.5 size-4 shrink-0 accent-[var(--primary)]"
-      />
-      <span>
-        <span className="block text-sm font-medium text-foreground">{label}</span>
-        <span className="block text-xs leading-snug text-muted-foreground">{hint}</span>
-      </span>
-    </label>
+    <button type="button" onClick={onClick} aria-pressed={active} className={chipClass(active)}>
+      {children}
+    </button>
+  );
+}
+
+function Group({
+  step,
+  label,
+  detail,
+  children,
+}: {
+  step: string;
+  label: string;
+  detail?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <fieldset className="min-w-0 py-6">
+      <legend className="sr-only">{label}</legend>
+      <div className="grid gap-4 sm:grid-cols-[9.5rem_minmax(0,1fr)] sm:gap-6">
+        <div aria-hidden className="flex items-baseline gap-2.5 sm:flex-col sm:gap-1">
+          <span className="font-mono text-[11px] text-muted-foreground">{step}</span>
+          <span className="text-[0.95rem] font-semibold text-foreground">{label}</span>
+          {detail ? (
+            <span className="ml-auto text-right text-xs leading-snug text-muted-foreground sm:ml-0 sm:text-left">
+              {detail}
+            </span>
+          ) : null}
+        </div>
+        <div className="min-w-0">{children}</div>
+      </div>
+    </fieldset>
+  );
+}
+
+function Segmented<T extends string>({
+  name,
+  options,
+  value,
+  onChange,
+}: {
+  name: string;
+  options: { value: T; label: string }[];
+  value: T;
+  onChange: (value: T) => void;
+}) {
+  return (
+    <div className="grid grid-cols-3 gap-1 rounded-full border border-border bg-background-subtle p-1">
+      {options.map((option) => (
+        <label
+          key={option.value}
+          className="cursor-pointer rounded-full px-2 py-1.5 text-center text-[0.8125rem] font-medium text-muted-foreground transition-colors hover:text-foreground has-[:checked]:bg-background has-[:checked]:text-foreground has-[:checked]:shadow-[0_1px_3px_rgb(15_23_42/0.12)] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring"
+        >
+          <input
+            type="radio"
+            name={name}
+            value={option.value}
+            checked={value === option.value}
+            onChange={() => onChange(option.value)}
+            className="sr-only"
+          />
+          {option.label}
+        </label>
+      ))}
+    </div>
   );
 }
 
@@ -505,7 +462,7 @@ function QuoteSummary({
         name: String(form.get("quote-name") ?? ""),
         email: String(form.get("quote-email") ?? ""),
         phone: String(form.get("quote-phone") ?? ""),
-        notes: String(form.get("quote-notes") ?? ""),
+        notes: "",
         honeypot: String(form.get("quote-honeypot") ?? ""),
       },
     );
@@ -525,104 +482,61 @@ function QuoteSummary({
 
   return (
     <aside className="lg:sticky lg:top-24 lg:self-start">
-      <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-surface shadow-[0_1px_2px_rgb(15_23_42/0.05),0_12px_28px_-12px_rgb(15_23_42/0.18),0_40px_80px_-40px_rgb(0_161_198/0.35)] dark:border-border">
-        <div className="relative isolate overflow-hidden bg-[#05070d] p-5 text-white md:p-6">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -right-16 -top-20 -z-10 size-64 rounded-full bg-[#00a1c6]/35 blur-3xl"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -bottom-24 -left-10 -z-10 size-56 rounded-full bg-[#3b82f6]/25 blur-3xl"
-          />
-          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/75">
-            <span className="size-1.5 rounded-full bg-[#00a1c6]" aria-hidden />
-            Estimated investment
-          </p>
-          <p className="mt-2 font-display text-3xl font-semibold tabular-nums md:text-4xl">
-            {formatINRCompact(result.low)} – {formatINRCompact(result.high)}
-          </p>
-          <p className="mt-1 text-sm text-white/85">
-            Mid-point {formatINR(result.total)} · Fixed price confirmed after discovery
-          </p>
-
-          <div className="mt-5 grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2.5">
-              <span className="flex items-center gap-1.5 text-[11px] text-white/80">
-                <Clock className="size-3 text-[#22c3e6]" aria-hidden /> Timeline
-              </span>
-              <span className="mt-0.5 block text-sm font-semibold">
-                ~{result.weeks} weeks
-              </span>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2.5">
-              <span className="flex items-center gap-1.5 text-[11px] text-white/80">
-                <Users className="size-3 text-[#22c3e6]" aria-hidden /> Team size
-              </span>
-              <span className="mt-0.5 block text-sm font-semibold">
-                {result.teamSize} people
-              </span>
-            </div>
-          </div>
+      <div className="rounded-2xl border border-border bg-surface p-6 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_16px_40px_-24px_rgb(15_23_42/0.18)]">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          Estimate
+        </p>
+        <p className="mt-2 font-display text-[2.1rem] font-semibold leading-none tracking-[-0.03em] tabular-nums text-foreground">
+          {formatINRCompact(result.low)} – {formatINRCompact(result.high)}
+        </p>
+        <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+          <span>~{result.weeks} weeks</span>
+          <span aria-hidden className="size-1 rounded-full bg-border" />
+          <span>{result.teamSize} people</span>
         </div>
 
-        <div className="flex flex-col gap-5 p-5 md:p-6">
-          <div>
-            <h2 className="text-sm font-semibold text-foreground">Payment milestones</h2>
-            <ul className="mt-2.5 flex flex-col gap-2">
-              {result.milestones.map((milestone) => (
-                <li
-                  key={milestone.name}
-                  className="flex items-center justify-between gap-3 text-sm"
-                >
-                  <span className="text-muted-foreground">{milestone.name}</span>
-                  <span className="shrink-0 font-mono text-[0.8rem] font-medium tabular-nums text-foreground">
-                    {formatINR(milestone.amount)}
-                  </span>
-                </li>
-              ))}
-              {result.monthlyRetainer > 0 ? (
-                <li className="flex items-center justify-between gap-3 border-t border-border pt-2 text-sm">
-                  <span className="text-muted-foreground">Maintenance plan (monthly)</span>
-                  <span className="shrink-0 font-mono text-[0.8rem] font-medium tabular-nums text-primary">
-                    {formatINR(result.monthlyRetainer)}
-                  </span>
-                </li>
-              ) : null}
-            </ul>
-          </div>
-
+        <div className="mt-6 border-t border-border pt-5">
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            Payment milestones
+          </h2>
+          <ul className="mt-3 flex flex-col gap-2">
+            {result.milestones.map((milestone) => (
+              <li key={milestone.name} className="flex items-center justify-between gap-3 text-[0.8125rem]">
+                <span className="text-muted-foreground">{milestone.name}</span>
+                <span className="shrink-0 tabular-nums text-foreground">{formatINR(milestone.amount)}</span>
+              </li>
+            ))}
+            {result.monthlyRetainer > 0 ? (
+              <li className="flex items-center justify-between gap-3 text-[0.8125rem]">
+                <span className="text-muted-foreground">Maintenance, per month</span>
+                <span className="shrink-0 tabular-nums text-foreground">{formatINR(result.monthlyRetainer)}</span>
+              </li>
+            ) : null}
+          </ul>
           {result.notes.length > 0 ? (
-            <ul className="flex flex-col gap-1.5 rounded-xl bg-surface-2/70 p-3 text-xs leading-relaxed text-muted-foreground">
+            <ul className="mt-3 flex flex-col gap-1 text-xs leading-relaxed text-muted-foreground">
               {result.notes.map((note) => (
-                <li key={note} className="flex gap-2">
-                  <span className="mt-1.5 size-1 shrink-0 rounded-full bg-primary" aria-hidden />
-                  {note}
-                </li>
+                <li key={note}>{note}</li>
               ))}
             </ul>
           ) : null}
+        </div>
 
+        <div className="mt-6 border-t border-border pt-5">
           {status === "done" ? (
-            <div
-              className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-4"
-              role="status"
-            >
+            <div role="status">
               <p className="flex items-center gap-2 text-sm font-medium text-emerald-700 dark:text-emerald-400">
                 <Check className="size-4 shrink-0" aria-hidden />
                 {message}
               </p>
               <p className="mt-1.5 text-xs text-muted-foreground">
-                Your reference is{" "}
+                Reference{" "}
                 <span className="font-mono font-semibold text-foreground">{reference}</span>
-                . Please quote it when you speak to our team.
               </p>
             </div>
           ) : (
-            <form ref={formRef} onSubmit={onSubmit} className="relative flex flex-col gap-3" noValidate>
-              <h2 className="text-sm font-semibold text-foreground">
-                Receive this estimate by email
-              </h2>
+            <form ref={formRef} onSubmit={onSubmit} className="flex flex-col gap-3" noValidate>
+              <h2 className="text-sm font-semibold text-foreground">Email me this estimate</h2>
 
               <Field label="Name" htmlFor="quote-name" required error={errors.name}>
                 <Input
@@ -630,7 +544,6 @@ function QuoteSummary({
                   name="quote-name"
                   autoComplete="name"
                   required
-                  placeholder="Your name"
                   aria-invalid={Boolean(errors.name)}
                 />
               </Field>
@@ -643,7 +556,6 @@ function QuoteSummary({
                   inputMode="email"
                   autoComplete="email"
                   required
-                  placeholder="you@company.com"
                   aria-invalid={Boolean(errors.email)}
                 />
               </Field>
@@ -654,72 +566,48 @@ function QuoteSummary({
                   name="quote-phone"
                   type="tel"
                   autoComplete="tel"
-                  placeholder="+91…"
                   aria-invalid={Boolean(errors.phone)}
-                />
-              </Field>
-
-              <Field label="Additional details" htmlFor="quote-notes" error={errors.notes}>
-                <Textarea
-                  id="quote-notes"
-                  name="quote-notes"
-                  rows={3}
-                  placeholder="Deadline, existing systems or integrations"
                 />
               </Field>
 
               <Honeypot name="quote-honeypot" />
 
-              <Button type="submit" variant="gradient" block disabled={status === "sending"}>
+              <Button
+                type="submit"
+                block
+                disabled={status === "sending"}
+                className="mt-1 rounded-full bg-foreground text-background shadow-none hover:bg-foreground/85"
+              >
                 {status === "sending" ? (
                   <>
                     <Loader2 className="size-4 animate-spin" aria-hidden />
                     Sending
                   </>
                 ) : (
-                  <>
-                    <Mail className="size-4" aria-hidden />
-                    Send me this quote
-                  </>
+                  "Send me this quote"
                 )}
               </Button>
 
-              <p aria-live="polite">
+              <p aria-live="polite" className="text-[11px] leading-relaxed text-muted-foreground">
                 {status === "error" ? (
                   <span className="text-xs font-medium text-red-500">{message}</span>
                 ) : (
-                  <span className="text-[11px] text-muted-foreground">
-                    You will receive one email with the full breakdown. Our
-                    team follows up only if you request it.
-                  </span>
+                  "Indicative and excluding GST. We confirm a fixed price after a short call."
                 )}
               </p>
             </form>
           )}
-
-          <button
-            type="button"
-            onClick={copyLink}
-            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-border py-2 text-xs text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {copied ? (
-              <>
-                <Check className="size-3" aria-hidden /> Link copied
-              </>
-            ) : (
-              <>
-                <Link2 className="size-3" aria-hidden /> Copy shareable link
-              </>
-            )}
-          </button>
         </div>
       </div>
 
-      <p className="mt-3 flex items-start gap-2 px-1 text-[11px] leading-relaxed text-muted-foreground">
-        <Info className="mt-0.5 size-3 shrink-0 text-setu" aria-hidden />
-        Calculated from the rate card used for our proposals. Your written
-        proposal confirms a fixed price after discovery.
-      </p>
+      <button
+        type="button"
+        onClick={copyLink}
+        className="mt-3 inline-flex items-center gap-1.5 px-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+      >
+        {copied ? <Check className="size-3" aria-hidden /> : <Link2 className="size-3" aria-hidden />}
+        {copied ? "Link copied" : "Copy shareable link"}
+      </button>
     </aside>
   );
 }

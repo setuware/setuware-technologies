@@ -87,9 +87,18 @@ describe("pageMetadata", () => {
   });
 });
 
+describe("home page search snippet", () => {
+  it("leads with the brand and the company slogan", () => {
+    expect(HOME_TITLE).toBe(
+      "Setuware Technologies - We act as a bridge between your business idea and a working digital product",
+    );
+    expect(HOME_DESCRIPTION.length).toBeGreaterThanOrEqual(100);
+    expect(HOME_DESCRIPTION.length).toBeLessThanOrEqual(160);
+  });
+});
+
 describe("content SEO fields stay inside search-snippet limits", () => {
   const pages = [
-    { path: "/", title: HOME_TITLE, description: HOME_DESCRIPTION },
     ...services.map((s) => ({
       path: s.slug,
       title: fitTitle(s.seoTitle ?? s.name),

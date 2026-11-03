@@ -110,6 +110,9 @@ export default function RootLayout({
     // hydrates, which is what prevents a flash of the wrong theme.
     <html
       lang="en-IN"
+      // Lets Next.js switch off CSS smooth scrolling while it moves a new
+      // page to the top; without it pages open at the previous position.
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${inter.variable} ${display.variable} ${brand.variable}`}
     >

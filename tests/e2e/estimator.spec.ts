@@ -41,7 +41,8 @@ test.describe("instant quote estimator", () => {
 
   test("survives a reload with the configuration intact", async ({ page }) => {
     await page.goto("/estimate");
-    await page.getByLabel(/Realtime chat/i).check();
+    // The checkbox is visually hidden inside its chip; click the chip.
+    await page.getByText("Realtime chat / notifications").click();
 
     await page.reload();
 

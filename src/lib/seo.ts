@@ -33,14 +33,19 @@ export const DEFAULT_OG_IMAGE = {
   width: 1200,
   height: 630,
   type: "image/png",
-  alt: `${site.name} — website, app and software development in Gurugram`,
+  alt: `${site.name} — websites, apps and custom software`,
 } as const;
 
-/** Home page title and description; also the site-wide defaults. */
-export const HOME_KEYWORD_TITLE = "Website Development Company in Gurugram";
-export const HOME_TITLE = fitTitle(HOME_KEYWORD_TITLE);
+/**
+ * Home page title and description; also the site-wide defaults.
+ *
+ * The title is the brand plus the company slogan, matching the LinkedIn page,
+ * so Google shows "Setuware Technologies - We act as a bridge between your …".
+ * It is longer than 60 characters on purpose; Google trims the end.
+ */
+export const HOME_TITLE = `${site.name} - ${site.slogan.replace(/\.$/, "")}`;
 export const HOME_DESCRIPTION =
-  "Setuware Technologies is a website development company in Gurugram building business websites, e-commerce stores, mobile apps and custom software in India.";
+  "We act as a bridge between your business idea and a working digital product: websites, online stores, mobile apps and custom software at fixed prices.";
 
 /** Square brand mark (`app/apple-icon.tsx`), used as the schema.org logo. */
 export const LOGO_URL = absolute("/apple-icon");
@@ -66,6 +71,8 @@ export function fitTitle(title: string): string {
 export interface PageMetaOptions {
   /** Page-specific part of the title; the brand is appended by `fitTitle`. */
   title: string;
+  /** Use `title` exactly as given, without the brand suffix (home page). */
+  exactTitle?: boolean;
   description: string;
   path: string;
   /** Overrides the default social card (a path or absolute URL plus its size). */
@@ -77,6 +84,7 @@ export interface PageMetaOptions {
 
 export function pageMetadata({
   title,
+  exactTitle = false,
   description,
   path,
   image,
@@ -85,7 +93,7 @@ export function pageMetadata({
   noIndex = false,
 }: PageMetaOptions): Metadata {
   const url = absolute(path);
-  const fullTitle = fitTitle(title);
+  const fullTitle = exactTitle ? title : fitTitle(title);
   const ogImage = image ?? DEFAULT_OG_IMAGE;
 
   return {
@@ -162,6 +170,7 @@ export function organizationJsonLd() {
     email: site.email,
     telephone: site.phone,
     description: site.description,
+    slogan: site.slogan,
     foundingDate: site.founded,
     founder: {
       "@type": "Person",

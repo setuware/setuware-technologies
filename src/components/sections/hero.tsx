@@ -73,10 +73,10 @@ export function Hero() {
         <div className="container-figma relative flex min-h-[clamp(30rem,72vh,40rem)] flex-col justify-center py-16 md:py-20 lg:h-[calc(var(--s)*765)] lg:min-h-0 lg:justify-start lg:pb-0 lg:pt-[calc(var(--s)*184)]">
           <HeroScrollFade className="flex max-w-[42.625rem] flex-col items-start gap-8 lg:ml-[calc(var(--s)*2)] lg:w-[calc(var(--s)*682)] lg:max-w-none lg:gap-[calc(var(--s)*43)]">
             <div className="flex flex-col gap-4 text-white lg:gap-[calc(var(--s)*21)]">
-              {/* The page's one h1 names the service and the city; the display
-                  line below is the brand promise, so it is the subheading. */}
+              {/* The page's one h1 names what we build; the display line below
+                  is the brand promise, so it is the subheading. */}
               <h1 className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-white/75 sm:text-sm">
-                Website &amp; app development company in Gurugram
+                Websites, apps &amp; custom software
               </h1>
               <TextReveal
                 as="h2"
@@ -90,9 +90,8 @@ export function Hero() {
 
               <FadeUp immediate delay={0.75} y={24}>
                 <p className="text-base font-medium leading-relaxed opacity-78 sm:text-lg lg:ml-[calc(var(--s)*5)] lg:w-[calc(var(--s)*672)] lg:text-[calc(var(--s)*18)] lg:leading-[calc(var(--s)*32)]">
-                  Setuware Technologies is a Gurugram-based digital studio. We
-                  design and engineer websites, e-commerce platforms, mobile
-                  apps and custom software for businesses ready to grow online.
+                  We act as a bridge between your business idea and a working
+                  digital product, designed, built and supported by one team.
                 </p>
               </FadeUp>
             </div>
