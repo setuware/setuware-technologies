@@ -91,7 +91,8 @@ test.describe("accessibility", () => {
       scope = page.getByRole("dialog", { name: /site menu/i });
     }
 
-    await scope.getByRole("radio", { name: /dark theme/i }).click();
+    await expect(page.locator("html")).not.toHaveClass(/dark/);
+    await scope.getByRole("button", { name: /switch to dark theme/i }).click();
     await expect(page.locator("html")).toHaveClass(/dark/);
 
     await page.reload();

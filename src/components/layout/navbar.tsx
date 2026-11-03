@@ -160,7 +160,7 @@ export function Navbar({ links }: NavbarProps) {
             isActive={isActive}
           />
 
-          <div className="flex items-center gap-2 lg:ml-auto lg:items-end lg:gap-[calc(var(--s)*34)]">
+          <div className="flex items-center gap-2 lg:ml-auto lg:items-end lg:gap-[calc(var(--s)*22)]">
             <a
               href={site.phoneHref}
               aria-label={`Call us on ${site.phone}`}
@@ -177,7 +177,7 @@ export function Navbar({ links }: NavbarProps) {
                 <span className="text-[calc(var(--s)*11)] font-medium text-foreground/60">Call us</span>
                 {/* Two stacked copies: on hover the dark one rolls up and the
                     cyan one rolls in, with an underline sweeping across. */}
-                <span className="relative block overflow-hidden text-[calc(var(--s)*17)] font-bold">
+                <span className="relative block overflow-hidden whitespace-nowrap text-[calc(var(--s)*17)] font-bold">
                   <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover/phone:-translate-y-full motion-safe:group-focus-visible/phone:-translate-y-full motion-reduce:group-hover/phone:text-setu">
                     {site.phone}
                   </span>
@@ -189,7 +189,7 @@ export function Navbar({ links }: NavbarProps) {
               </span>
             </a>
 
-            <ThemeToggle className="hidden sm:inline-flex lg:hidden" />
+            <ThemeToggle className="hidden sm:inline-flex lg:size-[calc(var(--s)*40)] lg:self-center" />
 
             <Magnetic strength={0.25} className="hidden sm:block">
               <ButtonLink
