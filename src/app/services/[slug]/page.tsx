@@ -103,7 +103,7 @@ async function ServiceLanding({ params }: { params: Promise<{ slug: string }> })
 
   return (
     <>
-      <Hero service={service} groupLabel={group?.label} contactHref={contactHref} estimateHref={estimateHref} />
+      <Hero service={service} groupLabel={group?.label} estimateHref={estimateHref} />
 
       {service.audience?.length ? (
         <Section surface="grid" aria-labelledby="audience-heading">
@@ -576,12 +576,10 @@ const HERO_PHOTO_OVERLAY = [
 function Hero({
   service,
   groupLabel,
-  contactHref,
   estimateHref,
 }: {
   service: Service;
   groupLabel?: string;
-  contactHref: string;
   estimateHref: string;
 }) {
   const photo = servicePhotos[service.slug];
