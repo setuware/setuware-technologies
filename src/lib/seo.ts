@@ -233,6 +233,8 @@ export function organizationJsonLd() {
     "@id": WEBSITE_ID,
     url: site.url,
     name: site.name,
+    // Google's "site name" in results; the variants help brand searches match.
+    alternateName: ["Setuware", "Setuware Tech", "setuware.in"],
     description: site.description,
     inLanguage: "en-IN",
     publisher: { "@id": ORGANIZATION_ID },
