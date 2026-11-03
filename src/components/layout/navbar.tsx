@@ -20,7 +20,7 @@ import { ThemeToggle } from "@/components/layout/theme";
 import { OPEN_COMMAND_EVENT } from "@/components/layout/command-menu-events";
 import { Magnetic, useReducedMotionSafe } from "@/components/motion/primitives";
 import { DURATION, EASE_OUT } from "@/components/motion/ease";
-import { DesktopMenus, NavItemIcon } from "@/components/layout/mega-menu";
+import { DesktopMenus } from "@/components/layout/mega-menu";
 import type { NavEntry, NavMenu } from "@/components/layout/nav-menu-data";
 
 /**
@@ -319,7 +319,6 @@ export function Navbar({ links }: NavbarProps) {
                                       isActive(item.href) ? "text-setu" : "text-foreground",
                                     )}
                                   >
-                                    {item.icon ? <NavItemIcon icon={item.icon} compact /> : null}
                                     {item.label}
                                   </Link>
                                 </li>

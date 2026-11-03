@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
 import {
@@ -420,26 +421,35 @@ function MenuPanel({ menu, id, open, isActive, onNavigate, onKeyDown, panelRef }
           {mega && menu.feature ? (
             <motion.aside
               variants={itemVariants}
-              className="relative flex flex-col overflow-hidden rounded-2xl bg-[#062f3c] p-[calc(var(--s)*26)] text-white"
+              className="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl bg-[#05070d] p-[calc(var(--s)*24)] text-white"
             >
+              {menu.feature.image ? (
+                <Image
+                  src={menu.feature.image}
+                  alt=""
+                  fill
+                  sizes="330px"
+                  className="-z-20 object-cover opacity-80"
+                />
+              ) : null}
               <div
                 aria-hidden
-                className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-setu/40 blur-3xl"
+                className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(5,7,13,0.05)_0%,rgba(5,7,13,0.55)_45%,rgba(5,7,13,0.94)_100%)]"
               />
-              <p className="relative text-[calc(var(--s)*11)] font-semibold uppercase tracking-[0.16em] text-[#7fdcf0]">
+              <p className="text-[calc(var(--s)*11)] font-semibold uppercase tracking-[0.16em] text-white/70">
                 {menu.feature.eyebrow}
               </p>
-              <p className="relative mt-[calc(var(--s)*10)] text-[calc(var(--s)*20)] font-semibold leading-snug">
+              <p className="mt-[calc(var(--s)*8)] font-display text-[calc(var(--s)*21)] font-semibold leading-tight tracking-[-0.02em]">
                 {menu.feature.title}
               </p>
-              <p className="relative mt-[calc(var(--s)*10)] text-[calc(var(--s)*13.5)] leading-relaxed text-white/75">
+              <p className="mt-[calc(var(--s)*6)] text-[calc(var(--s)*13.5)] leading-relaxed text-white/75">
                 {menu.feature.body}
               </p>
-              <div className="relative mt-auto flex flex-col gap-[calc(var(--s)*10)] pt-[calc(var(--s)*22)]">
+              <div className="mt-[calc(var(--s)*18)] flex flex-wrap items-center gap-x-[calc(var(--s)*16)] gap-y-2">
                 <Link
                   href={menu.feature.primary.href}
                   onClick={onNavigate}
-                  className="inline-flex h-[calc(var(--s)*42)] items-center justify-center gap-2 rounded-full bg-setu px-5 text-[calc(var(--s)*14)] font-semibold text-white transition-colors hover:bg-setu-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                  className="inline-flex h-[calc(var(--s)*40)] items-center justify-center gap-2 rounded-full bg-white px-[calc(var(--s)*18)] text-[calc(var(--s)*13.5)] font-semibold text-[#05070d] transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
                 >
                   {menu.feature.primary.label}
                   <ArrowRight aria-hidden className="size-[calc(var(--s)*14)]" />
@@ -448,7 +458,7 @@ function MenuPanel({ menu, id, open, isActive, onNavigate, onKeyDown, panelRef }
                   <Link
                     href={menu.feature.secondary.href}
                     onClick={onNavigate}
-                    className="inline-flex h-[calc(var(--s)*42)] items-center justify-center rounded-full border border-white/25 px-5 text-[calc(var(--s)*14)] font-semibold text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                    className="text-[calc(var(--s)*13.5)] font-medium text-white/80 underline-offset-4 transition-colors hover:text-white hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
                   >
                     {menu.feature.secondary.label}
                   </Link>
@@ -478,26 +488,26 @@ function MenuLink({
       aria-current={active ? "page" : undefined}
       suppressHydrationWarning
       className={cn(
-        "group/item flex items-start gap-[calc(var(--s)*12)] rounded-xl p-[calc(var(--s)*10)] transition-colors hover:bg-foreground/[0.04] focus-visible:bg-foreground/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-setu/50",
-        active && "bg-setu/[0.07]",
+        "group/item -mx-[calc(var(--s)*2)] block rounded-lg px-[calc(var(--s)*10)] py-[calc(var(--s)*8)] transition-colors hover:bg-foreground/[0.035] focus-visible:bg-foreground/[0.035] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-setu/50",
       )}
     >
-      {item.icon ? <NavItemIcon icon={item.icon} /> : null}
-      <span className="min-w-0">
-        <span
-          className={cn(
-            "block text-[calc(var(--s)*14.5)] font-semibold leading-snug transition-colors group-hover/item:text-setu",
-            active ? "text-setu" : "text-foreground",
-          )}
-        >
-          {item.label}
-        </span>
-        {item.description ? (
-          <span className="mt-[calc(var(--s)*2)] block text-[calc(var(--s)*12.5)] leading-snug text-muted-foreground">
-            {item.description}
-          </span>
-        ) : null}
+      <span
+        className={cn(
+          "flex items-center gap-1.5 text-[calc(var(--s)*14.5)] font-medium leading-snug",
+          active ? "text-setu" : "text-foreground",
+        )}
+      >
+        {item.label}
+        <ArrowRight
+          aria-hidden
+          className="size-[calc(var(--s)*13)] -translate-x-1 opacity-0 transition-all duration-200 group-hover/item:translate-x-0 group-hover/item:opacity-100"
+        />
       </span>
+      {item.description ? (
+        <span className="mt-[calc(var(--s)*1)] block text-[calc(var(--s)*12.5)] leading-snug text-muted-foreground">
+          {item.description}
+        </span>
+      ) : null}
     </Link>
   );
 }
