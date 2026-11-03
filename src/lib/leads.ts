@@ -1,4 +1,6 @@
 import { emailConfigured, emailLead } from "./lead-email";
+import { saveEnquiry } from "./cms/store";
+import { leadView } from "./email-templates";
 import { referenceId } from "./utils";
 import { sendToZoho, zohoConfigured } from "./zoho-crm";
 
@@ -8,10 +10,9 @@ import { sendToZoho, zohoConfigured } from "./zoho-crm";
  * Enquiries are e-mailed when SMTP is configured (see ./lead-email.ts),
  * created as Leads in Zoho CRM when ZOHO_* is set (see ./zoho-crm.ts), and/or
  * forwarded to `LEAD_WEBHOOK_URL` (Slack, a CRM, Google Sheets via Apps
- * Script). A redacted trace is always written to the server log. Nothing is
- * stored in process memory and no endpoint reads leads back out — a marketing
- * site should never become an unauthenticated database of its visitors'
- * contact details.
+ * Script). A redacted trace is always written to the server log, and the
+ * enquiry is saved to the admin's Enquiries inbox (sign-in required; no
+ * public endpoint reads leads back out).
  */
 
 export type LeadKind = "contact" | "newsletter" | "estimate" | "booking";
@@ -68,6 +69,7 @@ export async function deliverLead(
 
   // Always keep a redacted trace in the server log.
   console.info("[lead]", kind, lead.reference, redact(payload));
+  storeEnquiry(lead);
 
   if (!webhook && !viaEmailEnabled && !viaZohoEnabled) {
     console.warn(
@@ -85,6 +87,30 @@ export async function deliverLead(
   ]);
 
   return { reference: lead.reference, delivered: byEmail || byWebhook || byZoho };
+}
+
+/** Saves the enquiry for the admin inbox. Never throws. */
+function storeEnquiry(lead: Lead): void {
+  if (lead.kind === "newsletter") return;
+  try {
+    const view = leadView(lead);
+    saveEnquiry({
+      reference: lead.reference,
+      kind: lead.kind,
+      source: view.source,
+      name: view.name,
+      email: view.email,
+      phone: view.phone,
+      service: view.service,
+      message: [view.slot ? `Consultation booked: ${view.slot}${view.mode ? ` (${view.mode})` : ""}` : "", view.message]
+        .filter(Boolean)
+        .join("\n\n"),
+      payload: JSON.stringify(lead.payload),
+      created_at: lead.receivedAt,
+    });
+  } catch (error) {
+    console.error("[lead] could not save to the admin inbox", lead.reference, error instanceof Error ? error.message : error);
+  }
 }
 
 async function postWebhook(webhook: string, lead: Lead): Promise<boolean> {

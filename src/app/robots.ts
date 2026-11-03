@@ -10,7 +10,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         // Nothing under /api is useful to a crawler, and the form endpoints
         // should not be probed.
-        disallow: ["/api/"],
+        disallow: ["/api/", "/admin"],
       },
     ],
     sitemap: new URL("/sitemap.xml", site.url).toString(),

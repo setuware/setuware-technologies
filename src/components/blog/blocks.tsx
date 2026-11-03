@@ -1,5 +1,7 @@
 import { Info, TriangleAlert } from "lucide-react";
 
+import { Inline } from "@/components/blog/inline";
+
 import type { Block } from "@/lib/post-bodies";
 
 /**
@@ -35,7 +37,9 @@ function BlockView({ block }: { block: Block }) {
       );
     case "p":
       return (
-        <p className="leading-[1.8] text-foreground/80">{block.text}</p>
+        <p className="leading-[1.8] text-foreground/80">
+          <Inline text={block.text} />
+        </p>
       );
     case "ul":
       return (
@@ -43,7 +47,9 @@ function BlockView({ block }: { block: Block }) {
           {block.items.map((item) => (
             <li key={item} className="flex gap-3.5 leading-[1.7] text-foreground/80">
               <span className="mt-[0.7rem] size-1.5 shrink-0 rounded-full bg-setu" aria-hidden />
-              {item}
+              <span>
+                <Inline text={item} />
+              </span>
             </li>
           ))}
         </ul>
@@ -56,7 +62,9 @@ function BlockView({ block }: { block: Block }) {
               <span className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-setu/12 font-mono text-[11px] font-semibold text-setu">
                 {index + 1}
               </span>
-              {item}
+              <span>
+                <Inline text={item} />
+              </span>
             </li>
           ))}
         </ol>
@@ -105,10 +113,28 @@ function BlockView({ block }: { block: Block }) {
             }
             aria-hidden
           />
-          <p className="text-[0.98rem] leading-relaxed text-foreground/85">{block.text}</p>
+          <p className="text-[0.98rem] leading-relaxed text-foreground/85">
+            <Inline text={block.text} />
+          </p>
         </aside>
       );
     }
+    case "image":
+      return (
+        <figure className="my-2">
+          {/* eslint-disable-next-line @next/next/no-img-element -- uploaded media, sized by CSS */}
+          <img
+            src={block.src}
+            alt={block.alt}
+            loading="lazy"
+            decoding="async"
+            className="w-full rounded-card border border-border object-cover"
+          />
+          {block.caption ? (
+            <figcaption className="mt-2.5 text-center text-sm text-muted-foreground">{block.caption}</figcaption>
+          ) : null}
+        </figure>
+      );
     default: {
       // Exhaustiveness guard: adding a block type without a case fails here.
       const exhaustive: never = block;

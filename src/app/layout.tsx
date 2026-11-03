@@ -10,6 +10,7 @@ import { navLinks } from "@/components/layout/nav-menu-data";
 import { ThemeProvider } from "@/components/layout/theme";
 import { DeferredWidgets } from "@/components/layout/deferred-widgets";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
+import { SiteChrome } from "@/components/layout/site-chrome";
 import { MotionProvider } from "@/components/motion/motion-provider";
 
 import "./globals.css";
@@ -124,12 +125,9 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <MotionProvider>
-            <Navbar links={navLinks} />
-            <main id="main" className="flex-1">
+            <SiteChrome navbar={<Navbar links={navLinks} />} footer={<Footer />} widgets={<DeferredWidgets />}>
               {children}
-            </main>
-            <Footer />
-            <DeferredWidgets />
+            </SiteChrome>
             <SmoothScroll />
           </MotionProvider>
         </ThemeProvider>

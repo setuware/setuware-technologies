@@ -1,4 +1,7 @@
 import "@testing-library/jest-dom/vitest";
+
+// The CMS database lives in memory during tests.
+process.env.CMS_DB_PATH ??= ":memory:";
 import { cleanup } from "@testing-library/react";
 import { afterEach, beforeEach, vi } from "vitest";
 

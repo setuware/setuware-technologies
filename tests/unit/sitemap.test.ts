@@ -5,6 +5,16 @@ vi.mock("@/lib/time", () => ({
   currentDateIso: async () => "2026-11-02T00:00:00.000Z",
 }));
 
+// The CMS readers use `"use cache"` too; serve the seed content directly.
+vi.mock("@/lib/cms/public", async () => {
+  const { posts } = await import("@/lib/posts");
+  const { jobs } = await import("@/lib/careers");
+  return {
+    getPublishedPosts: async () => posts,
+    getOpenJobs: async () => jobs.map((job) => ({ ...job, postedAt: "2026-11-02" })),
+  };
+});
+
 import robots from "@/app/robots";
 import sitemap from "@/app/sitemap";
 import { jobs } from "@/lib/careers";
@@ -41,9 +51,9 @@ describe("sitemap.xml", () => {
 });
 
 describe("robots.txt", () => {
-  it("allows everything but the API and points at the sitemap", () => {
+  it("allows everything but the API and admin, and points at the sitemap", () => {
     const result = robots();
-    expect(result.rules).toEqual([{ userAgent: "*", allow: "/", disallow: ["/api/"] }]);
+    expect(result.rules).toEqual([{ userAgent: "*", allow: "/", disallow: ["/api/", "/admin"] }]);
     expect(result.sitemap).toBe(`${site.url}/sitemap.xml`);
     expect(result.host).toBe(site.url);
   });

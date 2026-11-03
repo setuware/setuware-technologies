@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 
 import { faqs } from "@/lib/content";
+import { getPublishedPosts } from "@/lib/cms/public";
 import { faqJsonLd, HOME_DESCRIPTION, HOME_TITLE, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Hero } from "@/components/sections/hero";
@@ -58,7 +59,8 @@ const Articles = dynamic(() =>
 );
 const Faq = dynamic(() => import("@/components/sections/faq").then((mod) => mod.Faq));
 
-export default function HomePage() {
+export default async function HomePage() {
+  const latestPosts = (await getPublishedPosts()).slice(0, 3);
   return (
     <>
       <Hero />
@@ -87,7 +89,7 @@ export default function HomePage() {
       </DeferredSection>
 
       <DeferredSection minHeight={720}>
-        <Articles />
+        <Articles posts={latestPosts} />
       </DeferredSection>
 
       <DeferredSection minHeight={720}>

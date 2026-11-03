@@ -46,6 +46,7 @@ const nextConfig: NextConfig = {
   typescript: { ignoreBuildErrors: process.env.SKIP_BUILD_TYPECHECK === "1" },
 
   cacheComponents: true,
+
   partialPrefetching: true,
 
   // Trim the response on the way out; a CDN in front will usually do better,
@@ -64,6 +65,8 @@ const nextConfig: NextConfig = {
   // Keep icon imports from pulling the whole library into a chunk.
   experimental: {
     optimizePackageImports: ["lucide-react"],
+    // Admin uploads (cover images) go through Server Actions; 1 MB is too small.
+    serverActions: { bodySizeLimit: "6mb" },
   },
 
   turbopack: {

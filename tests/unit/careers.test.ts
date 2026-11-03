@@ -43,14 +43,14 @@ describe("careers", () => {
     expect(JSON.stringify({ jobs, whatWeOffer })).not.toMatch(banned);
   });
 
-  it("builds a JobPosting valid for 60 days with an email application", () => {
+  it("builds a JobPosting valid for 60 days with direct application", () => {
     expect(jobsValidThrough()).toBe("2027-01-01");
     const posting = jobPostingJsonLd(jobs[0]);
     expect(posting).toMatchObject({
       "@type": "JobPosting",
       datePosted: "2026-11-02",
       validThrough: "2027-01-01",
-      directApply: false,
+      directApply: true,
       hiringOrganization: { name: "Setuware Technologies" },
       jobLocation: { address: { addressLocality: "Gurugram", addressRegion: "Haryana", addressCountry: "IN" } },
     });
