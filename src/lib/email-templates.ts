@@ -156,9 +156,11 @@ ${inner}
  * card would vanish). The tile carries a teal outline for the same reason.
  */
 function logo(onDark: boolean): string {
+  // The SW mark as a PNG (mail apps do not show SVG); the name stays live
+  // text in mid-tone colours that read on light and dark backgrounds.
   return `<table role="presentation" cellpadding="0" cellspacing="0"><tr>
-  <td bgcolor="#0b1020" style="width:40px;height:40px;background:#0b1020;border:2px solid #0891b2;border-radius:10px;text-align:center;font:800 17px/40px Arial,sans-serif;"><span style="color:#22c3e6;">S</span><span style="color:#ffffff;">T</span></td>
-  <td style="padding-left:12px;"><div style="font:800 19px/1 Arial,sans-serif;letter-spacing:.06em;color:${onDark ? "#ffffff" : "#0891b2"};">SETUWARE</div><div style="font:700 10px/1 Arial,sans-serif;letter-spacing:.34em;color:${onDark ? "#cbd5e1" : "#64748b"};margin-top:6px;">TECHNOLOGIES</div></td>
+  <td bgcolor="#ffffff" style="width:44px;height:44px;background:#ffffff;border-radius:12px;text-align:center;"><img src="${esc(site.url)}/apple-icon" width="44" height="44" alt="SW" style="display:block;border:0;border-radius:12px;"></td>
+  <td style="padding-left:12px;"><div style="font:800 19px/1 Arial,sans-serif;letter-spacing:.06em;color:${onDark ? "#ffffff" : "#0891b2"};">SETUWARE</div><div style="font:700 11px/1 Arial,sans-serif;letter-spacing:.26em;color:${onDark ? "#cbd5e1" : "#64748b"};margin-top:6px;">TECHNOLOGIES</div></td>
 </tr></table>`;
 }
 

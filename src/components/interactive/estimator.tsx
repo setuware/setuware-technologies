@@ -23,6 +23,7 @@ import { services } from "@/lib/content";
 import { cn, formatINR, formatINRCompact } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Field, Honeypot, Input } from "@/components/ui/field";
+import { MultiSelect, SelectField } from "@/components/ui/multi-select";
 
 const STORAGE_KEY = "setuware.estimate.v1";
 
@@ -158,22 +159,6 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
   const result = useMemo(() => estimateProject(input), [input]);
   const rate = SERVICE_RATES[input.service];
 
-  const toggleFeature = (feature: FeatureKey) => {
-    update({
-      features: input.features.includes(feature)
-        ? input.features.filter((key) => key !== feature)
-        : [...input.features, feature],
-    });
-  };
-
-  const togglePlatform = (platform: PlatformKey) => {
-    const next = input.platforms.includes(platform)
-      ? input.platforms.filter((key) => key !== platform)
-      : [...input.platforms, platform];
-    // Never leave zero platforms selected: the quote would be meaningless.
-    update({ platforms: next.length > 0 ? next : [platform] });
-  };
-
   const reset = () => {
     clearStored();
     setInput(DEFAULT_ESTIMATE_INPUT);
@@ -181,126 +166,121 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
   };
 
   const service = services.find((entry) => entry.slug === input.service);
-  let step = 0;
-  const next = () => String(++step).padStart(2, "0");
 
   return (
     <div
       className={cn(
-        "grid gap-10 lg:gap-14",
+        "grid gap-8 lg:gap-10",
         compact ? "lg:grid-cols-1" : "lg:grid-cols-[minmax(0,1fr)_22rem] xl:grid-cols-[minmax(0,1fr)_24rem]",
       )}
     >
-      <div className="flex min-w-0 flex-col divide-y divide-border border-y border-border">
-        {/* Service */}
-        <Group
-          step={next()}
-          label="Service"
-          detail={service ? `from ${formatINR(service.priceFrom)} + GST` : undefined}
-        >
-          <div className="flex flex-wrap gap-2">
-            {services.map((entry) => (
-              <Chip
-                key={entry.slug}
-                active={input.service === entry.slug}
-                onClick={() => update({ service: entry.slug })}
-              >
-                {entry.shortName}
-                {/* Read with the name ("Apps from ₹74,999"); shown once above. */}
-                <span className="sr-only"> from {formatINR(entry.priceFrom)}</span>
-              </Chip>
-            ))}
-          </div>
-        </Group>
-
-        {/* Scope */}
-        <Group step={next()} label={`Number of ${rate.scopeNoun}`} detail={String(input.scope)}>
-          <input
-            type="range"
-            min={SCOPE_LIMITS.min}
-            max={SCOPE_LIMITS.max}
-            step={1}
-            value={input.scope}
-            onChange={(event) => update({ scope: Number(event.target.value) })}
-            className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-border accent-[var(--color-setu,#00a1c6)]"
-            aria-label={`Number of ${rate.scopeNoun}`}
-            aria-valuetext={`${input.scope} ${rate.scopeNoun}`}
-          />
-          <div className="mt-2 flex justify-between font-mono text-[11px] text-muted-foreground">
-            <span>{SCOPE_LIMITS.min}</span>
-            <span>{SCOPE_LIMITS.max}</span>
-          </div>
-        </Group>
-
-        {/* Platforms: only meaningful for app builds */}
-        {rate.supportsPlatforms ? (
-          <Group step={next()} label="Platforms">
-            <div className="flex flex-wrap gap-2">
-              {(Object.keys(PLATFORM_LABELS) as PlatformKey[]).map((platform) => (
-                <Chip
-                  key={platform}
-                  active={input.platforms.includes(platform)}
-                  onClick={() => togglePlatform(platform)}
-                >
-                  {PLATFORM_LABELS[platform]}
-                </Chip>
+      <div className="flex min-w-0 flex-col gap-6 self-start rounded-2xl border border-border bg-surface p-5 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_16px_40px_-24px_rgb(15_23_42/0.14)] md:p-7">
+        <div className="grid gap-6 md:grid-cols-2">
+          <Field
+            label="Service" showOptional={false}
+            htmlFor="estimate-service"
+            hint={service ? `Starts from ${formatINR(service.priceFrom)} + GST` : undefined}
+          >
+            <SelectField
+              id="estimate-service"
+              value={input.service}
+              onChange={(slug) => update({ service: slug as ServiceKey })}
+            >
+              {services.map((entry) => (
+                <option key={entry.slug} value={entry.slug}>
+                  {entry.name}
+                </option>
               ))}
+            </SelectField>
+          </Field>
+
+          <Field label={`Number of ${rate.scopeNoun}`} showOptional={false} htmlFor="estimate-scope">
+            <div className="flex h-11 items-center gap-3">
+              <input
+                id="estimate-scope"
+                type="range"
+                min={SCOPE_LIMITS.min}
+                max={SCOPE_LIMITS.max}
+                step={1}
+                value={input.scope}
+                onChange={(event) => update({ scope: Number(event.target.value) })}
+                className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-border accent-[var(--color-setu,#00a1c6)]"
+                aria-valuetext={`${input.scope} ${rate.scopeNoun}`}
+              />
+              <output
+                htmlFor="estimate-scope"
+                className="w-12 shrink-0 rounded-lg border border-border bg-background py-1.5 text-center text-sm font-semibold tabular-nums text-foreground"
+              >
+                {input.scope}
+              </output>
             </div>
-          </Group>
+          </Field>
+        </div>
+
+        <Field
+          label="Features" showOptional={false}
+          htmlFor="estimate-features"
+          hint="Choose what you need at launch. Others can follow later."
+        >
+          <MultiSelect
+            id="estimate-features"
+            options={FEATURE_ORDER.map((feature) => ({
+              value: feature,
+              label: FEATURE_RATES[feature].label,
+              hint: FEATURE_RATES[feature].hint,
+            }))}
+            value={input.features}
+            onChange={(features) => update({ features })}
+            placeholder="Select features"
+          />
+        </Field>
+
+        {rate.supportsPlatforms ? (
+          <Field label="Platforms" showOptional={false} htmlFor="estimate-platforms">
+            <MultiSelect
+              id="estimate-platforms"
+              options={(Object.keys(PLATFORM_LABELS) as PlatformKey[]).map((platform) => ({
+                value: platform,
+                label: PLATFORM_LABELS[platform],
+              }))}
+              value={input.platforms}
+              onChange={(platforms) => update({ platforms })}
+              minOne
+            />
+          </Field>
         ) : null}
 
-        {/* Features */}
-        <Group
-          step={next()}
-          label="Features"
-          detail={input.features.length > 0 ? `${input.features.length} selected` : "Optional"}
-        >
-          <div className="flex flex-wrap gap-2">
-            {FEATURE_ORDER.map((feature) => {
-              const meta = FEATURE_RATES[feature];
-              const active = input.features.includes(feature);
-              return (
-                <label key={feature} title={meta.hint} className={chipClass(active, "cursor-pointer")}>
-                  <input
-                    type="checkbox"
-                    checked={active}
-                    onChange={() => toggleFeature(feature)}
-                    className="sr-only"
-                  />
-                  {active ? <Check className="size-3.5" aria-hidden /> : null}
-                  {meta.label}
-                </label>
-              );
-            })}
-          </div>
-        </Group>
+        <div className="grid gap-6 md:grid-cols-2">
+          <Field label="Design" showOptional={false} htmlFor="estimate-design" hint={DESIGN_TIERS[input.design].hint}>
+            <SelectField
+              id="estimate-design"
+              value={input.design}
+              onChange={(design) => update({ design: design as DesignTier })}
+            >
+              {(Object.keys(DESIGN_TIERS) as DesignTier[]).map((tier) => (
+                <option key={tier} value={tier}>
+                  {DESIGN_TIERS[tier].label}
+                </option>
+              ))}
+            </SelectField>
+          </Field>
 
-        {/* Design + timeline */}
-        <Group step={next()} label="Design" detail={DESIGN_TIERS[input.design].hint}>
-          <Segmented
-            name="design"
-            options={(Object.keys(DESIGN_TIERS) as DesignTier[]).map((tier) => ({
-              value: tier,
-              label: DESIGN_TIERS[tier].label,
-            }))}
-            value={input.design}
-            onChange={(design) => update({ design })}
-          />
-        </Group>
+          <Field label="Timeline" showOptional={false} htmlFor="estimate-timeline" hint={TIMELINES[input.timeline].hint}>
+            <SelectField
+              id="estimate-timeline"
+              value={input.timeline}
+              onChange={(timeline) => update({ timeline: timeline as TimelineKey })}
+            >
+              {(Object.keys(TIMELINES) as TimelineKey[]).map((key) => (
+                <option key={key} value={key}>
+                  {TIMELINES[key].label}
+                </option>
+              ))}
+            </SelectField>
+          </Field>
+        </div>
 
-        <Group step={next()} label="Timeline" detail={TIMELINES[input.timeline].hint}>
-          <Segmented
-            name="timeline"
-            options={(Object.keys(TIMELINES) as TimelineKey[]).map((key) => ({
-              value: key,
-              label: TIMELINES[key].label,
-            }))}
-            value={input.timeline}
-            onChange={(timeline) => update({ timeline })}
-          />
-        </Group>
-
-        <div className="flex flex-wrap items-center justify-between gap-4 py-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
           <label className="flex cursor-pointer items-center gap-3">
             <input
               type="checkbox"
@@ -312,9 +292,7 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
               aria-hidden
               className="relative h-5 w-9 shrink-0 rounded-full bg-border transition-colors after:absolute after:left-0.5 after:top-0.5 after:size-4 after:rounded-full after:bg-white after:shadow-sm after:transition-transform peer-checked:bg-setu peer-checked:after:translate-x-4 peer-focus-visible:ring-2 peer-focus-visible:ring-ring"
             />
-            <span className="text-sm text-foreground">
-              Monthly maintenance after launch
-            </span>
+            <span className="text-sm text-foreground">Monthly maintenance after launch</span>
           </label>
 
           <button
@@ -329,95 +307,6 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
       </div>
 
       <QuoteSummary input={input} result={result} />
-    </div>
-  );
-}
-
-function chipClass(active: boolean, extra?: string) {
-  return cn(
-    "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[0.8125rem] font-medium transition-colors duration-200 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-    active
-      ? "border-foreground bg-foreground text-background"
-      : "border-border bg-background text-foreground/80 hover:border-foreground/40 hover:text-foreground",
-    extra,
-  );
-}
-
-function Chip({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button type="button" onClick={onClick} aria-pressed={active} className={chipClass(active)}>
-      {children}
-    </button>
-  );
-}
-
-function Group({
-  step,
-  label,
-  detail,
-  children,
-}: {
-  step: string;
-  label: string;
-  detail?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <fieldset className="min-w-0 py-6">
-      <legend className="sr-only">{label}</legend>
-      <div className="grid gap-4 sm:grid-cols-[9.5rem_minmax(0,1fr)] sm:gap-6">
-        <div aria-hidden className="flex items-baseline gap-2.5 sm:flex-col sm:gap-1">
-          <span className="font-mono text-[11px] text-muted-foreground">{step}</span>
-          <span className="text-[0.95rem] font-semibold text-foreground">{label}</span>
-          {detail ? (
-            <span className="ml-auto text-right text-xs leading-snug text-muted-foreground sm:ml-0 sm:text-left">
-              {detail}
-            </span>
-          ) : null}
-        </div>
-        <div className="min-w-0">{children}</div>
-      </div>
-    </fieldset>
-  );
-}
-
-function Segmented<T extends string>({
-  name,
-  options,
-  value,
-  onChange,
-}: {
-  name: string;
-  options: { value: T; label: string }[];
-  value: T;
-  onChange: (value: T) => void;
-}) {
-  return (
-    <div className="grid grid-cols-3 gap-1 rounded-full border border-border bg-background-subtle p-1">
-      {options.map((option) => (
-        <label
-          key={option.value}
-          className="cursor-pointer rounded-full px-2 py-1.5 text-center text-[0.8125rem] font-medium text-muted-foreground transition-colors hover:text-foreground has-[:checked]:bg-background has-[:checked]:text-foreground has-[:checked]:shadow-[0_1px_3px_rgb(15_23_42/0.12)] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring"
-        >
-          <input
-            type="radio"
-            name={name}
-            value={option.value}
-            checked={value === option.value}
-            onChange={() => onChange(option.value)}
-            className="sr-only"
-          />
-          {option.label}
-        </label>
-      ))}
     </div>
   );
 }

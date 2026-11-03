@@ -13,6 +13,8 @@ export interface FieldProps {
   required?: boolean;
   className?: string;
   children: React.ReactNode;
+  /** Show the "optional" tag when not required (off for settings, not inputs). */
+  showOptional?: boolean;
 }
 
 /**
@@ -25,6 +27,7 @@ export function Field({
   error,
   hint,
   required,
+  showOptional = true,
   className,
   children,
 }: FieldProps) {
@@ -36,11 +39,11 @@ export function Field({
           <span className="ml-0.5 text-red-500" aria-hidden>
             *
           </span>
-        ) : (
+        ) : showOptional ? (
           <span className="ml-1.5 text-xs font-normal text-muted-foreground">
             optional
           </span>
-        )}
+        ) : null}
       </label>
       {children}
       {hint && !error ? (
