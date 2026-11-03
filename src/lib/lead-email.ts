@@ -92,7 +92,7 @@ function bookingInvite(lead: Lead): { method: string; content: string } | undefi
       startIso: slot,
       summary: `Consultation: ${site.name} and ${name}`,
       description: [
-        `Free 30-minute consultation (${lead.reference}).`,
+        "Free 30-minute consultation.",
         mode ? `Format: ${mode}.` : "",
         phone ? `Phone: ${phone}` : "",
         topic ? `Topic: ${topic}` : "",

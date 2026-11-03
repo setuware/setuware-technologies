@@ -74,7 +74,6 @@ export function ContactForm() {
   const [draft, setDraft, { clear }] = usePersistentState<Draft>(STORAGE_KEY, EMPTY);
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
-  const [reference, setReference] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [consent, setConsent] = useState(false);
   const mountedAt = useRef<number>(0);
@@ -124,7 +123,6 @@ export function ContactForm() {
 
     if (result.ok) {
       setStatus("done");
-      setReference(result.data.reference);
       setMessage(result.message ?? "Thank you. Your brief is with us.");
       clear();
       return;
@@ -146,10 +144,7 @@ export function ContactForm() {
         </span>
         <h2 className="mt-4 text-xl font-semibold text-foreground">{message}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Reference{" "}
-          <span className="font-mono font-semibold text-foreground">{reference}</span>.
-          Our team will respond within one business day. Please quote this
-          reference if you contact us by telephone or WhatsApp.
+          Our team will respond within one business day.
         </p>
       </div>
     );

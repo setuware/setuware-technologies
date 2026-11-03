@@ -58,7 +58,7 @@ test.describe("instant quote estimator", () => {
     await expect(page.getByRole("button", { name: /send me this quote/i })).toBeVisible();
   });
 
-  test("emails a quote and returns a reference", async ({ page }) => {
+  test("emails a quote and confirms it was sent", async ({ page }) => {
     await page.goto("/estimate");
 
     await page.getByLabel(/^Name/).fill("Priya Sharma");
@@ -66,7 +66,6 @@ test.describe("instant quote estimator", () => {
     await page.getByRole("button", { name: /send me this quote/i }).click();
 
     await expect(page.getByText(/quote on its way/i)).toBeVisible();
-    await expect(page.getByText(/^STW-[A-Z0-9]{6}$/)).toBeVisible();
   });
 
   test("the slider is operable from the keyboard", async ({ page }) => {

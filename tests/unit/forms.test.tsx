@@ -126,7 +126,7 @@ describe("ContactForm", () => {
     await user.click(screen.getByRole("checkbox"));
   };
 
-  it("sends the brief and shows the reference on success", async () => {
+  it("sends the brief and confirms on success", async () => {
     const user = userEvent.setup();
     const fetchMock = mockFetch({
       status: 201,
@@ -141,7 +141,7 @@ describe("ContactForm", () => {
     await fill(user);
     await user.click(screen.getByRole("button", { name: /send project brief/i }));
 
-    expect(await screen.findByText("STW-7F3K2A")).toBeInTheDocument();
+    expect(await screen.findByText(/respond within one business day/i)).toBeInTheDocument();
     const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
     expect(body).toMatchObject({ name: "Priya Sharma", consent: true });
     expect(typeof body.elapsedMs).toBe("number");
@@ -196,7 +196,7 @@ describe("ContactForm", () => {
     await fill(user);
     await user.click(screen.getByRole("button", { name: /send project brief/i }));
 
-    await screen.findByText("STW-ABCDEF");
+    await screen.findByText(/respond within one business day/i);
     expect(window.localStorage.getItem("setuware.contact-draft.v1")).toBeNull();
   });
 

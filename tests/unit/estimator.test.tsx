@@ -168,7 +168,7 @@ describe("Estimator", () => {
     expect(within(milestones).getByText(/QA, launch & handover/)).toBeInTheDocument();
   });
 
-  it("emails the quote and shows the reference", async () => {
+  it("emails the quote and confirms it was sent", async () => {
     const user = userEvent.setup();
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(
@@ -187,7 +187,7 @@ describe("Estimator", () => {
     await user.type(screen.getByLabelText(/Work email/), "priya@example.com");
     await user.click(screen.getByRole("button", { name: /send me this quote/i }));
 
-    expect(await screen.findByText("STW-QT1234")).toBeInTheDocument();
+    expect(await screen.findByText("Quote on its way to your inbox.")).toBeInTheDocument();
 
     const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
     expect(body.input.service).toBe("web-development");

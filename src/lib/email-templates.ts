@@ -207,7 +207,7 @@ export function teamEmail(lead: Lead): EmailContent {
   const tel = v.phone ? phoneDigits(v.phone) : "";
 
   const actions = [
-    v.email ? button(`mailto:${v.email}?subject=${encodeURIComponent(`Re: Your enquiry (${lead.reference})`)}`, "Reply by email", "primary") : "",
+    v.email ? button(`mailto:${v.email}?subject=${encodeURIComponent(`Re: Your enquiry with ${site.name}`)}`, "Reply by email", "primary") : "",
     tel ? button(`tel:+${tel}`, "Call", "outline") : "",
     tel ? button(`https://wa.me/${tel}`, "WhatsApp", "whatsapp") : "",
   ].join("");
@@ -367,7 +367,7 @@ export function acknowledgementEmail(lead: Lead): EmailContent | null {
       text: "If the time no longer suits you, reply to this email and we will move it.",
     });
   } else if (lead.kind === "estimate" && v.quote) {
-    subject = `Your project estimate (${lead.reference})`;
+    subject = `Your project estimate from ${site.name}`;
     highlight = {
       label: "Indicative estimate",
       value: quoteText(v.quote),
@@ -382,10 +382,14 @@ export function acknowledgementEmail(lead: Lead): EmailContent | null {
       text: `You can pick a time for that call here: ${bookUrl}. Otherwise we will contact you within one business day.`,
     });
   } else {
-    subject = `Your enquiry with ${site.name} (${lead.reference})`;
-    highlight = { label: "Your reference", value: lead.reference, note: v.service ? `${v.service} enquiry` : undefined };
+    subject = `Thank you for contacting ${site.name}`;
+    highlight = {
+      label: "What happens next",
+      value: "A free 30-minute consultation",
+      note: `We will contact you within one business day${v.service ? ` to discuss your ${v.service.toLowerCase()} project` : ""}.`,
+    };
     body.push({
-      html: "We have received your enquiry and will get back to you within one business day to arrange a free 30-minute consultation.",
+      html: "We have received your enquiry and will be in touch shortly.",
       text: "We have received your enquiry and will get back to you within one business day to arrange a free 30-minute consultation.",
     });
     body.push({
@@ -395,8 +399,8 @@ export function acknowledgementEmail(lead: Lead): EmailContent | null {
   }
 
   body.push({
-    html: `Need anything sooner? Just reply to this email or call <a href="${esc(site.phoneHref)}" style="color:#0089a9;text-decoration:none;">${esc(site.phone)}</a>.${lead.kind === "contact" ? "" : ` Your reference is ${esc(lead.reference)}.`}`,
-    text: `Need anything sooner? Just reply to this email or call ${site.phone}. Your reference is ${lead.reference}.`,
+    html: `Need anything sooner? Just reply to this email or call <a href="${esc(site.phoneHref)}" style="color:#0089a9;text-decoration:none;">${esc(site.phone)}</a>.`,
+    text: `Need anything sooner? Just reply to this email or call ${site.phone}.`,
   });
 
   const signature = {

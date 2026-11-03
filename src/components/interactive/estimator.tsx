@@ -431,7 +431,6 @@ function QuoteSummary({
 }) {
   const [status, setStatus] = useState<SendStatus>("idle");
   const [message, setMessage] = useState("");
-  const [reference, setReference] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [copied, setCopied] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -469,7 +468,6 @@ function QuoteSummary({
 
     if (response.ok) {
       setStatus("done");
-      setReference(response.data.reference);
       setMessage(response.message ?? "Quote sent.");
       formRef.current?.reset();
       return;
@@ -530,8 +528,7 @@ function QuoteSummary({
                 {message}
               </p>
               <p className="mt-1.5 text-xs text-muted-foreground">
-                Reference{" "}
-                <span className="font-mono font-semibold text-foreground">{reference}</span>
+                Check your inbox for the full breakdown.
               </p>
             </div>
           ) : (
