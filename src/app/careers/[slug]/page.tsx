@@ -23,6 +23,7 @@ import {
 } from "@/lib/careers";
 import { getOpenJob, getOpenJobs } from "@/lib/cms/public";
 import { ApplyForm } from "@/components/interactive/apply-form";
+import { ViewBeacon } from "@/components/interactive/view-beacon";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/button";
@@ -181,6 +182,7 @@ async function Role({ params }: { params: Promise<{ slug: string }> }) {
               </p>
 
               <ApplyForm jobSlug={job.slug} jobTitle={job.title} />
+              <ViewBeacon path={`/careers/${job.slug}`} />
 
               <p className="mt-4 text-center text-xs text-muted-foreground">
                 Prefer email?{" "}

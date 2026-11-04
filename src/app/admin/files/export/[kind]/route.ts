@@ -1,5 +1,6 @@
 import { can } from "@/lib/cms/auth";
 import { currentUser } from "@/lib/cms/session";
+import { listSubscribers } from "@/lib/cms/crm";
 import { listApplications, listEnquiries } from "@/lib/cms/store";
 
 /** Quotes a CSV cell and defuses spreadsheet formulas (=, +, -, @). */
@@ -16,7 +17,7 @@ function csv(rows: Record<string, unknown>[], columns: string[]): string {
 export async function GET(request: Request, { params }: { params: Promise<{ kind: string }> }) {
   const { kind } = await params;
   const user = await currentUser();
-  if (!user || (kind !== "enquiries" && kind !== "applications") || !can(user.role, kind)) {
+  if (!user || !["enquiries", "applications", "subscribers"].includes(kind) || !can(user.role, kind)) {
     return new Response("Not found", { status: 404 });
   }
   const search = new URL(request.url).searchParams;
@@ -25,7 +26,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ kind
     status: search.get("status") || undefined,
   };
   const body =
-    kind === "enquiries"
+    kind === "subscribers"
+      ? csv(listSubscribers() as unknown as Record<string, unknown>[], ["email", "source", "created_at"])
+      : kind === "enquiries"
       ? csv(listEnquiries({ ...filter, kind: search.get("kind") || undefined }) as unknown as Record<string, unknown>[], [
           "created_at",
           "reference",
@@ -36,6 +39,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ kind
           "phone",
           "service",
           "message",
+          "assignee",
+          "follow_up_at",
           "internal_notes",
         ])
       : csv(listApplications({ ...filter, job: search.get("job") || undefined }) as unknown as Record<string, unknown>[], [
@@ -47,6 +52,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ kind
           "phone",
           "links",
           "note",
+          "rating",
+          "interview_at",
+          "assignee",
           "internal_notes",
         ]);
   const date = new Date().toISOString().slice(0, 10);

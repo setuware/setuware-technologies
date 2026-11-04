@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Download } from "lucide-react";
 
+import { bulkStatusAction } from "@/app/admin/actions";
 import { requireUser } from "@/lib/cms/session";
+import { BulkBar } from "@/components/admin/bulk-bar";
 import { APPLICATION_STATUSES, listApplications, listJobRecords } from "@/lib/cms/store";
 import { Avatar, buttonClass, Card, Empty, formatWhen, inputClass, PageHeader, StatusBadge, theadClass, timeAgo } from "@/components/admin/ui";
 
@@ -54,12 +56,17 @@ export default async function ApplicationsPage({
         {items.length === 0 ? (
           <Empty title="No applications">{q || status || job ? "Nothing matches these filters." : "Applications from job pages appear here."}</Empty>
         ) : (
+          <form action={bulkStatusAction}>
+            <input type="hidden" name="entity" value="application" />
+            <BulkBar statuses={APPLICATION_STATUSES} />
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className={theadClass}>
                 <tr>
+                  <th className="w-10 py-3 pl-5" aria-label="Select" />
                   <th className="px-5 py-3 font-medium">Candidate</th>
                   <th className="hidden px-5 py-3 font-medium md:table-cell">Role</th>
+                  <th className="hidden px-5 py-3 font-medium lg:table-cell">Rating</th>
                   <th className="px-5 py-3 font-medium">Status</th>
                   <th className="hidden px-5 py-3 font-medium sm:table-cell">Received</th>
                 </tr>
@@ -67,6 +74,9 @@ export default async function ApplicationsPage({
               <tbody className="divide-y divide-border">
                 {items.map((item) => (
                   <tr key={item.id} className="transition-colors hover:bg-foreground/[0.03]">
+                    <td className="py-3 pl-5">
+                      <input type="checkbox" name="ids" value={item.id} aria-label={`Select ${item.name}`} className="size-4 accent-[#2f56d8]" />
+                    </td>
                     <td className="px-5 py-3">
                       <Link href={`/admin/applications/${item.id}`} className="flex items-center gap-3">
                         <Avatar name={item.name} />
@@ -77,6 +87,9 @@ export default async function ApplicationsPage({
                       </Link>
                     </td>
                     <td className="hidden px-5 py-3 text-muted-foreground md:table-cell">{item.job_title}</td>
+                    <td className="hidden px-5 py-3 text-amber-400 lg:table-cell" aria-label={item.rating ? `${item.rating} of 5` : "Not rated"}>
+                      {item.rating ? "★".repeat(item.rating) : <span className="text-xs text-muted-foreground">—</span>}
+                    </td>
                     <td className="px-5 py-3">
                       <StatusBadge status={item.status} />
                     </td>
@@ -86,6 +99,7 @@ export default async function ApplicationsPage({
               </tbody>
             </table>
           </div>
+          </form>
         )}
       </Card>
     </>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Briefcase, FileText, Inbox, Plus, UsersRound } from "lucide-react";
 
 import { can, recentAudit } from "@/lib/cms/auth";
+import { followUpsDue, upcomingInterviews } from "@/lib/cms/crm";
 import { getDb } from "@/lib/cms/db";
 import { requireUser } from "@/lib/cms/session";
 import { dashboardCounts, ENQUIRY_STATUSES, listApplications, listEnquiries } from "@/lib/cms/store";
@@ -33,6 +34,9 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const activity = user.role === "owner" ? recentAudit(40).filter((entry) => entry.action !== "signed in").slice(0, 8) : [];
   const hour = Number(new Intl.DateTimeFormat("en-IN", { hour: "numeric", hourCycle: "h23", timeZone: "Asia/Kolkata" }).format(new Date()));
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
+  const dueFollowUps = showEnquiries ? followUpsDue(user.role === "sales" ? user.name : undefined) : [];
+  const interviews = showApplications ? upcomingInterviews() : [];
 
   const pipeline = showEnquiries
     ? (getDb().prepare("SELECT status, COUNT(*) AS n FROM enquiries GROUP BY status").all() as { status: string; n: number }[])
@@ -162,6 +166,39 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             ))}
           </ul>
         </Card>
+      ) : null}
+
+      {dueFollowUps.length || interviews.length ? (
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          {dueFollowUps.length ? (
+            <ListCard title={`Follow-ups due (${dueFollowUps.length})`} href="/admin/enquiries" empty="" emptyHint="">
+              {dueFollowUps.slice(0, 6).map((item) => (
+                <Row
+                  key={item.id}
+                  href={`/admin/enquiries/${item.id}`}
+                  name={item.name || item.email || "Visitor"}
+                  sub={`${item.assignee ? `${item.assignee} · ` : ""}due ${item.follow_up_at}`}
+                  when={item.follow_up_at && item.follow_up_at < new Date().toISOString().slice(0, 10) ? "Overdue" : "Today"}
+                  status={item.status}
+                />
+              ))}
+            </ListCard>
+          ) : null}
+          {interviews.length ? (
+            <ListCard title="Upcoming interviews" href="/admin/applications?status=interview" empty="" emptyHint="">
+              {interviews.slice(0, 6).map((item) => (
+                <Row
+                  key={item.id}
+                  href={`/admin/applications/${item.id}`}
+                  name={item.name}
+                  sub={item.job_title}
+                  when={(item.interview_at ?? "").replace("T", " ")}
+                  status={item.status}
+                />
+              ))}
+            </ListCard>
+          ) : null}
+        </div>
       ) : null}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">

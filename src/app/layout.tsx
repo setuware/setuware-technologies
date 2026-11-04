@@ -11,6 +11,7 @@ import { ThemeProvider } from "@/components/layout/theme";
 import { DeferredWidgets } from "@/components/layout/deferred-widgets";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import { SiteChrome } from "@/components/layout/site-chrome";
+import { getAnnouncement } from "@/lib/cms/public";
 import { MotionProvider } from "@/components/motion/motion-provider";
 
 import "./globals.css";
@@ -103,9 +104,10 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const announcement = await getAnnouncement();
   return (
     // suppressHydrationWarning: the theme class is applied before React
     // hydrates, which is what prevents a flash of the wrong theme.
@@ -125,7 +127,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <MotionProvider>
-            <SiteChrome navbar={<Navbar links={navLinks} />} footer={<Footer />} widgets={<DeferredWidgets />}>
+            <SiteChrome navbar={<Navbar links={navLinks} announcement={announcement} />} footer={<Footer />} widgets={<DeferredWidgets />}>
               {children}
             </SiteChrome>
             <SmoothScroll />

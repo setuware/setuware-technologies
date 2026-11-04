@@ -10,6 +10,7 @@ import { articleJsonLd, breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
 import { PostBody } from "@/components/blog/blocks";
+import { ViewBeacon } from "@/components/interactive/view-beacon";
 import { Badge } from "@/components/ui/badge";
 import { Section } from "@/components/ui/section";
 import { NewsletterForm } from "@/components/interactive/newsletter-form";
@@ -140,6 +141,7 @@ async function PostArticle({ params }: { params: Promise<{ slug: string }> }) {
           <div className="container-page">
             <div className="mx-auto max-w-[44rem]">
               <PostBody blocks={blocks} />
+              <ViewBeacon path={`/blog/${post.slug}`} />
 
               <div className="mt-14 flex flex-col gap-5 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">

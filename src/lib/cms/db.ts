@@ -147,6 +147,39 @@ CREATE INDEX IF NOT EXISTS posts_status ON posts(status, published_at);
 CREATE INDEX IF NOT EXISTS jobs_status ON jobs(status);
 CREATE INDEX IF NOT EXISTS applications_created ON applications(created_at);
 CREATE INDEX IF NOT EXISTS enquiries_created ON enquiries(created_at);
+CREATE TABLE IF NOT EXISTS notes (
+  id INTEGER PRIMARY KEY,
+  entity TEXT NOT NULL CHECK (entity IN ('enquiry','application')),
+  entity_id INTEGER NOT NULL,
+  kind TEXT NOT NULL DEFAULT 'note',
+  author TEXT NOT NULL,
+  body TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS notes_entity ON notes(entity, entity_id, created_at);
+CREATE TABLE IF NOT EXISTS email_templates (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  audience TEXT NOT NULL CHECK (audience IN ('enquiry','application')),
+  subject TEXT NOT NULL,
+  body TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS subscribers (
+  id INTEGER PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+  source TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS page_views (
+  path TEXT PRIMARY KEY,
+  views INTEGER NOT NULL DEFAULT 0,
+  updated_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);
 `;
 
 export function dataDir(): string {
@@ -210,6 +243,55 @@ function seed(db: Database): void {
   }
 }
 
+/** Columns added after the first release; each is added once if missing. */
+const COLUMNS: [table: string, column: string, definition: string][] = [
+  ["enquiries", "assignee", "TEXT"],
+  ["enquiries", "follow_up_at", "TEXT"],
+  ["applications", "assignee", "TEXT"],
+  ["applications", "rating", "INTEGER"],
+  ["applications", "interview_at", "TEXT"],
+];
+
+function migrate(db: Database): void {
+  for (const [table, column, definition] of COLUMNS) {
+    const existing = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
+    if (!existing.some((row) => row.name === column)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
+  const templates = (db.prepare("SELECT COUNT(*) AS n FROM email_templates").get() as { n: number }).n;
+  if (templates === 0) {
+    const insert = db.prepare("INSERT INTO email_templates (name,audience,subject,body,updated_at) VALUES (?,?,?,?,?)");
+    const now = new Date().toISOString();
+    for (const [name, audience, subject, body] of DEFAULT_TEMPLATES) insert.run(name, audience, subject, body, now);
+  }
+}
+
+const DEFAULT_TEMPLATES: [string, "enquiry" | "application", string, string][] = [
+  [
+    "Thanks, let's schedule a call",
+    "enquiry",
+    "Your enquiry with Setuware Technologies",
+    "Hi {{first_name}},\n\nThank you for getting in touch about {{service}}. I'd love to understand what you have in mind.\n\nCould you pick a 30-minute slot that suits you here: https://setuware.in/book\n\nIf you prefer, reply with two or three times and I'll send an invite.\n\nRegards,\n{{sender}}\nSetuware Technologies",
+  ],
+  [
+    "Proposal follow-up",
+    "enquiry",
+    "Following up on your proposal",
+    "Hi {{first_name}},\n\nI wanted to check whether you had a chance to review our proposal. Happy to walk through it on a quick call or adjust the scope.\n\nRegards,\n{{sender}}\nSetuware Technologies",
+  ],
+  [
+    "Interview invitation",
+    "application",
+    "Interview: {{job}} at Setuware Technologies",
+    "Hi {{first_name}},\n\nThank you for applying for the {{job}} role. We enjoyed reading your application and would like to invite you to a 45-minute interview.\n\nPlease reply with two or three times that work for you this week.\n\nRegards,\n{{sender}}\nSetuware Technologies",
+  ],
+  [
+    "Application update (not progressing)",
+    "application",
+    "Your application for {{job}}",
+    "Hi {{first_name}},\n\nThank you for your interest in the {{job}} role and for the time you put into your application. After careful review we will not be moving forward this time.\n\nWe will keep your details and get in touch if a suitable role opens up.\n\nRegards,\n{{sender}}\nSetuware Technologies",
+  ],
+];
+
 const globalForDb = globalThis as unknown as { __setuwareCms?: Database };
 
 export function getDb(): Database {
@@ -220,8 +302,23 @@ export function getDb(): Database {
 
   const { DatabaseSync } = loadSqlite();
   const db = new DatabaseSync(file);
+  // node:sqlite returns null-prototype rows; React cannot pass those to
+  // Client Components, so every row is copied into a plain object.
+  const prepare = db.prepare.bind(db);
+  db.prepare = (sql: string) => {
+    const statement = prepare(sql);
+    return {
+      run: (...params: unknown[]) => statement.run(...params),
+      get: (...params: unknown[]) => {
+        const row = statement.get(...params);
+        return row && typeof row === "object" ? { ...(row as object) } : row;
+      },
+      all: (...params: unknown[]) => statement.all(...params).map((row) => ({ ...(row as object) })),
+    };
+  };
   db.exec("PRAGMA journal_mode = WAL; PRAGMA busy_timeout = 5000; PRAGMA foreign_keys = ON;");
   db.exec(SCHEMA);
+  migrate(db);
   // Build workers and the running site can open the file at the same time;
   // the immediate transaction makes the first-run import happen exactly once.
   db.exec("BEGIN IMMEDIATE");

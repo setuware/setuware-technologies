@@ -1,48 +1,65 @@
 import { notFound } from "next/navigation";
-import { FileDown, Mail, Phone } from "lucide-react";
+import { CalendarClock, FileDown, Phone, Star } from "lucide-react";
 
-import { updateApplicationAction } from "@/app/admin/actions";
+import { listUsers } from "@/lib/cms/auth";
+import { listTemplates, timeline } from "@/lib/cms/crm";
 import { requireUser } from "@/lib/cms/session";
 import { APPLICATION_STATUSES, getApplication } from "@/lib/cms/store";
-import { StatusForm } from "@/components/admin/status-form";
-import { buttonClass, Card, formatWhen, PageHeader, StatusBadge } from "@/components/admin/ui";
+import { AddNoteForm, EmailComposer, RecordPanel } from "@/components/admin/record-tools";
+import { Timeline } from "@/components/admin/timeline";
+import { Avatar, buttonClass, Card, formatWhen, PageHeader, StatusBadge } from "@/components/admin/ui";
 
 // Signed-in page: rendered per request (see the panel layout).
 export const instant = false;
 
 export default async function ApplicationPage({ params }: { params: Promise<{ id: string }> }) {
-  await requireUser("applications");
+  const user = await requireUser("applications");
   const { id } = await params;
   const item = getApplication(Number(id));
   if (!item) notFound();
   const links = item.links.split(/[\s,]+/).filter((link) => /^https?:\/\//i.test(link));
+  const team = listUsers().filter((member) => member.active).map((member) => member.name);
+  const templates = listTemplates("application").map(({ id: templateId, name, subject, body }) => ({ id: templateId, name, subject, body }));
+  const digits = item.phone.replace(/\D/g, "").replace(/^(\d{10})$/, "91$1");
 
   return (
     <>
-      <PageHeader title={item.name} description={`${item.job_title} · applied ${formatWhen(item.created_at)}`} back={{ href: "/admin/applications", label: "All applications" }} />
+      <PageHeader title="Application" back={{ href: "/admin/applications", label: "All applications" }} />
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <div className="flex flex-col gap-6">
-          <Card className="p-5">
-            <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge status={item.status} />
-              <span className="text-sm text-muted-foreground">for {item.job_title}</span>
+        <div className="flex min-w-0 flex-col gap-6">
+          <Card className="p-6">
+            <div className="flex flex-wrap items-start gap-4">
+              <Avatar name={item.name} size="lg" />
+              <div className="min-w-0 flex-1">
+                <h2 className="font-display text-xl font-semibold text-foreground">{item.name}</h2>
+                <p className="text-sm text-muted-foreground">
+                  {item.job_title} · applied {formatWhen(item.created_at)}
+                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <StatusBadge status={item.status} />
+                  {item.rating ? (
+                    <span className="inline-flex items-center gap-0.5" aria-label={`${item.rating} of 5`}>
+                      {Array.from({ length: 5 }, (_, index) => (
+                        <Star key={index} className={index < (item.rating ?? 0) ? "size-3.5 fill-amber-400 text-amber-400" : "size-3.5 text-foreground/15"} aria-hidden />
+                      ))}
+                    </span>
+                  ) : null}
+                  {item.interview_at ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-2.5 py-1 text-[11px] font-semibold text-indigo-700 dark:text-indigo-300">
+                      <CalendarClock className="size-3" aria-hidden /> Interview {formatWhen(item.interview_at)}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
             </div>
-            <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-2">
+            <dl className="mt-5 grid gap-4 border-t border-border pt-5 text-sm sm:grid-cols-2">
               <div>
                 <dt className="text-xs text-muted-foreground">Email</dt>
-                <dd>
-                  <a href={`mailto:${item.email}`} className="font-medium text-foreground hover:underline">
-                    {item.email}
-                  </a>
-                </dd>
+                <dd className="font-medium text-foreground">{item.email}</dd>
               </div>
               <div>
                 <dt className="text-xs text-muted-foreground">Phone</dt>
-                <dd>
-                  <a href={`tel:${item.phone.replace(/[^\d+]/g, "")}`} className="font-medium text-foreground hover:underline">
-                    {item.phone}
-                  </a>
-                </dd>
+                <dd className="font-medium text-foreground">{item.phone}</dd>
               </div>
               {links.length ? (
                 <div className="sm:col-span-2">
@@ -58,27 +75,50 @@ export default async function ApplicationPage({ params }: { params: Promise<{ id
               ) : null}
             </dl>
             <div className="mt-5 flex flex-wrap gap-2">
+              <EmailComposer
+                entity="application"
+                id={item.id}
+                to={item.email}
+                templates={templates}
+                values={{ first_name: item.name.split(" ")[0], name: item.name, job: item.job_title, sender: user.name }}
+              />
               {item.resume_file ? (
-                <a href={`/admin/files/resume/${item.id}`} className={buttonClass.primary}>
+                <a href={`/admin/files/resume/${item.id}`} className={buttonClass.secondary}>
                   <FileDown className="size-4" aria-hidden /> Download CV
                 </a>
               ) : null}
-              <a href={`mailto:${item.email}?subject=${encodeURIComponent(`Your application for ${item.job_title}`)}`} className={buttonClass.secondary}>
-                <Mail className="size-4" aria-hidden /> Email
-              </a>
-              <a href={`https://wa.me/${item.phone.replace(/\D/g, "").replace(/^(\d{10})$/, "91$1")}`} target="_blank" rel="noreferrer" className={buttonClass.secondary}>
+              <a href={`https://wa.me/${digits}`} target="_blank" rel="noreferrer" className={buttonClass.secondary}>
                 <Phone className="size-4" aria-hidden /> WhatsApp
               </a>
             </div>
           </Card>
-          <Card className="p-5">
+
+          <Card className="p-6">
             <h2 className="text-sm font-semibold text-foreground">Note from the candidate</h2>
             <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-foreground/85">{item.note || "No note."}</p>
             {item.resume_name ? <p className="mt-4 text-xs text-muted-foreground">CV file: {item.resume_name}</p> : null}
           </Card>
+
+          <Card className="p-6">
+            <h2 className="mb-4 text-sm font-semibold text-foreground">Activity</h2>
+            <AddNoteForm entity="application" id={item.id} />
+            <div className="mt-6">
+              <Timeline notes={timeline("application", item.id)} legacyNote={item.internal_notes || undefined} received={item.created_at} />
+            </div>
+          </Card>
         </div>
-        <Card className="h-fit p-5">
-          <StatusForm key={`${item.status}:${item.internal_notes}`} action={updateApplicationAction} id={item.id} status={item.status} statuses={APPLICATION_STATUSES} notes={item.internal_notes} />
+        <Card className="h-fit p-5 lg:sticky lg:top-6">
+          <RecordPanel
+            key={`${item.status}:${item.assignee}:${item.rating}:${item.interview_at}`}
+            entity="application"
+            id={item.id}
+            status={item.status}
+            statuses={APPLICATION_STATUSES}
+            assignee={item.assignee}
+            team={team}
+            rating={item.rating}
+            interview={item.interview_at}
+          />
         </Card>
       </div>
     </>

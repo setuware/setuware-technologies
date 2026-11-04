@@ -31,8 +31,8 @@ export const ROLE_LABELS: Record<Role, string> = {
 /** What each role may open. The owner may open everything. */
 export const ROLE_ACCESS: Record<Exclude<Role, "owner">, readonly string[]> = {
   editor: ["posts", "media"],
-  hr: ["jobs", "applications"],
-  sales: ["enquiries"],
+  hr: ["jobs", "applications", "templates"],
+  sales: ["enquiries", "bookings", "templates", "subscribers", "analytics"],
 };
 
 export function can(role: Role, area: string): boolean {

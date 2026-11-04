@@ -308,9 +308,14 @@ export interface ApplicationRecord {
   status: ApplicationStatus;
   internal_notes: string;
   created_at: string;
+  assignee: string | null;
+  rating: number | null;
+  interview_at: string | null;
 }
 
-export function createApplication(input: Omit<ApplicationRecord, "id" | "status" | "internal_notes" | "created_at">): number {
+export function createApplication(
+  input: Omit<ApplicationRecord, "id" | "status" | "internal_notes" | "created_at" | "assignee" | "rating" | "interview_at">,
+): number {
   const result = getDb()
     .prepare(
       `INSERT INTO applications (job_slug,job_title,name,email,phone,links,note,resume_file,resume_name,created_at) VALUES (?,?,?,?,?,?,?,?,?,?)`,
@@ -330,9 +335,13 @@ export function createApplication(input: Omit<ApplicationRecord, "id" | "status"
   return Number(result.lastInsertRowid);
 }
 
-export function listApplications(filter?: { status?: string; job?: string; q?: string }): ApplicationRecord[] {
+export function listApplications(filter?: { status?: string; job?: string; q?: string; assignee?: string }): ApplicationRecord[] {
   const where: string[] = [];
   const params: unknown[] = [];
+  if (filter?.assignee) {
+    where.push("assignee = ?");
+    params.push(filter.assignee);
+  }
   if (filter?.status) {
     where.push("status = ?");
     params.push(filter.status);
@@ -383,9 +392,11 @@ export interface EnquiryRecord {
   status: EnquiryStatus;
   internal_notes: string;
   created_at: string;
+  assignee: string | null;
+  follow_up_at: string | null;
 }
 
-export function saveEnquiry(input: Omit<EnquiryRecord, "id" | "status" | "internal_notes">): void {
+export function saveEnquiry(input: Omit<EnquiryRecord, "id" | "status" | "internal_notes" | "assignee" | "follow_up_at">): void {
   getDb()
     .prepare(
       `INSERT INTO enquiries (reference,kind,source,name,email,phone,service,message,payload,created_at) VALUES (?,?,?,?,?,?,?,?,?,?)`,
@@ -404,9 +415,13 @@ export function saveEnquiry(input: Omit<EnquiryRecord, "id" | "status" | "intern
     );
 }
 
-export function listEnquiries(filter?: { status?: string; kind?: string; q?: string }): EnquiryRecord[] {
+export function listEnquiries(filter?: { status?: string; kind?: string; q?: string; assignee?: string }): EnquiryRecord[] {
   const where: string[] = [];
   const params: unknown[] = [];
+  if (filter?.assignee) {
+    where.push("assignee = ?");
+    params.push(filter.assignee);
+  }
   if (filter?.status) {
     where.push("status = ?");
     params.push(filter.status);

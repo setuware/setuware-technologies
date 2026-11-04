@@ -29,17 +29,36 @@ import {
   deleteJob,
   deletePost,
   ENQUIRY_STATUSES,
+  getApplication,
+  getEnquiry,
   getJobRecord,
   getPostRecord,
+  jobLists,
   saveJob,
   savePost,
   slugTaken,
-  updateApplication,
-  updateEnquiry,
+  type ApplicationRecord,
+  type EnquiryRecord,
   type JobInput,
   type PostInput,
 } from "@/lib/cms/store";
 import { saveUpload, UploadError } from "@/lib/cms/uploads";
+import {
+  addNote,
+  bulkStatus,
+  deleteMedia,
+  deleteSubscriber,
+  deleteTemplate,
+  saveTemplate,
+  setAssignee,
+  setFollowUp,
+  setInterview,
+  setRating,
+  setSetting,
+  setStatus,
+} from "@/lib/cms/crm";
+import { emailConfigured, getTransporter, senderAddress } from "@/lib/lead-email";
+import { site } from "@/lib/site";
 
 export interface FormState {
   error?: string;
@@ -226,28 +245,6 @@ export async function deleteJobAction(form: FormData): Promise<void> {
 /* Applications and enquiries                                                  */
 /* -------------------------------------------------------------------------- */
 
-export async function updateApplicationAction(_previous: FormState, form: FormData): Promise<FormState> {
-  const user = await requireUser("applications");
-  const id = Number(form.get("id"));
-  const status = text(form, "status");
-  if (!APPLICATION_STATUSES.includes(status as (typeof APPLICATION_STATUSES)[number])) return { error: "Unknown status." };
-  updateApplication(id, { status, internal_notes: text(form, "internal_notes", 5000) });
-  audit(user.name, "updated application", "application", `#${id} → ${status}`);
-  refresh();
-  return { ok: "Saved." };
-}
-
-export async function updateEnquiryAction(_previous: FormState, form: FormData): Promise<FormState> {
-  const user = await requireUser("enquiries");
-  const id = Number(form.get("id"));
-  const status = text(form, "status");
-  if (!ENQUIRY_STATUSES.includes(status as (typeof ENQUIRY_STATUSES)[number])) return { error: "Unknown status." };
-  updateEnquiry(id, { status, internal_notes: text(form, "internal_notes", 5000) });
-  audit(user.name, "updated enquiry", "enquiry", `#${id} → ${status}`);
-  refresh();
-  return { ok: "Saved." };
-}
-
 /* -------------------------------------------------------------------------- */
 /* Team                                                                        */
 /* -------------------------------------------------------------------------- */
@@ -313,4 +310,199 @@ export async function changeOwnPasswordAction(_previous: FormState, form: FormDa
   audit(user.name, "changed password", "account", user.email);
   (await cookies()).delete(SESSION_COOKIE);
   redirect("/admin/login?changed=1");
+}
+
+/* -------------------------------------------------------------------------- */
+/* Team workflow: timeline, e-mail, assignment, bulk, duplicates, settings     */
+/* -------------------------------------------------------------------------- */
+
+type Entity = "enquiry" | "application";
+const AREA: Record<Entity, "enquiries" | "applications"> = { enquiry: "enquiries", application: "applications" };
+
+function entityOf(form: FormData): Entity {
+  return form.get("entity") === "application" ? "application" : "enquiry";
+}
+
+export async function addNoteAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const entity = entityOf(form);
+  const user = await requireUser(AREA[entity]);
+  const body = text(form, "body", 5000);
+  if (body.length < 2) return { error: "Write a note first." };
+  addNote(entity, Number(form.get("id")), "note", user.name, body);
+  refresh();
+  return { ok: "Note added." };
+}
+
+/** Status, owner, follow-up date (enquiries) or rating and interview (applications). */
+export async function updateRecordAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const entity = entityOf(form);
+  const user = await requireUser(AREA[entity]);
+  const id = Number(form.get("id"));
+  const record = entity === "enquiry" ? getEnquiry(id) : getApplication(id);
+  if (!record) return { error: "Record not found." };
+  const allowed: readonly string[] = entity === "enquiry" ? ENQUIRY_STATUSES : APPLICATION_STATUSES;
+
+  const status = text(form, "status");
+  if (status && allowed.includes(status) && status !== record.status) {
+    setStatus(entity, id, status);
+    addNote(entity, id, "status", user.name, `Status changed from ${record.status} to ${status}`);
+  }
+  const assignee = text(form, "assignee", 80) || null;
+  if (assignee !== (record.assignee ?? null)) {
+    setAssignee(entity, id, assignee);
+    addNote(entity, id, "assign", user.name, assignee ? `Assigned to ${assignee}` : "Unassigned");
+  }
+  if (entity === "enquiry") {
+    const followUp = text(form, "follow_up_at", 10) || null;
+    if (followUp !== ((record as EnquiryRecord).follow_up_at ?? null)) {
+      setFollowUp(id, followUp);
+      addNote(entity, id, "system", user.name, followUp ? `Follow-up set for ${followUp}` : "Follow-up cleared");
+    }
+  } else {
+    const rating = Number(form.get("rating")) || null;
+    if (rating !== ((record as ApplicationRecord).rating ?? null)) setRating(id, rating && rating >= 1 && rating <= 5 ? rating : null);
+    const interview = text(form, "interview_at", 16) || null;
+    if (interview !== ((record as ApplicationRecord).interview_at ?? null)) {
+      setInterview(id, interview);
+      addNote(entity, id, "system", user.name, interview ? `Interview scheduled for ${interview.replace("T", " ")}` : "Interview cleared");
+    }
+  }
+  audit(user.name, `updated ${entity}`, entity, `#${id}`);
+  refresh();
+  return { ok: "Saved." };
+}
+
+export async function sendEmailAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const entity = entityOf(form);
+  const user = await requireUser(AREA[entity]);
+  const id = Number(form.get("id"));
+  const record = entity === "enquiry" ? getEnquiry(id) : getApplication(id);
+  if (!record?.email) return { error: "This record has no email address." };
+  const subject = text(form, "subject", 200);
+  const body = String(form.get("body") ?? "").trim().slice(0, 20_000);
+  if (subject.length < 3 || body.length < 10) return { error: "Add a subject and a message." };
+  if (!emailConfigured()) return { error: "Email is not set up on the server (SMTP settings)." };
+  try {
+    await getTransporter().sendMail({
+      from: { name: `${user.name} | ${site.name}`, address: senderAddress() },
+      to: record.email,
+      replyTo: user.email,
+      subject,
+      text: body,
+    });
+  } catch (error) {
+    return { error: `Email could not be sent: ${error instanceof Error ? error.message : "unknown error"}` };
+  }
+  addNote(entity, id, "email", user.name, `Emailed: ${subject}\n\n${body}`);
+  if (entity === "enquiry" && record.status === "new") {
+    setStatus(entity, id, "contacted");
+    addNote(entity, id, "status", user.name, "Status changed from new to contacted");
+  }
+  audit(user.name, "sent email", entity, `${record.email}: ${subject}`);
+  refresh();
+  return { ok: `Sent to ${record.email}.` };
+}
+
+export async function bulkStatusAction(form: FormData): Promise<void> {
+  const entity = entityOf(form);
+  const user = await requireUser(AREA[entity]);
+  const status = text(form, "bulk_status");
+  const allowed: readonly string[] = entity === "enquiry" ? ENQUIRY_STATUSES : APPLICATION_STATUSES;
+  const ids = form.getAll("ids").map(Number).filter(Boolean).slice(0, 500);
+  if (ids.length && allowed.includes(status)) {
+    bulkStatus(entity, ids, status, user.name);
+    audit(user.name, "bulk update", entity, `${ids.length} → ${status}`);
+  }
+  refresh();
+}
+
+export async function duplicatePostAction(form: FormData): Promise<void> {
+  const user = await requireUser("posts");
+  const post = getPostRecord(Number(form.get("id")));
+  if (!post) redirect("/admin/posts");
+  let slug = `${post.slug}-copy`;
+  for (let n = 2; slugTaken("posts", slug); n += 1) slug = `${post.slug}-copy-${n}`;
+  const { id: _id, created_at: _c, updated_at: _u, updated_by: _b, ...rest } = post;
+  const newId = savePost({ ...rest, slug, title: `${post.title} (copy)`, status: "draft" }, user.name);
+  audit(user.name, "duplicated post", "post", post.title);
+  redirect(`/admin/posts/${newId}`);
+}
+
+export async function duplicateJobAction(form: FormData): Promise<void> {
+  const user = await requireUser("jobs");
+  const job = getJobRecord(Number(form.get("id")));
+  if (!job) redirect("/admin/jobs");
+  let slug = `${job.slug}-copy`;
+  for (let n = 2; slugTaken("jobs", slug); n += 1) slug = `${job.slug}-copy-${n}`;
+  const lists = jobLists(job);
+  const newId = saveJob(
+    {
+      slug,
+      title: `${job.title} (copy)`,
+      short_title: job.short_title,
+      team: job.team,
+      location: job.location,
+      type: job.type,
+      experience: job.experience,
+      summary: job.summary,
+      ...lists,
+      status: "draft",
+      posted_at: new Date().toISOString().slice(0, 10),
+    },
+    user.name,
+  );
+  audit(user.name, "duplicated job", "job", job.title);
+  redirect(`/admin/jobs/${newId}`);
+}
+
+export async function saveTemplateAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser("templates");
+  const name = text(form, "name", 80);
+  const subject = text(form, "subject", 200);
+  const body = String(form.get("body") ?? "").trim().slice(0, 10_000);
+  const audience = form.get("audience") === "application" ? "application" : "enquiry";
+  if (name.length < 3 || subject.length < 3 || body.length < 10) return { error: "Fill in the name, subject and message." };
+  const id = Number(form.get("id")) || undefined;
+  saveTemplate({ name, audience, subject, body }, id);
+  audit(user.name, id ? "updated template" : "created template", "template", name);
+  refresh();
+  return { ok: "Template saved." };
+}
+
+export async function deleteTemplateAction(form: FormData): Promise<void> {
+  const user = await requireUser("templates");
+  deleteTemplate(Number(form.get("id")));
+  audit(user.name, "deleted template", "template", `#${form.get("id")}`);
+  refresh();
+}
+
+export async function deleteSubscriberAction(form: FormData): Promise<void> {
+  const user = await requireUser("subscribers");
+  deleteSubscriber(Number(form.get("id")));
+  audit(user.name, "removed subscriber", "subscriber", `#${form.get("id")}`);
+  refresh();
+}
+
+export async function deleteMediaAction(form: FormData): Promise<void> {
+  const user = await requireUser("media");
+  const name = text(form, "name", 120);
+  await deleteMedia(name);
+  audit(user.name, "deleted image", "media", name);
+  refresh();
+}
+
+export async function saveAnnouncementAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser("settings");
+  const value = {
+    enabled: form.get("enabled") === "on",
+    text: text(form, "text", 160),
+    link: text(form, "link", 300),
+    linkLabel: text(form, "linkLabel", 40),
+  };
+  if (value.enabled && value.text.length < 3) return { error: "Write the announcement text first." };
+  if (value.link && !/^(\/|https?:\/\/)/.test(value.link)) return { error: "Links must start with / or https://" };
+  setSetting("announcement", value);
+  audit(user.name, "updated announcement", "settings", value.enabled ? value.text : "off");
+  updateTag(CMS_TAGS.settings);
+  return { ok: value.enabled ? "Announcement is live on the website." : "Announcement turned off." };
 }

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
-import { deletePostAction } from "@/app/admin/actions";
+import { deletePostAction, duplicatePostAction } from "@/app/admin/actions";
+import { SubmitButton } from "@/components/admin/form-bits";
 import { requireUser } from "@/lib/cms/session";
 import { getPostRecord, listPostRecords } from "@/lib/cms/store";
 import { ConfirmDelete } from "@/components/admin/confirm-delete";
@@ -30,7 +31,17 @@ export default async function EditPostPage({
         title="Edit post"
         description={`Last saved ${formatWhen(post.updated_at)}${post.updated_by ? ` by ${post.updated_by}` : ""}`}
         back={{ href: "/admin/posts", label: "All posts" }}
-        actions={<ConfirmDelete action={deletePostAction} id={post.id} label="Delete post" what={post.title} />}
+        actions={
+          <>
+            <form action={duplicatePostAction}>
+              <input type="hidden" name="id" value={post.id} />
+              <SubmitButton variant="secondary" pendingLabel="Copying…">
+                Duplicate
+              </SubmitButton>
+            </form>
+            <ConfirmDelete action={deletePostAction} id={post.id} label="Delete post" what={post.title} />
+          </>
+        }
       />
       {saved ? (
         <p className="mb-5 rounded-xl bg-emerald-500/10 px-4 py-2.5 text-sm font-medium text-emerald-700 dark:text-emerald-400">

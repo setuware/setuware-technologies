@@ -1,4 +1,5 @@
 import { emailConfigured, emailLead } from "./lead-email";
+import { addSubscriber } from "./cms/crm";
 import { saveEnquiry } from "./cms/store";
 import { leadView } from "./email-templates";
 import { referenceId } from "./utils";
@@ -91,8 +92,11 @@ export async function deliverLead(
 
 /** Saves the enquiry for the admin inbox. Never throws. */
 function storeEnquiry(lead: Lead): void {
-  if (lead.kind === "newsletter") return;
   try {
+    if (lead.kind === "newsletter") {
+      if (typeof lead.payload.email === "string") addSubscriber(lead.payload.email, String(lead.payload.source ?? "website"));
+      return;
+    }
     const view = leadView(lead);
     saveEnquiry({
       reference: lead.reference,

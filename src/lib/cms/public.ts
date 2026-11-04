@@ -4,6 +4,7 @@ import type { Job } from "@/lib/careers";
 import type { Block } from "@/lib/post-bodies";
 import type { Post } from "@/lib/posts";
 
+import { DEFAULT_ANNOUNCEMENT, getSetting, type Announcement } from "./crm";
 import {
   openJobBySlug,
   openJobRecords,
@@ -20,7 +21,7 @@ import {
  * cache life also brings scheduled posts online within a few minutes.
  */
 
-export const CMS_TAGS = { posts: "cms-posts", jobs: "cms-jobs" } as const;
+export const CMS_TAGS = { posts: "cms-posts", jobs: "cms-jobs", settings: "cms-settings" } as const;
 
 export type PublicJob = Job & { postedAt: string };
 
@@ -52,4 +53,13 @@ export async function getOpenJob(slug: string): Promise<PublicJob | null> {
   cacheLife("minutes");
   const record = openJobBySlug(slug);
   return record ? toJob(record) : null;
+}
+
+/** The announcement bar, or null when switched off. */
+export async function getAnnouncement(): Promise<Omit<Announcement, "enabled"> | null> {
+  "use cache";
+  cacheTag(CMS_TAGS.settings);
+  cacheLife("hours");
+  const value = getSetting<Announcement>("announcement", DEFAULT_ANNOUNCEMENT);
+  return value.enabled && value.text ? { text: value.text, link: value.link, linkLabel: value.linkLabel } : null;
 }

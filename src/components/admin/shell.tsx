@@ -4,6 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  BarChart3,
+  CalendarDays,
+  Image as ImageIcon,
+  Mail,
+  MailPlus,
+  Search,
+  Settings,
   Briefcase,
   ExternalLink,
   FileText,
@@ -23,11 +30,18 @@ import { logoutAction } from "@/app/admin/actions";
 
 const NAV = [
   { group: "Overview", href: "/admin", label: "Dashboard", Icon: LayoutDashboard, area: null },
-  { group: "Overview", href: "/admin/enquiries", label: "Enquiries", Icon: Inbox, area: "enquiries" },
+  { group: "Overview", href: "/admin/search", label: "Search", Icon: Search, area: null },
+  { group: "Overview", href: "/admin/analytics", label: "Analytics", Icon: BarChart3, area: "analytics" },
+  { group: "Sales", href: "/admin/enquiries", label: "Enquiries", Icon: Inbox, area: "enquiries" },
+  { group: "Sales", href: "/admin/bookings", label: "Bookings", Icon: CalendarDays, area: "bookings" },
+  { group: "Sales", href: "/admin/subscribers", label: "Subscribers", Icon: Mail, area: "subscribers" },
   { group: "Content", href: "/admin/posts", label: "Blog posts", Icon: FileText, area: "posts" },
   { group: "Content", href: "/admin/jobs", label: "Jobs", Icon: Briefcase, area: "jobs" },
+  { group: "Content", href: "/admin/media", label: "Media", Icon: ImageIcon, area: "media" },
   { group: "People", href: "/admin/applications", label: "Applications", Icon: UsersRound, area: "applications" },
   { group: "People", href: "/admin/users", label: "Team", Icon: Users, area: "users" },
+  { group: "Settings", href: "/admin/templates", label: "Email templates", Icon: MailPlus, area: "templates" },
+  { group: "Settings", href: "/admin/settings", label: "Site settings", Icon: Settings, area: "settings" },
 ] as const;
 
 export function AdminShell({
@@ -156,7 +170,16 @@ export function AdminShell({
         </header>
         <div className="relative flex-1 bg-[radial-gradient(60rem_30rem_at_100%_-10%,rgba(47,86,216,0.07),transparent),radial-gradient(40rem_24rem_at_0%_0%,rgba(10,142,166,0.05),transparent)]">
           <div className="hidden items-center justify-between border-b border-border/70 bg-surface/70 px-10 py-3 backdrop-blur lg:flex">
-            <p className="text-xs text-muted-foreground">
+            <form action="/admin/search" className="relative w-80">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+              <input
+                name="q"
+                placeholder="Search enquiries, people, posts…"
+                aria-label="Search the admin"
+                className="h-9 w-full rounded-full border border-border bg-surface pl-9 pr-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-setu focus:ring-2 focus:ring-setu/20"
+              />
+            </form>
+            <p className="ml-auto mr-4 text-xs text-muted-foreground">
               {new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "long", timeZone: "Asia/Kolkata" }).format(new Date())}
             </p>
             <a href="/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground">

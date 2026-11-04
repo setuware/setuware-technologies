@@ -72,9 +72,11 @@ function useAutoHide(pinned: boolean): boolean {
 }
 export interface NavbarProps {
   links: readonly NavEntry[];
+  /** Optional site-wide message, managed in Admin → Site settings. */
+  announcement?: { text: string; link: string; linkLabel: string } | null;
 }
 
-export function Navbar({ links }: NavbarProps) {
+export function Navbar({ links, announcement }: NavbarProps) {
   const pathname = usePathname();
   const scrolled = useScrolled(12);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -151,6 +153,7 @@ export function Navbar({ links }: NavbarProps) {
           }
         }}
       >
+        {announcement ? <AnnouncementBar {...announcement} /> : null}
         <nav
           className="container-figma flex h-16 items-center justify-between gap-4 md:h-18 lg:h-auto lg:justify-start lg:gap-0 lg:pb-[calc(var(--s)*18)] lg:pt-[calc(var(--s)*14)]"
           aria-label="Main"
@@ -399,5 +402,44 @@ export function Navbar({ links }: NavbarProps) {
         </div>
       </div>
     </>
+  );
+}
+
+/** Thin brand bar above the navigation; dismissed per browser session. */
+function AnnouncementBar({ text, link, linkLabel }: { text: string; link: string; linkLabel: string }) {
+  const key = `stw-announcement:${text}`;
+  const [hidden, setHidden] = useState(false);
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem(key)) setHidden(true);
+    } catch {
+      // Storage blocked: keep showing it.
+    }
+  }, [key]);
+  if (hidden) return null;
+  return (
+    <div className="relative bg-[linear-gradient(100deg,#1d3fae,#1468ad_55%,#0a8ea6)] px-10 py-2 text-center text-[0.8rem] font-medium text-white">
+      <span>{text}</span>
+      {link ? (
+        <a href={link} className="ml-2 font-semibold underline decoration-white/50 underline-offset-4 hover:decoration-white">
+          {linkLabel || "Learn more"} →
+        </a>
+      ) : null}
+      <button
+        type="button"
+        aria-label="Dismiss announcement"
+        onClick={() => {
+          setHidden(true);
+          try {
+            sessionStorage.setItem(key, "1");
+          } catch {
+            // ignore
+          }
+        }}
+        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/70 hover:bg-white/15 hover:text-white"
+      >
+        ×
+      </button>
+    </div>
   );
 }

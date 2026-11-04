@@ -6,7 +6,7 @@ import { currentUser } from "@/lib/cms/session";
 import { dashboardCounts } from "@/lib/cms/store";
 import { AdminShell } from "@/components/admin/shell";
 
-const AREAS = ["enquiries", "posts", "jobs", "applications", "users"] as const;
+const AREAS = ["enquiries", "bookings", "subscribers", "analytics", "posts", "jobs", "media", "applications", "users", "templates", "settings"] as const;
 
 // Signed-in pages block on the session; per the Cache Components auth guide,
 // they opt out of instant-navigation validation.

@@ -8,13 +8,24 @@ on the site immediately; no redeploy needed.
 
 | Section | Who | What it does |
 | ------- | --- | ------------ |
-| Dashboard | everyone | New enquiries and applications, published posts, open jobs, recent team activity (owner) |
-| Enquiries | Owner, Sales | Every contact form, pop-up, chat, estimate and booking. Status pipeline (new → contacted → qualified → proposal → won/lost/spam), internal notes, reply/call/WhatsApp buttons, CSV export |
-| Blog posts | Owner, Editor | Markdown editor with toolbar and live preview, cover image upload, images inside posts, categories, author, SEO title and description with a Google preview, drafts, scheduling (future date), featured flag |
-| Jobs | Owner, HR | Create, edit, open, close or delete roles. Open roles appear on /careers with Google JobPosting data |
-| Applications | Owner, HR | Candidates apply on each job page with a CV (PDF/Word, 5 MB). Status pipeline (new → reviewing → shortlisted → interview → offer → hired/rejected), notes, CV download, CSV export. HR also gets each application by email with the CV attached |
+| Dashboard | everyone | Workload summary, follow-ups due, upcoming interviews, enquiry pipeline, latest items, team activity |
+| Search | everyone | One search across enquiries, applicants, posts and jobs (only what your role can see) |
+| Analytics | Owner, Sales | Enquiries per day (30 days), sources, services, win rate, most-read articles, applications per role, subscribers |
+| Enquiries | Owner, Sales | Every form, pop-up, chat, estimate and booking. Owner, follow-up date, status pipeline, timeline of notes, emails and changes, email from the admin with templates, bulk status, CSV |
+| Bookings | Owner, Sales | Upcoming and past consultation calls by day |
+| Subscribers | Owner, Sales | Newsletter sign-ups, search, remove, CSV export |
+| Blog posts | Owner, Editor | Markdown editor with live preview, images, drafts, scheduling, SEO preview, duplicate |
+| Jobs | Owner, HR | Create, open, close, duplicate roles; application counts |
+| Media | Owner, Editor | Every uploaded image, where it is used, copy link, delete unused |
+| Applications | Owner, HR | CV download, 1–5 rating, interview date, owner, status pipeline, timeline, email with templates, bulk status, CSV |
 | Team | Owner | Add people, set roles, disable access, reset passwords |
+| Email templates | Owner, Sales, HR | Saved replies with placeholders ({{first_name}}, {{service}}, {{job}}, {{sender}}) |
+| Site settings | Owner | Announcement bar above the website navigation |
 | My account | everyone | Change your own password |
+
+Emails sent from the admin go out through the site's SMTP mailbox under the
+sender's name (e.g. "Satyam Raj | Setuware Technologies"), with replies going
+to the sender's own address, and are recorded on the record's timeline.
 
 The site's existing articles and roles were imported automatically on first
 start, so everything is editable from day one.

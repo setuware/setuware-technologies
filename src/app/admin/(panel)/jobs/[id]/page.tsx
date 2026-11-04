@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
-import { deleteJobAction } from "@/app/admin/actions";
+import { deleteJobAction, duplicateJobAction } from "@/app/admin/actions";
+import { SubmitButton } from "@/components/admin/form-bits";
 import { jobLocations, jobTeams, jobTypes } from "@/lib/careers";
 import { requireUser } from "@/lib/cms/session";
 import { getJobRecord, jobLists } from "@/lib/cms/store";
@@ -31,7 +32,17 @@ export default async function EditJobPage({
         title="Edit job"
         description={`Last saved ${formatWhen(job.updated_at)}${job.updated_by ? ` by ${job.updated_by}` : ""}`}
         back={{ href: "/admin/jobs", label: "All jobs" }}
-        actions={<ConfirmDelete action={deleteJobAction} id={job.id} label="Delete job" what={job.title} />}
+        actions={
+          <>
+            <form action={duplicateJobAction}>
+              <input type="hidden" name="id" value={job.id} />
+              <SubmitButton variant="secondary" pendingLabel="Copying…">
+                Duplicate
+              </SubmitButton>
+            </form>
+            <ConfirmDelete action={deleteJobAction} id={job.id} label="Delete job" what={job.title} />
+          </>
+        }
       />
       {saved ? (
         <p className="mb-5 rounded-xl bg-emerald-500/10 px-4 py-2.5 text-sm font-medium text-emerald-700 dark:text-emerald-400">Job created.</p>
