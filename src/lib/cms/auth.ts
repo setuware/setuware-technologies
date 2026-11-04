@@ -58,6 +58,12 @@ export interface AdminUser {
   twoFactor: boolean;
   lockedUntil: string | null;
   hasPassword: boolean;
+  designation: string;
+  department: string;
+  phone: string;
+  joinedOn: string | null;
+  birthday: string | null;
+  managerId: number | null;
 }
 
 export async function hashPassword(password: string): Promise<string> {
@@ -103,6 +109,12 @@ function rowToUser(row: Record<string, unknown>): AdminUser {
     twoFactor: Number(row.totp_enabled) === 1,
     lockedUntil: (row.locked_until as string | null) ?? null,
     hasPassword: row.password_hash !== NO_PASSWORD,
+    designation: String(row.designation ?? ""),
+    department: String(row.department ?? ""),
+    phone: String(row.phone ?? ""),
+    joinedOn: (row.joined_on as string | null) ?? null,
+    birthday: (row.birthday as string | null) ?? null,
+    managerId: row.manager_id == null ? null : Number(row.manager_id),
   };
 }
 
@@ -160,6 +172,44 @@ export function updateUser(userId: number, patch: { name?: string; role?: Role; 
     db.prepare("UPDATE users SET active = ? WHERE id = ?").run(patch.active ? 1 : 0, userId);
     if (!patch.active) db.prepare("DELETE FROM sessions WHERE user_id = ?").run(userId);
   }
+}
+
+export interface Profile {
+  designation: string;
+  department: string;
+  phone: string;
+  joinedOn: string | null;
+  birthday: string | null;
+  managerId: number | null;
+}
+
+/** Job details shown in the directory; the manager can't be the person themself or someone who reports to them. */
+export function updateProfile(userId: number, profile: Profile): void {
+  let managerId = profile.managerId && profile.managerId !== userId ? profile.managerId : null;
+  // Walk up the chain to stop loops (A reports to B reports to A).
+  for (let id = managerId, guard = 0; id && guard < 50; guard += 1) {
+    if (id === userId) {
+      managerId = null;
+      break;
+    }
+    id = (getDb().prepare("SELECT manager_id FROM users WHERE id = ?").get(id) as { manager_id: number | null } | undefined)?.manager_id ?? null;
+  }
+  getDb()
+    .prepare("UPDATE users SET designation = ?, department = ?, phone = ?, joined_on = ?, birthday = ?, manager_id = ? WHERE id = ?")
+    .run(profile.designation, profile.department, profile.phone, profile.joinedOn, profile.birthday, managerId, userId);
+}
+
+/** People who report to `managerId`, directly or through others. */
+export function reportIds(managerId: number): number[] {
+  const rows = getDb().prepare("SELECT id, manager_id FROM users").all() as { id: number; manager_id: number | null }[];
+  const found: number[] = [];
+  let frontier = [managerId];
+  while (frontier.length && found.length < 500) {
+    const next = rows.filter((row) => row.manager_id !== null && frontier.includes(row.manager_id) && !found.includes(row.id) && row.id !== managerId).map((row) => row.id);
+    found.push(...next);
+    frontier = next;
+  }
+  return found;
 }
 
 export function unlockUser(userId: number): void {

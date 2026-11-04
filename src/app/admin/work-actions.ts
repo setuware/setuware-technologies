@@ -3,9 +3,10 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { refresh } from "next/cache";
-import { after } from "next/server";
 
-import { audit, can, getUser, listUsers, seesAll, type AdminUser } from "@/lib/cms/auth";
+import { audit, can, getUser, seesAll, updateProfile, type AdminUser } from "@/lib/cms/auth";
+import { markRead } from "@/lib/cms/notifications";
+import { PROJECT_STATUSES, saveProject, type ProjectStatus } from "@/lib/cms/projects";
 import {
   addHoliday,
   attendanceSettings,
@@ -18,6 +19,7 @@ import {
   endBreak,
   LEAVE_TYPES,
   MODES,
+  getRequest,
   removeHoliday,
   requestCorrection,
   requestLeave,
@@ -30,7 +32,7 @@ import {
 } from "@/lib/cms/attendance";
 import { decideSheet, isLocked, reopenSheet, setCell, submitSheet, weekDays, weekStart } from "@/lib/cms/timesheets";
 import { addNote } from "@/lib/cms/crm";
-import { sendAccountEmail } from "@/lib/cms/mailer";
+import { approversFor, mayApproveFor, notify } from "@/lib/cms/notify";
 import { requireUser } from "@/lib/cms/session";
 import {
   addTaskItem,
@@ -54,7 +56,6 @@ import {
   type Task,
   type TaskStatus,
 } from "@/lib/cms/tasks";
-import { site } from "@/lib/site";
 
 import type { FormState } from "./actions";
 
@@ -65,15 +66,6 @@ const TIME = /^\d{2}:\d{2}$/;
 async function clientIp(): Promise<string | undefined> {
   const h = await headers();
   return (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || h.get("x-real-ip") || undefined;
-}
-
-/** E-mails a team member after the response is sent (no-op without SMTP). */
-function notify(userId: number | null | undefined, subject: string, lines: string[], path: string, label: string): void {
-  if (!userId) return;
-  after(async () => {
-    const person = getUser(userId);
-    if (person?.active) await sendAccountEmail(person.email, subject, lines, { url: `${site.url}${path}`, label });
-  });
 }
 
 /* ---------------------------------- tasks ---------------------------------- */
@@ -382,9 +374,6 @@ export async function checkOutAction(_previous: FormState, form: FormData): Prom
   return { ok: "Checked out. See you tomorrow!" };
 }
 
-function managers(except: number): AdminUser[] {
-  return listUsers().filter((member) => member.active && member.id !== except && can(member, "attendance.manage"));
-}
 
 export async function leaveRequestAction(_previous: FormState, form: FormData): Promise<FormState> {
   const user = await requireUser();
@@ -400,7 +389,7 @@ export async function leaveRequestAction(_previous: FormState, form: FormData): 
     return { error: error instanceof Error ? error.message : "Could not send the request." };
   }
   const when = from === to || halfDay ? `${from}${halfDay ? " (half day)" : ""}` : `${from} to ${to}`;
-  for (const manager of managers(user.id)) {
+  for (const manager of approversFor(user.id, "attendance.manage")) {
     notify(manager.id, `Leave request: ${user.name}`, [`${user.name} asked for ${type} leave on ${when}.`, reason].filter(Boolean), "/admin/attendance/team", "Review the request");
   }
   refresh();
@@ -415,7 +404,7 @@ export async function correctionRequestAction(_previous: FormState, form: FormDa
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Could not send the request." };
   }
-  for (const manager of managers(user.id)) {
+  for (const manager of approversFor(user.id, "attendance.manage")) {
     notify(manager.id, `Attendance correction: ${user.name}`, [`${user.name} asked to correct ${input.day} to ${input.checkIn}–${input.checkOut}.`, input.reason], "/admin/attendance/team", "Review the request");
   }
   refresh();
@@ -429,8 +418,10 @@ export async function cancelRequestAction(form: FormData): Promise<void> {
 }
 
 export async function decideRequestAction(form: FormData): Promise<void> {
-  const user = await requireUser("attendance.manage");
+  const user = await requireUser();
   const approve = form.get("decision") === "approve";
+  const pending = getRequest(Number(form.get("id")));
+  if (!pending || !mayApproveFor(user, pending.user_id, "attendance.manage")) return;
   try {
     const request = decideRequest(Number(form.get("id")), approve, user.name, text(form, "note", 500));
     audit(user.name, approve ? "approved request" : "rejected request", "attendance", `${request.user_name}: ${request.kind} ${request.from_day}`);
@@ -550,7 +541,7 @@ export async function saveSheetAction(_previous: FormState, form: FormData): Pro
       refresh();
       return { error: error instanceof Error ? error.message : "Could not submit." };
     }
-    for (const approver of listUsers().filter((member) => member.active && member.id !== user.id && can(member, "timesheets.approve"))) {
+    for (const approver of approversFor(user.id, "timesheets.approve")) {
       notify(approver.id, `Timesheet submitted: ${user.name}`, [`${user.name} submitted the timesheet for the week of ${monday}.`], `/admin/timesheets/team?week=${monday}`, "Review timesheets");
     }
     refresh();
@@ -561,11 +552,12 @@ export async function saveSheetAction(_previous: FormState, form: FormData): Pro
 }
 
 export async function decideSheetAction(_previous: FormState, form: FormData): Promise<FormState> {
-  const user = await requireUser("timesheets.approve");
+  const user = await requireUser();
   const member = getUser(Number(form.get("user_id")));
   const monday = text(form, "week", 10);
   if (!member || !DAY.test(monday)) return { error: "Timesheet not found." };
   if (member.id === user.id && user.role !== "owner") return { error: "Someone else must approve your own timesheet." };
+  if (!mayApproveFor(user, member.id, "timesheets.approve")) return { error: "Only their manager or a timesheet approver can do this." };
   const decision = text(form, "decision", 10);
   try {
     if (decision === "reopen") {
@@ -587,4 +579,84 @@ export async function decideSheetAction(_previous: FormState, form: FormData): P
   }
   refresh();
   return { ok: decision === "approve" ? `Approved ${member.name}'s week.` : decision === "reopen" ? "Reopened for changes." : `Sent back to ${member.name}.` };
+}
+
+/* ------------------------------ notifications ------------------------------ */
+
+/** Opens a notification: marks it read and goes to its page. */
+export async function openNotificationAction(form: FormData): Promise<void> {
+  const user = await requireUser();
+  const id = Number(form.get("id"));
+  markRead(user.id, id);
+  const link = text(form, "link", 300);
+  // The shell (and its bell) is a shared layout; refresh it along with the move.
+  refresh();
+  redirect(link.startsWith("/admin") ? link : "/admin/notifications");
+}
+
+export async function markAllReadAction(): Promise<void> {
+  const user = await requireUser();
+  markRead(user.id);
+  refresh();
+}
+
+/* --------------------------------- people ---------------------------------- */
+
+export async function saveProfileAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser();
+  const member = getUser(Number(form.get("user_id")));
+  if (!member) return { error: "Person not found." };
+  const manage = can(user, "users.manage");
+  if (!manage && member.id !== user.id) return { error: "Only an owner can change someone else's profile." };
+  const date = (key: string) => {
+    const value = text(form, key, 10);
+    return DAY.test(value) ? value : null;
+  };
+  const phone = text(form, "phone", 30);
+  if (phone && !/^[+\d][\d\s()-]{5,}$/.test(phone)) return { error: "Enter a valid phone number." };
+  updateProfile(member.id, {
+    // People can update their own phone and birthday; job details are set by an owner.
+    designation: manage ? text(form, "designation", 80) : member.designation,
+    department: manage ? text(form, "department", 60) : member.department,
+    joinedOn: manage ? date("joined_on") : member.joinedOn,
+    managerId: manage ? Number(form.get("manager_id")) || null : member.managerId,
+    phone,
+    birthday: date("birthday"),
+  });
+  if (manage && member.id !== user.id) audit(user.name, "updated profile", "user", member.name);
+  refresh();
+  return { ok: "Profile saved." };
+}
+
+/* -------------------------------- projects --------------------------------- */
+
+export async function saveProjectAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser();
+  if (!can(user, "tasks.assign") && !seesAll(user, "tasks")) return { error: "Only people who assign tasks can edit projects." };
+  const status = text(form, "status", 20) as ProjectStatus;
+  const budget = Number(text(form, "budget_hours", 8));
+  const date = (key: string) => (DAY.test(text(form, key, 10)) ? text(form, key, 10) : null);
+  const previous = text(form, "previous_name", 80) || undefined;
+  const name = text(form, "name", 80);
+  try {
+    saveProject(
+      {
+        name,
+        client: text(form, "client", 120),
+        status: PROJECT_STATUSES.includes(status) ? status : "active",
+        ownerId: Number(form.get("owner_id")) || null,
+        startDate: date("start_date"),
+        deadline: date("deadline"),
+        budgetHours: Number.isFinite(budget) && budget > 0 ? budget : null,
+        description: text(form, "description", 4000),
+      },
+      previous,
+    );
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Could not save the project." };
+  }
+  audit(user.name, previous ? "updated project" : "created project", "project", name);
+  if (!previous || previous !== name) redirect(`/admin/projects/${encodeURIComponent(name)}`);
+  refresh();
+  return { ok: "Project saved." };
 }

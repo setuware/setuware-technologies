@@ -99,7 +99,7 @@ export default async function EnquiryPage({ params }: { params: Promise<{ id: st
         <div className="flex flex-col gap-6">
           <Card className="h-fit p-5">
           <RecordPanel
-            key={`${item.status}:${item.assignee}:${item.follow_up_at}`}
+            version={`${item.status}:${item.assignee}:${item.follow_up_at}`}
             entity="enquiry"
             id={item.id}
             status={item.status}

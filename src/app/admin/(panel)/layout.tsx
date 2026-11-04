@@ -1,12 +1,14 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 
-import { can } from "@/lib/cms/auth";
+import { can, reportIds } from "@/lib/cms/auth";
+import { unreadCount } from "@/lib/cms/notifications";
 import { currentUser } from "@/lib/cms/session";
 import { dashboardCounts } from "@/lib/cms/store";
 import { listRequests, localDay, presence } from "@/lib/cms/attendance";
 import { runningTimer, taskCounts } from "@/lib/cms/tasks";
 import { pendingSheets } from "@/lib/cms/timesheets";
+import { mayApproveFor } from "@/lib/cms/notify";
 import { AdminShell } from "@/components/admin/shell";
 
 const AREAS = ["leads", "roles.manage", "enquiries", "bookings", "subscribers", "analytics", "posts", "jobs", "media", "applications", "users", "templates", "settings.manage", "attendance", "timesheets"] as const;
@@ -28,15 +30,19 @@ async function Gate({ children }: { children: React.ReactNode }) {
   const user = await currentUser();
   if (!user) redirect("/admin/login");
   const counts = dashboardCounts();
-  const areas = AREAS.filter((area) => can(user, area));
+  // Managers see their own team's attendance and timesheets even without the wider permission.
+  const manages = reportIds(user.id).length > 0;
+  const areas = AREAS.filter((area) => can(user, area) || (manages && (area === "attendance" || area === "timesheets")));
   const today = presence(user.id);
   const timer = runningTimer(user.id);
   const tasks = taskCounts(user.id, localDay());
-  const approvals = areas.includes("attendance") && can(user, "attendance.manage") ? listRequests({ status: "pending" }).length : 0;
+  const approvals = areas.includes("attendance") ? listRequests({ status: "pending" }).filter((request) => mayApproveFor(user, request.user_id, "attendance.manage")).length : 0;
+  const sheetsWaiting = areas.includes("timesheets") ? pendingSheets().filter((id) => mayApproveFor(user, id, "timesheets.approve")).length : 0;
   return (
     <AdminShell
       user={{ name: user.name, email: user.email, roleLabel: user.roleName }}
       areas={areas}
+      unread={unreadCount(user.id)}
       presence={{
         state: today.state,
         since: today.record?.check_in_at ?? null,
@@ -48,7 +54,7 @@ async function Gate({ children }: { children: React.ReactNode }) {
         ...(areas.includes("enquiries") ? { "/admin/enquiries": counts.enquiriesNew } : {}),
         ...(areas.includes("applications") ? { "/admin/applications": counts.applicationsNew } : {}),
         "/admin/tasks": tasks.overdue + tasks.toReview,
-        ...(areas.includes("timesheets") && can(user, "timesheets.approve") ? { "/admin/timesheets/team": pendingSheets() } : {}),
+        "/admin/timesheets/team": sheetsWaiting,
         "/admin/attendance/team": approvals,
       }}
     >

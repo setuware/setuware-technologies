@@ -251,7 +251,7 @@ export function PunchCard({ punch, inTime, outTime }: { punch: PunchState; inTim
   );
 }
 
-export function LeaveForm({ types, today }: { types: readonly string[]; today: string }) {
+export function LeaveForm({ types, earliest }: { types: readonly string[]; earliest: string }) {
   const [state, action] = useActionState<FormState, FormData>(leaveRequestAction, {});
   const [half, setHalf] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -276,14 +276,14 @@ export function LeaveForm({ types, today }: { types: readonly string[]; today: s
           <label htmlFor="from_day" className={LABEL}>
             {half ? "Date" : "From"}
           </label>
-          <input id="from_day" name="from_day" type="date" required min={today} className={inputClass} />
+          <input id="from_day" name="from_day" type="date" required min={earliest} className={inputClass} />
         </div>
         {!half ? (
           <div>
             <label htmlFor="to_day" className={LABEL}>
               To
             </label>
-            <input id="to_day" name="to_day" type="date" min={today} className={inputClass} />
+            <input id="to_day" name="to_day" type="date" min={earliest} className={inputClass} />
           </div>
         ) : null}
       </div>

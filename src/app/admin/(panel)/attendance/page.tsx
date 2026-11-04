@@ -4,6 +4,7 @@ import { AlertTriangle, Settings2, Users } from "lucide-react";
 import { cancelRequestAction } from "@/app/admin/work-actions";
 import { can } from "@/lib/cms/auth";
 import {
+  addDays,
   attendanceSettings,
   isLate,
   LEAVE_TYPES,
@@ -17,7 +18,7 @@ import {
   register,
   workedMinutes,
 } from "@/lib/cms/attendance";
-import { getUser } from "@/lib/cms/auth";
+import { getUser, reportIds } from "@/lib/cms/auth";
 import { requireUser } from "@/lib/cms/session";
 import { CorrectionForm, LeaveForm, PunchCard } from "@/components/admin/attendance-tools";
 import { Legend, MonthCalendar, monthLabel, monthParam, shiftMonth } from "@/components/admin/attendance-view";
@@ -55,7 +56,7 @@ export default async function MyAttendancePage({ searchParams }: { searchParams:
         description={`Office hours start at ${settings.start}. Check in when you start and check out when you finish.`}
         actions={
           <>
-            {can(user, "attendance") ? (
+            {can(user, "attendance") || reportIds(user.id).length ? (
               <Link href="/admin/attendance/team" className={buttonClass.secondary}>
                 <Users className="size-4" aria-hidden /> Team
               </Link>
@@ -170,7 +171,7 @@ export default async function MyAttendancePage({ searchParams }: { searchParams:
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card className="p-5 sm:p-6">
           <h2 className="mb-4 text-sm font-semibold text-foreground">Request leave</h2>
-          <LeaveForm types={LEAVE_TYPES} today={today} />
+          <LeaveForm types={LEAVE_TYPES} earliest={addDays(today, -60)} />
         </Card>
         <Card className="p-5 sm:p-6">
           <h2 className="mb-1 text-sm font-semibold text-foreground">Fix a day</h2>

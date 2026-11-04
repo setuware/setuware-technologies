@@ -1,6 +1,7 @@
 import { can, listUsers, seesAll } from "@/lib/cms/auth";
 import { localDay, localTime, register } from "@/lib/cms/attendance";
 import { getSheet, sheetRows, weekDays, weekStart } from "@/lib/cms/timesheets";
+import { teamScope } from "@/lib/cms/notify";
 import { currentUser } from "@/lib/cms/session";
 import { listSubscribers } from "@/lib/cms/crm";
 import { listApplications, listEnquiries } from "@/lib/cms/store";
@@ -20,10 +21,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ kind
   const { kind } = await params;
   const user = await currentUser();
   const search = new URL(request.url).searchParams;
-  if (user && kind === "attendance" && can(user, "attendance")) {
+  const attendanceScope = user ? teamScope(user, "attendance") : null;
+  if (user && attendanceScope && kind === "attendance" && (attendanceScope.all || attendanceScope.ids.length)) {
     const month = /^\d{4}-(0[1-9]|1[0-2])$/.test(search.get("month") ?? "") ? (search.get("month") as string) : localDay().slice(0, 7);
     const role = search.get("role");
-    const rows = register(month, listUsers().filter((member) => member.active && (!role || member.role === role))).flatMap((row) =>
+    const rows = register(
+      month,
+      listUsers().filter((member) => member.active && (!role || member.role === role) && (attendanceScope.all || attendanceScope.ids.includes(member.id))),
+    ).flatMap((row) =>
       row.cells.map((cell) => ({
         name: row.name,
         date: cell.day,
@@ -49,11 +54,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ kind
       },
     });
   }
-  if (user && kind === "timesheets" && can(user, "timesheets")) {
+  const sheetScope = user ? teamScope(user, "timesheets") : null;
+  if (user && sheetScope && kind === "timesheets" && (sheetScope.all || sheetScope.ids.length)) {
     const monday = weekStart(/^\d{4}-\d{2}-\d{2}$/.test(search.get("week") ?? "") ? (search.get("week") as string) : localDay());
     const days = weekDays(monday);
     const rows = listUsers()
-      .filter((member) => member.active)
+      .filter((member) => member.active && (sheetScope.all || sheetScope.ids.includes(member.id)))
       .flatMap((member) => {
         const status = getSheet(member.id, monday).status;
         return sheetRows(member.id, monday).map((row) => ({

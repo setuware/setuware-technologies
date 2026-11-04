@@ -175,7 +175,10 @@ export function TaskPanel({
   canAssign,
   projects,
   reviewers,
+  version,
 }: {
+  /** Changes when the task changes on the server, so the fields show the saved values. */
+  version: string;
   reviewers: Member[];
   task: { id: number; status: string; priority: string; assignee_id: number | null; reviewer_id: number | null; due_date: string | null; project: string; estimate_minutes: number | null };
   team: Member[];
@@ -187,6 +190,7 @@ export function TaskPanel({
   return (
     <form action={action} className="flex flex-col gap-3.5">
       <input type="hidden" name="id" value={task.id} />
+      <div key={version} className="flex flex-col gap-3.5">
       <div>
         <label htmlFor="status" className={LABEL}>
           Status
@@ -258,7 +262,8 @@ export function TaskPanel({
           />
         </div>
       </div>
-      <div className="flex items-center gap-3 pt-1">
+      </div>
+      <div className="flex flex-wrap items-center gap-3 pt-1">
         <SubmitButton>Save</SubmitButton>
         <FormMessage state={state} />
       </div>

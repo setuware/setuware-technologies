@@ -225,7 +225,8 @@ export function checkIn(userId: number, input: CheckInInput, now: Date = new Dat
     return recordFor(userId, day) as AttendanceRecord;
   }
   const { distance } = checkLocation(input.location, attendanceSettings());
-  db.prepare("INSERT INTO attendance (user_id,day,check_in_at,mode,in_ip,in_lat,in_lng,in_accuracy,in_distance) VALUES (?,?,?,?,?,?,?,?,?)").run(
+  try {
+    db.prepare("INSERT INTO attendance (user_id,day,check_in_at,mode,in_ip,in_lat,in_lng,in_accuracy,in_distance) VALUES (?,?,?,?,?,?,?,?,?)").run(
     userId,
     day,
     iso,
@@ -236,6 +237,11 @@ export function checkIn(userId: number, input: CheckInInput, now: Date = new Dat
     input.location?.accuracy != null ? Math.round(input.location.accuracy) : null,
     distance,
   );
+  } catch (error) {
+    // A double tap can race: the unique (user, day) index lets only one through.
+    if (error instanceof Error && /UNIQUE/i.test(error.message)) throw new Error("You are already checked in.");
+    throw error;
+  }
   return recordFor(userId, day) as AttendanceRecord;
 }
 
@@ -344,6 +350,8 @@ export function workingDays(from: string, to: string, settings: AttendanceSettin
 export function requestLeave(userId: number, input: { type: string; from: string; to: string; halfDay: boolean; reason: string }): number {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input.from) || !/^\d{4}-\d{2}-\d{2}$/.test(input.to) || input.to < input.from) throw new Error("Choose valid dates.");
   if (input.halfDay && input.from !== input.to) throw new Error("A half day must be a single date.");
+  if (input.from < addDays(localDay(), -60)) throw new Error("Leave can be requested up to 60 days back.");
+  if (input.to > addDays(input.from, 90)) throw new Error("Request at most 90 days at a time.");
   if (!workingDays(input.from, input.to).length) throw new Error("Those dates are all days off or holidays.");
   const overlap = getDb()
     .prepare("SELECT 1 FROM leave_requests WHERE user_id = ? AND kind = 'leave' AND status IN ('pending','approved') AND to_day >= ? AND from_day <= ?")

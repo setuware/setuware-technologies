@@ -112,7 +112,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
         {editable ? (
           <Card className="h-fit p-5">
             <RecordPanel
-              key={`${lead.status}:${lead.assignee}:${lead.follow_up_at}`}
+              version={`${lead.status}:${lead.assignee}:${lead.follow_up_at}`}
               entity="lead"
               id={lead.id}
               status={lead.status}

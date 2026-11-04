@@ -5,7 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BarChart3,
+  Bell,
   CalendarCheck,
+  Contact,
+  FolderKanban,
   ClipboardCheck,
   Sheet,
   Clock3,
@@ -52,6 +55,7 @@ const NAV = [
   { group: "Overview", href: "/admin/search", label: "Search", Icon: Search, area: null },
   { group: "Overview", href: "/admin/analytics", label: "Analytics", Icon: BarChart3, area: "analytics" },
   { group: "Work", href: "/admin/tasks", label: "Tasks", Icon: ListChecks, area: null },
+  { group: "Work", href: "/admin/projects", label: "Projects", Icon: FolderKanban, area: null },
   { group: "Work", href: "/admin/timesheets", label: "My timesheet", Icon: Sheet, area: null },
   { group: "Work", href: "/admin/attendance", label: "My attendance", Icon: Clock3, area: null },
   { group: "Work", href: "/admin/timesheets/team", label: "Team timesheets", Icon: ClipboardCheck, area: "timesheets" },
@@ -63,6 +67,7 @@ const NAV = [
   { group: "Content", href: "/admin/posts", label: "Blog posts", Icon: FileText, area: "posts" },
   { group: "Content", href: "/admin/jobs", label: "Jobs", Icon: Briefcase, area: "jobs" },
   { group: "Content", href: "/admin/media", label: "Media", Icon: ImageIcon, area: "media" },
+  { group: "People", href: "/admin/people", label: "Team directory", Icon: Contact, area: null },
   { group: "People", href: "/admin/applications", label: "Applications", Icon: UsersRound, area: "applications" },
   { group: "People", href: "/admin/users", label: "Team", Icon: Users, area: "users" },
   { group: "People", href: "/admin/roles", label: "Roles & access", Icon: ShieldCheck, area: "roles.manage" },
@@ -75,8 +80,10 @@ export function AdminShell({
   areas,
   badges,
   presence,
+  unread,
   children,
 }: {
+  unread: number;
   presence: ShellPresence;
   user: { name: string; email: string; roleLabel: string };
   areas: readonly string[];
@@ -109,6 +116,18 @@ export function AdminShell({
 
   const presenceBar = (
     <div className="flex items-center gap-2">
+      <Link
+        href="/admin/notifications"
+        aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}
+        className="relative inline-flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
+      >
+        <Bell className="size-[18px]" aria-hidden />
+        {unread ? (
+          <span className="absolute -right-0.5 -top-0.5 min-w-4 rounded-full bg-red-500 px-1 text-center text-[10px] font-bold leading-4 text-white">
+            {unread > 99 ? "99+" : unread}
+          </span>
+        ) : null}
+      </Link>
       {presence.timer ? (
         <Link
           href={`/admin/tasks/${presence.timer.taskId}`}

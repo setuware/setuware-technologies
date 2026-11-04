@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { CheckCircle2, Clock3, Download, Hourglass, UserX } from "lucide-react";
 
-import { can, listUsers } from "@/lib/cms/auth";
+import { listUsers } from "@/lib/cms/auth";
 import { addDays, localDay } from "@/lib/cms/attendance";
+import { mayApproveFor, teamScope } from "@/lib/cms/notify";
 import { requireUser } from "@/lib/cms/session";
-import { attendanceByDay, expectedMinutes, sheetRows, teamSheets, weekDays } from "@/lib/cms/timesheets";
+import { redirect } from "next/navigation";
+import { attendanceByDay, sheetRows, teamSheets, weekDays } from "@/lib/cms/timesheets";
 import { SheetDecision, TimesheetGrid } from "@/components/admin/timesheet-grid";
 import { Avatar, Card, PageHeader, Stat, theadClass } from "@/components/admin/ui";
 import { cn } from "@/lib/utils";
@@ -17,14 +19,14 @@ export const instant = false;
 const hm = (minutes: number) => (minutes ? `${Math.floor(minutes / 60)}h ${String(minutes % 60).padStart(2, "0")}m` : "—");
 
 export default async function TeamTimesheetsPage({ searchParams }: { searchParams: Promise<{ week?: string; person?: string }> }) {
-  const user = await requireUser("timesheets");
+  const user = await requireUser();
+  const scope = teamScope(user, "timesheets");
+  if (!scope.all && !scope.ids.length) redirect("/admin?denied=1");
   const params = await searchParams;
   const today = localDay();
   const monday = weekParam(params.week, today);
-  const approve = can(user, "timesheets.approve");
-  const team = listUsers().filter((member) => member.active);
+  const team = listUsers().filter((member) => member.active && (scope.all || scope.ids.includes(member.id)));
   const sheets = teamSheets(team, monday);
-  const expected = expectedMinutes(monday);
   const person = sheets.find((item) => item.userId === Number(params.person));
   const count = (status: string) => sheets.filter((item) => item.sheet.status === status).length;
 
@@ -61,7 +63,7 @@ export default async function TeamTimesheetsPage({ searchParams }: { searchParam
                 <th className="px-5 py-3 font-medium">Logged</th>
                 <th className="px-5 py-3 font-medium">At work</th>
                 <th className="px-5 py-3 font-medium">Status</th>
-                <th className="px-5 py-3 font-medium">{approve ? "Decision" : ""}</th>
+                <th className="px-5 py-3 font-medium">Decision</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -75,8 +77,8 @@ export default async function TeamTimesheetsPage({ searchParams }: { searchParam
                       </Link>
                     </td>
                     <td className="px-5 py-3 tabular-nums">
-                      <span className={cn("font-semibold", item.logged < expected * 0.8 ? "text-amber-600 dark:text-amber-400" : "text-foreground")}>{hm(item.logged)}</span>
-                      <span className="text-xs text-muted-foreground"> / {hm(expected)}</span>
+                      <span className={cn("font-semibold", item.logged < item.expected * 0.8 ? "text-amber-600 dark:text-amber-400" : "text-foreground")}>{hm(item.logged)}</span>
+                      <span className="text-xs text-muted-foreground"> / {hm(item.expected)}</span>
                     </td>
                     <td className="px-5 py-3 tabular-nums text-muted-foreground">{hm(item.atWork)}</td>
                     <td className="px-5 py-3">
@@ -84,7 +86,7 @@ export default async function TeamTimesheetsPage({ searchParams }: { searchParam
                       {item.sheet.note ? <p className="mt-1 max-w-56 truncate text-xs text-muted-foreground" title={item.sheet.note}>“{item.sheet.note}”</p> : null}
                     </td>
                     <td className="px-5 py-3">
-                      {approve && (item.userId !== user.id || user.role === "owner") ? <SheetDecision userId={item.userId} week={monday} status={item.sheet.status} /> : null}
+                      {mayApproveFor(user, item.userId, "timesheets.approve") ? <SheetDecision userId={item.userId} week={monday} status={item.sheet.status} /> : null}
                     </td>
                   </tr>
                 );

@@ -1,4 +1,4 @@
-import { addDays, attendanceSettings, weekday, workedMinutes, type AttendanceRecord } from "./attendance";
+import { addDays, attendanceSettings, listRequests, weekday, workedMinutes, workingDays, type AttendanceRecord } from "./attendance";
 import { getDb } from "./db";
 
 /**
@@ -176,6 +176,7 @@ export interface TeamSheet {
   sheet: Timesheet;
   logged: number;
   atWork: number;
+  expected: number;
 }
 
 export function teamSheets(users: { id: number; name: string }[], monday: string): TeamSheet[] {
@@ -185,15 +186,25 @@ export function teamSheets(users: { id: number; name: string }[], monday: string
     sheet: getSheet(user.id, monday),
     logged: sheetRows(user.id, monday).reduce((sum, row) => sum + row.total, 0),
     atWork: attendanceByDay(user.id, monday).reduce((sum, minutes) => sum + minutes, 0),
+    expected: expectedMinutes(monday, user.id),
   }));
 }
 
-export function pendingSheets(): number {
-  return (getDb().prepare("SELECT COUNT(*) AS n FROM timesheets WHERE status = 'submitted'").get() as { n: number }).n;
+/** People whose timesheet is waiting for approval (any week). */
+export function pendingSheets(): number[] {
+  return (getDb().prepare("SELECT user_id FROM timesheets WHERE status = 'submitted'").all() as { user_id: number }[]).map((row) => row.user_id);
 }
 
-/** Expected working minutes in a week (full-day hours × working days). */
-export function expectedMinutes(monday: string): number {
+/** Expected working minutes in a week: working days (no weekly offs, holidays or approved leave) × full-day hours. */
+export function expectedMinutes(monday: string, userId?: number): number {
   const settings = attendanceSettings();
-  return weekDays(monday).filter((day) => !settings.weeklyOff.includes(weekday(day))).length * settings.fullDayHours * 60;
+  const days = workingDays(monday, addDays(monday, 6), settings);
+  let leave = 0;
+  if (userId) {
+    for (const request of listRequests({ userId, status: "approved", from: monday, to: addDays(monday, 6) })) {
+      if (request.kind !== "leave" || request.leave_type === "Work from home") continue;
+      leave += days.filter((day) => day >= request.from_day && day <= request.to_day).length * (request.half_day ? 0.5 : 1);
+    }
+  }
+  return Math.round((days.length - leave) * settings.fullDayHours * 60);
 }

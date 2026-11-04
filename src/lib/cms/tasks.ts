@@ -254,6 +254,18 @@ export interface RunningTimer {
   started_at: string;
 }
 
+/** Longest a single timer run can count. */
+export const MAX_TIMER_MINUTES = 10 * 60;
+
+/** Stops every timer running longer than the cap (scheduled clean-up). */
+export function stopStaleTimers(now: Date = new Date()): number {
+  const stale = getDb()
+    .prepare("SELECT DISTINCT user_id FROM time_entries WHERE ended_at IS NULL AND started_at < ?")
+    .all(new Date(now.getTime() - MAX_TIMER_MINUTES * 60_000).toISOString()) as { user_id: number }[];
+  for (const row of stale) stopTimer(row.user_id, now);
+  return stale.length;
+}
+
 export function runningTimer(userId: number): RunningTimer | null {
   return (
     (getDb()
@@ -265,8 +277,12 @@ export function runningTimer(userId: number): RunningTimer | null {
 export function stopTimer(userId: number, now: Date = new Date()): void {
   const timer = runningTimer(userId);
   if (!timer) return;
-  const minutes = Math.max(1, Math.round((now.getTime() - Date.parse(timer.started_at)) / 60_000));
-  getDb().prepare("UPDATE time_entries SET ended_at = ?, minutes = ? WHERE id = ?").run(now.toISOString(), minutes, timer.id);
+  const elapsed = Math.max(1, Math.round((now.getTime() - Date.parse(timer.started_at)) / 60_000));
+  // A timer left running overnight is capped so it can't inflate the timesheet.
+  const minutes = Math.min(elapsed, MAX_TIMER_MINUTES);
+  getDb()
+    .prepare("UPDATE time_entries SET ended_at = ?, minutes = ?, note = CASE WHEN ? THEN 'Timer stopped automatically after 10 hours' ELSE note END WHERE id = ?")
+    .run(now.toISOString(), minutes, elapsed > MAX_TIMER_MINUTES ? 1 : 0, timer.id);
 }
 
 /** Starts a timer on a task, stopping any other running timer first. */

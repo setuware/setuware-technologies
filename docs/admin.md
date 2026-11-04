@@ -9,6 +9,9 @@ on the site immediately; no redeploy needed.
 | Section | Who | What it does |
 | ------- | --- | ------------ |
 | Dashboard | everyone | Workload summary, follow-ups due, upcoming interviews, enquiry pipeline, latest items, team activity |
+| Projects | everyone | Client projects: progress, hours vs budget, deadline, overdue tasks, hours per person |
+| Team directory | everyone | People by department, designation, contacts, reporting manager, who's in today; profiles |
+| Notifications | everyone | The bell: assignments, reviews, approvals, comments, reminders |
 | Tasks | everyone | Board (drag between To do / In progress / In review / Done), list, weekly timesheet; checklist, comments, due dates, priorities, projects, timers and logged time; link a task to a lead, enquiry or applicant |
 | My attendance | everyone | Check in / break / check out (office, remote or on-site, with location), daily work summary, month calendar, leave balance, leave and correction requests |
 | Team attendance | Owner, HR | Who is in today, late arrivals, approvals, monthly register with CSV, daily logs, fix a record, settings and holidays |
@@ -151,6 +154,62 @@ last 14. To run it daily at 2 am, add this with `crontab -e`:
   full/half-day hours, weekly offs, office location and radius, leave
   allowances, holidays.
 - Times use India time. Export the monthly register as CSV for payroll.
+
+## Projects
+
+Tasks → **Projects** groups tasks by their project name. Create a project to
+add the client, project manager, start date, deadline, budget (hours) and
+scope; tasks with that project name join it automatically. Each project shows
+progress, hours against budget, overdue tasks, hours per person and its task
+list. Renaming a project moves its tasks; completed and cancelled projects
+drop out of the task form's suggestions. People who can assign tasks can edit
+projects.
+
+## Team directory and reporting lines
+
+**People → Team directory** lists everyone by department with designation,
+contact details, who they report to and whether they're in today. Owners set
+designation, department, joining date and **Reports to** on a person's page;
+everyone can update their own phone and birthday.
+
+A person's manager (directly, or further up) can see their team under Team
+attendance and Team timesheets and **approve their leave, corrections and
+timesheets**, even without the wider HR or Tech Lead permissions. Nobody
+approves their own requests (except the Owner).
+
+## Notifications and reminders
+
+The **bell** at the top shows assignments, reviews, approvals, comments and
+reminders; they're also emailed when SMTP is set up. Scheduled reminders
+(each sent once):
+
+- not checked in an hour after office start (working days, not on leave);
+- still checked in at 9 pm;
+- overdue tasks (morning);
+- timesheet not submitted (Friday 5 pm for the week, Monday 10 am for last week);
+- approvals waiting (morning, to managers and approvers);
+- birthdays and work anniversaries (to the team).
+
+Timers left running are stopped after 10 hours so they can't inflate
+timesheets.
+
+## Scheduled jobs (server crontab)
+
+Set `CRON_SECRET` in `.env.production.local` (`openssl rand -hex 24`), restart
+pm2, then `crontab -e`:
+
+```cron
+# Reminders and clean-up (safe to run often)
+*/15 * * * * curl -fsS "http://127.0.0.1:3000/api/cron/daily?key=YOUR_CRON_SECRET" >/dev/null
+# Zoho CRM lead sync
+*/5 * * * * curl -fsS "http://127.0.0.1:3000/api/cron/crm-sync?key=YOUR_CRON_SECRET" >/dev/null
+# Nightly backup of the admin database and uploads (keeps 14)
+30 2 * * * cd /home/ubuntu/setuware-technologies && npm run cms:backup >/dev/null 2>&1
+```
+
+For uptime monitoring use `https://setuware.in/api/health` (fast) and, every
+few minutes, `https://setuware.in/api/health?deep=1` (also checks the
+database).
 
 ## Roles and access
 

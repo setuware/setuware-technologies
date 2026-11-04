@@ -111,7 +111,7 @@ export default async function ApplicationPage({ params }: { params: Promise<{ id
         <div className="flex flex-col gap-6">
           <Card className="h-fit p-5">
           <RecordPanel
-            key={`${item.status}:${item.assignee}:${item.rating}:${item.interview_at}`}
+            version={`${item.status}:${item.assignee}:${item.rating}:${item.interview_at}`}
             entity="application"
             id={item.id}
             status={item.status}

@@ -1,6 +1,6 @@
 import { can, listUsers, seesAll } from "@/lib/cms/auth";
+import { activeProjectNames } from "@/lib/cms/projects";
 import { requireUser } from "@/lib/cms/session";
-import { taskProjects } from "@/lib/cms/tasks";
 import { NewTaskForm } from "@/components/admin/task-tools";
 import { Card, PageHeader } from "@/components/admin/ui";
 
@@ -24,7 +24,7 @@ export default async function NewTaskPage({ searchParams }: { searchParams: Prom
           team={team}
           me={{ id: user.id, name: user.name }}
           canAssign={can(user, "tasks.assign") || seesAll(user, "tasks")}
-          projects={taskProjects()}
+          projects={activeProjectNames()}
           reviewers={reviewerOptions()}
           link={link ? { entity: link.entity, id: link.id, label: link.label } : null}
         />

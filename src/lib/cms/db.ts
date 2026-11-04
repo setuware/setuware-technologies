@@ -302,6 +302,30 @@ CREATE TABLE IF NOT EXISTS timesheets (
   decision_note TEXT NOT NULL DEFAULT '',
   UNIQUE (user_id, week_start)
 );
+CREATE TABLE IF NOT EXISTS notifications (
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL DEFAULT '',
+  link TEXT NOT NULL DEFAULT '',
+  kind TEXT NOT NULL DEFAULT 'info',
+  created_at TEXT NOT NULL,
+  read_at TEXT
+);
+CREATE INDEX IF NOT EXISTS notifications_user ON notifications(user_id, read_at, created_at);
+CREATE TABLE IF NOT EXISTS projects (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE COLLATE NOCASE,
+  client TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'active',
+  owner_id INTEGER,
+  start_date TEXT,
+  deadline TEXT,
+  budget_hours REAL,
+  description TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS holidays (
   day TEXT PRIMARY KEY,
   name TEXT NOT NULL
@@ -394,7 +418,20 @@ const COLUMNS: [table: string, column: string, definition: string][] = [
   ["attendance", "out_lng", "REAL"],
   ["attendance", "out_accuracy", "INTEGER"],
   ["attendance", "out_distance", "INTEGER"],
+  ["users", "designation", "TEXT NOT NULL DEFAULT ''"],
+  ["users", "department", "TEXT NOT NULL DEFAULT ''"],
+  ["users", "phone", "TEXT NOT NULL DEFAULT ''"],
+  ["users", "joined_on", "TEXT"],
+  ["users", "birthday", "TEXT"],
+  ["users", "manager_id", "INTEGER"],
 ];
+
+function addColumns(db: Database): void {
+  for (const [table, column, definition] of COLUMNS) {
+    const existing = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
+    if (!existing.some((row) => row.name === column)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
+}
 
 /** SQLite cannot drop a CHECK constraint, so tables created with one are rebuilt once. */
 function rebuild(db: Database, table: string, marker: string, create: string, columns: string[]): void {
@@ -417,10 +454,7 @@ function rebuild(db: Database, table: string, marker: string, create: string, co
 }
 
 function migrate(db: Database): void {
-  for (const [table, column, definition] of COLUMNS) {
-    const existing = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
-    if (!existing.some((row) => row.name === column)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
-  }
+  addColumns(db);
   rebuild(
     db,
     "users",
@@ -442,6 +476,8 @@ function migrate(db: Database): void {
     ["id", "entity", "entity_id", "kind", "author", "body", "created_at"],
   );
   db.exec("CREATE INDEX IF NOT EXISTS notes_entity ON notes(entity, entity_id, created_at)");
+  // A rebuild copies only the columns it lists; add any later ones back.
+  addColumns(db);
   const roles = (db.prepare("SELECT COUNT(*) AS n FROM roles").get() as { n: number }).n;
   if (roles === 0) {
     const insert = db.prepare("INSERT OR IGNORE INTO roles (key,name,description,permissions,builtin) VALUES (?,?,?,?,?)");

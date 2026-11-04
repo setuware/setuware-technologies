@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CalendarRange, Clock3, Target, Users } from "lucide-react";
 
-import { can } from "@/lib/cms/auth";
+import { can, reportIds } from "@/lib/cms/auth";
 import { addDays, localDay } from "@/lib/cms/attendance";
 import { requireUser } from "@/lib/cms/session";
 import { listTasks } from "@/lib/cms/tasks";
@@ -38,7 +38,7 @@ export default async function MyTimesheetPage({ searchParams }: { searchParams: 
         title="My timesheet"
         description="Fill in the hours you spent on each task, then submit the week for approval."
         actions={
-          can(user, "timesheets") ? (
+          can(user, "timesheets") || reportIds(user.id).length ? (
             <Link href={`/admin/timesheets/team?week=${monday}`} className={buttonClass.secondary}>
               <Users className="size-4" aria-hidden /> Team timesheets
             </Link>
@@ -49,7 +49,7 @@ export default async function MyTimesheetPage({ searchParams }: { searchParams: 
       <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Stat label="Logged on tasks" value={hm(logged)} icon={<Clock3 className="size-4" />} tone="blue" />
         <Stat label="At work (attendance)" value={hm(atWork.reduce((sum, minutes) => sum + minutes, 0))} icon={<CalendarRange className="size-4" />} tone="teal" />
-        <Stat label="Expected" value={hm(expectedMinutes(monday))} hint="Working days × full-day hours" icon={<Target className="size-4" />} tone="violet" />
+        <Stat label="Expected" value={hm(expectedMinutes(monday, user.id))} hint="Working days × full-day hours, minus leave and holidays" icon={<Target className="size-4" />} tone="violet" />
       </div>
 
       <Card className="overflow-hidden">

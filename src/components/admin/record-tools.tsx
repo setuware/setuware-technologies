@@ -23,7 +23,10 @@ export function RecordPanel({
   rating,
   interview,
   canAssign = true,
+  version,
 }: {
+  /** Changes when the record changes on the server, so the fields show the saved values without losing the message. */
+  version?: string;
   canAssign?: boolean;
   entity: Entity;
   id: number;
@@ -41,6 +44,7 @@ export function RecordPanel({
     <form action={action} className="flex flex-col gap-3.5">
       <input type="hidden" name="entity" value={entity} />
       <input type="hidden" name="id" value={id} />
+      <div key={version} className="flex flex-col gap-3.5">
       <div>
         <label htmlFor="status" className="mb-1 block text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
           Status
@@ -103,6 +107,7 @@ export function RecordPanel({
           </div>
         </>
       )}
+      </div>
       <FormMessage state={state} />
       <SubmitButton>Save changes</SubmitButton>
     </form>

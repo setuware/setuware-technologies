@@ -5,7 +5,9 @@ import { decideRequestAction } from "@/app/admin/work-actions";
 import { can, listUsers } from "@/lib/cms/auth";
 import { attendanceSettings, formatMinutes, listRequests, localDay, localTime, register, todayBoard, type AttendanceRecord, type BoardRow } from "@/lib/cms/attendance";
 import { listRoles } from "@/lib/cms/rbac";
+import { mayApproveFor, teamScope } from "@/lib/cms/notify";
 import { requireUser } from "@/lib/cms/session";
+import { redirect } from "next/navigation";
 import { FixAttendanceForm } from "@/components/admin/attendance-tools";
 import { Legend, monthLabel, monthParam, RegisterGrid, shiftMonth } from "@/components/admin/attendance-view";
 import { Avatar, buttonClass, Card, Empty, formatDay, inputClass, PageHeader, Stat, theadClass } from "@/components/admin/ui";
@@ -57,20 +59,22 @@ function Where({ record, radius }: { record: AttendanceRecord; radius: number | 
 }
 
 export default async function TeamAttendancePage({ searchParams }: { searchParams: Promise<{ month?: string; person?: string; role?: string }> }) {
-  const user = await requireUser("attendance");
+  const user = await requireUser();
+  const scope = teamScope(user, "attendance");
+  if (!scope.all && !scope.ids.length) redirect("/admin?denied=1");
   const params = await searchParams;
   const today = localDay();
   const month = monthParam(params.month, today);
   const settings = attendanceSettings();
   const manage = can(user, "attendance.manage");
-  const everyone = listUsers().filter((member) => member.active);
+  const everyone = listUsers().filter((member) => member.active && (scope.all || scope.ids.includes(member.id)));
   const roles = listRoles().filter((role) => everyone.some((member) => member.role === role.key));
   const role = roles.some((item) => item.key === params.role) ? (params.role as string) : "";
   const team = role ? everyone.filter((member) => member.role === role) : everyone;
   const board = todayBoard(team);
   const rows = register(month, team);
   const keep = (extra: Record<string, string>) => `/admin/attendance/team?${new URLSearchParams({ ...(role ? { role } : {}), month, ...extra }).toString()}`;
-  const pending = manage ? listRequests({ status: "pending" }) : [];
+  const pending = listRequests({ status: "pending" }).filter((request) => mayApproveFor(user, request.user_id, "attendance.manage"));
   const person = rows.find((row) => row.userId === Number(params.person));
   const count = (state: BoardRow["state"]) => board.filter((row) => row.state === state).length;
   const summaries = board.filter((row) => row.record?.summary);
@@ -79,7 +83,7 @@ export default async function TeamAttendancePage({ searchParams }: { searchParam
     <>
       <PageHeader
         title="Team attendance"
-        description="Who is in today, leave approvals and the monthly register."
+        description={scope.all ? "Who is in today, leave approvals and the monthly register." : "Your team: who is in today, their leave requests and the monthly register."}
         actions={
           manage ? (
             <Link href="/admin/attendance/settings" className={buttonClass.secondary}>

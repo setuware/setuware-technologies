@@ -60,6 +60,7 @@ import {
 } from "@/lib/cms/store";
 import { saveUpload, UploadError } from "@/lib/cms/uploads";
 import { sendAccountEmail } from "@/lib/cms/mailer";
+import { notify } from "@/lib/cms/notify";
 import { deleteRole, getRole, roleInUse, saveRole } from "@/lib/cms/rbac";
 import { getLead, leadStatuses, syncLeads, type CrmLead } from "@/lib/cms/crm-leads";
 import { addZohoLeadNote, updateZohoLead, zohoUsers } from "@/lib/zoho-crm";
@@ -587,6 +588,12 @@ export async function updateRecordAction(_previous: FormState, form: FormData): 
   if (mayAssign && assignee !== (record.assignee ?? null)) {
     setAssignee(entity, id, assignee);
     addNote(entity, id, "assign", user.name, assignee ? `Assigned to ${assignee}` : "Unassigned");
+    const assigned = assignee ? listUsers().find((member) => member.name === assignee && member.active) : null;
+    if (assigned && assigned.id !== user.id) {
+      const path = entity === "lead" ? `/admin/leads/${id}` : entity === "enquiry" ? `/admin/enquiries/${id}` : `/admin/applications/${id}`;
+      const kind = entity === "lead" ? "lead" : entity === "enquiry" ? "enquiry" : "applicant";
+      notify(assigned.id, `New ${kind} for you: ${record.name || record.email || "a visitor"}`, [`${user.name} assigned this ${kind} to you.`], path, `Open the ${kind}`);
+    }
     if (entity === "lead" && assignee) {
       const staff = listUsers().find((member) => member.name === assignee);
       const warning = await toZoho(entity, record, async (zohoId) => {

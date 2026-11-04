@@ -6,9 +6,10 @@ import { deleteTaskAction, deleteTimeEntryAction, taskItemAction, timerAction } 
 import { can, listUsers, seesAll } from "@/lib/cms/auth";
 import { localDay } from "@/lib/cms/attendance";
 import { timeline } from "@/lib/cms/crm";
+import { activeProjectNames } from "@/lib/cms/projects";
 import { requireUser } from "@/lib/cms/session";
 import { isLocked } from "@/lib/cms/timesheets";
-import { getTask, runningTimer, STATUS_LABELS, taskItems, taskProjects, timeEntries } from "@/lib/cms/tasks";
+import { getTask, runningTimer, STATUS_LABELS, taskItems, timeEntries } from "@/lib/cms/tasks";
 import { Elapsed } from "@/components/admin/live-clock";
 import { hours, PRIORITY_STYLE } from "@/components/admin/task-format";
 import { LogTimeForm, ReviewBox, TaskCommentForm, TaskPanel, TaskText } from "@/components/admin/task-tools";
@@ -166,12 +167,12 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
         <div className="flex flex-col gap-6">
           <Card className="h-fit p-5">
             <TaskPanel
-              key={`${task.status}:${task.assignee_id}:${task.reviewer_id}:${task.priority}:${task.due_date}:${task.updated_at}`}
+              version={`${task.status}:${task.assignee_id}:${task.reviewer_id}:${task.priority}:${task.due_date}:${task.updated_at}`}
               task={task}
               team={team}
               me={{ id: user.id, name: user.name }}
               canAssign={can(user, "tasks.assign") || seesAll(user, "tasks")}
-              projects={taskProjects()}
+              projects={activeProjectNames()}
               reviewers={reviewerOptions()}
             />
           </Card>
