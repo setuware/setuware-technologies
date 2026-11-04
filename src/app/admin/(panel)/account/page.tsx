@@ -3,7 +3,7 @@ import QRCode from "qrcode";
 import { Laptop, ShieldCheck, Smartphone } from "lucide-react";
 
 import { revokeSessionAction, startTwoFactorAction } from "@/app/admin/actions";
-import { listSessions, otpauthUrl, recoveryCodesLeft, ROLE_LABELS, SESSION_COOKIE } from "@/lib/cms/auth";
+import { listSessions, otpauthUrl, recoveryCodesLeft, SESSION_COOKIE } from "@/lib/cms/auth";
 import { getDb } from "@/lib/cms/db";
 import { requireUser } from "@/lib/cms/session";
 import { SubmitButton } from "@/components/admin/form-bits";
@@ -43,7 +43,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
         <div>
           <p className="font-semibold text-foreground">{user.name}</p>
           <p className="text-sm text-muted-foreground">
-            {user.email} · {ROLE_LABELS[user.role]}
+            {user.email} · {user.roleName}
           </p>
         </div>
       </Card>

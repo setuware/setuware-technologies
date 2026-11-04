@@ -1,5 +1,6 @@
 import { updateUserAction, userSecurityAction } from "@/app/admin/actions";
-import { listUsers, ROLE_LABELS } from "@/lib/cms/auth";
+import { can, listUsers } from "@/lib/cms/auth";
+import { listRoles } from "@/lib/cms/rbac";
 import { requireUser } from "@/lib/cms/session";
 import { SubmitButton } from "@/components/admin/form-bits";
 import { AddUserForm, UserAccess } from "@/components/admin/team-forms";
@@ -23,6 +24,8 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
   const me = await requireUser("users");
   const { error } = await searchParams;
   const users = listUsers();
+  const roles = Object.fromEntries(listRoles().map((role) => [role.key, role.name]));
+  const manage = can(me, "users.manage");
   const now = new Date().toISOString();
 
   return (
@@ -32,11 +35,13 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
         <p className="mb-5 rounded-xl bg-amber-500/10 px-4 py-2.5 text-sm text-amber-700 dark:text-amber-300">There must always be at least one active owner.</p>
       ) : null}
 
+      {manage ? (
       <Card className="mb-6 p-6">
         <h2 className="mb-1 font-semibold text-foreground">Add a team member</h2>
         <p className="mb-4 text-sm text-muted-foreground">Use their work email so emails they send from the admin come back to them.</p>
-        <AddUserForm roles={ROLE_LABELS} />
+        <AddUserForm roles={roles} />
       </Card>
+      ) : null}
 
       <Card className="overflow-hidden">
         <ul className="divide-y divide-border">
@@ -59,8 +64,8 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
                     <p className="text-xs text-muted-foreground">
                       {user.email} · {user.last_login_at ? `last sign-in ${timeAgo(user.last_login_at)}` : "never signed in"}
                     </p>
-                    {user.id !== me.id ? <UserAccess id={user.id} invited={!user.hasPassword} /> : null}
-                    {user.id !== me.id ? (
+                    {manage && user.id !== me.id ? <UserAccess id={user.id} invited={!user.hasPassword} /> : null}
+                    {manage && user.id !== me.id ? (
                       <div className="mt-2 flex flex-wrap gap-3 text-xs">
                         {locked ? (
                           <form action={userSecurityAction}>
@@ -85,10 +90,11 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
                     ) : null}
                   </div>
                 </div>
+                {manage ? (
                 <form action={updateUserAction} className="flex flex-wrap items-center gap-2">
                   <input type="hidden" name="id" value={user.id} />
                   <select name="role" defaultValue={user.role} aria-label={`Role for ${user.name}`} className={`${inputClass} w-auto py-1.5`}>
-                    {Object.entries(ROLE_LABELS).map(([value, label]) => (
+                    {Object.entries(roles).map(([value, label]) => (
                       <option key={value} value={value}>
                         {label}
                       </option>
@@ -101,6 +107,9 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
                     Update
                   </SubmitButton>
                 </form>
+                ) : (
+                  <span className="text-sm text-muted-foreground">{user.roleName}</span>
+                )}
               </li>
             );
           })}

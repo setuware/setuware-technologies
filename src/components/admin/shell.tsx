@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BarChart3,
+  Download,
+  ShieldCheck,
+  Target,
   CalendarDays,
   Image as ImageIcon,
   Mail,
@@ -32,6 +35,7 @@ const NAV = [
   { group: "Overview", href: "/admin", label: "Dashboard", Icon: LayoutDashboard, area: null },
   { group: "Overview", href: "/admin/search", label: "Search", Icon: Search, area: null },
   { group: "Overview", href: "/admin/analytics", label: "Analytics", Icon: BarChart3, area: "analytics" },
+  { group: "Sales", href: "/admin/leads", label: "CRM leads", Icon: Target, area: "leads" },
   { group: "Sales", href: "/admin/enquiries", label: "Enquiries", Icon: Inbox, area: "enquiries" },
   { group: "Sales", href: "/admin/bookings", label: "Bookings", Icon: CalendarDays, area: "bookings" },
   { group: "Sales", href: "/admin/subscribers", label: "Subscribers", Icon: Mail, area: "subscribers" },
@@ -40,8 +44,9 @@ const NAV = [
   { group: "Content", href: "/admin/media", label: "Media", Icon: ImageIcon, area: "media" },
   { group: "People", href: "/admin/applications", label: "Applications", Icon: UsersRound, area: "applications" },
   { group: "People", href: "/admin/users", label: "Team", Icon: Users, area: "users" },
+  { group: "People", href: "/admin/roles", label: "Roles & access", Icon: ShieldCheck, area: "roles.manage" },
   { group: "Settings", href: "/admin/templates", label: "Email templates", Icon: MailPlus, area: "templates" },
-  { group: "Settings", href: "/admin/settings", label: "Site settings", Icon: Settings, area: "settings" },
+  { group: "Settings", href: "/admin/settings", label: "Site settings", Icon: Settings, area: "settings.manage" },
 ] as const;
 
 export function AdminShell({
@@ -57,6 +62,19 @@ export function AdminShell({
 }) {
   const pathname = usePathname() ?? "/admin";
   const [open, setOpen] = useState(false);
+  const [install, setInstall] = useState<{ prompt: () => Promise<void> } | null>(null);
+
+  // Installable app: register the offline worker and offer "Install app".
+  useEffect(() => {
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register("/admin-sw.js", { scope: "/admin" }).catch(() => undefined);
+    const onPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstall(event as unknown as { prompt: () => Promise<void> });
+    };
+    window.addEventListener("beforeinstallprompt", onPrompt);
+    window.addEventListener("appinstalled", () => setInstall(null));
+    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
+  }, []);
   const items = NAV.filter((item) => item.area === null || areas.includes(item.area));
 
   const groups = [...new Set(items.map((item) => item.group))];
@@ -122,6 +140,18 @@ export function AdminShell({
         </span>
       </Link>
       <div className="relative flex flex-1 flex-col">{nav}</div>
+      {install ? (
+        <button
+          type="button"
+          onClick={() => {
+            void install.prompt();
+            setInstall(null);
+          }}
+          className="relative mx-3 mt-4 flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(100deg,#2f56d8,#0a8ea6)] py-2 text-xs font-semibold text-white hover:brightness-110"
+        >
+          <Download className="size-3.5" aria-hidden /> Install app
+        </button>
+      ) : null}
       <div className="relative mx-3 mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
         <Link href="/admin/account" onClick={() => setOpen(false)} className="flex items-center gap-3 rounded-xl p-1 hover:bg-white/[0.04]">
           <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#2f56d8,#0a8ea6)] text-xs font-bold">

@@ -2,6 +2,7 @@ import { createHash, createHmac, randomBytes, scrypt as scryptCb, timingSafeEqua
 import { promisify } from "node:util";
 
 import { getDb } from "./db";
+import { allows, permissionsFor, roleName } from "./rbac";
 
 /**
  * Admin accounts and sessions.
@@ -27,24 +28,20 @@ const MAX_FAILURES = 5;
 const LOCK_MINUTES = 15;
 const PENDING_MINUTES = 10;
 
-export type Role = "owner" | "editor" | "hr" | "sales";
+/** A role key from the roles table (see ./rbac.ts); "owner" is built in. */
+export type Role = string;
 
-export const ROLE_LABELS: Record<Role, string> = {
-  owner: "Owner (everything)",
-  editor: "Editor (blog)",
-  hr: "HR (jobs and applications)",
-  sales: "Sales (enquiries)",
-};
+/**
+ * Whether a person may do something. `permission` is "module.action"
+ * ("posts.publish") or a bare module meaning "module.view".
+ */
+export function can(user: Pick<AdminUser, "permissions">, permission: string): boolean {
+  return allows(user.permissions, permission);
+}
 
-/** What each role may open. The owner may open everything. */
-export const ROLE_ACCESS: Record<Exclude<Role, "owner">, readonly string[]> = {
-  editor: ["posts", "media"],
-  hr: ["jobs", "applications", "templates"],
-  sales: ["enquiries", "bookings", "templates", "subscribers", "analytics"],
-};
-
-export function can(role: Role, area: string): boolean {
-  return role === "owner" || (ROLE_ACCESS[role as Exclude<Role, "owner">] ?? []).includes(area);
+/** True when the person sees every record of a scoped module, not only their own. */
+export function seesAll(user: Pick<AdminUser, "permissions">, module: "leads" | "enquiries" | "applications"): boolean {
+  return allows(user.permissions, `${module}.all`);
 }
 
 export interface AdminUser {
@@ -52,6 +49,8 @@ export interface AdminUser {
   email: string;
   name: string;
   role: Role;
+  roleName: string;
+  permissions: string[];
   active: boolean;
   created_at: string;
   last_login_at: string | null;
@@ -94,7 +93,9 @@ function rowToUser(row: Record<string, unknown>): AdminUser {
     id: Number(row.id),
     email: String(row.email),
     name: String(row.name),
-    role: row.role as Role,
+    role: String(row.role),
+    roleName: roleName(String(row.role)),
+    permissions: permissionsFor(String(row.role)),
     active: Number(row.active) === 1,
     created_at: String(row.created_at),
     last_login_at: (row.last_login_at as string | null) ?? null,

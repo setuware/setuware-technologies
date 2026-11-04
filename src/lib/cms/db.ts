@@ -6,6 +6,7 @@ import { postBodies } from "@/lib/post-bodies";
 import { posts as seedPosts } from "@/lib/posts";
 
 import { blocksToMarkdown } from "./markdown";
+import { DEFAULT_ROLES } from "./rbac";
 
 /**
  * The CMS database: one SQLite file (Node's built-in driver, no native
@@ -53,7 +54,7 @@ CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY,
   email TEXT NOT NULL UNIQUE COLLATE NOCASE,
   name TEXT NOT NULL,
-  role TEXT NOT NULL CHECK (role IN ('owner','editor','hr','sales')),
+  role TEXT NOT NULL,
   password_hash TEXT NOT NULL,
   active INTEGER NOT NULL DEFAULT 1,
   created_at TEXT NOT NULL,
@@ -149,7 +150,7 @@ CREATE INDEX IF NOT EXISTS applications_created ON applications(created_at);
 CREATE INDEX IF NOT EXISTS enquiries_created ON enquiries(created_at);
 CREATE TABLE IF NOT EXISTS notes (
   id INTEGER PRIMARY KEY,
-  entity TEXT NOT NULL CHECK (entity IN ('enquiry','application')),
+  entity TEXT NOT NULL,
   entity_id INTEGER NOT NULL,
   kind TEXT NOT NULL DEFAULT 'note',
   author TEXT NOT NULL,
@@ -184,6 +185,33 @@ CREATE TABLE IF NOT EXISTS password_tokens (
   used_at TEXT,
   created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS roles (
+  key TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  permissions TEXT NOT NULL DEFAULT '[]',
+  builtin INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS crm_leads (
+  id INTEGER PRIMARY KEY,
+  zoho_id TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL DEFAULT '',
+  email TEXT NOT NULL DEFAULT '',
+  phone TEXT NOT NULL DEFAULT '',
+  company TEXT NOT NULL DEFAULT '',
+  source TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT '',
+  zoho_owner TEXT NOT NULL DEFAULT '',
+  zoho_owner_email TEXT NOT NULL DEFAULT '',
+  description TEXT NOT NULL DEFAULT '',
+  created_time TEXT NOT NULL DEFAULT '',
+  modified_time TEXT NOT NULL DEFAULT '',
+  assignee TEXT,
+  follow_up_at TEXT,
+  synced_at TEXT NOT NULL,
+  removed INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS crm_leads_modified ON crm_leads(modified_time);
 CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
@@ -268,12 +296,59 @@ const COLUMNS: [table: string, column: string, definition: string][] = [
   ["sessions", "ip", "TEXT"],
   ["sessions", "last_seen_at", "TEXT"],
   ["sessions", "mfa_ok", "INTEGER NOT NULL DEFAULT 1"],
+  ["enquiries", "zoho_id", "TEXT"],
 ];
+
+/** SQLite cannot drop a CHECK constraint, so tables created with one are rebuilt once. */
+function rebuild(db: Database, table: string, marker: string, create: string, columns: string[]): void {
+  const row = db.prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = ?").get(table) as { sql: string } | undefined;
+  if (!row?.sql.includes(marker)) return;
+  db.exec("PRAGMA foreign_keys = OFF");
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    db.exec(create.replace(`CREATE TABLE IF NOT EXISTS ${table} (`, `CREATE TABLE ${table}_v2 (`));
+    db.exec(`INSERT INTO ${table}_v2 (${columns.join(",")}) SELECT ${columns.join(",")} FROM ${table}`);
+    db.exec(`DROP TABLE ${table}`);
+    db.exec(`ALTER TABLE ${table}_v2 RENAME TO ${table}`);
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  } finally {
+    db.exec("PRAGMA foreign_keys = ON");
+  }
+}
 
 function migrate(db: Database): void {
   for (const [table, column, definition] of COLUMNS) {
     const existing = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
     if (!existing.some((row) => row.name === column)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
+  rebuild(
+    db,
+    "users",
+    "CHECK (role IN",
+    `CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY, email TEXT NOT NULL UNIQUE COLLATE NOCASE, name TEXT NOT NULL, role TEXT NOT NULL,
+      password_hash TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL, last_login_at TEXT,
+      must_change_password INTEGER NOT NULL DEFAULT 0, totp_secret TEXT, totp_enabled INTEGER NOT NULL DEFAULT 0,
+      recovery_codes TEXT, failed_attempts INTEGER NOT NULL DEFAULT 0, locked_until TEXT)`,
+    ["id", "email", "name", "role", "password_hash", "active", "created_at", "last_login_at", "must_change_password", "totp_secret", "totp_enabled", "recovery_codes", "failed_attempts", "locked_until"],
+  );
+  rebuild(
+    db,
+    "notes",
+    "CHECK (entity IN",
+    `CREATE TABLE IF NOT EXISTS notes (
+      id INTEGER PRIMARY KEY, entity TEXT NOT NULL, entity_id INTEGER NOT NULL, kind TEXT NOT NULL DEFAULT 'note',
+      author TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL)`,
+    ["id", "entity", "entity_id", "kind", "author", "body", "created_at"],
+  );
+  db.exec("CREATE INDEX IF NOT EXISTS notes_entity ON notes(entity, entity_id, created_at)");
+  const roles = (db.prepare("SELECT COUNT(*) AS n FROM roles").get() as { n: number }).n;
+  if (roles === 0) {
+    const insert = db.prepare("INSERT OR IGNORE INTO roles (key,name,description,permissions,builtin) VALUES (?,?,?,?,?)");
+    for (const role of DEFAULT_ROLES) insert.run(role.key, role.name, role.description, JSON.stringify(role.permissions), role.key === "owner" ? 1 : 0);
   }
   const templates = (db.prepare("SELECT COUNT(*) AS n FROM email_templates").get() as { n: number }).n;
   if (templates === 0) {

@@ -20,6 +20,6 @@ export async function requireUser(area?: string, options: { allowPasswordChange?
   const user = await currentUser();
   if (!user) redirect("/admin/login");
   if (user.mustChangePassword && !options.allowPasswordChange) redirect("/admin/account?required=1");
-  if (area && !can(user.role, area)) redirect("/admin?denied=1");
+  if (area && !can(user, area)) redirect("/admin?denied=1");
   return user;
 }

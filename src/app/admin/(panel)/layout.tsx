@@ -1,12 +1,12 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 
-import { can, ROLE_LABELS } from "@/lib/cms/auth";
+import { can } from "@/lib/cms/auth";
 import { currentUser } from "@/lib/cms/session";
 import { dashboardCounts } from "@/lib/cms/store";
 import { AdminShell } from "@/components/admin/shell";
 
-const AREAS = ["enquiries", "bookings", "subscribers", "analytics", "posts", "jobs", "media", "applications", "users", "templates", "settings"] as const;
+const AREAS = ["leads", "roles.manage", "enquiries", "bookings", "subscribers", "analytics", "posts", "jobs", "media", "applications", "users", "templates", "settings.manage"] as const;
 
 // Signed-in pages block on the session; per the Cache Components auth guide,
 // they opt out of instant-navigation validation.
@@ -25,10 +25,10 @@ async function Gate({ children }: { children: React.ReactNode }) {
   const user = await currentUser();
   if (!user) redirect("/admin/login");
   const counts = dashboardCounts();
-  const areas = AREAS.filter((area) => can(user.role, area));
+  const areas = AREAS.filter((area) => can(user, area));
   return (
     <AdminShell
-      user={{ name: user.name, email: user.email, roleLabel: ROLE_LABELS[user.role] }}
+      user={{ name: user.name, email: user.email, roleLabel: user.roleName }}
       areas={areas}
       badges={{
         ...(areas.includes("enquiries") ? { "/admin/enquiries": counts.enquiriesNew } : {}),

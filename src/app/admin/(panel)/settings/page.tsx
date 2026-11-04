@@ -7,7 +7,7 @@ import { Card, PageHeader } from "@/components/admin/ui";
 export const instant = false;
 
 export default async function SettingsPage() {
-  await requireUser("settings");
+  await requireUser("settings.manage");
   const announcement = getSetting<Announcement>("announcement", DEFAULT_ANNOUNCEMENT);
   return (
     <>

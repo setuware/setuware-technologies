@@ -7,6 +7,10 @@ import { refresh, updateTag } from "next/cache";
 import { RateLimiter } from "@/lib/rate-limit";
 import {
   audit,
+  can,
+  listUsers,
+  seesAll,
+  type AdminUser,
   completeTwoFactor,
   createPasswordToken,
   createUser,
@@ -20,7 +24,6 @@ import {
   pendingTwoFactor,
   revokeOtherSessions,
   revokeSession,
-  ROLE_LABELS,
   sessionAfterPasswordSet,
   unlockUser,
   redeemPasswordToken,
@@ -57,6 +60,9 @@ import {
 } from "@/lib/cms/store";
 import { saveUpload, UploadError } from "@/lib/cms/uploads";
 import { sendAccountEmail } from "@/lib/cms/mailer";
+import { deleteRole, getRole, roleInUse, saveRole } from "@/lib/cms/rbac";
+import { getLead, leadStatuses, syncLeads, type CrmLead } from "@/lib/cms/crm-leads";
+import { addZohoLeadNote, updateZohoLead, zohoUsers } from "@/lib/zoho-crm";
 import {
   addNote,
   bulkStatus,
@@ -205,6 +211,7 @@ export async function setPasswordFromLinkAction(_previous: FormState, form: Form
 export async function savePostAction(_previous: FormState, form: FormData): Promise<FormState> {
   const user = await requireUser("posts");
   const id = Number(form.get("id")) || undefined;
+  if (!can(user, id ? "posts.edit" : "posts.create")) return { error: "Your role cannot " + (id ? "edit" : "create") + " posts." };
   const title = text(form, "title", 200);
   const slug = slugify(text(form, "slug", 120) || title);
   const fields: Record<string, string> = {};
@@ -214,6 +221,9 @@ export async function savePostAction(_previous: FormState, form: FormData): Prom
   const body = String(form.get("body") ?? "").slice(0, 200_000);
   const status = form.get("intent") === "publish" ? "published" : form.get("intent") === "draft" ? "draft" : (text(form, "status") as "draft" | "published");
   if (status === "published" && body.trim().length < 50) fields.body = "Write at least a paragraph before publishing.";
+  if (status === "published" && !can(user, "posts.publish")) {
+    return { error: "Your role can save drafts but not publish. Save as draft and ask an editor to publish." };
+  }
   if (Object.keys(fields).length) return { error: "Please fix the highlighted fields.", fields };
 
   let coverSrc = text(form, "cover_src", 500);
@@ -252,7 +262,7 @@ export async function savePostAction(_previous: FormState, form: FormData): Prom
 }
 
 export async function deletePostAction(form: FormData): Promise<void> {
-  const user = await requireUser("posts");
+  const user = await requireUser("posts.delete");
   const id = Number(form.get("id"));
   const record = getPostRecord(id);
   if (record) {
@@ -265,7 +275,7 @@ export async function deletePostAction(form: FormData): Promise<void> {
 
 /** Uploads an image for use inside a post body; returns its URL. */
 export async function uploadImageAction(form: FormData): Promise<{ url?: string; error?: string }> {
-  await requireUser("posts");
+  await requireUser("media.upload");
   const file = form.get("file");
   if (!(file instanceof File)) return { error: "Choose an image." };
   try {
@@ -282,6 +292,7 @@ export async function uploadImageAction(form: FormData): Promise<{ url?: string;
 export async function saveJobAction(_previous: FormState, form: FormData): Promise<FormState> {
   const user = await requireUser("jobs");
   const id = Number(form.get("id")) || undefined;
+  if (!can(user, id ? "jobs.edit" : "jobs.create")) return { error: "Your role cannot " + (id ? "edit" : "create") + " jobs." };
   const title = text(form, "title", 120);
   const slug = slugify(text(form, "slug", 120) || title);
   const summary = text(form, "summary", 300);
@@ -322,7 +333,7 @@ export async function saveJobAction(_previous: FormState, form: FormData): Promi
 }
 
 export async function deleteJobAction(form: FormData): Promise<void> {
-  const user = await requireUser("jobs");
+  const user = await requireUser("jobs.delete");
   const id = Number(form.get("id"));
   const record = getJobRecord(id);
   if (record) {
@@ -341,11 +352,10 @@ export async function deleteJobAction(form: FormData): Promise<void> {
 /* Team                                                                        */
 /* -------------------------------------------------------------------------- */
 
-const ROLES: Role[] = ["owner", "editor", "hr", "sales"];
 
 /** Adds a team member by invite link (default) or with a temporary password. */
 export async function createUserAction(_previous: FormState, form: FormData): Promise<FormState> {
-  const owner = await requireUser("users");
+  const owner = await requireUser("users.manage");
   const email = text(form, "email", 254).toLowerCase();
   const name = text(form, "name", 80);
   const role = text(form, "role") as Role;
@@ -354,7 +364,7 @@ export async function createUserAction(_previous: FormState, form: FormData): Pr
   const fields: Record<string, string> = {};
   if (!/^\S+@\S+\.\S+$/.test(email)) fields.email = "Enter a valid email.";
   if (name.length < 2) fields.name = "Enter a name.";
-  if (!ROLES.includes(role)) fields.role = "Choose a role.";
+  if (!getRole(role)) fields.role = "Choose a role.";
   if (method === "password") {
     const problem = passwordProblem(password);
     if (problem) fields.password = problem;
@@ -381,7 +391,7 @@ async function sendInvite(userId: number, from: string): Promise<FormState> {
     `${from} invited you to Setuware Admin`,
     [
       `Hi ${user.name.split(" ")[0]},`,
-      `${from} has given you access to the Setuware Technologies admin as ${ROLE_LABELS[user.role]}.`,
+      `${from} has given you access to the Setuware Technologies admin as ${user.roleName}.`,
       "Choose your password to get started. The link works once and expires in 3 days.",
     ],
     { url, label: "Set up my account" },
@@ -392,14 +402,14 @@ async function sendInvite(userId: number, from: string): Promise<FormState> {
 }
 
 export async function resendInviteAction(_previous: FormState, form: FormData): Promise<FormState> {
-  const owner = await requireUser("users");
+  const owner = await requireUser("users.manage");
   const state = await sendInvite(Number(form.get("id")), owner.name);
   audit(owner.name, "sent invite", "user", `#${form.get("id")}`);
   return state;
 }
 
 export async function sendResetLinkAction(_previous: FormState, form: FormData): Promise<FormState> {
-  const owner = await requireUser("users");
+  const owner = await requireUser("users.manage");
   const user = getUser(Number(form.get("id")));
   if (!user) return { error: "User not found." };
   const token = createPasswordToken(user.id, "reset");
@@ -415,7 +425,7 @@ export async function sendResetLinkAction(_previous: FormState, form: FormData):
 }
 
 export async function updateUserAction(form: FormData): Promise<void> {
-  const owner = await requireUser("users");
+  const owner = await requireUser("users.manage");
   const id = Number(form.get("id"));
   const target = getUser(id);
   if (!target) redirect("/admin/users");
@@ -424,13 +434,13 @@ export async function updateUserAction(form: FormData): Promise<void> {
   // Never leave the portal without an active owner.
   const removingOwner = target.role === "owner" && (role !== "owner" || !active);
   if (removingOwner && ownerCount() <= 1) redirect("/admin/users?error=last-owner");
-  updateUser(id, { role: ROLES.includes(role) ? role : target.role, active });
+  updateUser(id, { role: getRole(role) ? role : target.role, active });
   audit(owner.name, "updated team member", "user", `${target.name} → ${role}${active ? "" : " (disabled)"}`);
   redirect("/admin/users");
 }
 
 export async function resetUserPasswordAction(_previous: FormState, form: FormData): Promise<FormState> {
-  const owner = await requireUser("users");
+  const owner = await requireUser("users.manage");
   const id = Number(form.get("id"));
   const password = String(form.get("password") ?? "");
   const problem = passwordProblem(password);
@@ -441,7 +451,7 @@ export async function resetUserPasswordAction(_previous: FormState, form: FormDa
 }
 
 export async function userSecurityAction(form: FormData): Promise<void> {
-  const owner = await requireUser("users");
+  const owner = await requireUser("users.manage");
   const id = Number(form.get("id"));
   const user = getUser(id);
   if (!user) redirect("/admin/users");
@@ -511,46 +521,85 @@ export async function revokeSessionAction(form: FormData): Promise<void> {
 /* Team workflow: timeline, e-mail, assignment, bulk, duplicates, settings     */
 /* -------------------------------------------------------------------------- */
 
-type Entity = "enquiry" | "application";
-const AREA: Record<Entity, "enquiries" | "applications"> = { enquiry: "enquiries", application: "applications" };
+type Entity = "enquiry" | "application" | "lead";
+const AREA: Record<Entity, "enquiries" | "applications" | "leads"> = { enquiry: "enquiries", application: "applications", lead: "leads" };
+
+/** People without "all records" may only act on records assigned to them. */
+function inScope(user: AdminUser, entity: Entity, record: { assignee: string | null } | null): boolean {
+  return Boolean(record) && (seesAll(user, AREA[entity]) || record?.assignee === user.name);
+}
 
 function entityOf(form: FormData): Entity {
-  return form.get("entity") === "application" ? "application" : "enquiry";
+  const value = form.get("entity");
+  return value === "application" ? "application" : value === "lead" ? "lead" : "enquiry";
+}
+
+type AnyRecord = (EnquiryRecord | ApplicationRecord | CrmLead) & { status: string; assignee: string | null; email: string; name: string };
+
+function getRecord(entity: Entity, id: number): AnyRecord | null {
+  return (entity === "enquiry" ? getEnquiry(id) : entity === "application" ? getApplication(id) : getLead(id)) as AnyRecord | null;
+}
+
+/** Writes a change back to Zoho for CRM leads; returns a warning on failure. */
+async function toZoho(entity: Entity, record: AnyRecord, work: (zohoId: string) => Promise<void>): Promise<string | null> {
+  if (entity !== "lead") return null;
+  try {
+    await work((record as CrmLead).zoho_id);
+    return null;
+  } catch (error) {
+    return `Saved here, but Zoho was not updated (${error instanceof Error ? error.message : "error"}).`;
+  }
 }
 
 export async function addNoteAction(_previous: FormState, form: FormData): Promise<FormState> {
   const entity = entityOf(form);
-  const user = await requireUser(AREA[entity]);
+  const user = await requireUser(`${AREA[entity]}.edit`);
   const body = text(form, "body", 5000);
   if (body.length < 2) return { error: "Write a note first." };
+  const target = getRecord(entity, Number(form.get("id")));
+  if (!target || !inScope(user, entity, target)) return { error: "This record is not assigned to you." };
   addNote(entity, Number(form.get("id")), "note", user.name, body);
+  const warning = await toZoho(entity, target, (zohoId) => addZohoLeadNote(zohoId, `Note from ${user.name}`, body));
   refresh();
-  return { ok: "Note added." };
+  return warning ? { error: warning } : { ok: entity === "lead" ? "Note added here and in Zoho." : "Note added." };
 }
 
 /** Status, owner, follow-up date (enquiries) or rating and interview (applications). */
 export async function updateRecordAction(_previous: FormState, form: FormData): Promise<FormState> {
   const entity = entityOf(form);
-  const user = await requireUser(AREA[entity]);
+  const user = await requireUser(`${AREA[entity]}.edit`);
   const id = Number(form.get("id"));
-  const record = entity === "enquiry" ? getEnquiry(id) : getApplication(id);
-  if (!record) return { error: "Record not found." };
-  const allowed: readonly string[] = entity === "enquiry" ? ENQUIRY_STATUSES : APPLICATION_STATUSES;
+  const record = getRecord(entity, id);
+  if (!record || !inScope(user, entity, record)) return { error: "Record not found." };
+  const allowed: readonly string[] = entity === "enquiry" ? ENQUIRY_STATUSES : entity === "application" ? APPLICATION_STATUSES : leadStatuses();
+  const warnings: string[] = [];
 
-  const status = text(form, "status");
+  const status = text(form, "status", 60);
   if (status && allowed.includes(status) && status !== record.status) {
     setStatus(entity, id, status);
-    addNote(entity, id, "status", user.name, `Status changed from ${record.status} to ${status}`);
+    addNote(entity, id, "status", user.name, `Status changed from ${record.status || "none"} to ${status}`);
+    const warning = await toZoho(entity, record, (zohoId) => updateZohoLead(zohoId, { Lead_Status: status }));
+    if (warning) warnings.push(warning);
   }
   const assignee = text(form, "assignee", 80) || null;
-  if (assignee !== (record.assignee ?? null)) {
+  // Only people who see every record (or may assign leads) can hand records to someone else.
+  const mayAssign = entity === "lead" ? can(user, "leads.assign") : seesAll(user, AREA[entity]);
+  if (mayAssign && assignee !== (record.assignee ?? null)) {
     setAssignee(entity, id, assignee);
     addNote(entity, id, "assign", user.name, assignee ? `Assigned to ${assignee}` : "Unassigned");
+    if (entity === "lead" && assignee) {
+      const staff = listUsers().find((member) => member.name === assignee);
+      const warning = await toZoho(entity, record, async (zohoId) => {
+        const zohoUser = (await zohoUsers()).find((item) => item.email === staff?.email.toLowerCase());
+        if (zohoUser) await updateZohoLead(zohoId, { Owner: { id: zohoUser.id } });
+      });
+      if (warning) warnings.push(warning);
+    }
   }
-  if (entity === "enquiry") {
+  if (entity === "enquiry" || entity === "lead") {
     const followUp = text(form, "follow_up_at", 10) || null;
     if (followUp !== ((record as EnquiryRecord).follow_up_at ?? null)) {
-      setFollowUp(id, followUp);
+      setFollowUp(id, followUp, entity);
       addNote(entity, id, "system", user.name, followUp ? `Follow-up set for ${followUp}` : "Follow-up cleared");
     }
   } else {
@@ -564,15 +613,16 @@ export async function updateRecordAction(_previous: FormState, form: FormData): 
   }
   audit(user.name, `updated ${entity}`, entity, `#${id}`);
   refresh();
-  return { ok: "Saved." };
+  return warnings.length ? { error: warnings[0] } : { ok: entity === "lead" ? "Saved here and in Zoho." : "Saved." };
 }
 
 export async function sendEmailAction(_previous: FormState, form: FormData): Promise<FormState> {
   const entity = entityOf(form);
-  const user = await requireUser(AREA[entity]);
+  const user = await requireUser(`${AREA[entity]}.edit`);
   const id = Number(form.get("id"));
-  const record = entity === "enquiry" ? getEnquiry(id) : getApplication(id);
-  if (!record?.email) return { error: "This record has no email address." };
+  const record = getRecord(entity, id);
+  if (!record || !inScope(user, entity, record)) return { error: "Record not found." };
+  if (!record.email) return { error: "This record has no email address." };
   const subject = text(form, "subject", 200);
   const body = String(form.get("body") ?? "").trim().slice(0, 20_000);
   if (subject.length < 3 || body.length < 10) return { error: "Add a subject and a message." };
@@ -589,6 +639,7 @@ export async function sendEmailAction(_previous: FormState, form: FormData): Pro
     return { error: `Email could not be sent: ${error instanceof Error ? error.message : "unknown error"}` };
   }
   addNote(entity, id, "email", user.name, `Emailed: ${subject}\n\n${body}`);
+  await toZoho(entity, record, (zohoId) => addZohoLeadNote(zohoId, `Email sent by ${user.name}: ${subject}`, body));
   if (entity === "enquiry" && record.status === "new") {
     setStatus(entity, id, "contacted");
     addNote(entity, id, "status", user.name, "Status changed from new to contacted");
@@ -600,19 +651,30 @@ export async function sendEmailAction(_previous: FormState, form: FormData): Pro
 
 export async function bulkStatusAction(form: FormData): Promise<void> {
   const entity = entityOf(form);
-  const user = await requireUser(AREA[entity]);
+  const user = await requireUser(`${AREA[entity]}.edit`);
   const status = text(form, "bulk_status");
-  const allowed: readonly string[] = entity === "enquiry" ? ENQUIRY_STATUSES : APPLICATION_STATUSES;
-  const ids = form.getAll("ids").map(Number).filter(Boolean).slice(0, 500);
+  const allowed: readonly string[] = entity === "enquiry" ? ENQUIRY_STATUSES : entity === "application" ? APPLICATION_STATUSES : leadStatuses();
+  const ids = form
+    .getAll("ids")
+    .map(Number)
+    .filter(Boolean)
+    .slice(0, 500)
+    .filter((id) => inScope(user, entity, getRecord(entity, id)));
   if (ids.length && allowed.includes(status)) {
     bulkStatus(entity, ids, status, user.name);
+    if (entity === "lead") {
+      for (const id of ids.slice(0, 100)) {
+        const lead = getLead(id);
+        if (lead) await updateZohoLead(lead.zoho_id, { Lead_Status: status }).catch(() => undefined);
+      }
+    }
     audit(user.name, "bulk update", entity, `${ids.length} → ${status}`);
   }
   refresh();
 }
 
 export async function duplicatePostAction(form: FormData): Promise<void> {
-  const user = await requireUser("posts");
+  const user = await requireUser("posts.create");
   const post = getPostRecord(Number(form.get("id")));
   if (!post) redirect("/admin/posts");
   let slug = `${post.slug}-copy`;
@@ -624,7 +686,7 @@ export async function duplicatePostAction(form: FormData): Promise<void> {
 }
 
 export async function duplicateJobAction(form: FormData): Promise<void> {
-  const user = await requireUser("jobs");
+  const user = await requireUser("jobs.create");
   const job = getJobRecord(Number(form.get("id")));
   if (!job) redirect("/admin/jobs");
   let slug = `${job.slug}-copy`;
@@ -651,7 +713,7 @@ export async function duplicateJobAction(form: FormData): Promise<void> {
 }
 
 export async function saveTemplateAction(_previous: FormState, form: FormData): Promise<FormState> {
-  const user = await requireUser("templates");
+  const user = await requireUser("templates.edit");
   const name = text(form, "name", 80);
   const subject = text(form, "subject", 200);
   const body = String(form.get("body") ?? "").trim().slice(0, 10_000);
@@ -665,21 +727,21 @@ export async function saveTemplateAction(_previous: FormState, form: FormData): 
 }
 
 export async function deleteTemplateAction(form: FormData): Promise<void> {
-  const user = await requireUser("templates");
+  const user = await requireUser("templates.edit");
   deleteTemplate(Number(form.get("id")));
   audit(user.name, "deleted template", "template", `#${form.get("id")}`);
   refresh();
 }
 
 export async function deleteSubscriberAction(form: FormData): Promise<void> {
-  const user = await requireUser("subscribers");
+  const user = await requireUser("subscribers.delete");
   deleteSubscriber(Number(form.get("id")));
   audit(user.name, "removed subscriber", "subscriber", `#${form.get("id")}`);
   refresh();
 }
 
 export async function deleteMediaAction(form: FormData): Promise<void> {
-  const user = await requireUser("media");
+  const user = await requireUser("media.delete");
   const name = text(form, "name", 120);
   await deleteMedia(name);
   audit(user.name, "deleted image", "media", name);
@@ -687,7 +749,7 @@ export async function deleteMediaAction(form: FormData): Promise<void> {
 }
 
 export async function saveAnnouncementAction(_previous: FormState, form: FormData): Promise<FormState> {
-  const user = await requireUser("settings");
+  const user = await requireUser("settings.manage");
   const value = {
     enabled: form.get("enabled") === "on",
     text: text(form, "text", 160),
@@ -700,4 +762,42 @@ export async function saveAnnouncementAction(_previous: FormState, form: FormDat
   audit(user.name, "updated announcement", "settings", value.enabled ? value.text : "off");
   updateTag(CMS_TAGS.settings);
   return { ok: value.enabled ? "Announcement is live on the website." : "Announcement turned off." };
+}
+
+/* -------------------------------------------------------------------------- */
+/* Roles                                                                       */
+/* -------------------------------------------------------------------------- */
+
+export async function saveRoleAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser("roles.manage");
+  const name = text(form, "name", 60);
+  if (name.length < 2) return { error: "Give the role a name." };
+  const key = text(form, "key", 60) || undefined;
+  if (key === "owner") return { error: "The Owner role always has full access." };
+  const permissions = form.getAll("permissions").map(String);
+  const saved = saveRole({ key, name, description: text(form, "description", 200), permissions });
+  audit(user.name, key ? "updated role" : "created role", "role", `${name} (${permissions.length} permissions)`);
+  refresh();
+  return { ok: key ? "Role saved. Changes apply on each person's next page load." : `Role "${name}" created (${saved}).` };
+}
+
+export async function deleteRoleAction(form: FormData): Promise<void> {
+  const user = await requireUser("roles.manage");
+  const key = text(form, "key", 60);
+  if (roleInUse(key) === 0) {
+    deleteRole(key);
+    audit(user.name, "deleted role", "role", key);
+  }
+  refresh();
+}
+
+/* -------------------------------------------------------------------------- */
+/* CRM sync                                                                    */
+/* -------------------------------------------------------------------------- */
+
+export async function syncLeadsAction(): Promise<void> {
+  const user = await requireUser("leads.sync");
+  const result = await syncLeads();
+  audit(user.name, "synced CRM leads", "leads", result.error ?? `${result.synced} changed`);
+  refresh();
 }

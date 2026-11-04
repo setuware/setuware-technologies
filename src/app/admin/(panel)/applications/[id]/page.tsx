@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { CalendarClock, FileDown, Phone, Star } from "lucide-react";
 
-import { listUsers } from "@/lib/cms/auth";
+import { listUsers, seesAll } from "@/lib/cms/auth";
 import { listTemplates, timeline } from "@/lib/cms/crm";
 import { requireUser } from "@/lib/cms/session";
 import { APPLICATION_STATUSES, getApplication } from "@/lib/cms/store";
@@ -16,7 +16,7 @@ export default async function ApplicationPage({ params }: { params: Promise<{ id
   const user = await requireUser("applications");
   const { id } = await params;
   const item = getApplication(Number(id));
-  if (!item) notFound();
+  if (!item || (!seesAll(user, "applications") && item.assignee !== user.name)) notFound();
   const links = item.links.split(/[\s,]+/).filter((link) => /^https?:\/\//i.test(link));
   const team = listUsers().filter((member) => member.active).map((member) => member.name);
   const templates = listTemplates("application").map(({ id: templateId, name, subject, body }) => ({ id: templateId, name, subject, body }));

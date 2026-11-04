@@ -9,6 +9,7 @@ import { posts } from "@/lib/posts";
 import { jobs } from "@/lib/careers";
 import {
   can,
+  seesAll,
   completeTwoFactor,
   createPasswordToken,
   createUser,
@@ -208,14 +209,20 @@ describe("admin auth", () => {
     expect(temp.mustChangePassword).toBe(true);
   });
 
-  it("limits each role to its sections", async () => {
-    await createUser({ email: "ed@example.com", name: "Ed", role: "editor", password: "EditorPass123" });
-    expect(can("editor", "posts")).toBe(true);
-    expect(can("editor", "applications")).toBe(false);
-    expect(can("hr", "applications")).toBe(true);
-    expect(can("sales", "users")).toBe(false);
-    expect(can("owner", "users")).toBe(true);
+  it("limits each role to its permissions", async () => {
+    const editor = await createUser({ email: "ed@example.com", name: "Ed", role: "editor", password: "EditorPass123" });
+    expect(can(editor, "posts")).toBe(true);
+    expect(can(editor, "posts.publish")).toBe(true);
+    expect(can(editor, "applications")).toBe(false);
+    const exec = await createUser({ email: "ex@example.com", name: "Ex", role: "sales_exec", password: "SalesPass123" });
+    expect(can(exec, "leads.edit")).toBe(true);
+    expect(seesAll(exec, "leads")).toBe(false);
+    expect(can(exec, "users")).toBe(false);
+    const owner = await createUser({ email: "ow@example.com", name: "Ow", role: "owner", password: "OwnerPass123" });
+    expect(can(owner, "roles.manage")).toBe(true);
+    expect(seesAll(owner, "leads")).toBe(true);
   });
+
 });
 
 describe("enquiries", () => {

@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { FormMessage, SubmitButton } from "./form-bits";
 import { inputClass } from "./ui";
 
-type Entity = "enquiry" | "application";
+type Entity = "enquiry" | "application" | "lead";
 
 /** Status, owner, and follow-up (enquiries) or rating and interview (applications). */
 export function RecordPanel({
@@ -22,7 +22,9 @@ export function RecordPanel({
   followUp,
   rating,
   interview,
+  canAssign = true,
 }: {
+  canAssign?: boolean;
   entity: Entity;
   id: number;
   status: string;
@@ -55,7 +57,7 @@ export function RecordPanel({
         <label htmlFor="assignee" className="mb-1 block text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
           Owner
         </label>
-        <select id="assignee" name="assignee" defaultValue={assignee ?? ""} className={inputClass}>
+        <select id="assignee" name="assignee" defaultValue={assignee ?? ""} disabled={!canAssign} className={`${inputClass} disabled:opacity-60`}>
           <option value="">Unassigned</option>
           {team.map((name) => (
             <option key={name} value={name}>
@@ -64,7 +66,8 @@ export function RecordPanel({
           ))}
         </select>
       </div>
-      {entity === "enquiry" ? (
+      {!canAssign ? <input type="hidden" name="assignee" value={assignee ?? ""} /> : null}
+      {entity !== "application" ? (
         <div>
           <label htmlFor="follow_up_at" className="mb-1 block text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
             Follow up on

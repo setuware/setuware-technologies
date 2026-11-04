@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, Briefcase, FileText, Inbox, Plus, UsersRound } from "lucide-react";
+import { ArrowRight, Briefcase, FileText, Inbox, Plus, Target, UsersRound } from "lucide-react";
 
-import { can, recentAudit } from "@/lib/cms/auth";
+import { can, recentAudit, seesAll } from "@/lib/cms/auth";
 import { followUpsDue, upcomingInterviews } from "@/lib/cms/crm";
+import { leadCounts } from "@/lib/cms/crm-leads";
 import { getDb } from "@/lib/cms/db";
 import { requireUser } from "@/lib/cms/session";
 import { dashboardCounts, ENQUIRY_STATUSES, listApplications, listEnquiries } from "@/lib/cms/store";
@@ -26,16 +27,16 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const user = await requireUser();
   const { denied } = await searchParams;
   const counts = dashboardCounts();
-  const showEnquiries = can(user.role, "enquiries");
-  const showApplications = can(user.role, "applications");
-  const enquiries = showEnquiries ? listEnquiries().slice(0, 6) : [];
-  const applications = showApplications ? listApplications().slice(0, 6) : [];
+  const showEnquiries = can(user, "enquiries");
+  const showApplications = can(user, "applications");
+  const enquiries = showEnquiries ? listEnquiries(seesAll(user, "enquiries") ? {} : { assignee: user.name }).slice(0, 6) : [];
+  const applications = showApplications ? listApplications(seesAll(user, "applications") ? {} : { assignee: user.name }).slice(0, 6) : [];
   // Content changes only; sign-ins stay in the log but would drown them out.
   const activity = user.role === "owner" ? recentAudit(40).filter((entry) => entry.action !== "signed in").slice(0, 8) : [];
   const hour = Number(new Intl.DateTimeFormat("en-IN", { hour: "numeric", hourCycle: "h23", timeZone: "Asia/Kolkata" }).format(new Date()));
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
-  const dueFollowUps = showEnquiries ? followUpsDue(user.role === "sales" ? user.name : undefined) : [];
+  const dueFollowUps = showEnquiries ? followUpsDue(seesAll(user, "enquiries") ? undefined : user.name) : [];
   const interviews = showApplications ? upcomingInterviews() : [];
 
   const pipeline = showEnquiries
@@ -69,7 +70,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {can(user.role, "posts") ? (
+            {can(user, "posts") ? (
               <Link
                 href="/admin/posts/new"
                 className="inline-flex h-10 items-center gap-2 rounded-full bg-white px-5 text-sm font-semibold text-[#0b1020] transition-opacity hover:opacity-90"
@@ -77,7 +78,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
                 <Plus className="size-4" aria-hidden /> Write a post
               </Link>
             ) : null}
-            {can(user.role, "jobs") ? (
+            {can(user, "jobs") ? (
               <Link
                 href="/admin/jobs/new"
                 className="inline-flex h-10 items-center gap-2 rounded-full border border-white/20 bg-white/[0.06] px-5 text-sm font-semibold text-white transition-colors hover:bg-white/[0.12]"
@@ -96,6 +97,16 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       ) : null}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {can(user, "leads") ? (
+          <Stat
+            label={seesAll(user, "leads") ? "Open CRM leads" : "My open leads"}
+            value={leadCounts(seesAll(user, "leads") ? undefined : user.name).open}
+            hint={`${leadCounts(seesAll(user, "leads") ? undefined : user.name).due} follow-ups due`}
+            href="/admin/leads"
+            icon={<Target className="size-4" />}
+            tone="teal"
+          />
+        ) : null}
         {showEnquiries ? (
           <Stat
             label="New enquiries"
@@ -116,7 +127,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             tone="violet"
           />
         ) : null}
-        {can(user.role, "posts") ? (
+        {can(user, "posts") ? (
           <Stat
             label="Published posts"
             value={counts.postsPublished}
@@ -126,7 +137,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             tone="teal"
           />
         ) : null}
-        {can(user.role, "jobs") ? (
+        {can(user, "jobs") ? (
           <Stat label="Open jobs" value={counts.jobsOpen} hint="Live on the careers page" href="/admin/jobs" icon={<Briefcase className="size-4" />} tone="amber" />
         ) : null}
       </div>

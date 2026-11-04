@@ -9,7 +9,7 @@ import type { ApplicationRecord, EnquiryRecord } from "./store";
  * follow-ups, subscribers, page views, site settings, search and analytics.
  */
 
-type Entity = "enquiry" | "application";
+type Entity = "enquiry" | "application" | "lead";
 
 /* -------------------------------------------------------------------------- */
 /* Timeline                                                                    */
@@ -39,7 +39,7 @@ export function timeline(entity: Entity, id: number): Note[] {
 /* Assignment, follow-ups, ratings                                             */
 /* -------------------------------------------------------------------------- */
 
-const TABLE: Record<Entity, string> = { enquiry: "enquiries", application: "applications" };
+const TABLE: Record<Entity, string> = { enquiry: "enquiries", application: "applications", lead: "crm_leads" };
 
 export function setAssignee(entity: Entity, id: number, assignee: string | null): void {
   getDb().prepare(`UPDATE ${TABLE[entity]} SET assignee = ? WHERE id = ?`).run(assignee, id);
@@ -49,8 +49,8 @@ export function setStatus(entity: Entity, id: number, status: string): void {
   getDb().prepare(`UPDATE ${TABLE[entity]} SET status = ? WHERE id = ?`).run(status, id);
 }
 
-export function setFollowUp(id: number, when: string | null): void {
-  getDb().prepare("UPDATE enquiries SET follow_up_at = ? WHERE id = ?").run(when, id);
+export function setFollowUp(id: number, when: string | null, entity: "enquiry" | "lead" = "enquiry"): void {
+  getDb().prepare(`UPDATE ${TABLE[entity]} SET follow_up_at = ? WHERE id = ?`).run(when, id);
 }
 
 export function setRating(id: number, rating: number | null): void {
@@ -94,13 +94,13 @@ export function bulkStatus(entity: Entity, ids: number[], status: string, author
 export interface EmailTemplate {
   id: number;
   name: string;
-  audience: Entity;
+  audience: "enquiry" | "application";
   subject: string;
   body: string;
   updated_at: string;
 }
 
-export function listTemplates(audience?: Entity): EmailTemplate[] {
+export function listTemplates(audience?: "enquiry" | "application"): EmailTemplate[] {
   return (audience
     ? getDb().prepare("SELECT * FROM email_templates WHERE audience = ? ORDER BY name").all(audience)
     : getDb().prepare("SELECT * FROM email_templates ORDER BY audience, name").all()) as EmailTemplate[];

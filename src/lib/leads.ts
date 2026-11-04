@@ -3,7 +3,8 @@ import { addSubscriber } from "./cms/crm";
 import { saveEnquiry } from "./cms/store";
 import { leadView } from "./email-templates";
 import { referenceId } from "./utils";
-import { sendToZoho, zohoConfigured } from "./zoho-crm";
+import { sendToZoho, zohoConfigured, zohoIdsByReference } from "./zoho-crm";
+import { getDb } from "./cms/db";
 
 /**
  * Lead delivery.
@@ -86,6 +87,16 @@ export async function deliverLead(
     webhook ? postWebhook(webhook, lead) : Promise.resolve(false),
     viaZohoEnabled ? sendToZoho(lead) : Promise.resolve(false),
   ]);
+
+  const zohoId = zohoIdsByReference.get(lead.reference);
+  if (zohoId) {
+    zohoIdsByReference.delete(lead.reference);
+    try {
+      getDb().prepare("UPDATE enquiries SET zoho_id = ? WHERE reference = ?").run(zohoId, lead.reference);
+    } catch {
+      // The link is a convenience; never fail the submission over it.
+    }
+  }
 
   return { reference: lead.reference, delivered: byEmail || byWebhook || byZoho };
 }

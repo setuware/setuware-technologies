@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Download } from "lucide-react";
 
 import { bulkStatusAction } from "@/app/admin/actions";
+import { can, seesAll } from "@/lib/cms/auth";
 import { requireUser } from "@/lib/cms/session";
 import { BulkBar } from "@/components/admin/bulk-bar";
 import { ENQUIRY_STATUSES, listEnquiries } from "@/lib/cms/store";
@@ -23,7 +24,7 @@ export default async function EnquiriesPage({
     q: q || undefined,
     status: status || undefined,
     kind: kind || undefined,
-    assignee: mine ? user.name : undefined,
+    assignee: mine || !seesAll(user, "enquiries") ? user.name : undefined,
   });
   const today = new Date().toISOString().slice(0, 10);
   const query = new URLSearchParams({ ...(q ? { q } : {}), ...(status ? { status } : {}), ...(kind ? { kind } : {}) }).toString();
@@ -34,9 +35,11 @@ export default async function EnquiriesPage({
         title="Enquiries"
         description="Every form, chat, estimate and booking from the website. Also sent by email and to Zoho CRM."
         actions={
-          <a href={`/admin/files/export/enquiries${query ? `?${query}` : ""}`} className={buttonClass.secondary}>
-            <Download className="size-4" aria-hidden /> Export CSV
-          </a>
+          can(user, "enquiries.export") ? (
+            <a href={`/admin/files/export/enquiries${query ? `?${query}` : ""}`} className={buttonClass.secondary}>
+              <Download className="size-4" aria-hidden /> Export CSV
+            </a>
+          ) : null
         }
       />
       <form className="mb-4 flex flex-col gap-2 sm:flex-row">

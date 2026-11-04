@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { CalendarClock, Phone } from "lucide-react";
 
-import { listUsers } from "@/lib/cms/auth";
+import { listUsers, seesAll } from "@/lib/cms/auth";
 import { listTemplates, timeline } from "@/lib/cms/crm";
 import { requireUser } from "@/lib/cms/session";
 import { ENQUIRY_STATUSES, getEnquiry } from "@/lib/cms/store";
@@ -16,7 +16,7 @@ export default async function EnquiryPage({ params }: { params: Promise<{ id: st
   const user = await requireUser("enquiries");
   const { id } = await params;
   const item = getEnquiry(Number(id));
-  if (!item) notFound();
+  if (!item || (!seesAll(user, "enquiries") && item.assignee !== user.name)) notFound();
   const digits = item.phone.replace(/\D/g, "").replace(/^(\d{10})$/, "91$1");
   const name = item.name || item.email || "Website visitor";
   const team = listUsers().filter((member) => member.active).map((member) => member.name);

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Download } from "lucide-react";
 
 import { bulkStatusAction } from "@/app/admin/actions";
+import { can, seesAll } from "@/lib/cms/auth";
 import { requireUser } from "@/lib/cms/session";
 import { BulkBar } from "@/components/admin/bulk-bar";
 import { APPLICATION_STATUSES, listApplications, listJobRecords } from "@/lib/cms/store";
@@ -15,9 +16,14 @@ export default async function ApplicationsPage({
 }: {
   searchParams: Promise<{ q?: string; status?: string; job?: string }>;
 }) {
-  await requireUser("applications");
+  const user = await requireUser("applications");
   const { q = "", status = "", job = "" } = await searchParams;
-  const items = listApplications({ q: q || undefined, status: status || undefined, job: job || undefined });
+  const items = listApplications({
+    q: q || undefined,
+    status: status || undefined,
+    job: job || undefined,
+    assignee: seesAll(user, "applications") ? undefined : user.name,
+  });
   const jobs = listJobRecords();
   const query = new URLSearchParams({ ...(q ? { q } : {}), ...(status ? { status } : {}), ...(job ? { job } : {}) }).toString();
 
@@ -27,9 +33,11 @@ export default async function ApplicationsPage({
         title="Applications"
         description="Candidates who applied from the careers pages. CVs are stored privately."
         actions={
-          <a href={`/admin/files/export/applications${query ? `?${query}` : ""}`} className={buttonClass.secondary}>
-            <Download className="size-4" aria-hidden /> Export CSV
-          </a>
+          can(user, "applications.export") ? (
+            <a href={`/admin/files/export/applications${query ? `?${query}` : ""}`} className={buttonClass.secondary}>
+              <Download className="size-4" aria-hidden /> Export CSV
+            </a>
+          ) : null
         }
       />
       <form className="mb-4 flex flex-col gap-2 sm:flex-row">

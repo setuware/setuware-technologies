@@ -11,6 +11,7 @@ on the site immediately; no redeploy needed.
 | Dashboard | everyone | Workload summary, follow-ups due, upcoming interviews, enquiry pipeline, latest items, team activity |
 | Search | everyone | One search across enquiries, applicants, posts and jobs (only what your role can see) |
 | Analytics | Owner, Sales | Enquiries per day (30 days), sources, services, win rate, most-read articles, applications per role, subscribers |
+| CRM leads | Owner, Sales | Leads synced from Zoho CRM (own or all, per role); status, owner, notes and emails written back to Zoho; Sync now (see docs/zoho-crm.md) |
 | Enquiries | Owner, Sales | Every form, pop-up, chat, estimate and booking. Owner, follow-up date, status pipeline, timeline of notes, emails and changes, email from the admin with templates, bulk status, CSV |
 | Bookings | Owner, Sales | Upcoming and past consultation calls by day |
 | Subscribers | Owner, Sales | Newsletter sign-ups, search, remove, CSV export |
@@ -18,10 +19,11 @@ on the site immediately; no redeploy needed.
 | Jobs | Owner, HR | Create, open, close, duplicate roles; application counts |
 | Media | Owner, Editor | Every uploaded image, where it is used, copy link, delete unused |
 | Applications | Owner, HR | CV download, 1–5 rating, interview date, owner, status pipeline, timeline, email with templates, bulk status, CSV |
-| Team | Owner | Add people, set roles, disable access, reset passwords |
+| Team | Owner | Invite people, set roles, disable access, reset passwords and 2-step, unlock |
+| Roles & access | Owner | Custom roles with per-section permissions and own/all record access |
 | Email templates | Owner, Sales, HR | Saved replies with placeholders ({{first_name}}, {{service}}, {{job}}, {{sender}}) |
 | Site settings | Owner | Announcement bar above the website navigation |
-| My account | everyone | Change your own password |
+| My account | everyone | Password, 2-step verification, signed-in devices |
 
 Emails sent from the admin go out through the site's SMTP mailbox under the
 sender's name (e.g. "Satyam Raj | Setuware Technologies"), with replies going
@@ -85,6 +87,31 @@ last 14. To run it daily at 2 am, add this with `crontab -e`:
   unlock it from Team.
 - **Devices**: My account lists where you are signed in; sign out any of them.
   Owners can sign a person out everywhere.
+
+## Roles and access
+
+Team → **Roles & access** lists the roles. Built-in roles: Owner (everything),
+Sales Manager, Sales Executive, HR and Content Editor; all except Owner can be
+edited, and you can create your own.
+
+- Tick what each role may do per section: view, create, edit, publish, delete,
+  assign, export, and so on.
+- For leads, enquiries and applications choose **All records** or **Own
+  records only** (only those assigned to the person).
+- Change a person's role on the Team page; it applies at their next page load.
+- A role that is still given to someone cannot be deleted.
+
+## Install as an app
+
+The admin can be installed on phones and computers like an app (it opens in
+its own window, with its own icon):
+
+- **Android / Chrome / Edge**: the **Install app** button in the sidebar, or
+  the browser menu → *Install app* / *Add to Home screen*.
+- **iPhone / iPad (Safari)**: Share → *Add to Home Screen*.
+
+Admin data is never stored on the device; without internet the app shows an
+offline page and reloads when the connection is back.
 
 ## Security
 

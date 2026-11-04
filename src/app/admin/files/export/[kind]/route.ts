@@ -1,4 +1,4 @@
-import { can } from "@/lib/cms/auth";
+import { can, seesAll } from "@/lib/cms/auth";
 import { currentUser } from "@/lib/cms/session";
 import { listSubscribers } from "@/lib/cms/crm";
 import { listApplications, listEnquiries } from "@/lib/cms/store";
@@ -17,7 +17,7 @@ function csv(rows: Record<string, unknown>[], columns: string[]): string {
 export async function GET(request: Request, { params }: { params: Promise<{ kind: string }> }) {
   const { kind } = await params;
   const user = await currentUser();
-  if (!user || !["enquiries", "applications", "subscribers"].includes(kind) || !can(user.role, kind)) {
+  if (!user || !["enquiries", "applications", "subscribers"].includes(kind) || !can(user, `${kind}.export`)) {
     return new Response("Not found", { status: 404 });
   }
   const search = new URL(request.url).searchParams;
@@ -29,7 +29,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ kind
     kind === "subscribers"
       ? csv(listSubscribers() as unknown as Record<string, unknown>[], ["email", "source", "created_at"])
       : kind === "enquiries"
-      ? csv(listEnquiries({ ...filter, kind: search.get("kind") || undefined }) as unknown as Record<string, unknown>[], [
+      ? csv(listEnquiries({ ...filter, kind: search.get("kind") || undefined, assignee: seesAll(user, "enquiries") ? undefined : user.name }) as unknown as Record<string, unknown>[], [
           "created_at",
           "reference",
           "source",
@@ -43,7 +43,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ kind
           "follow_up_at",
           "internal_notes",
         ])
-      : csv(listApplications({ ...filter, job: search.get("job") || undefined }) as unknown as Record<string, unknown>[], [
+      : csv(listApplications({ ...filter, job: search.get("job") || undefined, assignee: seesAll(user, "applications") ? undefined : user.name }) as unknown as Record<string, unknown>[], [
           "created_at",
           "job_title",
           "status",

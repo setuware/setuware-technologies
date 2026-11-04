@@ -19,7 +19,7 @@ const TONE: Record<string, string> = {
 export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const user = await requireUser();
   const { q = "" } = await searchParams;
-  const areas = ["enquiries", "applications", "posts", "jobs"].filter((area) => can(user.role, area));
+  const areas = ["enquiries", "applications", "posts", "jobs"].filter((area) => can(user, area));
   const hits = q.trim().length >= 2 ? search(q.trim(), areas) : [];
 
   return (
