@@ -7,6 +7,10 @@ import { getDb } from "./db";
  * opens a section; "<module>.all" widens record-level sections (enquiries,
  * CRM leads, applications) from "assigned to me" to everything. The Owner
  * role is built in and always has every permission.
+ *
+ * Every signed-in person can always use their own tasks (those assigned to
+ * or created by them), check in and out, and request leave; permissions
+ * below add to that.
  */
 
 export interface PermissionGroup {
@@ -159,6 +163,36 @@ export const DEFAULT_ROLES: Omit<Role, "builtin">[] = [
     name: "HR",
     description: "Jobs, applications, attendance and leave approvals.",
     permissions: [...all("jobs"), ...all("applications"), "templates.view", "templates.edit", "tasks.assign", ...all("attendance")],
+  },
+  {
+    key: "tech_lead",
+    name: "Tech Lead / Project Manager",
+    description: "Plans and assigns the engineering team's tasks, sees everyone's tasks and team attendance, reads client enquiries.",
+    permissions: ["tasks.assign", "tasks.all", "attendance.view", "users.view", "enquiries.view", "enquiries.all", "bookings.view"],
+  },
+  {
+    key: "developer",
+    name: "Software Developer",
+    description: "Works on their tasks, logs time, hands tasks to QA or designers, checks in and requests leave.",
+    permissions: ["tasks.assign"],
+  },
+  {
+    key: "qa",
+    name: "QA Tester",
+    description: "Tests features and files bugs as tasks for developers, logs time, checks in and requests leave.",
+    permissions: ["tasks.assign"],
+  },
+  {
+    key: "designer",
+    name: "UI/UX Designer",
+    description: "Works on design tasks, hands them to developers, and can upload images to the media library.",
+    permissions: ["tasks.assign", "media.view", "media.upload"],
+  },
+  {
+    key: "intern",
+    name: "Intern",
+    description: "Works on the tasks assigned to them, logs time, checks in and requests leave.",
+    permissions: [],
   },
   {
     key: "editor",

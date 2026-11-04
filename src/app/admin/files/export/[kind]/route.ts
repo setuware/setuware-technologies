@@ -21,7 +21,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ kind
   const search = new URL(request.url).searchParams;
   if (user && kind === "attendance" && can(user, "attendance")) {
     const month = /^\d{4}-(0[1-9]|1[0-2])$/.test(search.get("month") ?? "") ? (search.get("month") as string) : localDay().slice(0, 7);
-    const rows = register(month, listUsers().filter((member) => member.active)).flatMap((row) =>
+    const role = search.get("role");
+    const rows = register(month, listUsers().filter((member) => member.active && (!role || member.role === role))).flatMap((row) =>
       row.cells.map((cell) => ({
         name: row.name,
         date: cell.day,

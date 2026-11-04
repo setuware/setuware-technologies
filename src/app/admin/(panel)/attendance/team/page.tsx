@@ -4,6 +4,7 @@ import { Check, Coffee, Download, LogOut, MapPin, Plane, Settings2, UserCheck, U
 import { decideRequestAction } from "@/app/admin/work-actions";
 import { can, listUsers } from "@/lib/cms/auth";
 import { attendanceSettings, formatMinutes, listRequests, localDay, localTime, register, todayBoard, type BoardRow } from "@/lib/cms/attendance";
+import { listRoles } from "@/lib/cms/rbac";
 import { requireUser } from "@/lib/cms/session";
 import { FixAttendanceForm } from "@/components/admin/attendance-tools";
 import { Legend, monthLabel, monthParam, RegisterGrid, shiftMonth } from "@/components/admin/attendance-view";
@@ -31,16 +32,20 @@ function place(row: BoardRow, radius: number | null): string {
   return `${mode} · ${record.in_distance >= 1000 ? `${(record.in_distance / 1000).toFixed(1)} km` : `${record.in_distance} m`} away`;
 }
 
-export default async function TeamAttendancePage({ searchParams }: { searchParams: Promise<{ month?: string; person?: string }> }) {
+export default async function TeamAttendancePage({ searchParams }: { searchParams: Promise<{ month?: string; person?: string; role?: string }> }) {
   const user = await requireUser("attendance");
   const params = await searchParams;
   const today = localDay();
   const month = monthParam(params.month, today);
   const settings = attendanceSettings();
   const manage = can(user, "attendance.manage");
-  const team = listUsers().filter((member) => member.active);
+  const everyone = listUsers().filter((member) => member.active);
+  const roles = listRoles().filter((role) => everyone.some((member) => member.role === role.key));
+  const role = roles.some((item) => item.key === params.role) ? (params.role as string) : "";
+  const team = role ? everyone.filter((member) => member.role === role) : everyone;
   const board = todayBoard(team);
   const rows = register(month, team);
+  const keep = (extra: Record<string, string>) => `/admin/attendance/team?${new URLSearchParams({ ...(role ? { role } : {}), month, ...extra }).toString()}`;
   const pending = manage ? listRequests({ status: "pending" }) : [];
   const person = rows.find((row) => row.userId === Number(params.person));
   const count = (state: BoardRow["state"]) => board.filter((row) => row.state === state).length;
@@ -59,6 +64,23 @@ export default async function TeamAttendancePage({ searchParams }: { searchParam
           ) : null
         }
       />
+
+      {roles.length > 1 ? (
+        <nav className="mb-5 flex flex-wrap gap-2" aria-label="Filter by role">
+          {[{ key: "", name: "Everyone" }, ...roles].map((item) => (
+            <Link
+              key={item.key || "all"}
+              href={item.key ? `/admin/attendance/team?role=${item.key}&month=${month}` : `/admin/attendance/team?month=${month}`}
+              className={cn(
+                "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors",
+                role === item.key ? "border-[#0b1020] bg-[#0b1020] text-white dark:border-white dark:bg-white dark:text-[#0b1020]" : "border-border bg-surface text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </nav>
+      ) : null}
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Stat label="Working now" value={count("in") + count("break")} hint={`${count("break")} on break`} icon={<UserCheck className="size-4" />} tone="teal" />
@@ -174,20 +196,20 @@ export default async function TeamAttendancePage({ searchParams }: { searchParam
       <Card className="mt-6 overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-3">
           <div className="flex items-center gap-2">
-            <Link href={`/admin/attendance/team?month=${shiftMonth(month, -1)}`} className="rounded-full px-2 py-0.5 text-muted-foreground hover:bg-foreground/[0.05] hover:text-foreground" aria-label="Previous month">
+            <Link href={keep({ month: shiftMonth(month, -1) })} className="rounded-full px-2 py-0.5 text-muted-foreground hover:bg-foreground/[0.05] hover:text-foreground" aria-label="Previous month">
               ←
             </Link>
             <h2 className="text-sm font-semibold text-foreground">Register · {monthLabel(month)}</h2>
-            <Link href={`/admin/attendance/team?month=${shiftMonth(month, 1)}`} className="rounded-full px-2 py-0.5 text-muted-foreground hover:bg-foreground/[0.05] hover:text-foreground" aria-label="Next month">
+            <Link href={keep({ month: shiftMonth(month, 1) })} className="rounded-full px-2 py-0.5 text-muted-foreground hover:bg-foreground/[0.05] hover:text-foreground" aria-label="Next month">
               →
             </Link>
           </div>
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- CSV download from a route handler */}
-          <a href={`/admin/files/export/attendance?month=${month}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#2f56d8] hover:underline dark:text-[#8fb0ff]">
+          <a href={`/admin/files/export/attendance?month=${month}${role ? `&role=${role}` : ""}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#2f56d8] hover:underline dark:text-[#8fb0ff]">
             <Download className="size-4" aria-hidden /> Export CSV
           </a>
         </div>
-        {rows.length ? <RegisterGrid rows={rows} today={today} /> : <Empty title="No team members yet" />}
+        {rows.length ? <RegisterGrid rows={rows} today={today} query={new URLSearchParams({ ...(role ? { role } : {}), month }).toString()} /> : <Empty title="No team members yet" />}
         <div className="border-t border-border px-5 py-3">
           <Legend />
         </div>
@@ -237,7 +259,7 @@ export default async function TeamAttendancePage({ searchParams }: { searchParam
         <Card className="mt-6 max-w-2xl p-5 sm:p-6">
           <h2 className="mb-1 text-sm font-semibold text-foreground">Fix a record</h2>
           <p className="mb-4 text-xs text-muted-foreground">Set someone’s times for a day (it is marked as edited by you), or remove a wrong check-in.</p>
-          <FixAttendanceForm team={team.map(({ id, name }) => ({ id, name }))} today={today} />
+          <FixAttendanceForm team={everyone.map(({ id, name }) => ({ id, name }))} today={today} />
         </Card>
       ) : null}
       <p className="mt-6 flex items-center gap-1.5 text-xs text-muted-foreground">

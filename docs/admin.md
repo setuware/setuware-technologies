@@ -129,9 +129,23 @@ last 14. To run it daily at 2 am, add this with `crontab -e`:
 
 ## Roles and access
 
-Team → **Roles & access** lists the roles. Built-in roles: Owner (everything),
-Sales Manager, Sales Executive, HR and Content Editor; all except Owner can be
-edited, and you can create your own.
+Team → **Roles & access** lists the roles. Everyone, whatever their role,
+can use their own tasks, check in and out, and request leave.
+
+| Role | For | Extra access |
+| ---- | --- | ------------ |
+| Owner | Founders | Everything |
+| Sales Manager | Sales head | All leads and enquiries, assigning, bookings, subscribers, analytics, assigning tasks |
+| Sales Executive | Sales team | Leads and enquiries assigned to them |
+| Tech Lead / Project Manager | Engineering lead, PM | Assigns tasks, sees everyone's tasks and the timesheet, team attendance, reads client enquiries |
+| Software Developer | Developers | Hands tasks to QA, designers or other developers |
+| QA Tester | Testers | Files bugs as tasks for developers |
+| UI/UX Designer | Designers | Hands tasks on; uploads images to the media library |
+| Intern | Interns | Only their own tasks and attendance |
+| HR | HR | Jobs, applications, team attendance, leave approvals, attendance settings |
+| Content Editor | Marketing | Blog posts and media |
+
+All roles except Owner can be edited, and you can create your own.
 
 - Tick what each role may do per section: view, create, edit, publish, delete,
   assign, export, and so on.

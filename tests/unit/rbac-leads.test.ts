@@ -24,6 +24,20 @@ describe("roles", () => {
     expect(getRole("owner")?.permissions).toEqual(["*"]);
   });
 
+  it("includes engineering roles: developers hand off tasks, tech leads see everyone's", async () => {
+    expect(listRoles().map((role) => role.key)).toEqual(expect.arrayContaining(["tech_lead", "developer", "qa", "designer", "intern"]));
+    const dev = await createUser({ email: "dev@example.com", name: "Dev", role: "developer", password: "DevPass12345" });
+    expect(can(dev, "tasks.assign")).toBe(true);
+    expect(seesAll(dev, "tasks")).toBe(false);
+    expect(can(dev, "leads")).toBe(false);
+    const lead = await createUser({ email: "lead@example.com", name: "Lead", role: "tech_lead", password: "LeadPass12345" });
+    expect(seesAll(lead, "tasks")).toBe(true);
+    expect(can(lead, "attendance")).toBe(true);
+    expect(can(lead, "attendance.manage")).toBe(false);
+    const intern = await createUser({ email: "in@example.com", name: "In", role: "intern", password: "InternPass1234" });
+    expect(can(intern, "tasks.assign")).toBe(false);
+  });
+
   it("checks permissions, treating a bare module as view", () => {
     expect(allows(["leads.view", "leads.edit"], "leads")).toBe(true);
     expect(allows(["leads.view"], "leads.edit")).toBe(false);

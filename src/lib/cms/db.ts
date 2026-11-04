@@ -438,6 +438,14 @@ function migrate(db: Database): void {
     }
     db.prepare("INSERT OR REPLACE INTO settings (key,value) VALUES ('rbac_work_v1','true')").run();
   }
+  // Engineering roles (Nov 2026): added once to existing installs; never overwrites a role with the same key.
+  if (!db.prepare("SELECT 1 FROM settings WHERE key = 'roles_engineering_v1'").get()) {
+    const insert = db.prepare("INSERT OR IGNORE INTO roles (key,name,description,permissions,builtin) VALUES (?,?,?,?,0)");
+    for (const role of DEFAULT_ROLES.filter((item) => ["tech_lead", "developer", "qa", "designer", "intern"].includes(item.key))) {
+      insert.run(role.key, role.name, role.description, JSON.stringify(role.permissions));
+    }
+    db.prepare("INSERT OR REPLACE INTO settings (key,value) VALUES ('roles_engineering_v1','true')").run();
+  }
   const templates = (db.prepare("SELECT COUNT(*) AS n FROM email_templates").get() as { n: number }).n;
   if (templates === 0) {
     const insert = db.prepare("INSERT INTO email_templates (name,audience,subject,body,updated_at) VALUES (?,?,?,?,?)");

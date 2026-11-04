@@ -18,7 +18,7 @@ export default async function RolesPage() {
     <>
       <PageHeader
         title="Roles & access"
-        description="Decide exactly what each role can see and do. People get a role on the Team page; changes apply on their next click."
+        description="Decide exactly what each role can see and do. Everyone can always use their own tasks, check in and out, and request leave. People get a role on the Team page; changes apply on their next click."
       />
       <div className="flex flex-col gap-5">
         {roles.map((role) => {
@@ -35,7 +35,7 @@ export default async function RolesPage() {
                     <span className="block truncate text-xs text-muted-foreground">{role.description || "No description"}</span>
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {members} {members === 1 ? "person" : "people"} · {role.permissions.includes("*") ? "full access" : `${role.permissions.length} permissions`}
+                    {members} {members === 1 ? "person" : "people"} · {role.permissions.includes("*") ? "full access" : role.permissions.length ? `${role.permissions.length} permissions` : "own tasks & attendance"}
                   </span>
                 </summary>
                 <div className="mt-5 border-t border-border pt-5">

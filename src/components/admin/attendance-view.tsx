@@ -82,7 +82,7 @@ export function MonthCalendar({ row, today }: { row: RegisterRow; today: string 
 }
 
 /** People × days with codes and monthly totals. */
-export function RegisterGrid({ rows, today }: { rows: RegisterRow[]; today: string }) {
+export function RegisterGrid({ rows, today, query = "" }: { rows: RegisterRow[]; today: string; query?: string }) {
   if (!rows.length) return null;
   const days = rows[0].cells.map((cell) => cell.day);
   return (
@@ -109,7 +109,7 @@ export function RegisterGrid({ rows, today }: { rows: RegisterRow[]; today: stri
           {rows.map((row) => (
             <tr key={row.userId} className="group">
               <td className="sticky left-0 z-10 whitespace-nowrap border-t border-border bg-surface px-4 py-1.5 font-semibold text-foreground">
-                <Link href={`/admin/attendance/team?person=${row.userId}`} className="hover:underline">
+                <Link href={`/admin/attendance/team?${query ? `${query}&` : ""}person=${row.userId}`} className="hover:underline">
                   {row.name}
                 </Link>
               </td>
