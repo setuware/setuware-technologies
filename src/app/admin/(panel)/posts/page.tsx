@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 
 import { requireUser } from "@/lib/cms/session";
 import { listPostRecords } from "@/lib/cms/store";
-import { buttonClass, Card, Empty, formatDay, inputClass, PageHeader, StatusBadge } from "@/components/admin/ui";
+import { buttonClass, Card, Empty, formatDay, inputClass, PageHeader, StatusBadge, theadClass } from "@/components/admin/ui";
 
 // Signed-in page: rendered per request (see the panel layout).
 export const instant = false;
@@ -49,7 +49,7 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="border-b border-border text-left text-xs uppercase tracking-[0.08em] text-muted-foreground">
+              <thead className={theadClass}>
                 <tr>
                   <th className="px-5 py-3 font-medium">Title</th>
                   <th className="hidden px-5 py-3 font-medium md:table-cell">Category</th>
@@ -61,12 +61,20 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
                 {posts.map((post) => {
                   const state = post.status === "published" && post.published_at > today ? "scheduled" : post.status;
                   return (
-                    <tr key={post.id} className="hover:bg-foreground/[0.03]">
+                    <tr key={post.id} className="transition-colors hover:bg-foreground/[0.03]">
                       <td className="px-5 py-3">
-                        <Link href={`/admin/posts/${post.id}`} className="font-medium text-foreground hover:underline">
-                          {post.title}
+                        <Link href={`/admin/posts/${post.id}`} className="flex items-center gap-3.5">
+                          {post.cover_src ? (
+                            // eslint-disable-next-line @next/next/no-img-element -- small admin thumbnail
+                            <img src={post.cover_src} alt="" className="h-11 w-16 shrink-0 rounded-lg border border-border object-cover" />
+                          ) : (
+                            <span aria-hidden className="h-11 w-16 shrink-0 rounded-lg bg-[linear-gradient(135deg,#2f56d8,#0a8ea6)] opacity-80" />
+                          )}
+                          <span className="min-w-0">
+                            <span className="line-clamp-1 font-semibold text-foreground hover:underline">{post.title}</span>
+                            <span className="block truncate text-xs text-muted-foreground">/blog/{post.slug}</span>
+                          </span>
                         </Link>
-                        <span className="block text-xs text-muted-foreground">/blog/{post.slug}</span>
                       </td>
                       <td className="hidden px-5 py-3 text-muted-foreground md:table-cell">{post.category}</td>
                       <td className="px-5 py-3">

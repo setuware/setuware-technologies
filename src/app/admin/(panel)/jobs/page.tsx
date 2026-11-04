@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { getDb } from "@/lib/cms/db";
 import { requireUser } from "@/lib/cms/session";
 import { listJobRecords } from "@/lib/cms/store";
-import { buttonClass, Card, Empty, formatDay, PageHeader, StatusBadge } from "@/components/admin/ui";
+import { buttonClass, Card, Empty, formatDay, PageHeader, StatusBadge, theadClass } from "@/components/admin/ui";
 
 // Signed-in page: rendered per request (see the panel layout).
 export const instant = false;
@@ -35,7 +35,7 @@ export default async function JobsPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="border-b border-border text-left text-xs uppercase tracking-[0.08em] text-muted-foreground">
+              <thead className={theadClass}>
                 <tr>
                   <th className="px-5 py-3 font-medium">Role</th>
                   <th className="hidden px-5 py-3 font-medium md:table-cell">Team</th>
@@ -46,9 +46,9 @@ export default async function JobsPage() {
               </thead>
               <tbody className="divide-y divide-border">
                 {jobs.map((job) => (
-                  <tr key={job.id} className="hover:bg-foreground/[0.03]">
+                  <tr key={job.id} className="transition-colors hover:bg-foreground/[0.03]">
                     <td className="px-5 py-3">
-                      <Link href={`/admin/jobs/${job.id}`} className="font-medium text-foreground hover:underline">
+                      <Link href={`/admin/jobs/${job.id}`} className="font-semibold text-foreground hover:underline">
                         {job.title}
                       </Link>
                       <span className="block text-xs text-muted-foreground">
@@ -60,7 +60,10 @@ export default async function JobsPage() {
                       <StatusBadge status={job.status} />
                     </td>
                     <td className="px-5 py-3">
-                      <Link href={`/admin/applications?job=${job.slug}`} className="font-medium text-setu-dark hover:underline dark:text-[#5fd0ec]">
+                      <Link
+                        href={`/admin/applications?job=${job.slug}`}
+                        className="inline-flex min-w-8 items-center justify-center rounded-full bg-[#2f56d8]/10 px-2.5 py-0.5 text-xs font-bold text-[#2f56d8] hover:bg-[#2f56d8]/15 dark:text-[#8fb0ff]"
+                      >
                         {counts.get(job.slug) ?? 0}
                       </Link>
                     </td>

@@ -3,7 +3,7 @@ import { Download } from "lucide-react";
 
 import { requireUser } from "@/lib/cms/session";
 import { APPLICATION_STATUSES, listApplications, listJobRecords } from "@/lib/cms/store";
-import { buttonClass, Card, Empty, formatWhen, inputClass, PageHeader, StatusBadge } from "@/components/admin/ui";
+import { Avatar, buttonClass, Card, Empty, formatWhen, inputClass, PageHeader, StatusBadge, theadClass, timeAgo } from "@/components/admin/ui";
 
 // Signed-in page: rendered per request (see the panel layout).
 export const instant = false;
@@ -56,7 +56,7 @@ export default async function ApplicationsPage({
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="border-b border-border text-left text-xs uppercase tracking-[0.08em] text-muted-foreground">
+              <thead className={theadClass}>
                 <tr>
                   <th className="px-5 py-3 font-medium">Candidate</th>
                   <th className="hidden px-5 py-3 font-medium md:table-cell">Role</th>
@@ -66,18 +66,21 @@ export default async function ApplicationsPage({
               </thead>
               <tbody className="divide-y divide-border">
                 {items.map((item) => (
-                  <tr key={item.id} className="hover:bg-foreground/[0.03]">
+                  <tr key={item.id} className="transition-colors hover:bg-foreground/[0.03]">
                     <td className="px-5 py-3">
-                      <Link href={`/admin/applications/${item.id}`} className="font-medium text-foreground hover:underline">
-                        {item.name}
+                      <Link href={`/admin/applications/${item.id}`} className="flex items-center gap-3">
+                        <Avatar name={item.name} />
+                        <span className="min-w-0">
+                          <span className="block truncate font-semibold text-foreground hover:underline">{item.name}</span>
+                          <span className="block truncate text-xs text-muted-foreground">{item.email}</span>
+                        </span>
                       </Link>
-                      <span className="block text-xs text-muted-foreground">{item.email}</span>
                     </td>
                     <td className="hidden px-5 py-3 text-muted-foreground md:table-cell">{item.job_title}</td>
                     <td className="px-5 py-3">
                       <StatusBadge status={item.status} />
                     </td>
-                    <td className="hidden px-5 py-3 text-muted-foreground sm:table-cell">{formatWhen(item.created_at)}</td>
+                    <td className="hidden px-5 py-3 text-muted-foreground sm:table-cell" title={formatWhen(item.created_at)}>{timeAgo(item.created_at)}</td>
                   </tr>
                 ))}
               </tbody>
