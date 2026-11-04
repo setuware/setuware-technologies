@@ -11,7 +11,8 @@ import {
   Wrench,
 } from "lucide-react";
 
-import { applyHref, jobs, jobTeams } from "@/lib/careers";
+import { applyHref, jobTeams } from "@/lib/careers";
+import { getOpenJobs } from "@/lib/cms/public";
 import { breadcrumbJsonLd, faqJsonLd, pageMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/button";
@@ -122,7 +123,8 @@ const FAQS = [
   },
 ] as const;
 
-export default function CareersPage() {
+export default async function CareersPage() {
+  const jobs = await getOpenJobs();
   const roles: RoleCard[] = jobs.map((job) => ({
     slug: job.slug,
     title: job.title,

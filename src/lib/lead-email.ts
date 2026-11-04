@@ -60,7 +60,7 @@ function sender(): string {
 }
 
 /** Bare address of the sending mailbox (from LEAD_EMAIL_FROM or SMTP_USER). */
-function senderAddress(): string {
+export function senderAddress(): string {
   const from = process.env.LEAD_EMAIL_FROM ?? "";
   return from.match(/<([^>]+)>/)?.[1] ?? (from.includes("@") ? from.trim() : (process.env.SMTP_USER ?? ""));
 }

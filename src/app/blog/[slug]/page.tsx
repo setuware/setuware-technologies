@@ -4,23 +4,32 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
-import { getPost, posts, relatedPosts } from "@/lib/posts";
-import { getPostBody } from "@/lib/post-bodies";
+import type { Post } from "@/lib/posts";
+import { getPublishedPost, getPublishedPosts } from "@/lib/cms/public";
 import { articleJsonLd, breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
 import { PostBody } from "@/components/blog/blocks";
+import { ViewBeacon } from "@/components/interactive/view-beacon";
 import { Badge } from "@/components/ui/badge";
 import { Section } from "@/components/ui/section";
 import { NewsletterForm } from "@/components/interactive/newsletter-form";
 
-export function generateStaticParams() {
-  return posts.map((post) => ({ slug: post.slug }));
+export async function generateStaticParams() {
+  return (await getPublishedPosts()).map((post) => ({ slug: post.slug }));
+}
+
+/** Same category first, then the newest. */
+function relatedFrom(all: readonly Post[], current: Post, limit: number): Post[] {
+  return all
+    .filter((post) => post.slug !== current.slug)
+    .sort((a, b) => Number(b.category === current.category) - Number(a.category === current.category))
+    .slice(0, limit);
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = (await getPublishedPost(slug))?.post;
   if (!post) {
     return pageMetadata({
       title: "Not found",
@@ -60,10 +69,11 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
 
 async function PostArticle({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = getPost(slug);
-  if (!post) notFound();
+  const found = await getPublishedPost(slug);
+  if (!found) notFound();
+  const { post, blocks } = found;
 
-  const related = relatedPosts(post.slug, 3);
+  const related = relatedFrom(await getPublishedPosts(), post, 3);
 
   return (
     <>
@@ -115,6 +125,7 @@ async function PostArticle({ params }: { params: Promise<{ slug: string }> }) {
             <div className="relative mx-auto aspect-[3/2] max-w-5xl overflow-hidden rounded-card border border-border bg-background-subtle shadow-ambient sm:aspect-[16/9] lg:aspect-[2/1]">
               <Image
                 src={post.cover.src}
+                unoptimized={post.cover.src.startsWith("/media/")}
                 alt={post.cover.alt}
                 fill
                 fetchPriority="high"
@@ -129,7 +140,8 @@ async function PostArticle({ params }: { params: Promise<{ slug: string }> }) {
           {/* Same column as the header: 44rem is roughly 68ch at the body size. */}
           <div className="container-page">
             <div className="mx-auto max-w-[44rem]">
-              <PostBody blocks={getPostBody(post.slug)} />
+              <PostBody blocks={blocks} />
+              <ViewBeacon path={`/blog/${post.slug}`} />
 
               <div className="mt-14 flex flex-col gap-5 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
@@ -216,6 +228,7 @@ async function PostArticle({ params }: { params: Promise<{ slug: string }> }) {
                     <div className="relative aspect-[3/2] overflow-hidden">
                       <Image
                         src={item.cover.src}
+                unoptimized={item.cover.src.startsWith("/media/")}
                         alt={item.cover.alt}
                         fill
                         sizes="(min-width: 768px) 30vw, 100vw"

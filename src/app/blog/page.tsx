@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Mail } from "lucide-react";
 
-import { postsByDate, type Post } from "@/lib/posts";
+import type { Post } from "@/lib/posts";
+import { getPublishedPosts } from "@/lib/cms/public";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { formatDate } from "@/lib/utils";
@@ -19,8 +20,8 @@ export const metadata = pageMetadata({
   path: "/blog",
 });
 
-export default function BlogPage() {
-  const [lead, ...rest] = postsByDate;
+export default async function BlogPage() {
+  const [lead, ...rest] = await getPublishedPosts();
 
   return (
     <>
@@ -48,6 +49,7 @@ export default function BlogPage() {
                 <div className="relative aspect-[16/10] overflow-hidden lg:aspect-auto lg:min-h-[26rem]">
                   <Image
                     src={lead.cover.src}
+                    unoptimized={lead.cover.src.startsWith("/media/")}
                     alt={lead.cover.alt}
                     fill
                     priority
@@ -99,6 +101,7 @@ export default function BlogPage() {
                       <div className="relative aspect-[3/2] overflow-hidden">
                         <Image
                           src={post.cover.src}
+                    unoptimized={post.cover.src.startsWith("/media/")}
                           alt={post.cover.alt}
                           fill
                           sizes="(min-width: 1024px) 30vw, (min-width: 768px) 50vw, 100vw"

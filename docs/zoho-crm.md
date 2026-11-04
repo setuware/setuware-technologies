@@ -68,6 +68,31 @@ Delete the test lead in Zoho CRM → Leads, then submit a real enquiry on the
 site and check Leads. The server log shows `[lead] zoho lead created …`
 (`pm2 logs setuware`).
 
+## CRM leads in the admin
+
+Admin → **CRM leads** mirrors the Leads in Zoho so the team can work on them
+without a Zoho licence each:
+
+- Everyone with the *CRM leads* permission sees leads; roles with **own
+  records only** (e.g. Sales Executive) see just the leads assigned to them.
+- A lead whose Zoho owner has the same email as an admin user is assigned
+  to that person automatically.
+- **Status**, **owner** (when that person also has a Zoho CRM user) and
+  **notes / emails** made in the admin are written back to the Zoho lead.
+- The list syncs in the background when opened (at most every 10 minutes),
+  and **Sync now** pulls changes immediately.
+
+**Automatic sync every 5 minutes** (recommended): set `CRON_SECRET` in
+`.env.production.local` (`openssl rand -hex 24`), `pm2 restart setuware
+--update-env`, then add to `crontab -e`:
+
+```cron
+*/5 * * * * curl -fsS "http://127.0.0.1:3000/api/cron/crm-sync?key=YOUR_CRON_SECRET" >/dev/null
+```
+
+Add `&full=1` once to re-import every lead (for example after deleting
+`data/cms.db`).
+
 ## Troubleshooting
 
 | Message | Fix |

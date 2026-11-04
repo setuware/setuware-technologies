@@ -102,6 +102,19 @@ export const bookingSchema = z.object({
 
 export type BookingInput = z.infer<typeof bookingSchema>;
 
+export const applicationSchema = z.object({
+  job: z.string().trim().min(1).max(120),
+  name: trimmed(80).min(2, "Tell us your name"),
+  email: emailSchema,
+  phone: trimmed(24).regex(/^[+]?[\d\s()-]{7,}$/, "Enter a phone number we can call"),
+  links: trimmed(500).optional().or(z.literal("")),
+  note: trimmed(3000).optional().or(z.literal("")),
+  honeypot: z.string().max(0).optional().or(z.literal("")),
+  elapsedMs: z.coerce.number().int().nonnegative().optional(),
+});
+
+export type ApplicationInput = z.infer<typeof applicationSchema>;
+
 /** Flattens a ZodError into `{ field: message }` for form rendering. */
 export function fieldErrors(error: z.ZodError): Record<string, string> {
   const result: Record<string, string> = {};

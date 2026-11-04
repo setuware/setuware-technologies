@@ -1,9 +1,8 @@
 import type { MetadataRoute } from "next";
 
-import { jobs } from "@/lib/careers";
 import { caseStudies, services } from "@/lib/content";
 import { industries } from "@/lib/industries";
-import { posts } from "@/lib/posts";
+import { getOpenJobs, getPublishedPosts } from "@/lib/cms/public";
 import { site } from "@/lib/site";
 import { currentDateIso } from "@/lib/time";
 
@@ -13,6 +12,7 @@ import { currentDateIso } from "@/lib/time";
  * indexable pages belong here: `/status` and `/not-found` are `noindex`.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [posts, jobs] = await Promise.all([getPublishedPosts(), getOpenJobs()]);
   const url = (path: string) => new URL(path, site.url).toString();
   const lastModified = new Date(await currentDateIso());
 

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { KNOWN_SLUGS } from "@/lib/routes";
+import { openJobBySlug, publishedPostBySlug } from "@/lib/cms/store";
 
 /**
  * Returns a real 404 for unknown content slugs.
@@ -57,6 +58,17 @@ export async function proxy(request: NextRequest) {
   }
 
   if (known.has(decoded)) return NextResponse.next();
+
+  // Blog posts and jobs are managed in the admin, so ask the database.
+  if (section === "blog" || section === "careers") {
+    try {
+      const exists = section === "blog" ? publishedPostBySlug(decoded) : openJobBySlug(decoded);
+      if (exists) return NextResponse.next();
+    } catch (error) {
+      console.error("[proxy] cms lookup failed", error instanceof Error ? error.message : error);
+      return NextResponse.next();
+    }
+  }
 
   const html = await notFoundPage(request.nextUrl.origin);
 

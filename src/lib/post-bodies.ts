@@ -15,7 +15,8 @@ export type Block =
   | { type: "ol"; items: readonly string[] }
   | { type: "quote"; text: string; cite?: string }
   | { type: "code"; language: string; code: string }
-  | { type: "callout"; tone: "info" | "warn"; text: string };
+  | { type: "callout"; tone: "info" | "warn"; text: string }
+  | { type: "image"; src: string; alt: string; caption?: string };
 
 export const postBodies: Record<string, readonly Block[]> = {
   "surviving-a-traffic-spike": [

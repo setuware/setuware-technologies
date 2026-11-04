@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
-import { postsByDate, type Post } from "@/lib/posts";
+import type { Post } from "@/lib/posts";
 import { formatDate } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/button";
 import { TextReveal } from "@/components/motion/text-reveal";
@@ -50,6 +50,7 @@ function ArticleCard({
         <div className="relative size-full">
           <Image
             src={post.cover.src}
+            unoptimized={post.cover.src.startsWith("/media/")}
             alt={post.cover.alt}
             fill
             sizes={lead ? "(min-width: 768px) 32rem, 90vw" : "(min-width: 768px) 20rem, 90vw"}
@@ -84,8 +85,8 @@ function ArticleCard({
  * phone never downloads a desktop-sized asset. Images wipe up into place one
  * after another; titles follow them.
  */
-export function Articles() {
-  const [lead, ...rest] = postsByDate.slice(0, 3);
+export function Articles({ posts }: { posts: readonly Post[] }) {
+  const [lead, ...rest] = posts.slice(0, 3);
 
   return (
     <section id="blog" aria-labelledby="articles-title" className="bg-background py-20 md:py-24">

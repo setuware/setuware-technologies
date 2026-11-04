@@ -7,26 +7,23 @@ import {
   Briefcase,
   Check,
   Clock,
-  FileText,
-  FolderGit2,
-  Mail,
   MapPin,
   Plus,
-  Timer,
   Users,
 } from "lucide-react";
 
 import {
   applyHref,
   compensationNote,
-  getJob,
   jobMetaTitle,
   jobMetaDescription,
   jobPostingJsonLd,
-  jobs,
   whatWeOffer,
   type Job,
 } from "@/lib/careers";
+import { getOpenJob, getOpenJobs } from "@/lib/cms/public";
+import { ApplyForm } from "@/components/interactive/apply-form";
+import { ViewBeacon } from "@/components/interactive/view-beacon";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/button";
@@ -36,13 +33,13 @@ import { HeroBackdrop } from "@/components/interactive/hero-backdrop";
 import { heroBackdropPoster, heroBackdropSources } from "@/lib/media";
 import { FadeUp, Stagger, StaggerItem } from "@/components/motion/primitives";
 
-export function generateStaticParams() {
-  return jobs.map((job) => ({ slug: job.slug }));
+export async function generateStaticParams() {
+  return (await getOpenJobs()).map((job) => ({ slug: job.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const job = getJob(slug);
+  const job = await getOpenJob(slug);
   if (!job) {
     return pageMetadata({ title: "Role not found", description: "", path: "/careers", noIndex: true });
   }
@@ -67,21 +64,12 @@ export default function RolePage({ params }: { params: Promise<{ slug: string }>
   );
 }
 
-const APPLICATION_CHECKLIST = [
-  { Icon: FileText, label: "Your CV", detail: "PDF format preferred, up to two pages." },
-  {
-    Icon: FolderGit2,
-    label: "Portfolio, GitHub or live work",
-    detail: "Links to your work, with a note on your contribution.",
-  },
-  { Icon: Timer, label: "Notice period", detail: "Including your earliest available start date." },
-  { Icon: MapPin, label: "Current location", detail: "And whether you would relocate to Gurugram." },
-] as const;
 
 async function Role({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const job = getJob(slug);
+  const job = await getOpenJob(slug);
   if (!job) notFound();
+  const jobs = await getOpenJobs();
 
   const others = [
     ...jobs.filter((other) => other.slug !== job.slug && other.team === job.team),
@@ -138,7 +126,7 @@ async function Role({ params }: { params: Promise<{ slug: string }> }) {
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
               <ButtonLink
-                href={applyHref(job)}
+                href="#apply"
                 size="lg"
                 variant="ghost"
                 className="rounded-full bg-setu font-semibold text-white hover:bg-setu-dark dark:hover:bg-setu-dark"
@@ -180,7 +168,7 @@ async function Role({ params }: { params: Promise<{ slug: string }> }) {
             </FadeUp>
           </div>
 
-          <aside className="lg:sticky lg:top-24 lg:self-start" aria-labelledby="apply-heading">
+          <aside id="apply" className="scroll-mt-24 lg:sticky lg:top-24 lg:self-start" aria-labelledby="apply-heading">
             <div className="relative overflow-hidden rounded-card border border-border bg-surface p-6 shadow-ambient md:p-7">
               <span
                 aria-hidden
@@ -190,39 +178,21 @@ async function Role({ params }: { params: Promise<{ slug: string }> }) {
                 Apply for this role
               </h2>
               <p className="mt-2 text-[0.92rem] leading-relaxed text-muted-foreground">
-                Email{" "}
+                Takes about two minutes. We reply to every application within five working days.
+              </p>
+
+              <ApplyForm jobSlug={job.slug} jobTitle={job.title} />
+              <ViewBeacon path={`/careers/${job.slug}`} />
+
+              <p className="mt-4 text-center text-xs text-muted-foreground">
+                Prefer email?{" "}
                 <a
                   href={applyHref(job)}
                   className="font-medium text-foreground underline decoration-setu/50 underline-offset-4 hover:text-setu"
                 >
                   {site.hrEmail}
-                </a>{" "}
-                with the role in the subject line. Please include:
+                </a>
               </p>
-
-              <ul className="mt-5 flex flex-col gap-4">
-                {APPLICATION_CHECKLIST.map(({ Icon, label, detail }) => (
-                  <li key={label} className="flex gap-3">
-                    <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-setu/10 text-setu ring-1 ring-inset ring-setu/15">
-                      <Icon className="size-4" aria-hidden />
-                    </span>
-                    <span className="text-[0.9rem] leading-snug">
-                      <span className="block font-medium text-foreground">{label}</span>
-                      <span className="text-muted-foreground">{detail}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-
-              <ButtonLink
-                href={applyHref(job)}
-                block
-                variant="ghost"
-                className="mt-6 rounded-full bg-setu font-semibold text-white hover:bg-setu-dark dark:hover:bg-setu-dark"
-              >
-                <Mail className="size-4" aria-hidden />
-                Apply by email
-              </ButtonLink>
 
               <dl className="mt-6 flex flex-col gap-2 border-t border-border pt-5 text-[0.85rem]">
                 <div className="flex justify-between gap-4">

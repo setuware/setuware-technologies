@@ -45,3 +45,6 @@ next-env.d.ts
 /playwright-report
 /test-results
 .deploy/
+
+# CMS database and uploads (server only)
+/data/

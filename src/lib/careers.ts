@@ -11,8 +11,11 @@ import { site } from "./site";
 export const jobTeams = ["Engineering", "Design", "Marketing", "Sales & Ops"] as const;
 export type JobTeam = (typeof jobTeams)[number];
 
-export type JobType = "Full-time" | "Internship";
-export type JobLocation = "Gurugram (on-site)" | "Gurugram · Hybrid";
+export const jobTypes = ["Full-time", "Part-time", "Contract", "Internship"] as const;
+export type JobType = (typeof jobTypes)[number];
+export const jobLocations = ["Gurugram (on-site)", "Gurugram · Hybrid", "Remote (India)"] as const;
+/** Usually one of `jobLocations`; the admin may enter another. */
+export type JobLocation = string;
 
 export interface Job {
   slug: string;
@@ -338,8 +341,8 @@ export function jobMetaDescription(job: Job): string {
 }
 
 /** `validThrough` for the current listings, as YYYY-MM-DD. */
-export function jobsValidThrough(): string {
-  const date = new Date(`${JOBS_POSTED_ON}T00:00:00Z`);
+export function jobsValidThrough(postedOn: string = JOBS_POSTED_ON): string {
+  const date = new Date(`${postedOn.slice(0, 10)}T00:00:00Z`);
   date.setUTCDate(date.getUTCDate() + JOBS_VALID_DAYS);
   return date.toISOString().slice(0, 10);
 }
@@ -363,17 +366,23 @@ export function applyHref(job?: Pick<Job, "title">): string {
 }
 
 /** Schema.org `employmentType` for a role. */
-export function employmentType(type: JobType): "FULL_TIME" | "INTERN" {
-  return type === "Internship" ? "INTERN" : "FULL_TIME";
+export function employmentType(type: JobType): "FULL_TIME" | "PART_TIME" | "CONTRACTOR" | "INTERN" {
+  if (type === "Internship") return "INTERN";
+  if (type === "Part-time") return "PART_TIME";
+  if (type === "Contract") return "CONTRACTOR";
+  return "FULL_TIME";
 }
 
+const escapeHtml = (value: string) =>
+  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
 /** JobPosting structured data for a role detail page. */
-export function jobPostingJsonLd(job: Job) {
+export function jobPostingJsonLd(job: Job & { postedAt?: string }) {
   const description = [
-    `<p>${job.summary}</p>`,
-    `<h3>Responsibilities</h3><ul>${job.responsibilities.map((item) => `<li>${item}</li>`).join("")}</ul>`,
-    `<h3>Requirements</h3><ul>${job.requirements.map((item) => `<li>${item}</li>`).join("")}</ul>`,
-    `<h3>Nice to have</h3><ul>${job.niceToHaves.map((item) => `<li>${item}</li>`).join("")}</ul>`,
+    `<p>${escapeHtml(job.summary)}</p>`,
+    `<h3>Responsibilities</h3><ul>${job.responsibilities.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`,
+    `<h3>Requirements</h3><ul>${job.requirements.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`,
+    `<h3>Nice to have</h3><ul>${job.niceToHaves.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`,
     `<h3>What we offer</h3><ul>${whatWeOffer.map((item) => `<li>${item}</li>`).join("")}</ul>`,
     `<p>${compensationNote}</p>`,
   ].join("");
@@ -384,10 +393,10 @@ export function jobPostingJsonLd(job: Job) {
     title: job.title,
     description,
     identifier: { "@type": "PropertyValue", name: site.name, value: job.slug },
-    datePosted: JOBS_POSTED_ON,
-    validThrough: jobsValidThrough(),
+    datePosted: (job.postedAt ?? JOBS_POSTED_ON).slice(0, 10),
+    validThrough: jobsValidThrough(job.postedAt),
     employmentType: employmentType(job.type),
-    directApply: false,
+    directApply: true,
     hiringOrganization: {
       "@type": "Organization",
       name: site.name,
