@@ -5,7 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BarChart3,
+  CalendarCheck,
+  Clock3,
   Download,
+  ListChecks,
+  Timer,
   ShieldCheck,
   Target,
   CalendarDays,
@@ -31,10 +35,23 @@ import { cn } from "@/lib/utils";
 import { LogoMark } from "@/components/layout/logo";
 import { logoutAction } from "@/app/admin/actions";
 
+import { Elapsed } from "./live-clock";
+
+export interface ShellPresence {
+  state: "out" | "in" | "break" | "done";
+  since: string | null;
+  breakMinutes: number;
+  breakSince: string | null;
+  timer: { taskId: number; title: string; startedAt: string } | null;
+}
+
 const NAV = [
   { group: "Overview", href: "/admin", label: "Dashboard", Icon: LayoutDashboard, area: null },
   { group: "Overview", href: "/admin/search", label: "Search", Icon: Search, area: null },
   { group: "Overview", href: "/admin/analytics", label: "Analytics", Icon: BarChart3, area: "analytics" },
+  { group: "Work", href: "/admin/tasks", label: "Tasks", Icon: ListChecks, area: null },
+  { group: "Work", href: "/admin/attendance", label: "My attendance", Icon: Clock3, area: null },
+  { group: "Work", href: "/admin/attendance/team", label: "Team attendance", Icon: CalendarCheck, area: "attendance" },
   { group: "Sales", href: "/admin/leads", label: "CRM leads", Icon: Target, area: "leads" },
   { group: "Sales", href: "/admin/enquiries", label: "Enquiries", Icon: Inbox, area: "enquiries" },
   { group: "Sales", href: "/admin/bookings", label: "Bookings", Icon: CalendarDays, area: "bookings" },
@@ -53,8 +70,10 @@ export function AdminShell({
   user,
   areas,
   badges,
+  presence,
   children,
 }: {
+  presence: ShellPresence;
   user: { name: string; email: string; roleLabel: string };
   areas: readonly string[];
   badges: Record<string, number>;
@@ -78,6 +97,61 @@ export function AdminShell({
   const items = NAV.filter((item) => item.area === null || areas.includes(item.area));
 
   const groups = [...new Set(items.map((item) => item.group))];
+  // The most specific matching link is the active one (/admin/attendance vs /admin/attendance/team).
+  const activeHref = items
+    .map((item) => item.href as string)
+    .filter((href) => (href === "/admin" ? pathname === "/admin" : pathname === href || pathname.startsWith(`${href}/`)))
+    .sort((a, b) => b.length - a.length)[0];
+
+  const presenceBar = (
+    <div className="flex items-center gap-2">
+      {presence.timer ? (
+        <Link
+          href={`/admin/tasks/${presence.timer.taskId}`}
+          title={`Timer running: ${presence.timer.title}`}
+          className="hidden max-w-60 items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-700 hover:bg-violet-500/15 sm:inline-flex dark:text-violet-300"
+        >
+          <Timer className="size-3.5 shrink-0 animate-pulse" aria-hidden />
+          <span className="truncate">{presence.timer.title}</span>
+          <Elapsed since={presence.timer.startedAt} />
+        </Link>
+      ) : null}
+      <Link
+        href="/admin/attendance"
+        className={cn(
+          "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors",
+          presence.state === "in" && "bg-emerald-500/12 text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-300",
+          presence.state === "break" && "bg-amber-500/12 text-amber-700 hover:bg-amber-500/20 dark:text-amber-300",
+          presence.state === "out" && "bg-[#2f56d8] text-white hover:brightness-110",
+          presence.state === "done" && "bg-foreground/[0.06] text-muted-foreground hover:text-foreground",
+        )}
+      >
+        <span
+          aria-hidden
+          className={cn(
+            "size-2 rounded-full",
+            presence.state === "in" && "animate-pulse bg-emerald-500",
+            presence.state === "break" && "bg-amber-500",
+            presence.state === "out" && "bg-white",
+            presence.state === "done" && "bg-slate-400",
+          )}
+        />
+        {presence.state === "in" && presence.since ? (
+          <>
+            Working <Elapsed since={presence.since} minus={presence.breakMinutes} />
+          </>
+        ) : presence.state === "break" && presence.breakSince ? (
+          <>
+            On break <Elapsed since={presence.breakSince} />
+          </>
+        ) : presence.state === "done" ? (
+          "Checked out"
+        ) : (
+          "Check in"
+        )}
+      </Link>
+    </div>
+  );
   const initials = user.name
     .split(/\s+/)
     .slice(0, 2)
@@ -93,7 +167,7 @@ export function AdminShell({
             {items
               .filter((item) => item.group === group)
               .map(({ href, label, Icon }) => {
-                const active = href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
+                const active = href === activeHref;
                 const count = badges[href];
                 return (
                   <Link
@@ -194,6 +268,7 @@ export function AdminShell({
             <LogoMark className="size-8" />
             <span className="font-[family-name:var(--font-brand)] font-bold tracking-[0.06em]">ADMIN</span>
           </Link>
+          <div className="ml-auto mr-2">{presenceBar}</div>
           <button type="button" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen(!open)} className="rounded-lg p-2 hover:bg-white/10">
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
@@ -209,7 +284,8 @@ export function AdminShell({
                 className="h-9 w-full rounded-full border border-border bg-surface pl-9 pr-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-setu focus:ring-2 focus:ring-setu/20"
               />
             </form>
-            <p className="ml-auto mr-4 text-xs text-muted-foreground">
+            <div className="ml-auto mr-4">{presenceBar}</div>
+            <p className="mr-4 text-xs text-muted-foreground">
               {new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "long", timeZone: "Asia/Kolkata" }).format(new Date())}
             </p>
             <a href="/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground">

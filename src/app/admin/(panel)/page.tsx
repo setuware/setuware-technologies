@@ -1,10 +1,12 @@
 import Link from "next/link";
-import { ArrowRight, Briefcase, FileText, Inbox, Plus, Target, UsersRound } from "lucide-react";
+import { ArrowRight, Briefcase, CalendarClock, Clock3, FileText, Inbox, Plus, Target, UsersRound } from "lucide-react";
 
 import { can, recentAudit, seesAll } from "@/lib/cms/auth";
 import { followUpsDue, upcomingInterviews } from "@/lib/cms/crm";
 import { leadCounts } from "@/lib/cms/crm-leads";
 import { getDb } from "@/lib/cms/db";
+import { formatMinutes, listRequests, localDay, localTime, presence, workedMinutes } from "@/lib/cms/attendance";
+import { listTasks, taskCounts } from "@/lib/cms/tasks";
 import { requireUser } from "@/lib/cms/session";
 import { dashboardCounts, ENQUIRY_STATUSES, listApplications, listEnquiries } from "@/lib/cms/store";
 import { LogoMark } from "@/components/layout/logo";
@@ -38,6 +40,15 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
 
   const dueFollowUps = showEnquiries ? followUpsDue(seesAll(user, "enquiries") ? undefined : user.name) : [];
   const interviews = showApplications ? upcomingInterviews() : [];
+
+  const today = localDay();
+  const punch = presence(user.id);
+  const myTasks = listTasks({ assigneeId: user.id })
+    .filter((task) => task.status !== "done")
+    .sort((a, b) => (a.due_date ?? "9999").localeCompare(b.due_date ?? "9999"))
+    .slice(0, 5);
+  const taskStats = taskCounts(user.id, today);
+  const pendingApprovals = can(user, "attendance.manage") ? listRequests({ status: "pending" }).length : 0;
 
   const pipeline = showEnquiries
     ? (getDb().prepare("SELECT status, COUNT(*) AS n FROM enquiries GROUP BY status").all() as { status: string; n: number }[])
@@ -95,6 +106,72 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           Your role does not include that section. Ask the owner if you need access.
         </p>
       ) : null}
+
+      <Card className="mb-6 grid overflow-hidden md:grid-cols-[18rem_1fr]">
+        <Link href="/admin/attendance" className="flex flex-col justify-between gap-4 border-b border-border p-5 transition-colors hover:bg-foreground/[0.02] md:border-b-0 md:border-r">
+          <div>
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <Clock3 className="size-3.5" aria-hidden /> My day
+            </p>
+            <p className="mt-2 font-display text-2xl font-semibold text-foreground">
+              {punch.state === "out" ? "Not checked in" : punch.state === "done" ? "Checked out" : punch.state === "break" ? "On a break" : "Working"}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {punch.record
+                ? `In at ${localTime(punch.record.check_in_at)}${punch.record.check_out_at ? ` · out at ${localTime(punch.record.check_out_at)}` : ""} · ${formatMinutes(workedMinutes(punch.record))} worked`
+                : "Check in to start your day."}
+            </p>
+          </div>
+          <span className="inline-flex w-fit items-center gap-1 text-sm font-semibold text-[#2f56d8] dark:text-[#8fb0ff]">
+            {punch.state === "out" ? "Check in now" : "Open attendance"} <ArrowRight className="size-3.5" aria-hidden />
+          </span>
+          {pendingApprovals ? (
+            <span className="w-fit rounded-full bg-amber-500/15 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:text-amber-300">
+              {pendingApprovals} leave {pendingApprovals === 1 ? "request" : "requests"} to approve
+            </span>
+          ) : null}
+        </Link>
+        <div className="p-5">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-semibold text-foreground">
+              My tasks <span className="font-normal text-muted-foreground">· {taskStats.open} open{taskStats.overdue ? `, ${taskStats.overdue} overdue` : ""}</span>
+            </p>
+            <Link href="/admin/tasks" className="inline-flex items-center gap-1 text-sm font-medium text-setu-dark hover:underline dark:text-[#5fd0ec]">
+              Board <ArrowRight className="size-3.5" aria-hidden />
+            </Link>
+          </div>
+          {myTasks.length ? (
+            <ul className="mt-3 flex flex-col divide-y divide-border">
+              {myTasks.map((task) => (
+                <li key={task.id} className="flex items-center gap-3 py-2 text-sm">
+                  <span
+                    aria-hidden
+                    className={`size-2 shrink-0 rounded-full ${task.priority === "urgent" ? "bg-red-500" : task.priority === "high" ? "bg-amber-500" : task.priority === "low" ? "bg-slate-400" : "bg-[#2f56d8]"}`}
+                  />
+                  <Link href={`/admin/tasks/${task.id}`} className="min-w-0 flex-1 truncate font-medium text-foreground hover:underline">
+                    {task.title}
+                  </Link>
+                  {task.due_date ? (
+                    <span
+                      className={`inline-flex shrink-0 items-center gap-1 text-xs font-semibold ${task.due_date < today ? "text-red-600 dark:text-red-400" : task.due_date === today ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground"}`}
+                    >
+                      <CalendarClock className="size-3" aria-hidden />
+                      {task.due_date < today ? "Overdue" : task.due_date === today ? "Today" : task.due_date.slice(5)}
+                    </span>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm text-muted-foreground">
+              Nothing assigned to you.{" "}
+              <Link href="/admin/tasks/new" className="font-medium text-setu-dark hover:underline dark:text-[#5fd0ec]">
+                Add a task
+              </Link>
+            </p>
+          )}
+        </div>
+      </Card>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {can(user, "leads") ? (

@@ -40,7 +40,7 @@ export function can(user: Pick<AdminUser, "permissions">, permission: string): b
 }
 
 /** True when the person sees every record of a scoped module, not only their own. */
-export function seesAll(user: Pick<AdminUser, "permissions">, module: "leads" | "enquiries" | "applications"): boolean {
+export function seesAll(user: Pick<AdminUser, "permissions">, module: "leads" | "enquiries" | "applications" | "tasks"): boolean {
   return allows(user.permissions, `${module}.all`);
 }
 

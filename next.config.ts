@@ -87,6 +87,12 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: securityHeaders,
       },
+      // The admin's attendance check-in may record the browser's location
+      // (the later rule wins for the same header key).
+      {
+        source: "/admin/:path*",
+        headers: [{ key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self), interest-cohort=()" }],
+      },
       // `/_next/static/*` is left alone on purpose: Next already serves it
       // immutable, and overriding it breaks dev-time revalidation.
       {

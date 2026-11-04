@@ -1,4 +1,5 @@
-import { can, seesAll } from "@/lib/cms/auth";
+import { can, listUsers, seesAll } from "@/lib/cms/auth";
+import { localDay, localTime, register } from "@/lib/cms/attendance";
 import { currentUser } from "@/lib/cms/session";
 import { listSubscribers } from "@/lib/cms/crm";
 import { listApplications, listEnquiries } from "@/lib/cms/store";
@@ -17,10 +18,38 @@ function csv(rows: Record<string, unknown>[], columns: string[]): string {
 export async function GET(request: Request, { params }: { params: Promise<{ kind: string }> }) {
   const { kind } = await params;
   const user = await currentUser();
+  const search = new URL(request.url).searchParams;
+  if (user && kind === "attendance" && can(user, "attendance")) {
+    const month = /^\d{4}-(0[1-9]|1[0-2])$/.test(search.get("month") ?? "") ? (search.get("month") as string) : localDay().slice(0, 7);
+    const rows = register(month, listUsers().filter((member) => member.active)).flatMap((row) =>
+      row.cells.map((cell) => ({
+        name: row.name,
+        date: cell.day,
+        code: cell.code,
+        check_in: cell.record ? localTime(cell.record.check_in_at) : "",
+        check_out: cell.record?.check_out_at ? localTime(cell.record.check_out_at) : "",
+        break_minutes: cell.record?.break_minutes ?? "",
+        worked_hours: cell.minutes ? (cell.minutes / 60).toFixed(2) : "",
+        late: cell.late ? "yes" : "",
+        mode: cell.record?.mode ?? "",
+        leave: cell.leave ?? "",
+        holiday: cell.holiday ?? "",
+        summary: cell.record?.summary ?? "",
+        edited_by: cell.record?.edited_by ?? "",
+      })),
+    );
+    const body = csv(rows, ["name", "date", "code", "check_in", "check_out", "break_minutes", "worked_hours", "late", "mode", "leave", "holiday", "summary", "edited_by"]);
+    return new Response(`\ufeff${body}`, {
+      headers: {
+        "content-type": "text/csv; charset=utf-8",
+        "content-disposition": `attachment; filename="setuware-attendance-${month}.csv"`,
+        "cache-control": "private, no-store",
+      },
+    });
+  }
   if (!user || !["enquiries", "applications", "subscribers"].includes(kind) || !can(user, `${kind}.export`)) {
     return new Response("Not found", { status: 404 });
   }
-  const search = new URL(request.url).searchParams;
   const filter = {
     q: search.get("q") || undefined,
     status: search.get("status") || undefined,

@@ -9,6 +9,9 @@ on the site immediately; no redeploy needed.
 | Section | Who | What it does |
 | ------- | --- | ------------ |
 | Dashboard | everyone | Workload summary, follow-ups due, upcoming interviews, enquiry pipeline, latest items, team activity |
+| Tasks | everyone | Board (drag between To do / In progress / In review / Done), list, weekly timesheet; checklist, comments, due dates, priorities, projects, timers and logged time; link a task to a lead, enquiry or applicant |
+| My attendance | everyone | Check in / break / check out (office, remote or on-site, with location), daily work summary, month calendar, leave balance, leave and correction requests |
+| Team attendance | Owner, HR | Who is in today, late arrivals, approvals, monthly register with CSV, daily logs, fix a record, settings and holidays |
 | Search | everyone | One search across enquiries, applicants, posts and jobs (only what your role can see) |
 | Analytics | Owner, Sales | Enquiries per day (30 days), sources, services, win rate, most-read articles, applications per role, subscribers |
 | CRM leads | Owner, Sales | Leads synced from Zoho CRM (own or all, per role); status, owner, notes and emails written back to Zoho; Sync now (see docs/zoho-crm.md) |
@@ -88,6 +91,42 @@ last 14. To run it daily at 2 am, add this with `crontab -e`:
 - **Devices**: My account lists where you are signed in; sign out any of them.
   Owners can sign a person out everywhere.
 
+## Tasks
+
+- **Create** from Tasks → New task, with "Add a task" on the board, or from a
+  lead, enquiry or applicant page (the task stays linked to it).
+- **Board**: drag cards between columns; on phones use "Move to" on the card.
+  Done tasks stay on the board for 14 days.
+- **Who sees what**: everyone sees tasks assigned to them or created by them.
+  "Assign to others" lets a role give tasks to colleagues; "All records" shows
+  everyone's tasks.
+- **Time**: start a timer on a task (one at a time; starting another stops the
+  first, and checking out stops it) or log time by hand. The Timesheet tab
+  shows hours per person per day.
+- **Emails** (when SMTP is set up): assignment, comments, and "done" to the
+  person who created the task.
+
+## Attendance and leave
+
+- **Check in / out** from My attendance or the status button at the top of
+  every page. Choose Office, Remote or On-site; the browser asks once for
+  location. At check-out people write what they worked on; managers see it
+  under Team attendance.
+- **Breaks** are subtracted from worked hours. Checking in again after
+  checking out resumes the day (the gap counts as a break).
+- **Day codes**: P present (full-day hours), HD half day, S short day,
+  MC missed check-out, L leave, HL half-day leave, WFH, H holiday, WO weekly
+  off, A absent. Late = after office start + grace minutes.
+- **Leave**: people request it; anyone with "Approve leave" gets an email and
+  approves under Team attendance. Balances use the yearly allowance in
+  Attendance settings and count working days only.
+- **Corrections**: a forgotten check-out is fixed by a correction request, or
+  a manager can set the times directly ("Fix a record"; marked as edited).
+- **Settings** (Team attendance → Settings & holidays): office start, grace,
+  full/half-day hours, weekly offs, office location and radius, leave
+  allowances, holidays.
+- Times use India time. Export the monthly register as CSV for payroll.
+
 ## Roles and access
 
 Team → **Roles & access** lists the roles. Built-in roles: Owner (everything),
@@ -96,8 +135,10 @@ edited, and you can create your own.
 
 - Tick what each role may do per section: view, create, edit, publish, delete,
   assign, export, and so on.
-- For leads, enquiries and applications choose **All records** or **Own
-  records only** (only those assigned to the person).
+- For leads, enquiries, applications and tasks choose **All records** or
+  **Own records only** (only those assigned to the person).
+- HR has "See team attendance" and "Approve leave, fix records, settings";
+  Sales Manager and HR can assign tasks to others.
 - Change a person's role on the Team page; it applies at their next page load.
 - A role that is still given to someone cannot be deleted.
 

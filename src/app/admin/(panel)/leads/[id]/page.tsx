@@ -8,6 +8,7 @@ import { enquiryForLead, getLead, leadStatuses } from "@/lib/cms/crm-leads";
 import { requireUser } from "@/lib/cms/session";
 import { LeadStatus } from "@/components/admin/lead-status";
 import { AddNoteForm, EmailComposer, RecordPanel } from "@/components/admin/record-tools";
+import { LinkedTasks } from "@/components/admin/linked-tasks";
 import { Timeline } from "@/components/admin/timeline";
 import { Avatar, buttonClass, Card, formatWhen, PageHeader } from "@/components/admin/ui";
 
@@ -107,8 +108,9 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
             </div>
           </Card>
         </div>
+        <div className="flex flex-col gap-6">
         {editable ? (
-          <Card className="h-fit p-5 lg:sticky lg:top-6">
+          <Card className="h-fit p-5">
             <RecordPanel
               key={`${lead.status}:${lead.assignee}:${lead.follow_up_at}`}
               entity="lead"
@@ -123,6 +125,8 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
             <p className="mt-3 text-xs text-muted-foreground">Status, owner and notes are saved to Zoho CRM as well.</p>
           </Card>
         ) : null}
+        <LinkedTasks user={user} entity="lead" id={lead.id} />
+        </div>
       </div>
     </>
   );

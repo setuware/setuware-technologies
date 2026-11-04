@@ -216,6 +216,83 @@ CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS tasks (
+  id INTEGER PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'todo',
+  priority TEXT NOT NULL DEFAULT 'normal',
+  assignee_id INTEGER,
+  created_by INTEGER NOT NULL,
+  due_date TEXT,
+  project TEXT NOT NULL DEFAULT '',
+  entity TEXT,
+  entity_id INTEGER,
+  estimate_minutes INTEGER,
+  position REAL NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  completed_at TEXT
+);
+CREATE INDEX IF NOT EXISTS tasks_assignee ON tasks(assignee_id, status);
+CREATE INDEX IF NOT EXISTS tasks_entity ON tasks(entity, entity_id);
+CREATE TABLE IF NOT EXISTS task_items (
+  id INTEGER PRIMARY KEY,
+  task_id INTEGER NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  body TEXT NOT NULL,
+  done INTEGER NOT NULL DEFAULT 0,
+  position INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS time_entries (
+  id INTEGER PRIMARY KEY,
+  task_id INTEGER NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL,
+  started_at TEXT NOT NULL,
+  ended_at TEXT,
+  minutes INTEGER NOT NULL DEFAULT 0,
+  note TEXT NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS time_entries_user ON time_entries(user_id, ended_at);
+CREATE TABLE IF NOT EXISTS attendance (
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  day TEXT NOT NULL,
+  check_in_at TEXT NOT NULL,
+  check_out_at TEXT,
+  break_minutes INTEGER NOT NULL DEFAULT 0,
+  break_started_at TEXT,
+  mode TEXT NOT NULL DEFAULT 'office',
+  in_ip TEXT,
+  out_ip TEXT,
+  in_lat REAL,
+  in_lng REAL,
+  in_distance INTEGER,
+  summary TEXT NOT NULL DEFAULT '',
+  edited_by TEXT,
+  UNIQUE (user_id, day)
+);
+CREATE TABLE IF NOT EXISTS leave_requests (
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  kind TEXT NOT NULL DEFAULT 'leave',
+  leave_type TEXT NOT NULL DEFAULT '',
+  from_day TEXT NOT NULL,
+  to_day TEXT NOT NULL,
+  half_day INTEGER NOT NULL DEFAULT 0,
+  check_in TEXT,
+  check_out TEXT,
+  reason TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'pending',
+  decided_by TEXT,
+  decided_at TEXT,
+  decision_note TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS leave_requests_user ON leave_requests(user_id, from_day);
+CREATE TABLE IF NOT EXISTS holidays (
+  day TEXT PRIMARY KEY,
+  name TEXT NOT NULL
+);
 `;
 
 export function dataDir(): string {
@@ -349,6 +426,17 @@ function migrate(db: Database): void {
   if (roles === 0) {
     const insert = db.prepare("INSERT OR IGNORE INTO roles (key,name,description,permissions,builtin) VALUES (?,?,?,?,?)");
     for (const role of DEFAULT_ROLES) insert.run(role.key, role.name, role.description, JSON.stringify(role.permissions), role.key === "owner" ? 1 : 0);
+  }
+  // Tasks and attendance (Nov 2026): give existing built-in roles their new permissions once.
+  if (!db.prepare("SELECT 1 FROM settings WHERE key = 'rbac_work_v1'").get()) {
+    const extra: Record<string, string[]> = { sales: ["tasks.assign"], hr: ["tasks.assign", "attendance.view", "attendance.manage"] };
+    for (const [key, permissions] of Object.entries(extra)) {
+      const row = db.prepare("SELECT permissions FROM roles WHERE key = ?").get(key) as { permissions: string } | undefined;
+      if (!row) continue;
+      const merged = [...new Set([...(JSON.parse(row.permissions) as string[]), ...permissions])];
+      db.prepare("UPDATE roles SET permissions = ? WHERE key = ?").run(JSON.stringify(merged), key);
+    }
+    db.prepare("INSERT OR REPLACE INTO settings (key,value) VALUES ('rbac_work_v1','true')").run();
   }
   const templates = (db.prepare("SELECT COUNT(*) AS n FROM email_templates").get() as { n: number }).n;
   if (templates === 0) {

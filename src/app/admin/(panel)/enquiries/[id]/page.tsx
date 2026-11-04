@@ -6,6 +6,7 @@ import { listTemplates, timeline } from "@/lib/cms/crm";
 import { requireUser } from "@/lib/cms/session";
 import { ENQUIRY_STATUSES, getEnquiry } from "@/lib/cms/store";
 import { AddNoteForm, EmailComposer, RecordPanel } from "@/components/admin/record-tools";
+import { LinkedTasks } from "@/components/admin/linked-tasks";
 import { Timeline } from "@/components/admin/timeline";
 import { Avatar, buttonClass, Card, formatWhen, PageHeader, StatusBadge } from "@/components/admin/ui";
 
@@ -95,7 +96,8 @@ export default async function EnquiryPage({ params }: { params: Promise<{ id: st
             </div>
           </Card>
         </div>
-        <Card className="h-fit p-5 lg:sticky lg:top-6">
+        <div className="flex flex-col gap-6">
+          <Card className="h-fit p-5">
           <RecordPanel
             key={`${item.status}:${item.assignee}:${item.follow_up_at}`}
             entity="enquiry"
@@ -107,6 +109,8 @@ export default async function EnquiryPage({ params }: { params: Promise<{ id: st
             followUp={item.follow_up_at}
           />
         </Card>
+          <LinkedTasks user={user} entity="enquiry" id={item.id} />
+        </div>
       </div>
     </>
   );

@@ -1,0 +1,248 @@
+import Link from "next/link";
+import { Check, Coffee, Download, LogOut, MapPin, Plane, Settings2, UserCheck, UserX, X } from "lucide-react";
+
+import { decideRequestAction } from "@/app/admin/work-actions";
+import { can, listUsers } from "@/lib/cms/auth";
+import { attendanceSettings, formatMinutes, listRequests, localDay, localTime, register, todayBoard, type BoardRow } from "@/lib/cms/attendance";
+import { requireUser } from "@/lib/cms/session";
+import { FixAttendanceForm } from "@/components/admin/attendance-tools";
+import { Legend, monthLabel, monthParam, RegisterGrid, shiftMonth } from "@/components/admin/attendance-view";
+import { Avatar, buttonClass, Card, Empty, formatDay, inputClass, PageHeader, Stat, theadClass } from "@/components/admin/ui";
+import { cn } from "@/lib/utils";
+
+// Signed-in page: rendered per request (see the panel layout).
+export const instant = false;
+
+const STATE: Record<BoardRow["state"], { label: string; style: string }> = {
+  in: { label: "Working", style: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" },
+  break: { label: "On break", style: "bg-amber-500/15 text-amber-700 dark:text-amber-300" },
+  done: { label: "Checked out", style: "bg-sky-500/12 text-sky-700 dark:text-sky-300" },
+  leave: { label: "On leave", style: "bg-violet-500/15 text-violet-700 dark:text-violet-300" },
+  off: { label: "Day off", style: "bg-foreground/[0.06] text-muted-foreground" },
+  "not-in": { label: "Not in yet", style: "bg-red-500/10 text-red-700 dark:text-red-300" },
+};
+
+function place(row: BoardRow, radius: number | null): string {
+  const record = row.record;
+  if (!record) return "";
+  const mode = record.mode === "field" ? "On-site" : record.mode === "remote" ? "Remote" : "Office";
+  if (record.in_distance === null || radius === null) return record.in_lat !== null ? `${mode} · located` : mode;
+  if (record.in_distance <= radius) return `${mode} · at office`;
+  return `${mode} · ${record.in_distance >= 1000 ? `${(record.in_distance / 1000).toFixed(1)} km` : `${record.in_distance} m`} away`;
+}
+
+export default async function TeamAttendancePage({ searchParams }: { searchParams: Promise<{ month?: string; person?: string }> }) {
+  const user = await requireUser("attendance");
+  const params = await searchParams;
+  const today = localDay();
+  const month = monthParam(params.month, today);
+  const settings = attendanceSettings();
+  const manage = can(user, "attendance.manage");
+  const team = listUsers().filter((member) => member.active);
+  const board = todayBoard(team);
+  const rows = register(month, team);
+  const pending = manage ? listRequests({ status: "pending" }) : [];
+  const person = rows.find((row) => row.userId === Number(params.person));
+  const count = (state: BoardRow["state"]) => board.filter((row) => row.state === state).length;
+  const summaries = board.filter((row) => row.record?.summary);
+
+  return (
+    <>
+      <PageHeader
+        title="Team attendance"
+        description="Who is in today, leave approvals and the monthly register."
+        actions={
+          manage ? (
+            <Link href="/admin/attendance/settings" className={buttonClass.secondary}>
+              <Settings2 className="size-4" aria-hidden /> Settings & holidays
+            </Link>
+          ) : null
+        }
+      />
+
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <Stat label="Working now" value={count("in") + count("break")} hint={`${count("break")} on break`} icon={<UserCheck className="size-4" />} tone="teal" />
+        <Stat label="Late today" value={board.filter((row) => row.late).length} hint={`After ${settings.start} + ${settings.graceMinutes} min`} icon={<Coffee className="size-4" />} tone="amber" />
+        <Stat label="On leave" value={count("leave")} icon={<Plane className="size-4" />} tone="violet" />
+        <Stat label="Not in yet" value={count("not-in")} hint={`${count("done")} checked out`} icon={<UserX className="size-4" />} tone="blue" />
+      </div>
+
+      {pending.length ? (
+        <Card className="mt-6 overflow-hidden border-amber-500/40">
+          <h2 className="border-b border-border bg-amber-500/[0.06] px-5 py-3 text-sm font-semibold text-foreground">Waiting for approval ({pending.length})</h2>
+          <ul className="divide-y divide-border">
+            {pending.map((request) => (
+              <li key={request.id} className="flex flex-col gap-3 px-5 py-4 lg:flex-row lg:items-center">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <Avatar name={request.user_name} />
+                  <div className="min-w-0 text-sm">
+                    <p className="font-semibold text-foreground">
+                      {request.user_name} ·{" "}
+                      {request.kind === "leave"
+                        ? `${request.leave_type} leave${request.half_day ? " (half day)" : ""}`
+                        : `Correction to ${request.check_in}–${request.check_out}`}
+                    </p>
+                    <p className="text-muted-foreground">
+                      {formatDay(request.from_day)}
+                      {request.to_day !== request.from_day ? ` – ${formatDay(request.to_day)}` : ""}
+                      {request.reason ? ` · “${request.reason}”` : ""}
+                    </p>
+                  </div>
+                </div>
+                <form action={decideRequestAction} className="flex flex-wrap items-center gap-2">
+                  <input type="hidden" name="id" value={request.id} />
+                  <input name="note" placeholder="Note (optional)" aria-label="Note" className={`${inputClass} h-9 w-44 py-1.5`} />
+                  <button name="decision" value="approve" className="inline-flex h-9 items-center gap-1.5 rounded-full bg-emerald-600 px-4 text-sm font-semibold text-white hover:bg-emerald-700">
+                    <Check className="size-4" aria-hidden /> Approve
+                  </button>
+                  <button name="decision" value="reject" className="inline-flex h-9 items-center gap-1.5 rounded-full border border-red-500/30 px-4 text-sm font-semibold text-red-600 hover:bg-red-500/8 dark:text-red-400">
+                    <X className="size-4" aria-hidden /> Reject
+                  </button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : null}
+
+      <Card className="mt-6 overflow-hidden">
+        <h2 className="border-b border-border px-5 py-3 text-sm font-semibold text-foreground">Today · {formatDay(today)}</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className={theadClass}>
+              <tr>
+                <th className="px-5 py-3 font-medium">Person</th>
+                <th className="px-5 py-3 font-medium">Status</th>
+                <th className="px-5 py-3 font-medium">In</th>
+                <th className="px-5 py-3 font-medium">Out</th>
+                <th className="px-5 py-3 font-medium">Worked</th>
+                <th className="hidden px-5 py-3 font-medium md:table-cell">Where</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {board.map((row) => (
+                <tr key={row.userId}>
+                  <td className="px-5 py-3">
+                    <span className="flex items-center gap-2.5 font-medium text-foreground">
+                      <Avatar name={row.name} size="sm" /> {row.name}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3">
+                    <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", STATE[row.state].style)}>
+                      {row.state === "leave" && row.leave ? row.leave : STATE[row.state].label}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3 tabular-nums text-foreground">
+                    {row.record ? localTime(row.record.check_in_at) : "—"}
+                    {row.late ? <span className="ml-1.5 text-[11px] font-semibold text-amber-600 dark:text-amber-400">late</span> : null}
+                  </td>
+                  <td className="px-5 py-3 tabular-nums text-muted-foreground">{row.record?.check_out_at ? localTime(row.record.check_out_at) : "—"}</td>
+                  <td className="px-5 py-3 tabular-nums text-foreground">{row.record ? formatMinutes(row.minutes) : "—"}</td>
+                  <td className="hidden px-5 py-3 text-xs text-muted-foreground md:table-cell">
+                    {row.record ? (
+                      <span className="inline-flex items-center gap-1">
+                        <MapPin className="size-3" aria-hidden /> {place(row, settings.office?.radius ?? null)}
+                      </span>
+                    ) : null}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      {summaries.length ? (
+        <Card className="mt-6 p-5 sm:p-6">
+          <h2 className="mb-3 text-sm font-semibold text-foreground">What the team did today</h2>
+          <ul className="flex flex-col gap-3">
+            {summaries.map((row) => (
+              <li key={row.userId} className="flex gap-3">
+                <Avatar name={row.name} size="sm" />
+                <p className="min-w-0 flex-1 whitespace-pre-wrap text-sm text-foreground/85">
+                  <strong className="text-foreground">{row.name}</strong>
+                  <span className="text-muted-foreground"> · {formatMinutes(row.minutes)}</span>
+                  {"\n"}
+                  {row.record?.summary}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : null}
+
+      <Card className="mt-6 overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-3">
+          <div className="flex items-center gap-2">
+            <Link href={`/admin/attendance/team?month=${shiftMonth(month, -1)}`} className="rounded-full px-2 py-0.5 text-muted-foreground hover:bg-foreground/[0.05] hover:text-foreground" aria-label="Previous month">
+              ←
+            </Link>
+            <h2 className="text-sm font-semibold text-foreground">Register · {monthLabel(month)}</h2>
+            <Link href={`/admin/attendance/team?month=${shiftMonth(month, 1)}`} className="rounded-full px-2 py-0.5 text-muted-foreground hover:bg-foreground/[0.05] hover:text-foreground" aria-label="Next month">
+              →
+            </Link>
+          </div>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- CSV download from a route handler */}
+          <a href={`/admin/files/export/attendance?month=${month}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#2f56d8] hover:underline dark:text-[#8fb0ff]">
+            <Download className="size-4" aria-hidden /> Export CSV
+          </a>
+        </div>
+        {rows.length ? <RegisterGrid rows={rows} today={today} /> : <Empty title="No team members yet" />}
+        <div className="border-t border-border px-5 py-3">
+          <Legend />
+        </div>
+      </Card>
+
+      {person ? (
+        <Card className="mt-6 overflow-hidden">
+          <h2 className="border-b border-border px-5 py-3 text-sm font-semibold text-foreground">
+            {person.name} · daily log, {monthLabel(month)}
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className={theadClass}>
+                <tr>
+                  <th className="px-5 py-3 font-medium">Date</th>
+                  <th className="px-5 py-3 font-medium">In – out</th>
+                  <th className="px-5 py-3 font-medium">Break</th>
+                  <th className="px-5 py-3 font-medium">Worked</th>
+                  <th className="px-5 py-3 font-medium">Notes</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {person.cells
+                  .filter((cell) => cell.record || cell.leave)
+                  .map((cell) => (
+                    <tr key={cell.day}>
+                      <td className="whitespace-nowrap px-5 py-2.5 text-foreground">{formatDay(cell.day)}</td>
+                      <td className="whitespace-nowrap px-5 py-2.5 tabular-nums">
+                        {cell.record ? `${localTime(cell.record.check_in_at)} – ${cell.record.check_out_at ? localTime(cell.record.check_out_at) : "?"}` : cell.leave}
+                        {cell.late ? <span className="ml-1.5 text-[11px] font-semibold text-amber-600">late</span> : null}
+                      </td>
+                      <td className="px-5 py-2.5 tabular-nums text-muted-foreground">{cell.record?.break_minutes ? `${cell.record.break_minutes}m` : "—"}</td>
+                      <td className="px-5 py-2.5 tabular-nums text-foreground">{cell.minutes ? formatMinutes(cell.minutes) : "—"}</td>
+                      <td className="px-5 py-2.5 text-xs text-muted-foreground">
+                        {cell.record?.summary}
+                        {cell.record?.edited_by ? ` (edited by ${cell.record.edited_by})` : ""}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      ) : null}
+
+      {manage ? (
+        <Card className="mt-6 max-w-2xl p-5 sm:p-6">
+          <h2 className="mb-1 text-sm font-semibold text-foreground">Fix a record</h2>
+          <p className="mb-4 text-xs text-muted-foreground">Set someone’s times for a day (it is marked as edited by you), or remove a wrong check-in.</p>
+          <FixAttendanceForm team={team.map(({ id, name }) => ({ id, name }))} today={today} />
+        </Card>
+      ) : null}
+      <p className="mt-6 flex items-center gap-1.5 text-xs text-muted-foreground">
+        <LogOut className="size-3.5" aria-hidden /> People who forget to check out show as MC (missed check-out) until they ask for a correction.
+      </p>
+    </>
+  );
+}

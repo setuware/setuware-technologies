@@ -6,6 +6,7 @@ import { listTemplates, timeline } from "@/lib/cms/crm";
 import { requireUser } from "@/lib/cms/session";
 import { APPLICATION_STATUSES, getApplication } from "@/lib/cms/store";
 import { AddNoteForm, EmailComposer, RecordPanel } from "@/components/admin/record-tools";
+import { LinkedTasks } from "@/components/admin/linked-tasks";
 import { Timeline } from "@/components/admin/timeline";
 import { Avatar, buttonClass, Card, formatWhen, PageHeader, StatusBadge } from "@/components/admin/ui";
 
@@ -107,7 +108,8 @@ export default async function ApplicationPage({ params }: { params: Promise<{ id
             </div>
           </Card>
         </div>
-        <Card className="h-fit p-5 lg:sticky lg:top-6">
+        <div className="flex flex-col gap-6">
+          <Card className="h-fit p-5">
           <RecordPanel
             key={`${item.status}:${item.assignee}:${item.rating}:${item.interview_at}`}
             entity="application"
@@ -120,6 +122,8 @@ export default async function ApplicationPage({ params }: { params: Promise<{ id
             interview={item.interview_at}
           />
         </Card>
+          <LinkedTasks user={user} entity="application" id={item.id} />
+        </div>
       </div>
     </>
   );

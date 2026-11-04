@@ -23,13 +23,13 @@ export interface Note {
   created_at: string;
 }
 
-export function addNote(entity: Entity, id: number, kind: Note["kind"], author: string, body: string): void {
+export function addNote(entity: Entity | "task", id: number, kind: Note["kind"], author: string, body: string): void {
   getDb()
     .prepare("INSERT INTO notes (entity,entity_id,kind,author,body,created_at) VALUES (?,?,?,?,?,?)")
     .run(entity, id, kind, author, body.slice(0, 20_000), new Date().toISOString());
 }
 
-export function timeline(entity: Entity, id: number): Note[] {
+export function timeline(entity: Entity | "task", id: number): Note[] {
   return getDb()
     .prepare("SELECT id,kind,author,body,created_at FROM notes WHERE entity = ? AND entity_id = ? ORDER BY id DESC")
     .all(entity, id) as Note[];

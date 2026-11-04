@@ -106,6 +106,20 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       { key: "manage", label: "Invite / manage" },
     ],
   },
+  {
+    module: "tasks",
+    label: "Tasks",
+    scoped: true,
+    actions: [{ key: "assign", label: "Assign to others" }],
+  },
+  {
+    module: "attendance",
+    label: "Attendance & leave",
+    actions: [
+      { key: "view", label: "See team attendance" },
+      { key: "manage", label: "Approve leave, fix records, settings" },
+    ],
+  },
   { module: "roles", label: "Roles", actions: [{ key: "manage", label: "Create / edit roles" }] },
   { module: "settings", label: "Site settings", actions: [{ key: "manage", label: "Change" }] },
 ];
@@ -132,7 +146,7 @@ export const DEFAULT_ROLES: Omit<Role, "builtin">[] = [
     key: "sales",
     name: "Sales Manager",
     description: "All leads and enquiries, assigning, bookings, subscribers and analytics.",
-    permissions: [...all("leads"), ...all("enquiries"), "bookings.view", ...all("subscribers"), "analytics.view", "templates.view", "templates.edit", "users.view"],
+    permissions: [...all("leads"), ...all("enquiries"), "bookings.view", ...all("subscribers"), "analytics.view", "templates.view", "templates.edit", "users.view", "tasks.assign"],
   },
   {
     key: "sales_exec",
@@ -143,8 +157,8 @@ export const DEFAULT_ROLES: Omit<Role, "builtin">[] = [
   {
     key: "hr",
     name: "HR",
-    description: "Jobs and all applications.",
-    permissions: [...all("jobs"), ...all("applications"), "templates.view", "templates.edit"],
+    description: "Jobs, applications, attendance and leave approvals.",
+    permissions: [...all("jobs"), ...all("applications"), "templates.view", "templates.edit", "tasks.assign", ...all("attendance")],
   },
   {
     key: "editor",
