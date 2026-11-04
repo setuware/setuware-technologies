@@ -7,15 +7,16 @@ import { can, listUsers, seesAll } from "@/lib/cms/auth";
 import { localDay } from "@/lib/cms/attendance";
 import { timeline } from "@/lib/cms/crm";
 import { requireUser } from "@/lib/cms/session";
+import { isLocked } from "@/lib/cms/timesheets";
 import { getTask, runningTimer, STATUS_LABELS, taskItems, taskProjects, timeEntries } from "@/lib/cms/tasks";
 import { Elapsed } from "@/components/admin/live-clock";
 import { hours, PRIORITY_STYLE } from "@/components/admin/task-format";
-import { LogTimeForm, TaskCommentForm, TaskPanel, TaskText } from "@/components/admin/task-tools";
+import { LogTimeForm, ReviewBox, TaskCommentForm, TaskPanel, TaskText } from "@/components/admin/task-tools";
 import { Timeline } from "@/components/admin/timeline";
 import { buttonClass, Card, formatDay, formatWhen, inputClass, PageHeader } from "@/components/admin/ui";
 import { cn } from "@/lib/utils";
 
-import { linkedRecord } from "../links";
+import { linkedRecord, reviewerOptions } from "../links";
 
 // Signed-in page: rendered per request (see the panel layout).
 export const instant = false;
@@ -24,7 +25,7 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
   const user = await requireUser();
   const { id } = await params;
   const task = getTask(Number(id));
-  if (!task || !(seesAll(user, "tasks") || task.assignee_id === user.id || task.created_by === user.id)) notFound();
+  if (!task || !(seesAll(user, "tasks") || task.assignee_id === user.id || task.created_by === user.id || task.reviewer_id === user.id)) notFound();
   const today = localDay();
   const items = taskItems(task.id);
   const entries = timeEntries(task.id);
@@ -36,6 +37,8 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
     .map(({ id: memberId, name }) => ({ id: memberId, name }));
   const canDelete = task.created_by === user.id || seesAll(user, "tasks");
   const overdue = task.due_date && task.status !== "done" && task.due_date < today;
+  const isReviewer = task.reviewer_id === user.id || (can(user, "tasks.review") && (seesAll(user, "tasks") || task.created_by === user.id));
+  const locked = isLocked(user.id, today);
   const progress = task.estimate_minutes ? Math.min(100, Math.round((task.logged / task.estimate_minutes) * 100)) : null;
 
   return (
@@ -70,6 +73,8 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
             </div>
             <TaskText id={task.id} title={task.title} description={task.description} editable />
             <p className="mt-4 text-xs text-muted-foreground">
+              {task.assignee_name ? `Assigned to ${task.assignee_name} · ` : "Unassigned · "}
+              {task.reviewer_name ? `Reviewer: ${task.reviewer_name} · ` : ""}
               Created by {task.creator_name ?? "a former member"} · {formatWhen(task.created_at)}
               {task.completed_at ? ` · done ${formatWhen(task.completed_at)}` : ""}
             </p>
@@ -79,6 +84,21 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
               </Link>
             ) : null}
           </Card>
+
+          {task.status === "review" ? (
+            <Card className="border-violet-500/40 p-6">
+              <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
+                <span className="size-2 rounded-full bg-violet-500" aria-hidden /> Waiting for review
+              </h2>
+              {isReviewer ? (
+                <ReviewBox id={task.id} assignee={task.assignee_name} />
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {task.reviewer_name ? `${task.reviewer_name} will review this and mark it done, or send it back with comments.` : "The person who created the task will review it."}
+                </p>
+              )}
+            </Card>
+          ) : null}
 
           <Card className="p-6">
             <div className="mb-3 flex items-center justify-between">
@@ -146,12 +166,13 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
         <div className="flex flex-col gap-6">
           <Card className="h-fit p-5">
             <TaskPanel
-              key={`${task.status}:${task.assignee_id}:${task.priority}:${task.due_date}:${task.updated_at}`}
+              key={`${task.status}:${task.assignee_id}:${task.reviewer_id}:${task.priority}:${task.due_date}:${task.updated_at}`}
               task={task}
               team={team}
               me={{ id: user.id, name: user.name }}
               canAssign={can(user, "tasks.assign") || seesAll(user, "tasks")}
               projects={taskProjects()}
+              reviewers={reviewerOptions()}
             />
           </Card>
 
@@ -168,7 +189,12 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
                 <span className={cn("block h-full rounded-full", task.logged > (task.estimate_minutes ?? 0) ? "bg-red-500" : "bg-[#2f56d8]")} style={{ width: `${progress}%` }} />
               </div>
             ) : null}
-            <form action={timerAction} className="mt-4">
+            {locked ? (
+              <p className="mt-4 rounded-xl bg-amber-500/10 px-3 py-2 text-xs text-amber-800 dark:text-amber-300">
+                This week’s timesheet is submitted, so time can’t be added. Ask your approver to send it back if you need changes.
+              </p>
+            ) : null}
+            <form action={timerAction} className={cn("mt-4", locked && "hidden")}>
               <input type="hidden" name="task_id" value={task.id} />
               <input type="hidden" name="op" value={timingThis ? "stop" : "start"} />
               <button
@@ -210,6 +236,7 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
                       {entry.user_id === user.id || seesAll(user, "tasks") ? (
                         <form action={deleteTimeEntryAction}>
                           <input type="hidden" name="id" value={entry.id} />
+                          <input type="hidden" name="task_id" value={task.id} />
                           <button aria-label="Delete time entry" className="rounded p-0.5 text-muted-foreground opacity-0 hover:text-red-600 group-hover:opacity-100 focus:opacity-100">
                             <X className="size-3.5" aria-hidden />
                           </button>

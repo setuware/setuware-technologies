@@ -289,6 +289,19 @@ CREATE TABLE IF NOT EXISTS leave_requests (
   created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS leave_requests_user ON leave_requests(user_id, from_day);
+CREATE TABLE IF NOT EXISTS timesheets (
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  week_start TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'draft',
+  total_minutes INTEGER NOT NULL DEFAULT 0,
+  note TEXT NOT NULL DEFAULT '',
+  submitted_at TEXT,
+  decided_by TEXT,
+  decided_at TEXT,
+  decision_note TEXT NOT NULL DEFAULT '',
+  UNIQUE (user_id, week_start)
+);
 CREATE TABLE IF NOT EXISTS holidays (
   day TEXT PRIMARY KEY,
   name TEXT NOT NULL
@@ -374,6 +387,13 @@ const COLUMNS: [table: string, column: string, definition: string][] = [
   ["sessions", "last_seen_at", "TEXT"],
   ["sessions", "mfa_ok", "INTEGER NOT NULL DEFAULT 1"],
   ["enquiries", "zoho_id", "TEXT"],
+  ["tasks", "reviewer_id", "INTEGER"],
+  ["time_entries", "source", "TEXT NOT NULL DEFAULT 'timer'"],
+  ["attendance", "in_accuracy", "INTEGER"],
+  ["attendance", "out_lat", "REAL"],
+  ["attendance", "out_lng", "REAL"],
+  ["attendance", "out_accuracy", "INTEGER"],
+  ["attendance", "out_distance", "INTEGER"],
 ];
 
 /** SQLite cannot drop a CHECK constraint, so tables created with one are rebuilt once. */
@@ -437,6 +457,22 @@ function migrate(db: Database): void {
       db.prepare("UPDATE roles SET permissions = ? WHERE key = ?").run(JSON.stringify(merged), key);
     }
     db.prepare("INSERT OR REPLACE INTO settings (key,value) VALUES ('rbac_work_v1','true')").run();
+  }
+  // Task reviews and timesheet approvals (Nov 2026): extend existing roles once.
+  if (!db.prepare("SELECT 1 FROM settings WHERE key = 'rbac_review_v1'").get()) {
+    const extra: Record<string, string[]> = {
+      tech_lead: ["tasks.review", "timesheets.view", "timesheets.approve"],
+      qa: ["tasks.review"],
+      sales: ["tasks.review"],
+      hr: ["timesheets.view"],
+    };
+    for (const [key, permissions] of Object.entries(extra)) {
+      const row = db.prepare("SELECT permissions FROM roles WHERE key = ?").get(key) as { permissions: string } | undefined;
+      if (!row) continue;
+      const merged = [...new Set([...(JSON.parse(row.permissions) as string[]), ...permissions])];
+      db.prepare("UPDATE roles SET permissions = ? WHERE key = ?").run(JSON.stringify(merged), key);
+    }
+    db.prepare("INSERT OR REPLACE INTO settings (key,value) VALUES ('rbac_review_v1','true')").run();
   }
   // Engineering roles (Nov 2026): added once to existing installs; never overwrites a role with the same key.
   if (!db.prepare("SELECT 1 FROM settings WHERE key = 'roles_engineering_v1'").get()) {

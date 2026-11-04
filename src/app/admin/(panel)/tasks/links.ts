@@ -1,5 +1,5 @@
 import type { AdminUser } from "@/lib/cms/auth";
-import { can, seesAll } from "@/lib/cms/auth";
+import { can, listUsers, seesAll } from "@/lib/cms/auth";
 import { getLead } from "@/lib/cms/crm-leads";
 import { getApplication, getEnquiry } from "@/lib/cms/store";
 
@@ -23,4 +23,11 @@ export function linkedRecord(user: AdminUser, entity: string | null, id: number 
     }
   }
   return null;
+}
+
+/** Active people who may review work ("Review & approve work"). */
+export function reviewerOptions(): { id: number; name: string }[] {
+  return listUsers()
+    .filter((member) => member.active && can(member, "tasks.review"))
+    .map(({ id, name }) => ({ id, name }));
 }

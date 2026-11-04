@@ -114,7 +114,18 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
     module: "tasks",
     label: "Tasks",
     scoped: true,
-    actions: [{ key: "assign", label: "Assign to others" }],
+    actions: [
+      { key: "assign", label: "Assign to others" },
+      { key: "review", label: "Review & approve work" },
+    ],
+  },
+  {
+    module: "timesheets",
+    label: "Timesheets",
+    actions: [
+      { key: "view", label: "See team timesheets" },
+      { key: "approve", label: "Approve timesheets" },
+    ],
   },
   {
     module: "attendance",
@@ -150,7 +161,7 @@ export const DEFAULT_ROLES: Omit<Role, "builtin">[] = [
     key: "sales",
     name: "Sales Manager",
     description: "All leads and enquiries, assigning, bookings, subscribers and analytics.",
-    permissions: [...all("leads"), ...all("enquiries"), "bookings.view", ...all("subscribers"), "analytics.view", "templates.view", "templates.edit", "users.view", "tasks.assign"],
+    permissions: [...all("leads"), ...all("enquiries"), "bookings.view", ...all("subscribers"), "analytics.view", "templates.view", "templates.edit", "users.view", "tasks.assign", "tasks.review"],
   },
   {
     key: "sales_exec",
@@ -162,13 +173,13 @@ export const DEFAULT_ROLES: Omit<Role, "builtin">[] = [
     key: "hr",
     name: "HR",
     description: "Jobs, applications, attendance and leave approvals.",
-    permissions: [...all("jobs"), ...all("applications"), "templates.view", "templates.edit", "tasks.assign", ...all("attendance")],
+    permissions: [...all("jobs"), ...all("applications"), "templates.view", "templates.edit", "tasks.assign", ...all("attendance"), "timesheets.view"],
   },
   {
     key: "tech_lead",
     name: "Tech Lead / Project Manager",
-    description: "Plans and assigns the engineering team's tasks, sees everyone's tasks and team attendance, reads client enquiries.",
-    permissions: ["tasks.assign", "tasks.all", "attendance.view", "users.view", "enquiries.view", "enquiries.all", "bookings.view"],
+    description: "Plans, assigns and reviews the engineering team's tasks, approves timesheets, sees team attendance and client enquiries.",
+    permissions: ["tasks.assign", "tasks.review", "tasks.all", "timesheets.view", "timesheets.approve", "attendance.view", "users.view", "enquiries.view", "enquiries.all", "bookings.view"],
   },
   {
     key: "developer",
@@ -179,8 +190,8 @@ export const DEFAULT_ROLES: Omit<Role, "builtin">[] = [
   {
     key: "qa",
     name: "QA Tester",
-    description: "Tests features and files bugs as tasks for developers, logs time, checks in and requests leave.",
-    permissions: ["tasks.assign"],
+    description: "Tests and reviews developers' work, files bugs as tasks, fills timesheets, checks in and requests leave.",
+    permissions: ["tasks.assign", "tasks.review"],
   },
   {
     key: "designer",

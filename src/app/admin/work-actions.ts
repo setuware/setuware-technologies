@@ -13,6 +13,7 @@ import {
   checkIn,
   checkOut,
   decideRequest,
+  localDay,
   deleteAttendance,
   endBreak,
   LEAVE_TYPES,
@@ -24,8 +25,10 @@ import {
   setAttendance,
   startBreak,
   toIso,
+  type Location,
   type Mode,
 } from "@/lib/cms/attendance";
+import { decideSheet, isLocked, reopenSheet, setCell, submitSheet, weekDays, weekStart } from "@/lib/cms/timesheets";
 import { addNote } from "@/lib/cms/crm";
 import { sendAccountEmail } from "@/lib/cms/mailer";
 import { requireUser } from "@/lib/cms/session";
@@ -36,6 +39,7 @@ import {
   deleteTaskItem,
   deleteTimeEntry,
   getTask,
+  timeEntries,
   logTime,
   moveTask,
   PRIORITIES,
@@ -75,7 +79,37 @@ function notify(userId: number | null | undefined, subject: string, lines: strin
 /* ---------------------------------- tasks ---------------------------------- */
 
 function canSeeTask(user: AdminUser, task: Task | null): task is Task {
-  return Boolean(task) && (seesAll(user, "tasks") || task?.assignee_id === user.id || task?.created_by === user.id);
+  return Boolean(task) && (seesAll(user, "tasks") || task?.assignee_id === user.id || task?.created_by === user.id || task?.reviewer_id === user.id);
+}
+
+/** People who may review work: anyone with "Review & approve work". */
+function mayReview(member: AdminUser): boolean {
+  return member.active && can(member, "tasks.review");
+}
+
+/** Reviewer from the form: only people who assign may set one, and nobody reviews their own task. */
+function reviewerFrom(user: AdminUser, form: FormData, fallback: number | null, assigneeId: number | null): number | null {
+  const raw = form.get("reviewer_id");
+  if (raw === null || !(can(user, "tasks.assign") || seesAll(user, "tasks"))) return fallback === assigneeId ? null : fallback;
+  const id = Number(raw) || null;
+  if (id === null) return null;
+  const member = getUser(id);
+  return member && mayReview(member) && id !== assigneeId ? id : null;
+}
+
+/** "Done" on a task with a reviewer goes to review unless the reviewer (or a manager) does it. */
+function allowedStatus(user: AdminUser, task: Pick<Task, "reviewer_id" | "status">, requested: TaskStatus): TaskStatus {
+  if (requested !== "done" || !task.reviewer_id) return requested;
+  if (task.reviewer_id === user.id || (seesAll(user, "tasks") && can(user, "tasks.review"))) return "done";
+  return "review";
+}
+
+function locationFrom(form: FormData): Location | null {
+  const lat = Number(form.get("lat"));
+  const lng = Number(form.get("lng"));
+  if (!form.get("lat") || !form.get("lng") || !Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
+  const accuracy = Number(form.get("accuracy"));
+  return { lat, lng, accuracy: Number.isFinite(accuracy) && accuracy > 0 ? accuracy : null };
 }
 
 /** Who a task may be given to: anyone with "assign", otherwise only yourself. */
@@ -104,6 +138,7 @@ export async function createTaskAction(_previous: FormState, form: FormData): Pr
   const entity = text(form, "entity", 20) as LinkedEntity;
   const linked = entity in LINKS && can(user, LINKS[entity]) ? entity : null;
   const assigneeId = assigneeFrom(user, form, user.id);
+  const reviewerId = reviewerFrom(user, form, null, assigneeId);
   const status = text(form, "status", 20) as TaskStatus;
   const id = createTask(
     {
@@ -112,6 +147,7 @@ export async function createTaskAction(_previous: FormState, form: FormData): Pr
       status: TASK_STATUSES.includes(status) ? status : "todo",
       priority: (PRIORITIES as readonly string[]).includes(text(form, "priority", 10)) ? (text(form, "priority", 10) as Priority) : "normal",
       assigneeId,
+      reviewerId,
       dueDate: dueDate || null,
       project: text(form, "project", 80),
       entity: linked,
@@ -142,9 +178,11 @@ export async function updateTaskAction(_previous: FormState, form: FormData): Pr
   if (title.length < 2) return { error: "Give the task a title." };
   const dueDate = form.has("due_date") ? text(form, "due_date", 10) : (task.due_date ?? "");
   if (dueDate && !DAY.test(dueDate)) return { error: "Choose a valid due date." };
-  const status = (form.has("status") ? text(form, "status", 20) : task.status) as TaskStatus;
+  const requested = (form.has("status") ? text(form, "status", 20) : task.status) as TaskStatus;
+  const status = allowedStatus(user, task, requested);
   const priority = (form.has("priority") ? text(form, "priority", 10) : task.priority) as Priority;
   const assigneeId = assigneeFrom(user, form, task.assignee_id);
+  const reviewerId = reviewerFrom(user, form, task.reviewer_id, assigneeId);
 
   if (status !== task.status && TASK_STATUSES.includes(status)) changes.push(`Moved from ${STATUS_LABELS[task.status]} to ${STATUS_LABELS[status]}`);
   if (priority !== task.priority && PRIORITIES.includes(priority)) changes.push(`Priority set to ${priority}`);
@@ -155,6 +193,7 @@ export async function updateTaskAction(_previous: FormState, form: FormData): Pr
     status,
     priority,
     assigneeId,
+    reviewerId,
     dueDate: dueDate || null,
     project: form.has("project") ? text(form, "project", 80) : task.project,
     estimateMinutes: form.has("estimate_hours") ? estimateFrom(form) : task.estimate_minutes,
@@ -165,19 +204,61 @@ export async function updateTaskAction(_previous: FormState, form: FormData): Pr
     addNote("task", id, "assign", user.name, name ? `Assigned to ${name}` : "Unassigned");
     if (assigneeId && assigneeId !== user.id) notify(assigneeId, `Task assigned to you: ${title}`, [`${user.name} assigned you: ${title}.`], `/admin/tasks/${id}`, "Open the task");
   }
+  if (reviewerId !== task.reviewer_id) {
+    addNote("task", id, "assign", user.name, reviewerId ? `Reviewer set to ${getUser(reviewerId)?.name}` : "Reviewer removed");
+  }
+  if (status === "review" && task.status !== "review") askForReview({ ...task, title, reviewer_id: reviewerId }, user);
   if (status === "done" && task.status !== "done" && task.created_by !== user.id) {
     notify(task.created_by, `Done: ${title}`, [`${user.name} marked "${title}" as done.`], `/admin/tasks/${id}`, "Open the task");
   }
   refresh();
-  return { ok: "Saved." };
+  return { ok: requested === "done" && status === "review" ? "Sent for review. The reviewer marks it done." : "Saved." };
+}
+
+function askForReview(task: Pick<Task, "id" | "title" | "reviewer_id" | "created_by">, user: AdminUser): void {
+  const to = task.reviewer_id ?? (task.created_by !== user.id ? task.created_by : null);
+  if (to && to !== user.id) {
+    notify(to, `Ready for review: ${task.title}`, [`${user.name} finished "${task.title}" and asked you to review it.`], `/admin/tasks/${task.id}`, "Review the task");
+  }
+}
+
+/** Reviewer's decision: approve (done) or send back with what to change. */
+export async function reviewTaskAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser();
+  const task = getTask(Number(form.get("id")));
+  if (!canSeeTask(user, task)) return { error: "Task not found." };
+  const reviewer = task.reviewer_id === user.id || (can(user, "tasks.review") && (seesAll(user, "tasks") || task.created_by === user.id));
+  if (!reviewer) return { error: "Only the reviewer can approve this task." };
+  if (task.status !== "review") return { error: "This task is not waiting for review." };
+  const comment = text(form, "comment", 3000);
+  if (form.get("decision") === "approve") {
+    updateTask(task.id, { status: "done" });
+    addNote("task", task.id, "status", user.name, comment ? `Approved and marked done\n${comment}` : "Approved and marked done");
+    notify(task.assignee_id !== user.id ? task.assignee_id : null, `Approved: ${task.title}`, [`${user.name} approved "${task.title}".`, comment].filter(Boolean), `/admin/tasks/${task.id}`, "Open the task");
+    refresh();
+    return { ok: "Approved. The task is done." };
+  }
+  if (comment.length < 3) return { error: "Say what needs to change." };
+  updateTask(task.id, { status: "in_progress" });
+  addNote("task", task.id, "status", user.name, `Changes requested\n${comment}`);
+  notify(task.assignee_id !== user.id ? task.assignee_id : null, `Changes requested: ${task.title}`, [`${user.name} reviewed "${task.title}" and asked for changes:`, comment], `/admin/tasks/${task.id}`, "Open the task");
+  refresh();
+  return { ok: "Sent back to the assignee with your comments." };
 }
 
 /** Drag and drop on the board. */
-export async function moveTaskAction(id: number, status: string, beforeId: number | null): Promise<{ error?: string }> {
+export async function moveTaskAction(id: number, status: string, beforeId: number | null): Promise<{ error?: string; notice?: string }> {
   const user = await requireUser();
   const task = getTask(id);
   if (!canSeeTask(user, task) || !TASK_STATUSES.includes(status as TaskStatus)) return { error: "Task not found." };
-  moveTask(id, status as TaskStatus, beforeId);
+  const target = allowedStatus(user, task, status as TaskStatus);
+  moveTask(id, target, target === status ? beforeId : null);
+  if (target === "review" && task.status !== "review") askForReview(task, user);
+  if (target !== status) {
+    addNote("task", id, "status", user.name, `Sent for review (moved from ${STATUS_LABELS[task.status]})`);
+    refresh();
+    return { notice: `“${task.title}” went to In review: ${task.reviewer_name ?? "the reviewer"} marks it done.` };
+  }
   if (status !== task.status) {
     addNote("task", id, "status", user.name, `Moved from ${STATUS_LABELS[task.status]} to ${STATUS_LABELS[status as TaskStatus]}`);
     if (status === "done" && task.created_by !== user.id) {
@@ -229,7 +310,7 @@ export async function timerAction(form: FormData): Promise<void> {
     stopTimer(user.id);
   } else {
     const task = getTask(Number(form.get("task_id")));
-    if (!canSeeTask(user, task)) return;
+    if (!canSeeTask(user, task) || isLocked(user.id, localDay())) return;
     startTimer(task.id, user.id);
     if (task.status === "todo") updateTask(task.id, { status: "in_progress" });
   }
@@ -245,6 +326,7 @@ export async function logTimeAction(_previous: FormState, form: FormData): Promi
   const minutes = match ? Number(match[1]) * 60 + Number(match[2]) : Math.round(Number(raw) * 60);
   if (!Number.isFinite(minutes) || minutes < 1 || minutes > 16 * 60) return { error: "Enter time as 1.5 (hours) or 1:30." };
   const day = text(form, "day", 10);
+  if (isLocked(user.id, DAY.test(day) ? day : localDay())) return { error: "That week's timesheet is already submitted." };
   logTime(task.id, user.id, minutes, text(form, "note", 300), DAY.test(day) ? day : undefined);
   refresh();
   return { ok: "Time logged." };
@@ -252,7 +334,11 @@ export async function logTimeAction(_previous: FormState, form: FormData): Promi
 
 export async function deleteTimeEntryAction(form: FormData): Promise<void> {
   const user = await requireUser();
-  deleteTimeEntry(Number(form.get("id")), seesAll(user, "tasks") ? null : user.id);
+  const id = Number(form.get("id"));
+  const task = getTask(Number(form.get("task_id")));
+  const entry = task ? timeEntries(task.id).find((item) => item.id === id) : null;
+  if (entry && isLocked(entry.user_id, localDay(new Date(entry.started_at)))) return;
+  deleteTimeEntry(id, seesAll(user, "tasks") ? null : user.id);
   refresh();
 }
 
@@ -260,15 +346,11 @@ export async function deleteTimeEntryAction(form: FormData): Promise<void> {
 
 export async function checkInAction(_previous: FormState, form: FormData): Promise<FormState> {
   const user = await requireUser();
-  const lat = Number(form.get("lat"));
-  const lng = Number(form.get("lng"));
-  const located = form.get("lat") !== null && form.get("lat") !== "" && Number.isFinite(lat) && Number.isFinite(lng);
   try {
     checkIn(user.id, {
       mode: (MODES as readonly string[]).includes(text(form, "mode", 10)) ? (text(form, "mode", 10) as Mode) : "office",
       ip: await clientIp(),
-      lat: located ? lat : null,
-      lng: located ? lng : null,
+      location: locationFrom(form),
     });
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Could not check in." };
@@ -292,7 +374,7 @@ export async function checkOutAction(_previous: FormState, form: FormData): Prom
   const user = await requireUser();
   try {
     stopTimer(user.id);
-    checkOut(user.id, { summary: text(form, "summary", 3000), ip: await clientIp() });
+    checkOut(user.id, { summary: text(form, "summary", 3000), ip: await clientIp(), location: locationFrom(form) });
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Could not check out." };
   }
@@ -405,6 +487,7 @@ export async function attendanceSettingsAction(_previous: FormState, form: FormD
     halfDayHours,
     weeklyOff: form.getAll("weekly_off").map(Number).filter((day) => day >= 0 && day <= 6),
     office: hasOffice ? { lat, lng, radius: num("office_radius", 20, 5000, 200) } : null,
+    requireLocation: form.get("require_location") === "1",
     quotas,
   });
   audit(user.name, "updated attendance settings", "attendance", `start ${start}`);
@@ -420,4 +503,88 @@ export async function holidayAction(form: FormData): Promise<void> {
   else if (text(form, "name", 80)) addHoliday(day, text(form, "name", 80));
   audit(user.name, "updated holidays", "attendance", day);
   refresh();
+}
+
+/* -------------------------------- timesheets ------------------------------- */
+
+function parseHours(raw: string): number | null {
+  const value = raw.trim();
+  if (!value) return 0;
+  const match = value.match(/^(\d{1,2}):(\d{2})$/);
+  const minutes = match ? Number(match[1]) * 60 + Number(match[2]) : Math.round(Number(value) * 60);
+  return Number.isFinite(minutes) && minutes >= 0 && minutes <= 24 * 60 ? minutes : null;
+}
+
+/** Saves the weekly grid (cells named cell:<taskId>:<day>), optionally submitting it. */
+export async function saveSheetAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser();
+  const monday = text(form, "week", 10);
+  if (!DAY.test(monday) || weekStart(monday) !== monday) return { error: "Choose a week." };
+  if (isLocked(user.id, monday)) return { error: "This week is already submitted." };
+  const days = weekDays(monday);
+  const errors: string[] = [];
+  for (const [key, value] of form.entries()) {
+    const match = key.match(/^cell:(\d+):(\d{4}-\d{2}-\d{2})$/);
+    if (!match || !days.includes(match[2])) continue;
+    const minutes = parseHours(String(value));
+    if (minutes === null) {
+      errors.push(`"${value}" on ${match[2]} is not a valid time (use 1.5 or 1:30).`);
+      continue;
+    }
+    const task = getTask(Number(match[1]));
+    if (!canSeeTask(user, task)) continue;
+    try {
+      setCell(user.id, task.id, match[2], minutes);
+    } catch (error) {
+      errors.push(error instanceof Error ? error.message : "Could not save a cell.");
+    }
+  }
+  if (errors.length) {
+    refresh();
+    return { error: errors.slice(0, 3).join(" ") };
+  }
+  if (form.get("submit") === "1") {
+    try {
+      submitSheet(user.id, monday, text(form, "note", 1000));
+    } catch (error) {
+      refresh();
+      return { error: error instanceof Error ? error.message : "Could not submit." };
+    }
+    for (const approver of listUsers().filter((member) => member.active && member.id !== user.id && can(member, "timesheets.approve"))) {
+      notify(approver.id, `Timesheet submitted: ${user.name}`, [`${user.name} submitted the timesheet for the week of ${monday}.`], `/admin/timesheets/team?week=${monday}`, "Review timesheets");
+    }
+    refresh();
+    return { ok: "Timesheet submitted for approval." };
+  }
+  refresh();
+  return { ok: "Saved." };
+}
+
+export async function decideSheetAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser("timesheets.approve");
+  const member = getUser(Number(form.get("user_id")));
+  const monday = text(form, "week", 10);
+  if (!member || !DAY.test(monday)) return { error: "Timesheet not found." };
+  if (member.id === user.id && user.role !== "owner") return { error: "Someone else must approve your own timesheet." };
+  const decision = text(form, "decision", 10);
+  try {
+    if (decision === "reopen") {
+      reopenSheet(member.id, monday, user.name);
+    } else {
+      const approve = decision === "approve";
+      decideSheet(member.id, monday, approve, user.name, text(form, "note", 1000));
+      notify(
+        member.id,
+        approve ? `Timesheet approved (week of ${monday})` : `Timesheet sent back (week of ${monday})`,
+        [approve ? `${user.name} approved your timesheet.` : `${user.name} sent your timesheet back:`, text(form, "note", 1000)].filter(Boolean),
+        `/admin/timesheets?week=${monday}`,
+        "Open timesheet",
+      );
+    }
+    audit(user.name, `timesheet ${decision}`, "timesheet", `${member.name} ${monday}`);
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Could not update the timesheet." };
+  }
+  refresh();
+  return { ok: decision === "approve" ? `Approved ${member.name}'s week.` : decision === "reopen" ? "Reopened for changes." : `Sent back to ${member.name}.` };
 }

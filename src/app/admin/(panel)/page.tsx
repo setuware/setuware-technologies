@@ -135,6 +135,11 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold text-foreground">
               My tasks <span className="font-normal text-muted-foreground">· {taskStats.open} open{taskStats.overdue ? `, ${taskStats.overdue} overdue` : ""}</span>
+              {taskStats.toReview ? (
+                <Link href="/admin/tasks?who=review" className="ml-2 rounded-full bg-violet-500/12 px-2 py-0.5 text-xs font-semibold text-violet-700 hover:underline dark:text-violet-300">
+                  {taskStats.toReview} to review
+                </Link>
+              ) : null}
             </p>
             <Link href="/admin/tasks" className="inline-flex items-center gap-1 text-sm font-medium text-setu-dark hover:underline dark:text-[#5fd0ec]">
               Board <ArrowRight className="size-3.5" aria-hidden />

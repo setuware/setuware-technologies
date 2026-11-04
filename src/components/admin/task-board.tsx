@@ -19,6 +19,7 @@ export interface BoardTask {
   project: string;
   due_date: string | null;
   assignee_name: string | null;
+  reviewer_name: string | null;
   entity: string | null;
   logged: number;
   estimate_minutes: number | null;
@@ -88,6 +89,11 @@ export function TaskCard({ task, today, dragging, onDragStart, onMove }: {
         {task.items_total ? (
           <span className={cn("inline-flex items-center gap-1 text-[11px] font-medium", task.items_done === task.items_total ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground")}>
             <CheckSquare className="size-3" aria-hidden /> {task.items_done}/{task.items_total}
+          </span>
+        ) : null}
+        {task.reviewer_name && task.status !== "done" ? (
+          <span className={cn("text-[11px] font-medium", task.status === "review" ? "text-violet-600 dark:text-violet-300" : "text-muted-foreground")}>
+            Review: {task.reviewer_name.split(" ")[0]}
           </span>
         ) : null}
         {task.logged || task.estimate_minutes ? (
@@ -173,6 +179,7 @@ export function TaskBoard({ tasks: initial, today }: { tasks: BoardTask[]; today
   const [dragId, setDragId] = useState<number | null>(null);
   const [over, setOver] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [, startTransition] = useTransition();
 
   // New data from the server (after a save elsewhere) replaces local order.
@@ -190,11 +197,15 @@ export function TaskBoard({ tasks: initial, today }: { tasks: BoardTask[]; today
     const moved = { ...task, status };
     setTasks(index === -1 ? [...rest, moved] : [...rest.slice(0, index), moved, ...rest.slice(index)]);
     setError("");
+    setNotice("");
     startTransition(async () => {
       const result = await moveTaskAction(id, status, beforeId);
       if (result.error) {
         setTasks(previous);
         setError(result.error);
+      } else if (result.notice) {
+        setTasks((current) => current.map((item) => (item.id === id ? { ...item, status: "review" } : item)));
+        setNotice(result.notice);
       }
     });
   }
@@ -202,6 +213,7 @@ export function TaskBoard({ tasks: initial, today }: { tasks: BoardTask[]; today
   return (
     <>
       {error ? <p className="mb-3 rounded-xl bg-red-500/10 px-4 py-2 text-sm text-red-700 dark:text-red-300">{error}</p> : null}
+      {notice ? <p className="mb-3 rounded-xl bg-violet-500/10 px-4 py-2 text-sm text-violet-800 dark:text-violet-200">{notice}</p> : null}
       <div className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:px-0 xl:grid xl:grid-cols-4 xl:overflow-visible">
         {COLUMNS.map((column) => {
           const items = tasks.filter((task) => task.status === column.key);

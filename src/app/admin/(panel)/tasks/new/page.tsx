@@ -4,7 +4,7 @@ import { taskProjects } from "@/lib/cms/tasks";
 import { NewTaskForm } from "@/components/admin/task-tools";
 import { Card, PageHeader } from "@/components/admin/ui";
 
-import { linkedRecord } from "../links";
+import { linkedRecord, reviewerOptions } from "../links";
 
 // Signed-in page: rendered per request (see the panel layout).
 export const instant = false;
@@ -25,6 +25,7 @@ export default async function NewTaskPage({ searchParams }: { searchParams: Prom
           me={{ id: user.id, name: user.name }}
           canAssign={can(user, "tasks.assign") || seesAll(user, "tasks")}
           projects={taskProjects()}
+          reviewers={reviewerOptions()}
           link={link ? { entity: link.entity, id: link.id, label: link.label } : null}
         />
       </Card>

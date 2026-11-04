@@ -3,7 +3,7 @@ import { Check, Coffee, Download, LogOut, MapPin, Plane, Settings2, UserCheck, U
 
 import { decideRequestAction } from "@/app/admin/work-actions";
 import { can, listUsers } from "@/lib/cms/auth";
-import { attendanceSettings, formatMinutes, listRequests, localDay, localTime, register, todayBoard, type BoardRow } from "@/lib/cms/attendance";
+import { attendanceSettings, formatMinutes, listRequests, localDay, localTime, register, todayBoard, type AttendanceRecord, type BoardRow } from "@/lib/cms/attendance";
 import { listRoles } from "@/lib/cms/rbac";
 import { requireUser } from "@/lib/cms/session";
 import { FixAttendanceForm } from "@/components/admin/attendance-tools";
@@ -23,13 +23,37 @@ const STATE: Record<BoardRow["state"], { label: string; style: string }> = {
   "not-in": { label: "Not in yet", style: "bg-red-500/10 text-red-700 dark:text-red-300" },
 };
 
-function place(row: BoardRow, radius: number | null): string {
-  const record = row.record;
-  if (!record) return "";
+function Spot({ label, lat, lng, distance, accuracy, radius }: { label: string; lat: number | null; lng: number | null; distance: number | null; accuracy: number | null; radius: number | null }) {
+  if (lat === null || lng === null) return <span className="text-muted-foreground/70">{label}: no location</span>;
+  const far = distance !== null && radius !== null && distance > radius;
+  const where =
+    distance === null || radius === null
+      ? "view on map"
+      : distance <= radius
+        ? "at office"
+        : `${distance >= 1000 ? `${(distance / 1000).toFixed(1)} km` : `${distance} m`} away`;
+  return (
+    <a
+      href={`https://www.google.com/maps?q=${lat},${lng}`}
+      target="_blank"
+      rel="noreferrer"
+      title={accuracy ? `Accurate to about ${accuracy} m` : undefined}
+      className={cn("inline-flex items-center gap-1 hover:underline", far ? "font-semibold text-amber-600 dark:text-amber-400" : "text-[#2f56d8] dark:text-[#8fb0ff]")}
+    >
+      <MapPin className="size-3" aria-hidden /> {label}: {where}
+    </a>
+  );
+}
+
+function Where({ record, radius }: { record: AttendanceRecord; radius: number | null }) {
   const mode = record.mode === "field" ? "On-site" : record.mode === "remote" ? "Remote" : "Office";
-  if (record.in_distance === null || radius === null) return record.in_lat !== null ? `${mode} · located` : mode;
-  if (record.in_distance <= radius) return `${mode} · at office`;
-  return `${mode} · ${record.in_distance >= 1000 ? `${(record.in_distance / 1000).toFixed(1)} km` : `${record.in_distance} m`} away`;
+  return (
+    <div className="flex flex-col gap-0.5 text-xs">
+      <span className="font-medium text-foreground">{mode}</span>
+      <Spot label="In" lat={record.in_lat} lng={record.in_lng} distance={record.in_distance} accuracy={record.in_accuracy} radius={radius} />
+      {record.check_out_at ? <Spot label="Out" lat={record.out_lat} lng={record.out_lng} distance={record.out_distance} accuracy={record.out_accuracy} radius={radius} /> : null}
+    </div>
+  );
 }
 
 export default async function TeamAttendancePage({ searchParams }: { searchParams: Promise<{ month?: string; person?: string; role?: string }> }) {
@@ -160,13 +184,7 @@ export default async function TeamAttendancePage({ searchParams }: { searchParam
                   </td>
                   <td className="px-5 py-3 tabular-nums text-muted-foreground">{row.record?.check_out_at ? localTime(row.record.check_out_at) : "—"}</td>
                   <td className="px-5 py-3 tabular-nums text-foreground">{row.record ? formatMinutes(row.minutes) : "—"}</td>
-                  <td className="hidden px-5 py-3 text-xs text-muted-foreground md:table-cell">
-                    {row.record ? (
-                      <span className="inline-flex items-center gap-1">
-                        <MapPin className="size-3" aria-hidden /> {place(row, settings.office?.radius ?? null)}
-                      </span>
-                    ) : null}
-                  </td>
+                  <td className="hidden px-5 py-3 md:table-cell">{row.record ? <Where record={row.record} radius={settings.office?.radius ?? null} /> : null}</td>
                 </tr>
               ))}
             </tbody>
@@ -228,6 +246,7 @@ export default async function TeamAttendancePage({ searchParams }: { searchParam
                   <th className="px-5 py-3 font-medium">In – out</th>
                   <th className="px-5 py-3 font-medium">Break</th>
                   <th className="px-5 py-3 font-medium">Worked</th>
+                  <th className="px-5 py-3 font-medium">Where</th>
                   <th className="px-5 py-3 font-medium">Notes</th>
                 </tr>
               </thead>
@@ -243,6 +262,7 @@ export default async function TeamAttendancePage({ searchParams }: { searchParam
                       </td>
                       <td className="px-5 py-2.5 tabular-nums text-muted-foreground">{cell.record?.break_minutes ? `${cell.record.break_minutes}m` : "—"}</td>
                       <td className="px-5 py-2.5 tabular-nums text-foreground">{cell.minutes ? formatMinutes(cell.minutes) : "—"}</td>
+                      <td className="px-5 py-2.5">{cell.record ? <Where record={cell.record} radius={settings.office?.radius ?? null} /> : null}</td>
                       <td className="px-5 py-2.5 text-xs text-muted-foreground">
                         {cell.record?.summary}
                         {cell.record?.edited_by ? ` (edited by ${cell.record.edited_by})` : ""}

@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import {
   BarChart3,
   CalendarCheck,
+  ClipboardCheck,
+  Sheet,
   Clock3,
   Download,
   ListChecks,
@@ -50,7 +52,9 @@ const NAV = [
   { group: "Overview", href: "/admin/search", label: "Search", Icon: Search, area: null },
   { group: "Overview", href: "/admin/analytics", label: "Analytics", Icon: BarChart3, area: "analytics" },
   { group: "Work", href: "/admin/tasks", label: "Tasks", Icon: ListChecks, area: null },
+  { group: "Work", href: "/admin/timesheets", label: "My timesheet", Icon: Sheet, area: null },
   { group: "Work", href: "/admin/attendance", label: "My attendance", Icon: Clock3, area: null },
+  { group: "Work", href: "/admin/timesheets/team", label: "Team timesheets", Icon: ClipboardCheck, area: "timesheets" },
   { group: "Work", href: "/admin/attendance/team", label: "Team attendance", Icon: CalendarCheck, area: "attendance" },
   { group: "Sales", href: "/admin/leads", label: "CRM leads", Icon: Target, area: "leads" },
   { group: "Sales", href: "/admin/enquiries", label: "Enquiries", Icon: Inbox, area: "enquiries" },

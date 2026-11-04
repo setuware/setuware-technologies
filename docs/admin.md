@@ -100,17 +100,42 @@ last 14. To run it daily at 2 am, add this with `crontab -e`:
 - **Who sees what**: everyone sees tasks assigned to them or created by them.
   "Assign to others" lets a role give tasks to colleagues; "All records" shows
   everyone's tasks.
+- **Who assigns**: roles with "Assign to others" (Owner, Sales Manager, HR,
+  Tech Lead, Developer, QA, Designer) can give tasks to colleagues and choose
+  the reviewer; others create tasks for themselves.
+- **Who reviews**: roles with "Review & approve work" (Owner, Tech Lead, QA,
+  Sales Manager) can be picked as a task's reviewer. When the assignee moves
+  a reviewed task to Done it goes to **In review** instead; the reviewer gets
+  an email and either **approves** (task done) or **requests changes** (back
+  to In progress with their comments). Tasks waiting for you are under
+  Tasks → "Waiting for my review" and on the dashboard.
 - **Time**: start a timer on a task (one at a time; starting another stops the
-  first, and checking out stops it) or log time by hand. The Timesheet tab
-  shows hours per person per day.
+  first, and checking out stops it) or log time by hand.
 - **Emails** (when SMTP is set up): assignment, comments, and "done" to the
   person who created the task.
+
+## Timesheets
+
+- **My timesheet**: a weekly grid of tasks × days. Timer and manual time
+  appear automatically; type hours (1.5 or 1:30) to fill the rest, add rows
+  for other tasks, compare with your attendance hours, then **Submit week**.
+- A submitted week is locked (no timers or time logs) until it is approved
+  or sent back.
+- **Team timesheets** (Owner, Tech Lead, HR to view; Owner and Tech Lead to
+  approve): hours logged vs expected vs at work, each person's grid,
+  **Approve** / **Send back** with a comment, **Reopen** an approved week,
+  CSV export. Approvers get an email when someone submits.
 
 ## Attendance and leave
 
 - **Check in / out** from My attendance or the status button at the top of
-  every page. Choose Office, Remote or On-site; the browser asks once for
-  location. At check-out people write what they worked on; managers see it
+  every page. Choose Office, Remote or On-site.
+- **Location**: the browser's GPS location (with accuracy) is saved at
+  check-in and at check-out. With an office location set, managers see
+  "at office" or the distance (highlighted when outside the radius), with a
+  Google Maps link. Turn on **Require location** in Attendance settings to
+  stop check-ins without it. If someone blocked location, the app tells them
+  how to allow it. At check-out people write what they worked on; managers see it
   under Team attendance.
 - **Breaks** are subtracted from worked hours. Checking in again after
   checking out resumes the day (the gap counts as a break).

@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { AlertTriangle, CalendarClock, ListChecks, Plus } from "lucide-react";
+import { AlertTriangle, CalendarClock, ListChecks, Plus, SearchCheck } from "lucide-react";
 
 import { listUsers, seesAll } from "@/lib/cms/auth";
-import { addDays, localDay, weekday } from "@/lib/cms/attendance";
+import { localDay } from "@/lib/cms/attendance";
 import { requireUser } from "@/lib/cms/session";
-import { listTasks, STATUS_LABELS, taskCounts, taskProjects, timesheet, type TaskFilter } from "@/lib/cms/tasks";
+import { listTasks, STATUS_LABELS, taskCounts, taskProjects, type TaskFilter } from "@/lib/cms/tasks";
 import { TaskBoard } from "@/components/admin/task-board";
 import { hours, PRIORITY_STYLE } from "@/components/admin/task-format";
 import { Avatar, buttonClass, Card, Empty, inputClass, PageHeader, Stat, theadClass } from "@/components/admin/ui";
@@ -18,7 +18,7 @@ type Search = { view?: string; who?: string; project?: string; priority?: string
 export default async function TasksPage({ searchParams }: { searchParams: Promise<Search> }) {
   const user = await requireUser();
   const params = await searchParams;
-  const view = params.view === "list" ? "list" : params.view === "time" ? "time" : "board";
+  const view = params.view === "list" ? "list" : "board";
   const all = seesAll(user, "tasks");
   const today = localDay();
   const team = listUsers().filter((member) => member.active);
@@ -26,6 +26,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
 
   const filter: TaskFilter = { project: params.project || undefined, priority: params.priority || undefined, q: params.q || undefined };
   if (who === "mine") filter.assigneeId = user.id;
+  else if (who === "review") filter.reviewerId = user.id;
   else if (who === "created") filter.visibleTo = user.id;
   else if (who !== "everyone" && Number(who)) filter.assigneeId = Number(who);
   if (!all) filter.visibleTo = user.id;
@@ -46,10 +47,11 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
         }
       />
 
-      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="My open tasks" value={counts.open} href="/admin/tasks?who=mine" icon={<ListChecks className="size-4" />} tone="blue" />
         <Stat label="Due today" value={counts.dueToday} icon={<CalendarClock className="size-4" />} tone="amber" />
         <Stat label="Overdue" value={counts.overdue} icon={<AlertTriangle className="size-4" />} tone="violet" />
+        <Stat label="Waiting for my review" value={counts.toReview} href="/admin/tasks?who=review" icon={<SearchCheck className="size-4" />} tone="teal" />
       </div>
 
       <div className="mb-4 flex flex-col gap-3 xl:flex-row xl:items-center">
@@ -61,18 +63,18 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
           ].map(([key, label]) => (
             <Link
               key={key}
-              href={tab(key)}
+              href={key === "time" ? "/admin/timesheets" : tab(key)}
               className={cn("rounded-full px-4 py-1.5 font-semibold", view === key ? "bg-[#0b1020] text-white dark:bg-white dark:text-[#0b1020]" : "text-muted-foreground hover:text-foreground")}
             >
               {label}
             </Link>
           ))}
         </nav>
-        {view !== "time" ? (
-          <form className="flex flex-1 flex-col gap-2 sm:flex-row">
+        <form className="flex flex-1 flex-col gap-2 sm:flex-row">
             <input type="hidden" name="view" value={view} />
             <select name="who" defaultValue={who} className={`${inputClass} sm:w-48`} aria-label="Whose tasks">
               <option value="mine">Assigned to me</option>
+              <option value="review">Waiting for my review</option>
               <option value="created">I created / mine</option>
               {all ? <option value="everyone">Everyone</option> : null}
               {all
@@ -102,7 +104,6 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
             <input name="q" defaultValue={params.q ?? ""} placeholder="Search tasks…" className={`${inputClass} sm:max-w-56`} />
             <button className={buttonClass.secondary}>Filter</button>
           </form>
-        ) : null}
       </div>
 
       {view === "board" ? <TaskBoard tasks={tasks} today={today} /> : null}
@@ -168,65 +169,6 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
         </Card>
       ) : null}
 
-      {view === "time" ? <Timesheet userId={all ? undefined : user.id} week={params.week} today={today} /> : null}
     </>
-  );
-}
-
-/** Hours logged on tasks per person per day, Monday to Sunday. */
-function Timesheet({ userId, week, today }: { userId?: number; week?: string; today: string }) {
-  const base = week && /^\d{4}-\d{2}-\d{2}$/.test(week) ? week : today;
-  const monday = addDays(base, -((weekday(base) + 6) % 7));
-  const days = Array.from({ length: 7 }, (_, i) => addDays(monday, i));
-  const rows = timesheet(new Date(`${monday}T00:00:00+05:30`).toISOString(), new Date(`${addDays(monday, 7)}T00:00:00+05:30`).toISOString(), userId);
-  const people = [...new Map(rows.map((row) => [row.user_id, row.name])).entries()];
-  const cell = (id: number, day: string) => rows.find((row) => row.user_id === id && row.day === day)?.minutes ?? 0;
-  return (
-    <Card className="overflow-hidden">
-      <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3">
-        <Link href={`/admin/tasks?view=time&week=${addDays(monday, -7)}`} className="text-sm font-medium text-muted-foreground hover:text-foreground">
-          ← Previous week
-        </Link>
-        <p className="text-sm font-semibold text-foreground">Week of {monday}</p>
-        <Link href={`/admin/tasks?view=time&week=${addDays(monday, 7)}`} className="text-sm font-medium text-muted-foreground hover:text-foreground">
-          Next week →
-        </Link>
-      </div>
-      {people.length === 0 ? (
-        <Empty title="No time logged this week">Start a timer or log time on a task.</Empty>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className={theadClass}>
-              <tr>
-                <th className="px-5 py-3 font-medium">Person</th>
-                {days.map((day) => (
-                  <th key={day} className="px-3 py-3 text-center font-medium">
-                    {new Intl.DateTimeFormat("en-IN", { weekday: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${day}T00:00:00Z`))}
-                  </th>
-                ))}
-                <th className="px-5 py-3 text-right font-medium">Total</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {people.map(([id, name]) => {
-                const total = days.reduce((sum, day) => sum + cell(id, day), 0);
-                return (
-                  <tr key={id}>
-                    <td className="px-5 py-3 font-medium text-foreground">{name}</td>
-                    {days.map((day) => (
-                      <td key={day} className="px-3 py-3 text-center tabular-nums text-muted-foreground">
-                        {cell(id, day) ? hours(cell(id, day)) : "·"}
-                      </td>
-                    ))}
-                    <td className="px-5 py-3 text-right font-semibold tabular-nums text-foreground">{hours(total)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </Card>
   );
 }

@@ -1,5 +1,6 @@
 import { can, listUsers, seesAll } from "@/lib/cms/auth";
 import { localDay, localTime, register } from "@/lib/cms/attendance";
+import { getSheet, sheetRows, weekDays, weekStart } from "@/lib/cms/timesheets";
 import { currentUser } from "@/lib/cms/session";
 import { listSubscribers } from "@/lib/cms/crm";
 import { listApplications, listEnquiries } from "@/lib/cms/store";
@@ -44,6 +45,32 @@ export async function GET(request: Request, { params }: { params: Promise<{ kind
       headers: {
         "content-type": "text/csv; charset=utf-8",
         "content-disposition": `attachment; filename="setuware-attendance-${month}.csv"`,
+        "cache-control": "private, no-store",
+      },
+    });
+  }
+  if (user && kind === "timesheets" && can(user, "timesheets")) {
+    const monday = weekStart(/^\d{4}-\d{2}-\d{2}$/.test(search.get("week") ?? "") ? (search.get("week") as string) : localDay());
+    const days = weekDays(monday);
+    const rows = listUsers()
+      .filter((member) => member.active)
+      .flatMap((member) => {
+        const status = getSheet(member.id, monday).status;
+        return sheetRows(member.id, monday).map((row) => ({
+          name: member.name,
+          week: monday,
+          status,
+          task: row.title,
+          project: row.project,
+          ...Object.fromEntries(days.map((day, i) => [day, row.days[i] ? (row.days[i] / 60).toFixed(2) : ""])),
+          total_hours: (row.total / 60).toFixed(2),
+        }));
+      });
+    const body = csv(rows, ["name", "week", "status", "task", "project", ...days, "total_hours"]);
+    return new Response(`\ufeff${body}`, {
+      headers: {
+        "content-type": "text/csv; charset=utf-8",
+        "content-disposition": `attachment; filename="setuware-timesheets-${monday}.csv"`,
         "cache-control": "private, no-store",
       },
     });

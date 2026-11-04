@@ -80,6 +80,12 @@ export default async function MyAttendancePage({ searchParams }: { searchParams:
           summary: record?.summary ?? "",
           late: Boolean(record && isLate(record, settings)),
           officeSet: Boolean(settings.office),
+          requireLocation: settings.requireLocation,
+          officeRadius: settings.office?.radius ?? null,
+          inLocation:
+            record && record.in_lat !== null && record.in_lng !== null
+              ? { lat: record.in_lat, lng: record.in_lng, accuracy: record.in_accuracy, distance: record.in_distance }
+              : null,
         }}
         inTime={record ? localTime(record.check_in_at) : null}
         outTime={record?.check_out_at ? localTime(record.check_out_at) : null}

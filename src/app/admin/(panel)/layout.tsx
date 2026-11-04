@@ -6,9 +6,10 @@ import { currentUser } from "@/lib/cms/session";
 import { dashboardCounts } from "@/lib/cms/store";
 import { listRequests, localDay, presence } from "@/lib/cms/attendance";
 import { runningTimer, taskCounts } from "@/lib/cms/tasks";
+import { pendingSheets } from "@/lib/cms/timesheets";
 import { AdminShell } from "@/components/admin/shell";
 
-const AREAS = ["leads", "roles.manage", "enquiries", "bookings", "subscribers", "analytics", "posts", "jobs", "media", "applications", "users", "templates", "settings.manage", "attendance"] as const;
+const AREAS = ["leads", "roles.manage", "enquiries", "bookings", "subscribers", "analytics", "posts", "jobs", "media", "applications", "users", "templates", "settings.manage", "attendance", "timesheets"] as const;
 
 // Signed-in pages block on the session; per the Cache Components auth guide,
 // they opt out of instant-navigation validation.
@@ -30,7 +31,7 @@ async function Gate({ children }: { children: React.ReactNode }) {
   const areas = AREAS.filter((area) => can(user, area));
   const today = presence(user.id);
   const timer = runningTimer(user.id);
-  const overdue = taskCounts(user.id, localDay()).overdue;
+  const tasks = taskCounts(user.id, localDay());
   const approvals = areas.includes("attendance") && can(user, "attendance.manage") ? listRequests({ status: "pending" }).length : 0;
   return (
     <AdminShell
@@ -46,7 +47,8 @@ async function Gate({ children }: { children: React.ReactNode }) {
       badges={{
         ...(areas.includes("enquiries") ? { "/admin/enquiries": counts.enquiriesNew } : {}),
         ...(areas.includes("applications") ? { "/admin/applications": counts.applicationsNew } : {}),
-        "/admin/tasks": overdue,
+        "/admin/tasks": tasks.overdue + tasks.toReview,
+        ...(areas.includes("timesheets") && can(user, "timesheets.approve") ? { "/admin/timesheets/team": pendingSheets() } : {}),
         "/admin/attendance/team": approvals,
       }}
     >

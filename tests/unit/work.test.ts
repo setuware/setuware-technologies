@@ -22,6 +22,7 @@ import {
 import { createUser } from "@/lib/cms/auth";
 import { resetDb } from "@/lib/cms/db";
 import { createTask, getTask, listTasks, logTime, moveTask, runningTimer, startTimer, stopTimer, taskCounts } from "@/lib/cms/tasks";
+import { decideSheet, isLocked, setCell, sheetRows, submitSheet, weekStart } from "@/lib/cms/timesheets";
 
 const at = (iso: string) => new Date(iso);
 let asha: number;
@@ -104,7 +105,7 @@ describe("tasks", () => {
     const mine = createTask({ title: "Call Acme", assigneeId: asha, dueDate: "2026-11-01", priority: "high" }, ravi);
     createTask({ title: "Ravi's own", assigneeId: ravi }, ravi);
     expect(listTasks({ visibleTo: asha }).map((task) => task.title)).toEqual(["Call Acme"]);
-    expect(taskCounts(asha, "2026-11-04")).toEqual({ open: 1, dueToday: 0, overdue: 1 });
+    expect(taskCounts(asha, "2026-11-04")).toEqual({ open: 1, dueToday: 0, overdue: 1, toReview: 0 });
     moveTask(mine, "done", null);
     expect(getTask(mine)).toMatchObject({ status: "done" });
     expect(getTask(mine)?.completed_at).toBeTruthy();
@@ -122,5 +123,45 @@ describe("tasks", () => {
     expect(getTask(a)?.logged).toBe(75);
     expect(getTask(b)?.logged).toBe(30);
     expect(runningTimer(asha)).toBeNull();
+  });
+});
+
+describe("reviews, timesheets and location", () => {
+  it("records check-in and check-out locations and can require them", () => {
+    saveAttendanceSettings({ ...DEFAULT_ATTENDANCE, office: { lat: 28.4595, lng: 77.0266, radius: 200 } });
+    const record = checkIn(asha, { mode: "office", location: { lat: 28.4596, lng: 77.0267, accuracy: 12 } }, at("2026-11-04T04:30:00Z"));
+    expect(record).toMatchObject({ in_accuracy: 12 });
+    expect(record.in_distance).toBeLessThan(50);
+    const out = checkOut(asha, { location: { lat: 28.6139, lng: 77.209 } }, at("2026-11-04T13:00:00Z"));
+    expect(out.out_distance).toBeGreaterThan(20_000);
+    saveAttendanceSettings({ ...DEFAULT_ATTENDANCE, requireLocation: true });
+    expect(() => checkIn(ravi, { mode: "office" }, at("2026-11-04T04:30:00Z"))).toThrow(/location/i);
+  });
+
+  it("fills, submits, locks and approves a weekly timesheet", () => {
+    const task = createTask({ title: "API", assigneeId: asha }, ravi);
+    logTime(task, asha, 60, "", "2026-11-03");
+    setCell(asha, task, "2026-11-03", 150); // 1h logged + 1h30 from the grid
+    setCell(asha, task, "2026-11-04", 90);
+    expect(() => setCell(asha, task, "2026-11-03", 30)).toThrow(/Timers already recorded/);
+    const [row] = sheetRows(asha, "2026-11-02");
+    expect(row.days.slice(0, 3)).toEqual([0, 150, 90]);
+    expect(row.total).toBe(240);
+    submitSheet(asha, "2026-11-02", "");
+    expect(isLocked(asha, "2026-11-05")).toBe(true);
+    expect(() => setCell(asha, task, "2026-11-05", 60)).toThrow(/submitted/);
+    expect(() => decideSheet(asha, "2026-11-02", false, "Ravi", "")).toThrow(/needs changing/);
+    decideSheet(asha, "2026-11-02", false, "Ravi", "Split API work by endpoint");
+    expect(isLocked(asha, "2026-11-05")).toBe(false);
+    submitSheet(asha, "2026-11-02", "Split now");
+    expect(decideSheet(asha, "2026-11-02", true, "Ravi", "").status).toBe("approved");
+    expect(weekStart("2026-11-08")).toBe("2026-11-02"); // Sunday belongs to the week starting Monday
+  });
+
+  it("lets reviewers see the tasks they review", () => {
+    const id = createTask({ title: "Checkout page", assigneeId: asha, reviewerId: ravi }, asha);
+    expect(listTasks({ visibleTo: ravi }).map((task) => task.id)).toContain(id);
+    moveTask(id, "review", null);
+    expect(taskCounts(ravi, "2026-11-04").toReview).toBe(1);
   });
 });

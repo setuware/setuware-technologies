@@ -18,6 +18,8 @@ export interface AttendanceSettings {
   weeklyOff: number[];
   /** Office location for "at office" checks; null to skip. */
   office: { lat: number; lng: number; radius: number } | null;
+  /** Refuse check-in / check-out without the browser's location. */
+  requireLocation: boolean;
   /** Leave allowed per calendar year, by type. */
   quotas: Record<string, number>;
 }
@@ -29,6 +31,7 @@ export const DEFAULT_ATTENDANCE: AttendanceSettings = {
   halfDayHours: 4,
   weeklyOff: [0],
   office: null,
+  requireLocation: false,
   quotas: { Casual: 12, Sick: 6, Earned: 12 },
 };
 
@@ -50,6 +53,11 @@ export interface AttendanceRecord {
   in_lat: number | null;
   in_lng: number | null;
   in_distance: number | null;
+  in_accuracy: number | null;
+  out_lat: number | null;
+  out_lng: number | null;
+  out_accuracy: number | null;
+  out_distance: number | null;
   summary: string;
   edited_by: string | null;
 }
@@ -184,11 +192,25 @@ export function presence(userId: number, now: Date = new Date()): Presence {
   return { state: record.break_started_at ? "break" : "in", record };
 }
 
+export interface Location {
+  lat: number;
+  lng: number;
+  /** Metres. */
+  accuracy?: number | null;
+}
+
 export interface CheckInInput {
   mode: Mode;
   ip?: string;
-  lat?: number | null;
-  lng?: number | null;
+  location?: Location | null;
+}
+
+function checkLocation(location: Location | null | undefined, settings: AttendanceSettings): { distance: number | null } {
+  if (!location) {
+    if (settings.requireLocation) throw new Error("Allow location access in your browser to continue (your company requires it).");
+    return { distance: null };
+  }
+  return { distance: settings.office ? distanceMetres(settings.office, location) : null };
 }
 
 /** Checks in for today; checking in again after checking out resumes the day (the gap counts as a break). */
@@ -202,17 +224,16 @@ export function checkIn(userId: number, input: CheckInInput, now: Date = new Dat
     db.prepare("UPDATE attendance SET check_out_at = NULL, break_minutes = break_minutes + ? WHERE id = ?").run(minutesBetween(existing.check_out_at, iso), existing.id);
     return recordFor(userId, day) as AttendanceRecord;
   }
-  const office = attendanceSettings().office;
-  const hasLocation = typeof input.lat === "number" && typeof input.lng === "number";
-  const distance = office && hasLocation ? distanceMetres(office, { lat: input.lat as number, lng: input.lng as number }) : null;
-  db.prepare("INSERT INTO attendance (user_id,day,check_in_at,mode,in_ip,in_lat,in_lng,in_distance) VALUES (?,?,?,?,?,?,?,?)").run(
+  const { distance } = checkLocation(input.location, attendanceSettings());
+  db.prepare("INSERT INTO attendance (user_id,day,check_in_at,mode,in_ip,in_lat,in_lng,in_accuracy,in_distance) VALUES (?,?,?,?,?,?,?,?,?)").run(
     userId,
     day,
     iso,
     MODES.includes(input.mode) ? input.mode : "office",
     input.ip ?? null,
-    hasLocation ? input.lat : null,
-    hasLocation ? input.lng : null,
+    input.location?.lat ?? null,
+    input.location?.lng ?? null,
+    input.location?.accuracy != null ? Math.round(input.location.accuracy) : null,
     distance,
   );
   return recordFor(userId, day) as AttendanceRecord;
@@ -233,14 +254,27 @@ export function endBreak(userId: number, now: Date = new Date()): void {
     .run(minutesBetween(record.break_started_at, now.toISOString()), record.id);
 }
 
-export function checkOut(userId: number, input: { summary?: string; ip?: string }, now: Date = new Date()): AttendanceRecord {
+export function checkOut(userId: number, input: { summary?: string; ip?: string; location?: Location | null }, now: Date = new Date()): AttendanceRecord {
   const day = localDay(now);
   const record = recordFor(userId, day);
   if (!record || record.check_out_at) throw new Error("You are not checked in.");
+  const { distance } = checkLocation(input.location, attendanceSettings());
   endBreak(userId, now);
   getDb()
-    .prepare("UPDATE attendance SET check_out_at = ?, out_ip = ?, summary = CASE WHEN ? = '' THEN summary ELSE ? END WHERE id = ?")
-    .run(now.toISOString(), input.ip ?? null, input.summary ?? "", input.summary ?? "", record.id);
+    .prepare(
+      "UPDATE attendance SET check_out_at = ?, out_ip = ?, out_lat = ?, out_lng = ?, out_accuracy = ?, out_distance = ?, summary = CASE WHEN ? = '' THEN summary ELSE ? END WHERE id = ?",
+    )
+    .run(
+      now.toISOString(),
+      input.ip ?? null,
+      input.location?.lat ?? null,
+      input.location?.lng ?? null,
+      input.location?.accuracy != null ? Math.round(input.location.accuracy) : null,
+      distance,
+      input.summary ?? "",
+      input.summary ?? "",
+      record.id,
+    );
   return recordFor(userId, day) as AttendanceRecord;
 }
 

@@ -13,16 +13,33 @@ import { buttonClass, inputClass } from "./ui";
 
 const LABEL = "mb-1 block text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground";
 
-/** Best-effort location (5 s); resolves to null if refused or unavailable. */
-function locate(): Promise<{ lat: number; lng: number } | null> {
+type Located = { lat: number; lng: number; accuracy: number } | { error: string };
+
+/** Browser location (up to 10 s), or why it isn't available. */
+function locate(): Promise<Located> {
   return new Promise((resolve) => {
-    if (!("geolocation" in navigator)) return resolve(null);
+    if (!("geolocation" in navigator)) return resolve({ error: "This browser can't share location." });
     navigator.geolocation.getCurrentPosition(
-      (position) => resolve({ lat: position.coords.latitude, lng: position.coords.longitude }),
-      () => resolve(null),
-      { enableHighAccuracy: true, timeout: 5000, maximumAge: 60_000 },
+      (position) => resolve({ lat: position.coords.latitude, lng: position.coords.longitude, accuracy: position.coords.accuracy }),
+      (error) =>
+        resolve({
+          error:
+            error.code === error.PERMISSION_DENIED
+              ? "Location is blocked. Allow location for this site in your browser settings (the lock icon next to the address)."
+              : "Couldn't get your location. Turn on location (GPS) and try again.",
+        }),
+      { enableHighAccuracy: true, timeout: 10_000, maximumAge: 30_000 },
     );
   });
+}
+
+function withLocation(form: FormData, where: Located): FormData {
+  if ("lat" in where) {
+    form.set("lat", String(where.lat));
+    form.set("lng", String(where.lng));
+    form.set("accuracy", String(Math.round(where.accuracy)));
+  }
+  return form;
 }
 
 export interface PunchState {
@@ -35,6 +52,10 @@ export interface PunchState {
   summary: string;
   late: boolean;
   officeSet: boolean;
+  requireLocation: boolean;
+  /** Where the check-in was recorded, for the status line. */
+  inLocation: { lat: number; lng: number; accuracy: number | null; distance: number | null } | null;
+  officeRadius: number | null;
 }
 
 /** The check-in / break / check-out card. */
@@ -44,6 +65,7 @@ export function PunchCard({ punch, inTime, outTime }: { punch: PunchState; inTim
   const [outState, checkOut] = useActionState<FormState, FormData>(checkOutAction, {});
   const [locating, setLocating] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [locationError, setLocationError] = useState("");
   const [pending, startTransition] = useTransition();
   const busy = locating || pending;
 
@@ -51,13 +73,22 @@ export function PunchCard({ punch, inTime, outTime }: { punch: PunchState; inTim
     setLocating(true);
     const where = await locate();
     setLocating(false);
+    setLocationError("error" in where ? where.error : "");
+    if ("error" in where && punch.requireLocation) return;
     const form = new FormData();
     form.set("mode", mode);
-    if (where) {
-      form.set("lat", String(where.lat));
-      form.set("lng", String(where.lng));
-    }
-    startTransition(() => checkIn(form));
+    startTransition(() => checkIn(withLocation(form, where)));
+  }
+
+  async function doCheckOut(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    setLocating(true);
+    const where = await locate();
+    setLocating(false);
+    setLocationError("error" in where ? where.error : "");
+    if ("error" in where && punch.requireLocation) return;
+    startTransition(() => checkOut(withLocation(form, where)));
   }
 
   const status = {
@@ -126,17 +157,17 @@ export function PunchCard({ punch, inTime, outTime }: { punch: PunchState; inTim
                 {busy ? <Loader2 className="size-5 animate-spin" aria-hidden /> : <Fingerprint className="size-5" aria-hidden />}
                 {locating ? "Getting location…" : pending ? "Checking in…" : "Check in"}
               </button>
-              {punch.officeSet ? (
-                <p className="flex items-center gap-1.5 text-[11px] text-white/50">
-                  <MapPin className="size-3" aria-hidden /> Office check-ins are matched to the office location.
-                </p>
-              ) : null}
+              <p className="flex items-center gap-1.5 text-[11px] text-white/50">
+                <MapPin className="size-3" aria-hidden />
+                {punch.requireLocation ? "Your location is required to check in and out." : "Your location is recorded when you allow it."}
+                {punch.officeSet ? " It's compared with the office." : ""}
+              </p>
             </>
           ) : null}
 
           {punch.state === "in" || punch.state === "break" ? (
             closing ? (
-              <form action={checkOut} className="flex flex-col gap-2">
+              <form onSubmit={doCheckOut} className="flex flex-col gap-2">
                 <label htmlFor="summary" className="text-xs font-semibold text-white/70">
                   What did you work on today?
                 </label>
@@ -149,9 +180,13 @@ export function PunchCard({ punch, inTime, outTime }: { punch: PunchState; inTim
                   className="rounded-xl border border-white/15 bg-white/[0.06] px-3 py-2 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/40"
                 />
                 <div className="flex gap-2">
-                  <SubmitButton pendingLabel="Checking out…" className="flex-1 bg-none bg-red-500">
-                    <LogOut className="size-4" aria-hidden /> Check out
-                  </SubmitButton>
+                  <button
+                    disabled={busy}
+                    className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-red-500 px-5 text-sm font-semibold text-white hover:brightness-110 disabled:opacity-60"
+                  >
+                    {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <LogOut className="size-4" aria-hidden />}
+                    {locating ? "Getting location…" : pending ? "Checking out…" : "Check out"}
+                  </button>
                   <button type="button" onClick={() => setClosing(false)} className="rounded-full px-4 text-sm text-white/70 hover:text-white">
                     Back
                   </button>
@@ -189,6 +224,24 @@ export function PunchCard({ punch, inTime, outTime }: { punch: PunchState; inTim
               </button>
             </>
           ) : null}
+          {punch.inLocation && punch.state !== "out" ? (
+            <a
+              href={`https://www.google.com/maps?q=${punch.inLocation.lat},${punch.inLocation.lng}`}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 text-[11px] text-white/60 hover:text-white"
+            >
+              <MapPin className="size-3" aria-hidden />
+              Check-in location saved
+              {punch.inLocation.accuracy ? ` (±${punch.inLocation.accuracy} m)` : ""}
+              {punch.inLocation.distance !== null && punch.officeRadius !== null
+                ? punch.inLocation.distance <= punch.officeRadius
+                  ? " · at office"
+                  : ` · ${punch.inLocation.distance >= 1000 ? `${(punch.inLocation.distance / 1000).toFixed(1)} km` : `${punch.inLocation.distance} m`} from office`
+                : ""}
+            </a>
+          ) : null}
+          {locationError ? <p className="rounded-xl bg-amber-500/15 px-3 py-2 text-xs text-amber-200">{locationError}</p> : null}
           <div className="text-xs">
             <FormMessage state={outState.error ? outState : inState.error ? inState : punch.state === "done" ? outState : inState} />
           </div>
@@ -348,6 +401,7 @@ export function AttendanceSettingsForm({
     halfDayHours: number;
     weeklyOff: number[];
     office: { lat: number; lng: number; radius: number } | null;
+    requireLocation: boolean;
     quotas: Record<string, number>;
   };
 }) {
@@ -422,6 +476,13 @@ export function AttendanceSettingsForm({
           </label>
           <input id="office_radius" name="office_radius" type="number" min="20" max="5000" defaultValue={settings.office?.radius ?? 200} className={inputClass} />
         </div>
+        <label className="flex items-start gap-2 text-sm text-foreground sm:col-span-3">
+          <input type="checkbox" name="require_location" value="1" defaultChecked={settings.requireLocation} className="mt-0.5 size-4 accent-[#2f56d8]" />
+          <span>
+            Require location to check in and out
+            <span className="block text-xs text-muted-foreground">People who block location access can’t check in until they allow it.</span>
+          </span>
+        </label>
         <div className="flex gap-2 sm:col-span-3">
           <button
             type="button"
@@ -430,7 +491,7 @@ export function AttendanceSettingsForm({
               setLocating(true);
               const where = await locate();
               setLocating(false);
-              if (where) {
+              if ("lat" in where) {
                 setLat(where.lat.toFixed(6));
                 setLng(where.lng.toFixed(6));
               }

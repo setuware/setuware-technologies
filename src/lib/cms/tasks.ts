@@ -21,6 +21,8 @@ export interface Task {
   assignee_name: string | null;
   created_by: number;
   creator_name: string | null;
+  reviewer_id: number | null;
+  reviewer_name: string | null;
   due_date: string | null;
   project: string;
   entity: LinkedEntity | null;
@@ -36,16 +38,17 @@ export interface Task {
   items_done: number;
 }
 
-const SELECT = `SELECT t.*, a.name AS assignee_name, c.name AS creator_name,
+const SELECT = `SELECT t.*, a.name AS assignee_name, c.name AS creator_name, r.name AS reviewer_name,
   (SELECT COALESCE(SUM(minutes),0) FROM time_entries e WHERE e.task_id = t.id) AS logged,
   (SELECT COUNT(*) FROM task_items i WHERE i.task_id = t.id) AS items_total,
   (SELECT COUNT(*) FROM task_items i WHERE i.task_id = t.id AND i.done = 1) AS items_done
-  FROM tasks t LEFT JOIN users a ON a.id = t.assignee_id LEFT JOIN users c ON c.id = t.created_by`;
+  FROM tasks t LEFT JOIN users a ON a.id = t.assignee_id LEFT JOIN users c ON c.id = t.created_by LEFT JOIN users r ON r.id = t.reviewer_id`;
 
 export interface TaskFilter {
-  /** Limit to tasks assigned to or created by this person. */
+  /** Limit to tasks assigned to, created by or reviewed by this person. */
   visibleTo?: number;
   assigneeId?: number;
+  reviewerId?: number;
   status?: string;
   priority?: string;
   project?: string;
@@ -60,8 +63,12 @@ export function listTasks(filter: TaskFilter = {}): Task[] {
   const where: string[] = [];
   const params: unknown[] = [];
   if (filter.visibleTo) {
-    where.push("(t.assignee_id = ? OR t.created_by = ?)");
-    params.push(filter.visibleTo, filter.visibleTo);
+    where.push("(t.assignee_id = ? OR t.created_by = ? OR t.reviewer_id = ?)");
+    params.push(filter.visibleTo, filter.visibleTo, filter.visibleTo);
+  }
+  if (filter.reviewerId) {
+    where.push("t.reviewer_id = ?");
+    params.push(filter.reviewerId);
   }
   if (filter.assigneeId) {
     where.push("t.assignee_id = ?");
@@ -101,6 +108,7 @@ export interface TaskInput {
   status?: TaskStatus;
   priority?: Priority;
   assigneeId?: number | null;
+  reviewerId?: number | null;
   dueDate?: string | null;
   project?: string;
   entity?: LinkedEntity | null;
@@ -113,8 +121,8 @@ export function createTask(input: TaskInput, createdBy: number): number {
   const status = input.status && TASK_STATUSES.includes(input.status) ? input.status : "todo";
   const result = getDb()
     .prepare(
-      `INSERT INTO tasks (title,description,status,priority,assignee_id,created_by,due_date,project,entity,entity_id,estimate_minutes,position,created_at,updated_at,completed_at)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,0,?,?,?)`,
+      `INSERT INTO tasks (title,description,status,priority,assignee_id,reviewer_id,created_by,due_date,project,entity,entity_id,estimate_minutes,position,created_at,updated_at,completed_at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?)`,
     )
     .run(
       input.title,
@@ -122,6 +130,7 @@ export function createTask(input: TaskInput, createdBy: number): number {
       status,
       input.priority && PRIORITIES.includes(input.priority) ? input.priority : "normal",
       input.assigneeId ?? null,
+      input.reviewerId ?? null,
       createdBy,
       input.dueDate || null,
       input.project ?? "",
@@ -146,6 +155,7 @@ export function updateTask(id: number, input: Partial<TaskInput>): void {
   if (input.description !== undefined) set("description", input.description);
   if (input.priority && PRIORITIES.includes(input.priority)) set("priority", input.priority);
   if (input.assigneeId !== undefined) set("assignee_id", input.assigneeId);
+  if (input.reviewerId !== undefined) set("reviewer_id", input.reviewerId);
   if (input.dueDate !== undefined) set("due_date", input.dueDate || null);
   if (input.project !== undefined) set("project", input.project);
   if (input.estimateMinutes !== undefined) set("estimate_minutes", input.estimateMinutes);
@@ -184,7 +194,7 @@ export function taskProjects(): string[] {
 }
 
 /** Open, due today and overdue tasks for one person. */
-export function taskCounts(userId: number, today: string): { open: number; dueToday: number; overdue: number } {
+export function taskCounts(userId: number, today: string): { open: number; dueToday: number; overdue: number; toReview: number } {
   const row = getDb()
     .prepare(
       `SELECT COUNT(*) AS open,
@@ -193,7 +203,8 @@ export function taskCounts(userId: number, today: string): { open: number; dueTo
        FROM tasks WHERE assignee_id = ? AND status != 'done'`,
     )
     .get(today, today, userId) as { open: number; dueToday: number | null; overdue: number | null };
-  return { open: row.open, dueToday: row.dueToday ?? 0, overdue: row.overdue ?? 0 };
+  const toReview = (getDb().prepare("SELECT COUNT(*) AS n FROM tasks WHERE reviewer_id = ? AND status = 'review'").get(userId) as { n: number }).n;
+  return { open: row.open, dueToday: row.dueToday ?? 0, overdue: row.overdue ?? 0, toReview };
 }
 
 /* -------------------------------- checklist -------------------------------- */
@@ -226,6 +237,7 @@ export function deleteTaskItem(taskId: number, itemId: number): void {
 
 export interface TimeEntry {
   id: number;
+  source: "timer" | "manual" | "sheet";
   task_id: number;
   user_id: number;
   user_name: string | null;
@@ -266,7 +278,7 @@ export function startTimer(taskId: number, userId: number, now: Date = new Date(
 export function logTime(taskId: number, userId: number, minutes: number, note: string, day?: string): void {
   const startedAt = day ? new Date(`${day}T12:00:00+05:30`).toISOString() : new Date().toISOString();
   getDb()
-    .prepare("INSERT INTO time_entries (task_id,user_id,started_at,ended_at,minutes,note) VALUES (?,?,?,?,?,?)")
+    .prepare("INSERT INTO time_entries (task_id,user_id,started_at,ended_at,minutes,note,source) VALUES (?,?,?,?,?,?,'manual')")
     .run(taskId, userId, startedAt, startedAt, minutes, note);
 }
 

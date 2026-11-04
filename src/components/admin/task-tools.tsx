@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { Pencil } from "lucide-react";
 
-import { createTaskAction, logTimeAction, taskCommentAction, updateTaskAction } from "@/app/admin/work-actions";
+import { createTaskAction, logTimeAction, reviewTaskAction, taskCommentAction, updateTaskAction } from "@/app/admin/work-actions";
 import type { FormState } from "@/app/admin/actions";
 
 import { FormMessage, SubmitButton } from "./form-bits";
@@ -42,6 +42,22 @@ function AssigneeSelect({ team, value, canAssign, me }: { team: Member[]; value:
   );
 }
 
+function ReviewerSelect({ reviewers, value, canAssign }: { reviewers: Member[]; value: number | null; canAssign: boolean }) {
+  return (
+    <>
+      <select id="reviewer_id" name="reviewer_id" defaultValue={value ?? ""} disabled={!canAssign} className={`${inputClass} disabled:opacity-60`}>
+        <option value="">No review needed</option>
+        {reviewers.map((member) => (
+          <option key={member.id} value={member.id}>
+            {member.name}
+          </option>
+        ))}
+      </select>
+      {!canAssign ? <p className="mt-1 text-[11px] text-muted-foreground">Set by whoever assigns the task.</p> : null}
+    </>
+  );
+}
+
 /** Full "New task" form. */
 export function NewTaskForm({
   team,
@@ -49,7 +65,9 @@ export function NewTaskForm({
   canAssign,
   projects,
   link,
+  reviewers,
 }: {
+  reviewers: Member[];
   team: Member[];
   me: Member;
   canAssign: boolean;
@@ -86,6 +104,12 @@ export function NewTaskForm({
             Assign to
           </label>
           <AssigneeSelect team={team} value={me.id} canAssign={canAssign} me={me} />
+        </div>
+        <div>
+          <label htmlFor="reviewer_id" className={LABEL}>
+            Reviewer
+          </label>
+          <ReviewerSelect reviewers={reviewers} value={null} canAssign={canAssign} />
         </div>
         <div>
           <label htmlFor="due_date" className={LABEL}>
@@ -150,8 +174,10 @@ export function TaskPanel({
   me,
   canAssign,
   projects,
+  reviewers,
 }: {
-  task: { id: number; status: string; priority: string; assignee_id: number | null; due_date: string | null; project: string; estimate_minutes: number | null };
+  reviewers: Member[];
+  task: { id: number; status: string; priority: string; assignee_id: number | null; reviewer_id: number | null; due_date: string | null; project: string; estimate_minutes: number | null };
   team: Member[];
   me: Member;
   canAssign: boolean;
@@ -178,6 +204,12 @@ export function TaskPanel({
           Assigned to
         </label>
         <AssigneeSelect team={team} value={task.assignee_id} canAssign={canAssign} me={me} />
+      </div>
+      <div>
+        <label htmlFor="reviewer_id" className={LABEL}>
+          Reviewer
+        </label>
+        <ReviewerSelect reviewers={reviewers} value={task.reviewer_id} canAssign={canAssign} />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
@@ -306,6 +338,29 @@ export function LogTimeForm({ taskId, today }: { taskId: number; today: string }
       <div className="flex items-center gap-3">
         <SubmitButton variant="secondary" pendingLabel="Logging…">
           Log time
+        </SubmitButton>
+        <FormMessage state={state} />
+      </div>
+    </form>
+  );
+}
+
+/** Reviewer's box on a task waiting for review. */
+export function ReviewBox({ id, assignee }: { id: number; assignee: string | null }) {
+  const [state, action] = useActionState<FormState, FormData>(reviewTaskAction, {});
+  return (
+    <form action={action} className="flex flex-col gap-3">
+      <input type="hidden" name="id" value={id} />
+      <p className="text-sm text-foreground">
+        {assignee ?? "The assignee"} finished this task. Check the work, then approve it or send it back with what to change.
+      </p>
+      <textarea name="comment" rows={3} placeholder="Feedback (required when asking for changes)" aria-label="Review comment" className={inputClass} />
+      <div className="flex flex-wrap items-center gap-2">
+        <SubmitButton name="decision" value="approve" pendingLabel="Saving…" className="bg-none bg-emerald-600">
+          Approve & mark done
+        </SubmitButton>
+        <SubmitButton name="decision" value="changes" variant="secondary" pendingLabel="Sending…">
+          Request changes
         </SubmitButton>
         <FormMessage state={state} />
       </div>
