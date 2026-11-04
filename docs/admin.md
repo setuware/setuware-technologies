@@ -69,6 +69,23 @@ last 14. To run it daily at 2 am, add this with `crontab -e`:
 0 2 * * * cd /home/ubuntu/setuware-technologies && npm run cms:backup >> ~/backups/backup.log 2>&1
 ```
 
+## Staff accounts
+
+- **Invite** (Team → Add a team member → Email an invite): they get an email
+  with a link to choose their password (valid 3 days, works once). If SMTP is
+  not set up, copy the link shown and send it on WhatsApp.
+- **Temporary password**: they must choose their own at first sign-in.
+- **Forgot password?** on the sign-in page emails a reset link (1 hour).
+  Owners can also send a reset link from the Team page.
+- **2-step verification** (My account): scan the QR code with Google
+  Authenticator, Microsoft Authenticator or 1Password; sign-in then asks for
+  the 6-digit code. 8 one-time recovery codes are shown once. An owner can
+  reset it for someone who lost their phone.
+- **Lockout**: 5 wrong passwords lock the account for 15 minutes; owners can
+  unlock it from Team.
+- **Devices**: My account lists where you are signed in; sign out any of them.
+  Owners can sign a person out everywhere.
+
 ## Security
 
 - Passwords are hashed with scrypt; sessions are random tokens in an

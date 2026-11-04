@@ -7,7 +7,26 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { postBodies } from "@/lib/post-bodies";
 import { posts } from "@/lib/posts";
 import { jobs } from "@/lib/careers";
-import { can, createUser, hashPassword, passwordProblem, signIn, signOut, userForToken, verifyPassword } from "@/lib/cms/auth";
+import {
+  can,
+  completeTwoFactor,
+  createPasswordToken,
+  createUser,
+  enableTwoFactor,
+  getUserByEmail,
+  hashPassword,
+  newTotpSecret,
+  passwordProblem,
+  pendingTwoFactor,
+  signIn,
+  signOut,
+  totpCode,
+  unlockUser,
+  redeemPasswordToken,
+  userForPasswordToken,
+  userForToken,
+  verifyPassword,
+} from "@/lib/cms/auth";
 import { getDb, resetDb } from "@/lib/cms/db";
 import { blocksToMarkdown, markdownToBlocks, readingMinutes, slugify } from "@/lib/cms/markdown";
 import {
@@ -124,14 +143,69 @@ describe("admin auth", () => {
   it("creates the first owner from ADMIN_EMAIL / ADMIN_PASSWORD, then uses real sessions", async () => {
     vi.stubEnv("ADMIN_EMAIL", "owner@example.com");
     vi.stubEnv("ADMIN_PASSWORD", "BootPass12345");
-    expect(await signIn("owner@example.com", "nope")).toBeNull();
+    expect((await signIn("owner@example.com", "nope")).ok).toBe(false);
     const session = await signIn("Owner@Example.com", "BootPass12345");
-    expect(session?.user.role).toBe("owner");
-    expect(userForToken(session!.token)?.email).toBe("owner@example.com");
+    if (!session.ok) throw new Error("sign-in failed");
+    expect(session.user.role).toBe("owner");
+    expect(session.user.mustChangePassword).toBe(false);
+    expect(userForToken(session.token)?.email).toBe("owner@example.com");
     // Stored as a hash, never the raw token.
-    expect(getDb().prepare("SELECT id FROM sessions").get()).not.toEqual({ id: session!.token });
-    signOut(session!.token);
-    expect(userForToken(session!.token)).toBeNull();
+    expect(getDb().prepare("SELECT id FROM sessions").get()).not.toEqual({ id: session.token });
+    signOut(session.token);
+    expect(userForToken(session.token)).toBeNull();
+  });
+
+  it("locks an account after five wrong passwords", async () => {
+    await createUser({ email: "a@example.com", name: "A", role: "sales", password: "SalesPass123", temporary: false });
+    for (let attempt = 0; attempt < 4; attempt += 1) expect(await signIn("a@example.com", "wrong")).toEqual({ ok: false, reason: "invalid" });
+    expect(await signIn("a@example.com", "wrong")).toMatchObject({ ok: false, reason: "locked" });
+    expect(await signIn("a@example.com", "SalesPass123")).toMatchObject({ ok: false, reason: "locked" });
+    unlockUser(getUserByEmail("a@example.com")!.id);
+    expect((await signIn("a@example.com", "SalesPass123")).ok).toBe(true);
+  });
+
+  it("asks for a 2-step code before the session works", async () => {
+    const user = await createUser({ email: "b@example.com", name: "B", role: "hr", password: "HrPass12345", temporary: false });
+    const secret = newTotpSecret();
+    expect(enableTwoFactor(user.id, secret, "000000")).toBeNull();
+    const codes = enableTwoFactor(user.id, secret, totpCode(secret));
+    expect(codes).toHaveLength(8);
+
+    const first = await signIn("b@example.com", "HrPass12345");
+    if (!first.ok) throw new Error("sign-in failed");
+    expect(first.needsCode).toBe(true);
+    expect(userForToken(first.token)).toBeNull();
+    expect(pendingTwoFactor(first.token)).toBe(true);
+    expect(completeTwoFactor(first.token, "123456")).toBeNull();
+    expect(completeTwoFactor(first.token, totpCode(secret))?.email).toBe("b@example.com");
+    expect(userForToken(first.token)?.email).toBe("b@example.com");
+
+    // A recovery code works once.
+    const second = await signIn("b@example.com", "HrPass12345");
+    if (!second.ok) throw new Error("sign-in failed");
+    expect(completeTwoFactor(second.token, codes![0])).not.toBeNull();
+    const third = await signIn("b@example.com", "HrPass12345");
+    if (!third.ok) throw new Error("sign-in failed");
+    expect(completeTwoFactor(third.token, codes![0])).toBeNull();
+  });
+
+  it("matches the RFC 6238 test vector", () => {
+    // Secret "12345678901234567890" in base32, T = 59 s → 94287082 (last 6 digits).
+    expect(totpCode("GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ", 59_000)).toBe("287082");
+  });
+
+  it("invites by single-use link and forces temporary passwords to change", async () => {
+    const invited = await createUser({ email: "c@example.com", name: "C", role: "editor" });
+    expect(invited.hasPassword).toBe(false);
+    expect((await signIn("c@example.com", "anything")).ok).toBe(false);
+    const token = createPasswordToken(invited.id, "invite");
+    expect(userForPasswordToken(token)?.purpose).toBe("invite");
+    expect(await redeemPasswordToken(token, "EditorPass123")).not.toBeNull();
+    expect(await redeemPasswordToken(token, "EditorPass123")).toBeNull();
+    expect((await signIn("c@example.com", "EditorPass123")).ok).toBe(true);
+
+    const temp = await createUser({ email: "d@example.com", name: "D", role: "sales", password: "TempPass1234" });
+    expect(temp.mustChangePassword).toBe(true);
   });
 
   it("limits each role to its sections", async () => {

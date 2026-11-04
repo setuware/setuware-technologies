@@ -12,10 +12,14 @@ export async function currentUser(): Promise<AdminUser | null> {
   return userForToken(token);
 }
 
-/** Signed-in admin allowed to use `area`; otherwise redirects. */
-export async function requireUser(area?: string): Promise<AdminUser> {
+/**
+ * Signed-in admin allowed to use `area`; otherwise redirects. People with a
+ * temporary password are sent to My account until they choose their own.
+ */
+export async function requireUser(area?: string, options: { allowPasswordChange?: boolean } = {}): Promise<AdminUser> {
   const user = await currentUser();
   if (!user) redirect("/admin/login");
+  if (user.mustChangePassword && !options.allowPasswordChange) redirect("/admin/account?required=1");
   if (area && !can(user.role, area)) redirect("/admin?denied=1");
   return user;
 }

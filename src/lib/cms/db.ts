@@ -176,6 +176,14 @@ CREATE TABLE IF NOT EXISTS page_views (
   views INTEGER NOT NULL DEFAULT 0,
   updated_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS password_tokens (
+  id TEXT PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  purpose TEXT NOT NULL CHECK (purpose IN ('invite','reset')),
+  expires_at TEXT NOT NULL,
+  used_at TEXT,
+  created_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
@@ -250,6 +258,16 @@ const COLUMNS: [table: string, column: string, definition: string][] = [
   ["applications", "assignee", "TEXT"],
   ["applications", "rating", "INTEGER"],
   ["applications", "interview_at", "TEXT"],
+  ["users", "must_change_password", "INTEGER NOT NULL DEFAULT 0"],
+  ["users", "totp_secret", "TEXT"],
+  ["users", "totp_enabled", "INTEGER NOT NULL DEFAULT 0"],
+  ["users", "recovery_codes", "TEXT"],
+  ["users", "failed_attempts", "INTEGER NOT NULL DEFAULT 0"],
+  ["users", "locked_until", "TEXT"],
+  ["sessions", "user_agent", "TEXT"],
+  ["sessions", "ip", "TEXT"],
+  ["sessions", "last_seen_at", "TEXT"],
+  ["sessions", "mfa_ok", "INTEGER NOT NULL DEFAULT 1"],
 ];
 
 function migrate(db: Database): void {
