@@ -1,7 +1,5 @@
-import { useId } from "react";
+import Image from "next/image";
 import Link from "next/link";
-
-import { MARK_PATHS } from "@/lib/brand-mark";
 
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -38,7 +36,7 @@ export function Logo({
       className={cn("group inline-flex items-center gap-2.5 lg:gap-[calc(var(--s)*12)]", className)}
       aria-label={`${site.name} — home`}
     >
-      <LogoMark className="size-10 shrink-0 transition-transform duration-500 group-hover:rotate-[-8deg] lg:size-[calc(var(--s)*46)]" />
+      <LogoMark className="h-10 w-auto shrink-0 transition-transform duration-500 group-hover:rotate-[-8deg] lg:h-[calc(var(--s)*46)] lg:w-auto" />
       <span className="inline-flex flex-col leading-none" aria-hidden>
         <span
           className={cn(
@@ -64,32 +62,22 @@ export function Logo({
 }
 
 /**
- * Brand mark: the SW monogram in its ring. Colours come from CSS variables so
- * the same SVG switches to brighter blues in dark mode (and inside the
- * always-dark footer). Decorative — the link carries the name.
+ * Brand mark: the V3 SW ribbon (transparent PNG, no ring). The old ringed
+ * SVG monogram read as the "old logo" even after the V3 gradient landed,
+ * because the shape never changed — the ribbon is unmistakably the new mark
+ * on both light and dark backgrounds. The V3 gradient colours in
+ * `MARK_COLORS` remain the brand palette for generated assets and the
+ * favicon. Decorative — the link carries the name.
  */
 export function LogoMark({ className }: { className?: string }) {
-  const gradient = `sw-${useId().replace(/:/g, "")}`;
   return (
-    <svg
-      viewBox="0 0 100 100"
-      aria-hidden
-      className={cn(
-        "[--sw-ring:#1d4ed8] [--sw-w0:#06b6d4] [--sw-w1:#2563eb] [--sw-w2:#7c3aed] dark:[--sw-ring:#818cf8] dark:[--sw-w0:#22d3ee] dark:[--sw-w1:#60a5fa] dark:[--sw-w2:#c084fc]",
-        className,
-      )}
-    >
-      <defs>
-        <linearGradient id={gradient} x1="40" y1="0" x2="92" y2="0" gradientUnits="userSpaceOnUse">
-          <stop offset="0" style={{ stopColor: "var(--sw-w0)" }} />
-          <stop offset=".55" style={{ stopColor: "var(--sw-w1)" }} />
-          <stop offset="1" style={{ stopColor: "var(--sw-w2)" }} />
-        </linearGradient>
-      </defs>
-      <path d={MARK_PATHS.ring} fill="none" style={{ stroke: "var(--sw-ring)" }} strokeWidth="9" />
-      <path d={MARK_PATHS.nodes} fillRule="evenodd" style={{ fill: "var(--sw-ring)" }} />
-      <path d={MARK_PATHS.s} fill="none" style={{ stroke: "var(--sw-ring)" }} strokeWidth="9.4" />
-      <path d={MARK_PATHS.w} fill={`url(#${gradient})`} />
-    </svg>
+    <Image
+      src="/images/logo-v3-transparent.png"
+      alt=""
+      width={1412}
+      height={816}
+      className={cn("w-auto shrink-0", className)}
+      priority
+    />
   );
 }
