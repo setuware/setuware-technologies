@@ -101,7 +101,7 @@ export function ChatLauncher() {
                   <X className="size-6" strokeWidth={2.2} />
                 ) : (
                   <span className="dark">
-                    <LogoMark className="size-8 sm:size-9" />
+                    <LogoMark className="h-8 w-auto sm:h-9 sm:w-auto" />
                   </span>
                 )}
               </motion.span>
