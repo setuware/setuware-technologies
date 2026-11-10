@@ -11,9 +11,10 @@ export const MARK_PATHS = {
   w: "M35 31 L44 31 L51.2 57.5 L55.6 40 L61.4 40 L65.9 57.5 L72.6 33.6 C74.6 27.6 79 25.4 83.6 26.4 C90.4 27.9 95.2 34.8 95.6 44.4 L86.6 44.4 C86.2 38.8 84.4 35.4 81.9 35.3 C80.3 35.2 79.3 36.7 78.5 39.6 L69.6 70 L62.4 70 L58.5 55.6 L54.6 70 L47.4 70 Z",
 } as const;
 
+// V3 palette (Nov 2026): cyan -> blue -> violet, sampled from the V3 ribbon logo.
 export const MARK_COLORS = {
-  light: { ring: "#1d3fae", w: ["#1d3fae", "#1468ad", "#0a8ea6"] },
-  dark: { ring: "#6a8cff", w: ["#6a8cff", "#3fa9e8", "#22c3e6"] },
+  light: { ring: "#1d4ed8", w: ["#06b6d4", "#2563eb", "#7c3aed"] },
+  dark: { ring: "#818cf8", w: ["#22d3ee", "#60a5fa", "#c084fc"] },
 } as const;
 
 /** Standalone SVG markup, for icons generated at build time. */

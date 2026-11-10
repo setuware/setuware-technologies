@@ -75,7 +75,7 @@ export function LogoMark({ className }: { className?: string }) {
       viewBox="0 0 100 100"
       aria-hidden
       className={cn(
-        "[--sw-ring:#1d3fae] [--sw-w0:#1d3fae] [--sw-w1:#1468ad] [--sw-w2:#0a8ea6] dark:[--sw-ring:#6a8cff] dark:[--sw-w0:#6a8cff] dark:[--sw-w1:#3fa9e8] dark:[--sw-w2:#22c3e6]",
+        "[--sw-ring:#1d4ed8] [--sw-w0:#06b6d4] [--sw-w1:#2563eb] [--sw-w2:#7c3aed] dark:[--sw-ring:#818cf8] dark:[--sw-w0:#22d3ee] dark:[--sw-w1:#60a5fa] dark:[--sw-w2:#c084fc]",
         className,
       )}
     >
