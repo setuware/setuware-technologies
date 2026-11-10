@@ -16,7 +16,7 @@ import {
   useReducedMotionSafe,
 } from "@/components/motion/primitives";
 
-const HEADING = "One team. Every skill you need.";
+const HEADING = "One office in Gurugram. Every skill your project needs.";
 
 /**
  * Skills-gap band: a full-bleed, muted background video of a team working
@@ -141,20 +141,21 @@ export function SkillsGap() {
                 className="mt-6 text-[36px] font-bold leading-[1.1] tracking-[-0.03em] text-white sm:text-[52px] lg:mt-[calc(var(--s)*24)] lg:text-[calc(var(--s)*72)] lg:leading-[calc(var(--s)*80)]"
               >
                 <TextReveal as="span" delay={0.1}>
-                  One team.
+                  One office in Gurugram.
                 </TextReveal>
                 <br />
                 <span className="text-[#3fd0ee]">
                   <TextReveal as="span" delay={0.32}>
-                    Every skill you need.
+                    Every skill your project needs.
                   </TextReveal>
                 </span>
               </h2>
 
               <FadeUp delay={0.45} y={24}>
                 <p className="mt-6 max-w-[620px] text-[16px] font-medium leading-[27px] text-white/80 lg:mt-[calc(var(--s)*32)] lg:max-w-[calc(var(--s)*680)] lg:text-[calc(var(--s)*19)] lg:leading-[calc(var(--s)*31)]">
-                  Designers, developers, marketers and project managers working
-                  together as an extension of your business.
+                  Designers, developers and marketers in one office on MG Road,
+                  Gurugram, with one project manager per job — call +91 83027
+                  83900 and a person answers.
                 </p>
               </FadeUp>
 

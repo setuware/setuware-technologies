@@ -73,7 +73,7 @@ const SAME: readonly Point[] = [
   {
     icon: ShieldCheck,
     title: "Performance and security",
-    body: "Fast, accessible builds that follow established security practices.",
+    body: "Every launch hits 90+ on mobile Lighthouse, with SSL and backups.",
   },
   {
     icon: LifeBuoy,
@@ -89,15 +89,15 @@ export default function IndustriesPage() {
         video="industries"
         eyebrow="Industries"
         title="Industries we serve"
-        description="We bring domain understanding to every engagement, delivering websites and software tailored to the way each sector operates."
+        description="A shop needs GST invoicing and shipping. A clinic needs appointment booking. A school needs admissions. Each sector page says what we build for that sector — and what it costs."
       />
 
       <Section surface="tint" aria-labelledby="sectors-heading">
         <div className="container-page">
           <SectionHeading
             eyebrow="Sectors"
-            title={<span id="sectors-heading">Solutions for your sector</span>}
-            description="Each sector page sets out the challenges we address, the solutions we build and the services behind them."
+            title={<span id="sectors-heading">What each sector actually gets</span>}
+            description="Each sector page names the features that sector needs, and the services behind them."
           />
           <ul className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {industries.map((industry, index) => (
@@ -156,8 +156,8 @@ export default function IndustriesPage() {
         <div className="container-page">
           <SectionHeading
             eyebrow="Our approach"
-            title={<span id="approach-heading">Adapted to your sector, delivered consistently</span>}
-            description="What we build changes with your sector. How we deliver it does not."
+            title={<span id="approach-heading">Same process, different features</span>}
+            description="The features change with your sector. The fixed price, the staging link and the three months of support do not."
           />
           <div className="mx-auto mt-14 grid max-w-6xl gap-6 lg:grid-cols-2">
             <PointPanel title="Tailored to your sector" points={ADAPT} />
@@ -169,7 +169,7 @@ export default function IndustriesPage() {
       <DeferredSection minHeight={380}>
         <CtaBand
           title="Working in another sector?"
-          description="We build websites and business software for organisations across many industries. Book a consultation to discuss your requirements."
+          description="Tell us what you do on a free 30-minute call — we will say plainly whether we can build it, what it costs, and how long it takes."
           primaryLabel="Discuss your project"
         />
       </DeferredSection>

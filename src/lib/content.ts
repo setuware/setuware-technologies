@@ -26,25 +26,25 @@ export const serviceGroups: readonly ServiceGroupInfo[] = [
     id: "build",
     label: "Build",
     title: "Websites, stores and apps",
-    description: "Company websites, online stores, customer portals and mobile apps that present your business and serve your customers.",
+    description: "Websites from ₹14,999, stores on Shopify or WooCommerce, portals and apps on Next.js — every one reviewed on a staging link first.",
   },
   {
     id: "grow",
     label: "Grow",
     title: "Brand, design and marketing",
-    description: "Brand identity, interface design, SEO and paid campaigns that attract the right customers and turn visits into enquiries.",
+    description: "Logos and interfaces in Figma, SEO, and Google and Meta ads — tracking set up first, so you see which channel brings the enquiry.",
   },
   {
     id: "scale",
     label: "Scale",
     title: "Systems and automation",
-    description: "ERP, CRM and AI automation that replace spreadsheets and manual data entry with one dependable system.",
+    description: "ERP and CRM that replace your spreadsheets, and AI assistants that answer from your own documents — tested for accuracy before launch.",
   },
   {
     id: "run",
     label: "Run",
     title: "Hosting and support",
-    description: "Managed hosting, domains and maintenance plans that keep your platforms secure, current and available.",
+    description: "Hosting, domains and email we monitor around the clock, plus monthly updates and patches for a fixed fee.",
   },
 ];
 
@@ -143,9 +143,9 @@ export const services: readonly Service[] = [
     slug: "business-websites",
     name: "Business websites",
     shortName: "Website",
-    summary: "Fast, responsive company websites that build credibility and generate qualified leads.",
+    summary: "Company websites from ₹14,999, live in 3–6 weeks, on WordPress or Next.js.",
     description:
-      "Professionally designed company websites that present your business clearly and convert visitors into enquiries. Each site is built on WordPress or Next.js, with a content management system, technical SEO and analytics configured before launch.",
+      "A company website that says what you do in one screen, loads fast on a phone, and lets your team change the text without calling us. Built on WordPress or Next.js, with a CMS, technical SEO and enquiry tracking switched on before launch — and Lighthouse 90+ on mobile at launch. You review it on a staging link; it goes live only when you sign off.",
     icon: "globe",
     accent: ["#6366f1", "#22d3ee"],
     priceFrom: WEBSITE_FROM,
@@ -178,7 +178,7 @@ export const services: readonly Service[] = [
     group: "build",
     headline: "Business websites that build credibility and generate leads",
     subheadline:
-      "We design and develop fast, responsive company websites on WordPress or Next.js. Each site is structured to convert visitors into enquiries and is simple for your team to manage.",
+      "We build company websites on WordPress or Next.js, from ₹14,999, live in 3–6 weeks. Your team edits the content; we handle the speed, the SEO and the forms.",
     seoTitle: "Business Website Development in Gurugram",
     seoDescription:
       "Responsive business websites and landing pages on WordPress or Next.js, with technical SEO, analytics and an easy-to-use CMS. Based in Gurugram.",
@@ -321,9 +321,9 @@ export const services: readonly Service[] = [
     slug: "ecommerce-stores",
     name: "E-commerce stores",
     shortName: "Store",
-    summary: "Scalable online stores with secure payments, inventory and order management.",
+    summary: "Online stores on Shopify or WooCommerce, with UPI checkout and GST invoices.",
     description:
-      "Online stores on Shopify, WooCommerce or a custom Next.js build, with secure payments, GST invoicing and shipping integration. Each store is configured to take orders from launch and to scale with your catalogue.",
+      "A store that takes real orders on day one: UPI, cards and cash on delivery at checkout, GST invoices with HSN codes, and shipping labels through Shiprocket. Built on Shopify, WooCommerce or Next.js, with one stock record across your shop, website and marketplaces — so a product that sells out in store stops selling online.",
     icon: "cart",
     accent: ["#f97316", "#ec4899"],
     priceFrom: 24_999,
@@ -355,7 +355,7 @@ export const services: readonly Service[] = [
     group: "build",
     headline: "E-commerce stores built to sell and scale",
     subheadline:
-      "We build online stores on Shopify, WooCommerce or Next.js. Secure payments, GST invoicing and courier integration are configured and tested before launch.",
+      "We build stores on Shopify, WooCommerce or Next.js, place a real test order before launch, and hand over a store your staff can run without us.",
     seoTitle: "E-commerce Website Development in India",
     seoDescription:
       "E-commerce website development in India: Shopify, WooCommerce and custom stores with secure payments, GST invoicing, shipping and inventory sync.",
@@ -493,9 +493,9 @@ export const services: readonly Service[] = [
     slug: "web-development",
     name: "Web application development",
     shortName: "Web app",
-    summary: "Custom portals, dashboards and SaaS platforms engineered for scale.",
+    summary: "Portals, dashboards and SaaS on Next.js and PostgreSQL, from ₹34,999.",
     description:
-      "Custom web applications, including customer portals, dashboards and SaaS products, built on Next.js, TypeScript and PostgreSQL. Each application is developed in structured sprints with dedicated staging and production environments.",
+      "Customer portals, booking systems and SaaS products on Next.js, TypeScript and PostgreSQL. We build in weekly sprints, demo working software every week, and keep a staging copy separate from production — so you see progress, not slide decks.",
     icon: "code",
     accent: ["#8b5cf6", "#6366f1"],
     priceFrom: 49_999,
@@ -528,7 +528,7 @@ export const services: readonly Service[] = [
     group: "build",
     headline: "Web applications engineered for scale",
     subheadline:
-      "We build customer portals, dashboards, booking systems and SaaS platforms on Next.js, TypeScript and PostgreSQL, with weekly demonstrations of working software.",
+      "We build portals, dashboards and SaaS on Next.js, TypeScript and PostgreSQL. You get a demo of working software every week, and a fixed price in writing before we start.",
     seoTitle: "Custom Web Application Development",
     seoDescription:
       "Custom web applications, customer portals, dashboards and SaaS platforms on Next.js and PostgreSQL, with fixed scope, weekly demos and secure deployment.",
@@ -670,9 +670,9 @@ export const services: readonly Service[] = [
     slug: "app-development",
     name: "Mobile app development",
     shortName: "Apps",
-    summary: "High-performance iOS and Android apps built on modern cross-platform frameworks.",
+    summary: "One React Native or Flutter codebase for iOS and Android, store submission included.",
     description:
-      "iOS and Android apps built from a single React Native or Flutter codebase. We manage the complete lifecycle, from design and development to offline support, push notifications and app store submission.",
+      "One codebase, two stores: React Native or Flutter, with offline support for dead zones, push notifications and crash monitoring. We handle the App Store and Play Store submissions, the screenshots and the review replies — you get the app in your own developer accounts.",
     icon: "smartphone",
     accent: ["#8b5cf6", "#ec4899"],
     priceFrom: 74_999,
@@ -704,7 +704,7 @@ export const services: readonly Service[] = [
     group: "build",
     headline: "Mobile apps for iOS and Android from a single codebase",
     subheadline:
-      "We develop high-performance cross-platform apps in React Native or Flutter, with offline support, push notifications, crash monitoring and app store submission.",
+      "We build iOS and Android apps from one React Native or Flutter codebase — offline support, push notifications and crash monitoring included, and the app published under your name.",
     seoTitle: "Mobile App Development Company in Gurugram",
     seoDescription:
       "Mobile app development in Gurugram: cross-platform iOS and Android apps in React Native or Flutter, with offline sync, payments and app store launch.",
@@ -841,9 +841,9 @@ export const services: readonly Service[] = [
     slug: "product-design",
     name: "UI/UX & branding",
     shortName: "Design",
-    summary: "Brand identities and user experiences that are clear, consistent and memorable.",
+    summary: "Logos, brand guides and Figma interfaces, designed next to the engineers who build them.",
     description:
-      "Brand identities, logos and digital product interfaces designed in Figma. Our designers work alongside our engineers, so every approved design translates accurately into the finished product.",
+      "Logos, brand guidelines and product interfaces, designed in Figma by the same people who sit next to the engineers building them. You get the files, the fonts and the colour codes — and a design your developers can actually build without redrawing it.",
     icon: "palette",
     accent: ["#ec4899", "#6366f1"],
     priceFrom: 9_999,
@@ -866,7 +866,7 @@ export const services: readonly Service[] = [
     group: "grow",
     headline: "Brand identities and digital experiences that build trust",
     subheadline:
-      "We create logos, brand identities and website and app interfaces in Figma, working closely with the engineers who build them.",
+      "We design logos, brand identities and app interfaces in Figma, in the same room as the engineers who build them — so what you approve is what ships.",
     seoTitle: "UI/UX Design & Branding Agency in Gurugram",
     seoDescription:
       "Logo design, brand identity and UI/UX design for websites and apps, with brand guidelines, design systems and prototypes ready for development.",
@@ -998,9 +998,9 @@ export const services: readonly Service[] = [
     slug: "seo-marketing",
     name: "SEO & digital marketing",
     shortName: "Marketing",
-    summary: "Search, paid media and content strategies focused on measurable growth.",
+    summary: "SEO, Google Ads and Meta campaigns — tracking first, so every rupee is measured.",
     description:
-      "Search engine optimisation, Google Ads and social media campaigns managed by one team. Conversion tracking is configured first, so every channel is measured against the enquiries it generates.",
+      "SEO, Google Ads and Meta campaigns run from our MG Road office, by people you can call on the phone. We set up conversion tracking before spending a rupee, then report enquiries per channel — not clicks, not impressions.",
     icon: "megaphone",
     accent: ["#f59e0b", "#10b981"],
     priceFrom: 7_999,
@@ -1033,7 +1033,7 @@ export const services: readonly Service[] = [
     group: "grow",
     headline: "Search and paid campaigns that generate qualified enquiries",
     subheadline:
-      "We bring technical SEO, local search, Google Ads and Meta campaigns together under one team, with conversion tracking in place before any budget is spent.",
+      "Technical SEO, local search, Google Ads and Meta campaigns from one team. Tracking goes in before any budget is spent, and you get a monthly report that names the enquiries each channel produced.",
     seoTitle: "SEO Services in Gurugram & Digital Marketing",
     seoDescription:
       "SEO services in Gurugram: SEO audits, local SEO, Google Ads and Meta campaigns with conversion tracking and monthly reports on leads and rankings.",
@@ -1172,9 +1172,9 @@ export const services: readonly Service[] = [
     slug: "custom-software",
     name: "Custom software, ERP & CRM",
     shortName: "Software",
-    summary: "Bespoke business systems that streamline operations and reporting.",
+    summary: "ERP and CRM built around your process, plugged into Tally, Zoho and WhatsApp.",
     description:
-      "Custom ERP, CRM and internal systems that bring orders, inventory, customers, staff and billing into one platform. Each system is designed around your processes and integrated with the accounting and payment tools you already use.",
+      "One system for orders, inventory, customers, staff and billing — built around how your business actually runs, not how a packaged ERP wants it to run. It plugs into Tally, Zoho, Razorpay and WhatsApp, and your team gets a walkthrough before handover.",
     icon: "boxes",
     accent: ["#0ea5e9", "#6366f1"],
     priceFrom: 59_999,
@@ -1208,7 +1208,7 @@ export const services: readonly Service[] = [
     group: "scale",
     headline: "Custom ERP and CRM software that streamlines operations",
     subheadline:
-      "We build ERP, CRM and internal tools around the way your business operates, integrated with Tally, Zoho, Razorpay and WhatsApp.",
+      "We build ERP, CRM and internal tools around the way your business operates — Tally, Zoho, Razorpay and WhatsApp included — and we don't hand over until your team has used it.",
     seoTitle: "Custom Software Development: ERP & CRM",
     seoDescription:
       "Custom ERP, CRM and internal business software designed around your processes and integrated with Tally, Zoho and WhatsApp, with full data migration.",
@@ -1347,9 +1347,9 @@ export const services: readonly Service[] = [
     slug: "ai-integration",
     name: "AI & automation",
     shortName: "AI",
-    summary: "Intelligent assistants and workflow automation that improve efficiency.",
+    summary: "Assistants that answer from your own documents — and say so when they don't know.",
     description:
-      "AI assistants and workflow automation designed for specific business tasks, from answering customer queries to processing documents and routing leads. Each automation is tested for accuracy and cost before launch.",
+      "An assistant that answers customers from your own documents, files your data entry and routes leads to the right person — and stops to ask a human instead of guessing. We test every one for accuracy and cost before it goes live, and we won't sell you one for a job a form could do.",
     icon: "sparkles",
     accent: ["#f59e0b", "#ef4444"],
     priceFrom: 29_999,
@@ -1381,7 +1381,7 @@ export const services: readonly Service[] = [
     group: "scale",
     headline: "AI assistants and automation that reduce manual work",
     subheadline:
-      "We build assistants that answer from your own documents, automate data entry and route leads instantly. Each one is tested for accuracy and cost before it goes live.",
+      "We build assistants that answer from your own documents, automate data entry and route leads the same minute. Each one is tested for accuracy and cost before it goes live — and if a simple form does the job better, we'll tell you.",
     seoTitle: "AI Chatbots & Business Automation Services",
     seoDescription:
       "AI chatbots trained on your documents, WhatsApp assistants, document extraction and workflow automation, tested for accuracy and cost before launch.",
@@ -1520,9 +1520,9 @@ export const services: readonly Service[] = [
     slug: "managed-hosting",
     name: "Hosting & domains",
     shortName: "Hosting",
-    summary: "Secure managed hosting, domains and business email with proactive monitoring.",
+    summary: "Hosting, domains and email on AWS and Google Cloud, monitored around the clock.",
     description:
-      "Managed hosting, domain management, SSL, business email and backups for websites and applications. Our team monitors your infrastructure around the clock and responds promptly to any incident.",
+      "Your site and apps live on AWS or Google Cloud, with SSL, business email and nightly backups included. We watch it around the clock from Gurugram, and infrastructure is billed at cost — you see the actual cloud bill, not a marked-up one.",
     icon: "server",
     accent: ["#06b6d4", "#10b981"],
     priceFrom: 2_999,
@@ -1553,7 +1553,7 @@ export const services: readonly Service[] = [
     group: "run",
     headline: "Secure, monitored hosting for your websites and applications",
     subheadline:
-      "We manage your domains, hosting, SSL and business email, with 24×7 monitoring and infrastructure billed at cost.",
+      "We manage your domains, hosting, SSL and business email, watch it 24×7, and bill the infrastructure at cost — you see the real cloud bill.",
     seoTitle: "Managed Website Hosting, Domains & Email",
     seoDescription:
       "Managed hosting on AWS, Vercel and Cloudflare with SSL, nightly backups and 24×7 monitoring, plus domain registration and business email set-up.",
@@ -1691,9 +1691,9 @@ export const services: readonly Service[] = [
     slug: "support-maintenance",
     name: "Maintenance & support",
     shortName: "Support",
-    summary: "Ongoing updates, security patches and technical support for your platforms.",
+    summary: "Monthly updates, patches and fixes for a fixed fee, with published response times.",
     description:
-      "Ongoing maintenance for websites and applications, including updates, security patches, bug fixes and content changes. A dedicated team works to published response times for a fixed monthly fee.",
+      "Websites and apps go stale fast — plugins age, certificates expire, small bugs pile up. For a fixed monthly fee we apply the updates, patch the security holes, fix the bugs and make the small content changes, to published response times. Three months of this is included with every build.",
     icon: "shield",
     accent: ["#10b981", "#6366f1"],
     priceFrom: 9_999,
@@ -1724,7 +1724,7 @@ export const services: readonly Service[] = [
     group: "run",
     headline: "Maintenance and support that keep your platforms secure",
     subheadline:
-      "We manage updates, security patches, bug fixes and minor enhancements every month, with a dedicated team and published response times.",
+      "We handle updates, security patches, bug fixes and small changes every month, for a fixed fee, to published response times. Every build includes three months of it.",
     seoTitle: "Website & App Maintenance Services",
     seoDescription:
       "Website and app maintenance plans covering security patches, plugin and dependency updates, bug fixes, monitoring and monthly health reports.",

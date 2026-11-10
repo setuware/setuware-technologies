@@ -57,22 +57,22 @@ const VALUES = [
   {
     Icon: MessageSquareText,
     title: "Transparency",
-    body: "Every engagement begins with a clear scope and a fixed quote, followed by regular progress updates.",
+    body: "You get the scope, the price and the dates in writing before we start. If the scope changes, the price changes in writing first — never as a surprise invoice.",
   },
   {
     Icon: ShieldCheck,
     title: "Quality",
-    body: "We build fast, secure and accessible products that follow established engineering standards.",
+    body: "Every site launches with a Lighthouse score of 90+ on mobile, SSL on, and analytics tracking enquiries from day one.",
   },
   {
     Icon: KeyRound,
     title: "Ownership",
-    body: "Your code, domains and accounts remain the property of your business at every stage.",
+    body: "Your domain, hosting account and source code are registered to your business, not to us. If you leave, everything goes with you.",
   },
   {
     Icon: Handshake,
     title: "Partnership",
-    body: "We support and improve your platforms after launch, as a dependable extension of your team.",
+    body: "Three months of support comes with every project. After that, a maintenance plan covers hosting, updates and fixes — and you can reach us on the phone.",
   },
 ] as const;
 
@@ -80,22 +80,22 @@ const HOW_WE_WORK = [
   {
     step: "01",
     title: "Discovery",
-    body: "A free consultation to understand your business, customers and objectives.",
+    body: "A free 30-minute call. We ask what the site has to do — enquiries, orders, bookings — and tell you honestly if we cannot do it.",
   },
   {
     step: "02",
     title: "Proposal",
-    body: "A written scope, timeline and fixed price, agreed before work begins.",
+    body: "Scope, dates and a fixed price, in writing. The price only moves if you change the scope.",
   },
   {
     step: "03",
     title: "Design and development",
-    body: "Interactive prototypes, followed by development with regular progress reviews.",
+    body: "Designs to approve first, then the build — which you watch on a staging link, not in a status meeting.",
   },
   {
     step: "04",
     title: "Launch and support",
-    body: "Testing, go-live and handover, followed by ongoing maintenance and optimisation.",
+    body: "We test, go live, hand over the logins, and support you for three months. After that, a maintenance plan if you want one.",
   },
 ] as const;
 
@@ -150,8 +150,8 @@ export default function AboutPage() {
         video="about"
         align="left"
         eyebrow={`About ${site.name}`}
-        title="Strategy, design and engineering for growing businesses"
-        description={`${site.name} is a digital studio based in ${site.address.city}. We design and engineer websites, e-commerce platforms, mobile apps and custom software for growing businesses.`}
+        title="A Gurugram studio that builds websites, stores and apps"
+        description={`${site.name} is a studio on ${site.address.street}, ${site.address.city}, building since 2020. We design and build websites, online stores, mobile apps and custom software — and support them after launch. Every project starts with a free 30-minute call and a fixed-price quote in writing.`}
         className="pb-28 md:pb-32"
       >
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -207,21 +207,24 @@ export default function AboutPage() {
             >
               <StaggerItem y={20}>
                 <p>
-                  We partner with startups, SMEs and established companies across India to
-                  plan, design and build digital products that perform.
+                  Our clients are shop owners, clinics, manufacturers, schools and
+                  startups across India. The work is the same in every case: a
+                  website or app that brings in enquiries, bookings or orders —
+                  not just something that looks finished.
                 </p>
               </StaggerItem>
               <StaggerItem y={20}>
                 <p>
-                  Our designers, developers, marketers and project managers work as one
-                  accountable team. Each engagement is led by a dedicated project manager from
-                  discovery to launch.
+                  One project manager runs your job from the first call to launch.
+                  Designers and developers sit in the same team, so nothing gets
+                  lost between the proposal and the build.
                 </p>
               </StaggerItem>
               <StaggerItem y={20}>
                 <p>
-                  After launch, we provide hosting, maintenance and continuous improvement, so
-                  your platforms remain secure and effective as your business grows.
+                  After launch you get three months of support included, then a
+                  maintenance plan if you want it — hosting, updates, backups
+                  and fixes, with published response times.
                 </p>
               </StaggerItem>
             </Stagger>
@@ -271,8 +274,9 @@ export default function AboutPage() {
             <p className={cn(EYEBROW, "mt-6")}>Our mission</p>
             <blockquote className="mt-4">
               <p className="font-display text-[1.7rem] font-semibold leading-[1.25] tracking-[-0.02em] text-foreground sm:text-[2.2rem] lg:text-[2.6rem]">
-                To help growing businesses compete online with{" "}
-                <span className="text-setu">dependable, well-crafted technology</span>.
+                To build software small businesses can rely on — and to say plainly
+                what it will cost{" "}
+                <span className="text-setu">before we start</span>.
               </p>
             </blockquote>
             <div aria-hidden className="mx-auto mt-8 h-px w-16 bg-setu/60" />
@@ -286,11 +290,11 @@ export default function AboutPage() {
           <div className="max-w-2xl">
             <span className={EYEBROW}>Our values</span>
             <TextReveal as="h2" className={H2}>
-              The values behind every engagement
+              Four rules we do not break
             </TextReveal>
             <FadeUp delay={0.2} y={20}>
               <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
-                Four principles guide how we plan, deliver and support every project.
+                Four things we hold to on every project, whatever its size.
               </p>
             </FadeUp>
           </div>
@@ -334,7 +338,7 @@ export default function AboutPage() {
             <div className="max-w-2xl">
               <span className={EYEBROW}>How we work</span>
               <TextReveal as="h2" className={H2}>
-                A structured path from discovery to launch
+                Four steps, then launch
               </TextReveal>
             </div>
             <FadeUp delay={0.2} y={16}>
@@ -389,12 +393,12 @@ export default function AboutPage() {
             <div className="max-w-2xl">
               <span className={EYEBROW}>Our services</span>
               <TextReveal as="h2" className={H2}>
-                Comprehensive digital services
+                What we build
               </TextReveal>
               <FadeUp delay={0.2} y={20}>
                 <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
-                  From a first company website to enterprise software, every service is
-                  delivered by the same team.
+                  Landing pages, stores, apps, branding, SEO, ERP and hosting — from
+                  ₹4,999, all from the same team.
                 </p>
               </FadeUp>
             </div>
@@ -451,12 +455,13 @@ export default function AboutPage() {
           <div>
             <span className={EYEBROW}>Industries</span>
             <TextReveal as="h2" className={H2}>
-              {"Experience across\nkey sectors"}
+              {"Who we build for"}
             </TextReveal>
             <FadeUp delay={0.2} y={20}>
               <p className="mt-4 text-[1.02rem] leading-relaxed text-muted-foreground">
-                We work with startups and growing businesses across India, and bring an
-                understanding of each sector to every engagement.
+                Retail, healthcare, education, real estate, manufacturing, logistics,
+                hospitality and professional services — each sector page spells
+                out what we actually build for it.
               </p>
               <ButtonLink href="/industries" variant="secondary" className="mt-6 rounded-full">
                 Industries we serve
@@ -520,11 +525,12 @@ export default function AboutPage() {
             />
             <div className="relative mx-auto max-w-2xl">
               <h2 className="font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.4rem]">
-                Discuss your project with our team
+                Tell us what you need built
               </h2>
               <p className="mx-auto mt-4 max-w-xl text-[1.02rem] leading-relaxed text-muted-foreground">
-                Book a free 30-minute consultation. We will review your requirements and follow
-                up with a recommended approach and an indicative budget.
+                Book a free 30-minute call. We will tell you what we would build, what
+                it costs, and how long it takes — and if we are not the right
+                team, we will say so.
               </p>
               <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <ButtonLink

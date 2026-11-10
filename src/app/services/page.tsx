@@ -48,7 +48,7 @@ export default function ServicesPage() {
         video="services"
         eyebrow="Services"
         title="Web, app and software development services"
-        description="End-to-end digital services, from your first website to enterprise-grade software. Strategy, design, engineering and support are delivered by one accountable team."
+        description="Landing pages from ₹4,999, websites from ₹14,999, apps from ₹34,999. One team in Gurugram does the strategy, design, build and support — and quotes a fixed price before starting."
       >
         <nav aria-label="Service groups" className="mt-8 flex flex-wrap justify-center gap-2">
           {groups.map((group, index) => (
@@ -123,8 +123,9 @@ export default function ServicesPage() {
               {"Not sure which service is right for you?"}
             </TextReveal>
             <p className="mt-4 max-w-lg text-[1rem] leading-relaxed text-muted-foreground">
-              Many projects combine two or three services. A short consultation is the quickest
-              way to agree the right combination for your goals and budget.
+              Most jobs mix two or three services — a website with bookings, a store
+              with GST invoicing. A 30-minute call is the fastest way to pin
+              down the right mix and a fixed price.
             </p>
             <ul className="mt-8 grid gap-3 sm:grid-cols-2" aria-label="Included in every engagement">
               {INCLUDED.map((item) => (
@@ -141,7 +142,7 @@ export default function ServicesPage() {
               href="/contact"
               icon={<MessageCircle className="size-5" aria-hidden />}
               title="Book a free consultation"
-              body="A 30-minute call with a senior member of our team."
+              body="A 30-minute call — we will tell you the price and the timeline on it."
               primary
             />
             <NotSureLink

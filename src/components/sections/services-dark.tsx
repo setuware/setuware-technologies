@@ -47,57 +47,57 @@ const CARD_COPY: Record<ServiceKey, { name: string; description: string }> = {
   "business-websites": {
     name: "Business websites",
     description:
-      "Fast, responsive company websites that build credibility and generate qualified leads.",
+      "Company websites from ₹14,999, live in 3–6 weeks, on WordPress or Next.js.",
   },
   "ecommerce-stores": {
     name: "E-commerce stores",
     description:
-      "Scalable online stores with secure payments, inventory and order management.",
+      "Online stores on Shopify or WooCommerce, with UPI checkout and GST invoices.",
   },
   "web-development": {
     name: "Web applications",
     description:
-      "Custom portals, dashboards and SaaS platforms engineered for scale.",
+      "Portals, dashboards and SaaS on Next.js and PostgreSQL, from ₹34,999.",
   },
   "app-development": {
     name: "Mobile apps",
     description:
-      "High-performance iOS and Android apps built on modern cross-platform frameworks.",
+      "One React Native or Flutter codebase for iOS and Android, store submission included.",
   },
   "product-design": {
     name: "UI/UX & branding",
     description:
-      "Brand identities and user experiences that are clear, consistent and memorable.",
+      "Logos, brand guides and Figma interfaces, designed next to the engineers who build them.",
   },
   "seo-marketing": {
     name: "SEO & digital marketing",
     description:
-      "Search, paid media and content strategies focused on measurable growth.",
+      "SEO, Google Ads and Meta campaigns — tracking first, so every rupee is measured.",
   },
   "custom-software": {
     name: "Custom software, ERP & CRM",
     description:
-      "Bespoke business systems that streamline operations and reporting.",
+      "ERP and CRM built around your process, plugged into Tally, Zoho and WhatsApp.",
   },
   "ai-integration": {
     name: "AI & automation",
     description:
-      "Intelligent assistants and workflow automation that improve efficiency.",
+      "Assistants that answer from your own documents — and say so when they don't know.",
   },
   "managed-hosting": {
     name: "Hosting & domains",
     description:
-      "Secure managed hosting, domains and business email with proactive monitoring.",
+      "Hosting, domains and email on AWS and Google Cloud, monitored around the clock.",
   },
   "support-maintenance": {
     name: "Maintenance & support",
     description:
-      "Ongoing updates, security patches and technical support for your platforms.",
+      "Monthly updates, patches and fixes for a fixed fee, with published response times.",
   },
 };
 
 /**
- * "Services that grow with your business"
+ * "Ten services, one team in Gurugram"
  *
  * A peek carousel: the active card is centred and full-size, its neighbours
  * sit behind it scaled down and dimmed. Built on native scroll snapping, so
@@ -197,12 +197,12 @@ export function ServicesDark() {
               as="h2"
               className="font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.6rem]"
             >
-              Services that grow with your business
+              Ten services, one team in Gurugram
             </TextReveal>
             <FadeUp delay={0.25} y={20}>
               <p className="mt-4 text-[0.95rem] leading-relaxed text-muted-foreground">
-                End-to-end digital services, from your first website to
-                enterprise-grade software.
+                Websites from ₹14,999, apps from ₹34,999 — every price in
+                writing before we start.
               </p>
             </FadeUp>
           </div>

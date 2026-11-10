@@ -37,19 +37,21 @@ export function AboutPreview() {
             as="h2"
             className="font-display text-[2.2rem] font-semibold leading-tight text-foreground sm:text-[2.6rem]"
           >
-            One partner from strategy to launch
+            One team, from the first call to long after launch
           </TextReveal>
           <Stagger className="flex flex-col gap-4" delay={0.15}>
             <StaggerItem y={24}>
               <p className="text-[0.97rem] leading-relaxed text-muted-foreground">
-                We work with startups, small businesses and established companies to plan,
-                design and build the software they run on.
+                We are a Gurugram studio, building since 2020. One project manager runs
+                your job from the first call to launch, and the same team
+                designs, builds and supports it.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
               <p className="text-[0.97rem] leading-relaxed text-muted-foreground">
-                Strategy, design, engineering and marketing sit with one accountable team,
-                from a first website to enterprise software.
+                Landing pages from ₹4,999, business websites from ₹14,999, stores
+                and custom software after that. Every quote is fixed and in
+                writing before work starts.
               </p>
             </StaggerItem>
             <StaggerItem y={24}>
@@ -130,7 +132,7 @@ export function AboutPreview() {
               <Counter to={10} suffix="+" durationMs={1800} />
             </span>
             <p className="mt-1.5 text-[0.78rem] font-semibold leading-snug text-[#0b1020]/80 sm:mt-2 sm:text-[0.92rem]">
-              Digital services, delivered by one team
+              Services under one roof, one fixed quote
             </p>
           </FadeUp>
         </div>

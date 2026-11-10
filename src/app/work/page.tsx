@@ -38,7 +38,7 @@ export default function WorkPage() {
         video="work"
         eyebrow="Our work"
         title="Selected work"
-        description="Case studies across e-commerce, mobile apps, AI, dashboards and hosting. Each sets out the business challenge, our approach and the measurable results."
+        description="Six projects, each with the numbers: a grocery chain at 40,000 orders a month, a clinic AI resolving 68% of questions, an exam platform at 1,200 concurrent students. Challenge, approach, results — no vague claims."
       />
 
       <CaseStudyGrid studies={cards} />
@@ -54,8 +54,9 @@ export default function WorkPage() {
                 Explore our work by sector
               </h2>
               <p className="mt-3 text-[0.97rem] leading-relaxed text-muted-foreground">
-                See how we support retail, healthcare, education, manufacturing, logistics and
-                professional services, with the solutions each sector needs most.
+                See what we built for retail, healthcare, education, manufacturing,
+                logistics and professional services — and what it changed for
+                each of them.
               </p>
             </div>
             <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto">
