@@ -20,9 +20,9 @@ export const site = {
   /** Job applications. */
   hrEmail: "hr@setuware.in",
   hours: "Mon–Sat, 10:00–19:00 IST",
-  phone: "+91 83027 83900",
-  phoneHref: "tel:+918302783900",
-  whatsapp: "https://wa.me/918302783900",
+  phone: "+91 70912 98828",
+  phoneHref: "tel:+917091298828",
+  whatsapp: "https://wa.me/917091298828",
   address: {
     street: "MG Road",
     city: "Gurugram",
