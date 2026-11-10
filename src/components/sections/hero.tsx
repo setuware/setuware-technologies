@@ -85,14 +85,13 @@ export function Hero() {
                 stagger={0.07}
                 className="text-wrap text-[2.6rem] font-bold leading-[1.03] tracking-[-0.04em] sm:text-[3.6rem] lg:text-[calc(var(--s)*84)] lg:leading-[calc(var(--s)*86)]"
               >
-                From idea to live software, at a fixed price.
+                From ideas to production-ready software.
               </TextReveal>
 
               <FadeUp immediate delay={0.75} y={24}>
                 <p className="text-base font-medium leading-relaxed opacity-78 sm:text-lg lg:ml-[calc(var(--s)*5)] lg:w-[calc(var(--s)*672)] lg:text-[calc(var(--s)*18)] lg:leading-[calc(var(--s)*32)]">
-                  We are a Gurugram team that designs, builds and supports websites,
-                  stores and apps. You get a written quote before we start, a
-                  staging link to review, and three months of support after launch.
+                  We act as a bridge between your business idea and a working
+                  digital product, designed, built and supported by one team.
                 </p>
               </FadeUp>
             </div>
