@@ -154,8 +154,8 @@ export function SkillsGap() {
               <FadeUp delay={0.45} y={24}>
                 <p className="mt-6 max-w-[620px] text-[16px] font-medium leading-[27px] text-white/80 lg:mt-[calc(var(--s)*32)] lg:max-w-[calc(var(--s)*680)] lg:text-[calc(var(--s)*19)] lg:leading-[calc(var(--s)*31)]">
                   Designers, developers and marketers in one office on MG Road,
-                  Gurugram, with one project manager per job — call +91 83027
-                  83900 and a person answers.
+                  Gurugram, with one project manager per job — call +91 70912
+                  98828 and a person answers.
                 </p>
               </FadeUp>
 

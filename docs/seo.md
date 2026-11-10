@@ -88,7 +88,7 @@ After deploying, check a few URLs with Google's
 3. **Google Business Profile.** Create and verify a profile for the Gurugram
    office. Use exactly the same name, address and phone as the site:
    *Setuware Technologies, MG Road, Gurugram, Haryana 122001* and
-   *+91 83027 83900*. Set the hours to Mon–Sat 10:00–19:00, the category to
+   *+91 70912 98828*. Set the hours to Mon–Sat 10:00–19:00, the category to
    "Website designer" or "Software company", and the website to
    https://setuware.in. Ask happy clients for reviews.
 4. **Social profiles.** The company LinkedIn and GitHub are confirmed and are
