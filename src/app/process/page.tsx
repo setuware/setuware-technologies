@@ -242,7 +242,7 @@ export default function ProcessPage() {
         video="process"
         eyebrow="Our process"
         title="How we deliver every project"
-        description="Six structured stages, each with defined deliverables, durations and responsibilities. Progress and costs remain visible to you throughout."
+        description="Six stages, each ending with something you can see and approve. You know the price and the dates before we start, and nothing moves without your sign-off."
       >
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <ButtonLink

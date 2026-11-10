@@ -17,7 +17,7 @@ import { TextReveal } from "@/components/motion/text-reveal";
 import { LIGHT_CARD_SHADOW, LightSectionBackdrop } from "@/components/sections/services-dark";
 
 /**
- * "A refined process built on clarity".
+ * "Six steps, from a 30-minute call to three months of support".
  *
  * One row per stage: number, name and a one-line description. Deliverables
  * and durations stay on the /process page; the homepage gives the outline.
@@ -53,12 +53,12 @@ export function ProcessDark() {
             as="h2"
             className="font-display text-3xl font-semibold leading-tight text-foreground sm:text-[2.6rem]"
           >
-            A refined process built on clarity
+            Six steps, from a 30-minute call to three months of support
           </TextReveal>
           <FadeUp delay={0.25} y={20}>
             <p className="mx-auto mt-5 max-w-xl text-[0.95rem] leading-relaxed text-muted-foreground">
-              A structured delivery model that keeps every project on time, on
-              budget and fully transparent.
+              A free 30-minute call, a fixed price in writing, a staging link
+              to review — then three months of support after launch.
             </p>
           </FadeUp>
         </div>

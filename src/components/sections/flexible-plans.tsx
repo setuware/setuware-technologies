@@ -33,7 +33,7 @@ const DESIGN_COPY: Record<
 > = {
   "landing-page": {
     name: "Landing Page",
-    tagline: "A focused single page to launch a campaign or product.",
+    tagline: "One page, live within a week, from ₹4,999.",
     features: [
       "Single-page design",
       "Mobile-responsive design",
@@ -44,7 +44,7 @@ const DESIGN_COPY: Record<
   },
   "website-build": {
     name: "Business Website",
-    tagline: "A complete multi-page website for your company.",
+    tagline: "Up to 8 pages on WordPress or Next.js, from ₹14,999.",
     features: [
       "Up to 8 pages",
       "Mobile-responsive design",
@@ -56,7 +56,7 @@ const DESIGN_COPY: Record<
   },
   "full-application-build": {
     name: "Full Application",
-    tagline: "Online stores, web apps and mobile apps.",
+    tagline: "Stores, portals and apps with logins and payments, from ₹34,999.",
     features: [
       "User accounts and admin dashboard",
       "Secure payment integration",
@@ -67,7 +67,7 @@ const DESIGN_COPY: Record<
   },
   "enterprise-engagement": {
     name: "Enterprise",
-    tagline: "ERP, CRM and large-scale platforms.",
+    tagline: "ERP and CRM built around your process — quoted after a free 30-minute call.",
     features: [
       "Custom ERP, CRM and customer portals",
       "Phased migration from legacy systems",
@@ -231,7 +231,7 @@ export function FlexiblePlans() {
           </TextReveal>
           <FadeUp delay={0.25} y={18}>
             <p className="text-[15px] font-normal leading-[29px] tracking-[0.02em] text-black opacity-70 lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*29)] dark:text-white">
-              Clear, upfront pricing for every stage of your business. All
+              Three fixed prices, quoted in writing before we start. All
               prices exclude GST.
             </p>
           </FadeUp>

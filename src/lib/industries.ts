@@ -74,7 +74,7 @@ export const industries: readonly Industry[] = [
     summary: "Online stores and order management for retailers and D2C brands",
     headline: "Websites and software for retail and e-commerce",
     intro:
-      "We help retailers and direct-to-consumer brands sell online through their own stores, with inventory synchronised across shops, websites and marketplaces. Each store is built for secure mobile checkout and the demands of peak sale periods.",
+      "Your own store, not a marketplace listing: UPI checkout, GST invoices and one stock record across your shop, website and marketplaces. We load-test before Diwali, not during it — one grocery chain's 14 stores now take 40,000 orders a month on a platform we built in nine weeks.",
     seoTitle: "Retail and e-commerce websites",
     seoDescription:
       "Online stores, inventory synchronisation and order management for retailers and D2C brands, with UPI checkout, GST invoicing and courier integration.",
@@ -164,7 +164,7 @@ export const industries: readonly Industry[] = [
     summary: "Clinic websites, appointment booking and patient records",
     headline: "Websites and software for healthcare and clinics",
     intro:
-      "We build websites, online appointment booking and patient record systems for clinics, diagnostic laboratories and specialist practices. Every system is designed to improve the patient experience and keep medical data secure.",
+      "Websites with online appointment booking, patient records and WhatsApp reminders for clinics and diagnostic labs. Patients book without a phone call — at one clinic, an assistant answering from approved policies now resolves 68% of questions and front-desk calls fell 44%.",
     seoTitle: "Clinic websites and booking software",
     seoDescription:
       "Clinic websites, online appointment booking, WhatsApp reminders and patient record systems for clinics, diagnostic laboratories and specialist practices.",
@@ -249,7 +249,7 @@ export const industries: readonly Industry[] = [
     summary: "Admissions websites, learning portals and fee management",
     headline: "Websites and software for education and coaching",
     intro:
-      "We build admissions websites, learning portals and fee management systems for schools, coaching institutes and online educators. Each platform is designed to increase enquiries during admissions and reduce administration throughout the year.",
+      "Admissions websites, learning portals and fee collection for schools and coaching institutes — built to take the enquiry rush in April, not fall over during it. One exam platform we host handles 1,200 students at once.",
     seoTitle: "School and coaching websites",
     seoDescription:
       "Admissions websites, learning portals, online fee collection and parent apps for schools, coaching institutes and online educators across India.",
@@ -339,7 +339,7 @@ export const industries: readonly Industry[] = [
     summary: "Project websites, lead management and CRM for developers",
     headline: "Websites and software for real estate and construction",
     intro:
-      "We build project websites, lead management systems and site-tracking tools for developers, brokers and contractors. Each project launches quickly online, and every enquiry is captured and followed up promptly.",
+      "Project websites that launch before the hoardings go up, with every enquiry captured in one place and routed to the broker on duty — no lead sitting unread in an inbox.",
     seoTitle: "Real estate websites and CRM",
     seoDescription:
       "Project websites, lead capture and sales CRM for developers and brokers, with site-progress tools for contractors and RERA details on every listing.",
@@ -424,7 +424,7 @@ export const industries: readonly Industry[] = [
     summary: "Catalogue websites, dealer portals and ERP systems",
     headline: "Websites and software for manufacturing and distribution",
     intro:
-      "We build catalogue websites, dealer ordering portals and ERP modules for manufacturers and distributors. Each system connects production, inventory and dispatch, with reporting available every morning.",
+      "Catalogue websites, dealer ordering portals and ERP modules that connect production, inventory and dispatch. Dealers order online instead of phoning the office, dispatch sees one list, and the morning report shows yesterday's numbers without anyone opening a spreadsheet.",
     seoTitle: "Manufacturing ERP and dealer portals",
     seoDescription:
       "Catalogue websites, dealer ordering portals and ERP modules for manufacturers and distributors, integrated with Tally and GST e-invoicing.",
@@ -509,7 +509,7 @@ export const industries: readonly Industry[] = [
     summary: "Shipment tracking, dispatch and driver apps",
     headline: "Websites and software for logistics and transport",
     intro:
-      "We build booking portals, dispatch systems and driver apps for transporters, couriers and warehouse operators. Customers track shipments independently, drivers record proof of delivery on site and invoices are generated for every completed trip.",
+      "Booking portals, dispatch boards and driver apps for transporters and couriers. Customers track their own shipment instead of calling you, drivers capture proof of delivery on their phone, and the invoice goes out the moment the trip closes.",
     seoTitle: "Logistics tracking and driver apps",
     seoDescription:
       "Shipment tracking portals, dispatch tools and offline-ready driver apps for transporters, couriers and 3PLs, with proof of delivery and trip billing.",
@@ -599,7 +599,7 @@ export const industries: readonly Industry[] = [
     summary: "Websites, direct booking and online ordering",
     headline: "Websites and software for hospitality and restaurants",
     intro:
-      "We build fast, visually rich websites with direct booking and online ordering for hotels, cafés and restaurants. Each platform integrates with your front-desk and kitchen systems and reduces reliance on third-party commissions.",
+      "Hotel and restaurant websites with direct booking and online ordering — so the room or the thali is booked on your site, not on an aggregator that takes a cut of every booking. We plug into your front-desk and kitchen systems; the menu updates from one place.",
     seoTitle: "Hotel and restaurant websites",
     seoDescription:
       "Hotel and restaurant websites with direct booking, online ordering and QR menus that increase direct revenue and reduce aggregator commissions.",
@@ -689,7 +689,7 @@ export const industries: readonly Industry[] = [
     summary: "Practice websites and secure client portals",
     headline: "Websites and software for professional services",
     intro:
-      "We build practice websites and secure client portals for chartered accountancy firms, law practices and consultancies. Documents, deadlines and invoices are managed through a single secure login.",
+      "Websites and client portals for CA firms, law practices and consultancies. Clients upload documents, see their deadlines and pay invoices through one secure login — instead of chasing you on WhatsApp for the same file twice.",
     seoTitle: "Websites for CA and law firms",
     seoDescription:
       "Practice websites and secure client portals for CA firms, law practices and consultancies, with document collection, compliance calendars and invoicing.",
@@ -774,7 +774,7 @@ export const industries: readonly Industry[] = [
     summary: "MVPs, SaaS products and launch websites",
     headline: "Product development for startups and SaaS companies",
     intro:
-      "We help founders bring a working product to market by a fixed date, on a codebase designed to scale. Each MVP is scoped to its core objectives, built on Next.js and PostgreSQL and supported as the product grows.",
+      "An MVP on Next.js and PostgreSQL, scoped to the one thing your users must be able to do, shipped by a fixed date for a fixed price. No 40-page spec, no six-month runway burn — a working product your first users can break.",
     seoTitle: "MVP and SaaS development",
     seoDescription:
       "MVP and SaaS development for founders, with sign-up, billing, dashboards and mobile apps on Next.js and PostgreSQL, at a fixed price and launch date.",
