@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 import { Manrope, Sora } from "next/font/google";
 
@@ -11,6 +12,7 @@ import { ThemeProvider } from "@/components/layout/theme";
 import { DeferredWidgets } from "@/components/layout/deferred-widgets";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import { SiteChrome } from "@/components/layout/site-chrome";
+import { SiteViewBeacon } from "@/components/interactive/view-beacon";
 import { getAnnouncement } from "@/lib/cms/public";
 import { MotionProvider } from "@/components/motion/motion-provider";
 
@@ -130,6 +132,9 @@ export default async function RootLayout({
             <SiteChrome navbar={<Navbar links={navLinks} announcement={announcement} />} footer={<Footer />} widgets={<DeferredWidgets />}>
               {children}
             </SiteChrome>
+            <Suspense fallback={null}>
+              <SiteViewBeacon />
+            </Suspense>
             <SmoothScroll />
           </MotionProvider>
         </ThemeProvider>

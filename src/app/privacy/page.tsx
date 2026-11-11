@@ -51,7 +51,7 @@ const SECTIONS: LegalSection[] = [
   {
     heading: "Cookies and tracking",
     paragraphs: [
-      "This site sets no advertising or cross-site tracking cookies. Your theme preference and any unsent form draft are stored in your browser's local storage and never leave your device.",
+      "This site sets no advertising or cross-site tracking cookies. Your theme preference and any unsent form draft are stored in your browser's local storage and never leave your device. We count anonymous page views — which pages are visited and how often — with no cookies and no personal data, so we can see what visitors actually read.",
     ],
   },
   {
