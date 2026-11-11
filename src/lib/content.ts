@@ -1889,6 +1889,8 @@ export interface CaseStudy {
   stack: readonly string[];
   quote?: { text: string; author: string; role: string };
   featured: boolean;
+  /** Live client site, linked from the case-study page when present. */
+  website?: string;
   /** Search title (brand is appended; keep it short) when `title` is too long. */
   seoTitle?: string;
   /** Meta description, 120–155 characters, when `summary` is too short. */
@@ -2084,6 +2086,68 @@ export const caseStudies: readonly CaseStudy[] = [
       { label: "Teams on the system", value: "3" },
     ],
     stack: ["Figma", "Tailwind", "Storybook", "Next.js"],
+    featured: false,
+  },
+  {
+    slug: "engineering-expert-learning-platform",
+    seoTitle: "Engineering Exam Prep Platform Case Study",
+    seoDescription:
+      "How we built a learning platform for GATE, core engineering, placements and PSUs — live classes, DPPs and 1-on-1 doubt support.",
+    client: "My Engineering Expert",
+    sector: "Education",
+    title: "One platform for GATE prep, live classes and doubt support",
+    summary:
+      "Live classes, structured courses and 1-on-1 doubt support for 35+ exam categories, from GATE to PSUs.",
+    year: "2026",
+    services: ["web-development", "product-design"],
+    accent: ["#2563eb", "#06b6d4"],
+    challenge:
+      "Engineering aspirants juggle scattered resources — recorded lectures in one app, test series in another, doubt support somewhere else. EngineeringExpert needed one platform where a student could find their track, join live classes, practise with DPPs and get doubts cleared without switching tools.",
+    approach: [
+      "Structured the catalogue around 35+ exam tracks — GATE, core engineering, placements and PSUs — so every student lands on a plan, not a pile of videos",
+      "Built live classes, on-demand video, notes and DPPs into one learning flow",
+      "Added a 1-on-1 doubt engine and gamified practice with streaks, badges and leaderboards",
+      "Made certificates shareable to LinkedIn so finishing a course becomes a credential recruiters can see",
+    ],
+    results: [
+      { label: "Exam categories", value: "35+" },
+      { label: "Engineers learning", value: "12 lakh+" },
+      { label: "Learning right now", value: "2,450+" },
+      { label: "Learner rating", value: "5.0" },
+    ],
+    stack: ["Next.js"],
+    website: "https://www.myengineeringexpert.com/",
+    featured: false,
+  },
+  {
+    slug: "sanskar-kabir-couture-ecommerce",
+    seoTitle: "Luxury Fashion E-commerce Case Study",
+    seoDescription:
+      "How we built a luxury e-commerce site for a Delhi couture atelier — occasionwear, bridal appointments and Razorpay checkout.",
+    client: "Sanskar & Kabir",
+    sector: "Fashion & luxury",
+    title: "A Delhi couture atelier, selling occasionwear online",
+    summary:
+      "A luxury e-commerce site for sherwanis, bandhgalas and bridal jewellery — made-to-measure, with appointments and Razorpay checkout.",
+    year: "2026",
+    services: ["web-development", "product-design"],
+    accent: ["#a16207", "#451a03"],
+    challenge:
+      "A couture atelier sells pieces that take months to make and cost up to ₹3.25 lakh. The website had to carry the same weight as the Delhi studio — the craft, the karigars, the fittings — and still let a customer browse, choose and book an appointment without a phone call.",
+    approach: [
+      "Designed the store around the occasion — Sherwanis, Bandhgalas, Indo-Western and jewellery — led by the atelier's own photography",
+      "Built product pages around the piece: fabric, craft detail, price and size, with made-to-measure guidance on every order",
+      "Added appointment booking for the bridal studio, with the nine-month lead time and three fittings explained up front",
+      "Wired checkout through Razorpay — cards, UPI, netbanking and wallets",
+    ],
+    results: [
+      { label: "Bridal lead time", value: "9 months" },
+      { label: "Fittings per bridal piece", value: "3" },
+      { label: "Occasion collections", value: "4" },
+      { label: "Signature pieces", value: "8" },
+    ],
+    stack: ["Next.js", "Cloudinary", "Razorpay"],
+    website: "https://sanskarandkabir.com/",
     featured: false,
   },
 ];

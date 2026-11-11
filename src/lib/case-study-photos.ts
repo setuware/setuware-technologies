@@ -1,12 +1,13 @@
 /**
- * Cover photos for the case studies (Pexels, free licence; no attribution
- * required). 1200×800, cropped from the originals by id.
+ * Cover photos for the case studies. 1200×800, cropped from the originals.
+ * Stock covers are Pexels (free licence; no attribution required) and carry
+ * their Pexels id; covers using the client's own photography omit it.
  */
 export interface CaseStudyPhoto {
   src: string;
   alt: string;
   /** https://www.pexels.com/photo/<id>/ — kept for the record, not displayed. */
-  pexelsId: number;
+  pexelsId?: number;
 }
 
 export const caseStudyPhotos: Record<string, CaseStudyPhoto> = {
@@ -39,6 +40,15 @@ export const caseStudyPhotos: Record<string, CaseStudyPhoto> = {
     src: "/images/work/logistics-brand-design-system.jpg",
     alt: "A delivery van loaded with parcels",
     pexelsId: 6407553,
+  },
+  "engineering-expert-learning-platform": {
+    src: "/images/work/engineering-expert-learning-platform.jpg",
+    alt: "Two university students studying together with a laptop in a library",
+    pexelsId: 8199667,
+  },
+  "sanskar-kabir-couture-ecommerce": {
+    src: "/images/work/sanskar-kabir-couture-ecommerce.jpg",
+    alt: "A model wearing the ivory Moti Bagh sherwani with pearl and zardozi work",
   },
 };
 

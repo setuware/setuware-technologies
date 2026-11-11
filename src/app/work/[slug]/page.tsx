@@ -155,6 +155,20 @@ async function CaseStudy({ params }: { params: Promise<{ slug: string }> }) {
               ))}
             </ul>
           ) : null}
+
+          {study.website ? (
+            <div className="mt-8">
+              <ButtonLink
+                href={study.website}
+                variant="secondary"
+                size="md"
+                className="rounded-full"
+              >
+                Visit live site
+                <ArrowUpRight className="size-4" aria-hidden />
+              </ButtonLink>
+            </div>
+          ) : null}
         </div>
       </section>
 
