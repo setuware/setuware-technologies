@@ -38,7 +38,7 @@ export default function WorkPage() {
         video="work"
         eyebrow="Our work"
         title="Selected work"
-        description="Six projects, each with the numbers: a grocery chain at 40,000 orders a month, a clinic AI resolving 68% of questions, an exam platform at 1,200 concurrent students. Challenge, approach, results — no vague claims."
+        description="Eight projects, each with the numbers: a grocery chain at 40,000 orders a month, a clinic AI resolving 68% of questions, an exam platform at 1,200 concurrent students. Challenge, approach, results — no vague claims."
       />
 
       <CaseStudyGrid studies={cards} />
