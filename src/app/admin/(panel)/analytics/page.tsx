@@ -1,6 +1,6 @@
-import { Eye, Inbox, Mail, Trophy } from "lucide-react";
+import { Eye, Globe, Inbox, Mail, Trophy } from "lucide-react";
 
-import { analytics, topViews } from "@/lib/cms/crm";
+import { analytics, topViews, totalViews, viewsByDay } from "@/lib/cms/crm";
 import { requireUser } from "@/lib/cms/session";
 import { Card, PageHeader, Stat } from "@/components/admin/ui";
 
@@ -32,12 +32,16 @@ export default async function AnalyticsPage() {
   const data = analytics(30);
   const posts = topViews("/blog/", 8).map((row) => ({ label: row.path.replace("/blog/", ""), n: row.views }));
   const jobs = topViews("/careers/", 8).map((row) => ({ label: row.path.replace("/careers/", ""), n: row.views }));
+  const visits = viewsByDay(30);
+  const topPages = topViews("/", 8).map((row) => ({ label: row.path === "/" ? "Home" : row.path, n: row.views }));
   const max = Math.max(1, ...data.series.map((row) => row.n));
+  const visitsMax = Math.max(1, ...visits.map((row) => row.n));
 
   return (
     <>
-      <PageHeader title="Analytics" description="Leads and content performance over the last 30 days." />
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <PageHeader title="Analytics" description="Visits, leads and content performance over the last 30 days." />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <Stat label="Total visits" value={totalViews()} hint="All pages, all time" icon={<Globe className="size-4" />} tone="blue" />
         <Stat label="Enquiries (30 days)" value={data.last30} icon={<Inbox className="size-4" />} tone="blue" />
         <Stat label="Win rate" value={`${data.winRate}%`} hint={`${data.won} won · ${data.lost} lost`} icon={<Trophy className="size-4" />} tone="teal" />
         <Stat label="Newsletter subscribers" value={data.subscribers} icon={<Mail className="size-4" />} tone="violet" />
@@ -65,6 +69,27 @@ export default async function AnalyticsPage() {
         </div>
       </Card>
 
+      <Card className="mt-6 p-6">
+        <h2 className="font-semibold text-foreground">Visits per day</h2>
+        <div className="mt-5 flex h-44 items-end gap-[3px]" role="img" aria-label="Visits per day for the last 30 days">
+          {visits.map((row) => (
+            <div key={row.day} className="group relative flex h-full flex-1 flex-col justify-end">
+              <div
+                className="w-full rounded-t-md bg-[linear-gradient(180deg,#7c3aed,#22d3ee)] opacity-85 transition-opacity group-hover:opacity-100"
+                style={{ height: `${Math.max(row.n ? 6 : 2, (row.n / visitsMax) * 100)}%`, opacity: row.n ? undefined : 0.15 }}
+              />
+              <span className="pointer-events-none absolute -top-7 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-[#0b1020] px-2 py-1 text-[11px] text-white group-hover:block">
+                {row.day.slice(5)}: {row.n}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-2 flex justify-between text-[11px] text-muted-foreground">
+          <span>{visits[0]?.day.slice(5)}</span>
+          <span>Today</span>
+        </div>
+      </Card>
+
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card className="p-6">
           <h2 className="mb-4 font-semibold text-foreground">Where enquiries come from</h2>
@@ -77,6 +102,10 @@ export default async function AnalyticsPage() {
         <Card className="p-6">
           <h2 className="mb-4 font-semibold text-foreground">Most-read articles</h2>
           <Bars rows={posts} colour="#7c3aed" />
+        </Card>
+        <Card className="p-6">
+          <h2 className="mb-4 font-semibold text-foreground">Most-visited pages</h2>
+          <Bars rows={topPages} colour="#0a8ea6" />
         </Card>
         <Card className="p-6">
           <h2 className="mb-4 font-semibold text-foreground">Applications per role</h2>

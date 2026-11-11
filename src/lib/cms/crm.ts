@@ -173,6 +173,37 @@ export function topViews(prefix: string, limit = 10): { path: string; views: num
     .all(`${prefix}%`, limit) as { path: string; views: number }[];
 }
 
+/** One anonymous view per page load, rolled up by day (UTC) for the visits chart. */
+export function recordDailyView(pathname: string): void {
+  const day = new Date().toISOString().slice(0, 10);
+  getDb()
+    .prepare(
+      "INSERT INTO page_views_daily (day,path,views) VALUES (?,?,1) ON CONFLICT(day,path) DO UPDATE SET views = views + 1",
+    )
+    .run(day, pathname.slice(0, 200));
+}
+
+/** Total page views across the whole site, all time. */
+export function totalViews(): number {
+  const row = getDb().prepare("SELECT COALESCE(SUM(views),0) AS total FROM page_views").get() as { total: number };
+  return row.total;
+}
+
+/** Total views per day for the last `days` days, oldest first, missing days as 0. */
+export function viewsByDay(days = 30): { day: string; n: number }[] {
+  const since = new Date(Date.now() - (days - 1) * 86_400_000).toISOString().slice(0, 10);
+  const rows = getDb()
+    .prepare("SELECT day, SUM(views) AS n FROM page_views_daily WHERE day >= ? GROUP BY day ORDER BY day")
+    .all(since) as { day: string; n: number }[];
+  const byDay = new Map(rows.map((row) => [row.day, row.n]));
+  const out: { day: string; n: number }[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const day = new Date(Date.now() - i * 86_400_000).toISOString().slice(0, 10);
+    out.push({ day, n: byDay.get(day) ?? 0 });
+  }
+  return out;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Site settings                                                               */
 /* -------------------------------------------------------------------------- */

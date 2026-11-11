@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 /** Records one anonymous view per page load (bots without JS are ignored). */
 export function ViewBeacon({ path }: { path: string }) {
@@ -11,4 +12,10 @@ export function ViewBeacon({ path }: { path: string }) {
     }
   }, [path]);
   return null;
+}
+
+/** Site-wide beacon: counts every public page once per load. Mount once in the root layout. */
+export function SiteViewBeacon() {
+  const pathname = usePathname();
+  return <ViewBeacon path={pathname ?? "/"} />;
 }
