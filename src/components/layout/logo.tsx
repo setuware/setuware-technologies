@@ -66,8 +66,9 @@ export function Logo({
  * SVG monogram read as the "old logo" even after the V3 gradient landed,
  * because the shape never changed — the ribbon is unmistakably the new mark
  * on both light and dark backgrounds. The V3 gradient colours in
- * `MARK_COLORS` remain the brand palette for generated assets and the
- * favicon. Decorative — the link carries the name.
+ * `MARK_COLORS` remain the brand palette; the favicon and app icons use
+ * the glossy ribbon raster (`public/images/favicon-v3-glossy-512.png`).
+ * Decorative — the link carries the name.
  */
 export function LogoMark({ className }: { className?: string }) {
   return (
