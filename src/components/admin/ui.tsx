@@ -130,11 +130,37 @@ export function timeAgo(iso: string, now = Date.now()): string {
 }
 
 const STAT_TONES = {
-  blue: { tile: "from-[#2f56d8] to-[#4f7cff]", glow: "bg-[#2f56d8]/10" },
-  teal: { tile: "from-[#0a8ea6] to-[#22c3e6]", glow: "bg-[#0a8ea6]/10" },
-  violet: { tile: "from-[#7c3aed] to-[#a78bfa]", glow: "bg-[#7c3aed]/10" },
-  amber: { tile: "from-[#f59e0b] to-[#fb923c]", glow: "bg-[#f59e0b]/10" },
+  blue: { tile: "from-[#2f56d8] to-[#4f7cff]", glow: "bg-[#2f56d8]/10", text: "text-[#2f56d8] dark:text-[#8fb0ff]" },
+  teal: { tile: "from-[#0a8ea6] to-[#22c3e6]", glow: "bg-[#0a8ea6]/10", text: "text-[#0a8ea6] dark:text-[#5fd0ec]" },
+  violet: { tile: "from-[#7c3aed] to-[#a78bfa]", glow: "bg-[#7c3aed]/10", text: "text-[#7c3aed] dark:text-[#c4b5fd]" },
+  amber: { tile: "from-[#f59e0b] to-[#fb923c]", glow: "bg-[#f59e0b]/10", text: "text-[#f59e0b] dark:text-[#fcd34d]" },
 } as const;
+
+/** ▲/▼ percentage against the previous period. */
+export function Change({ value, label = "vs previous" }: { value: number | null; label?: string }) {
+  if (value === null) return <span className="font-semibold text-emerald-600 dark:text-emerald-400">New</span>;
+  const tone = value > 0 ? "text-emerald-600 dark:text-emerald-400" : value < 0 ? "text-red-600 dark:text-red-400" : "text-muted-foreground";
+  return (
+    <span className={cn("inline-flex items-center gap-1 font-semibold tabular-nums", tone)} title={label}>
+      {value > 0 ? "▲" : value < 0 ? "▼" : "•"} {Math.abs(value)}%<span className="sr-only"> {label}</span>
+    </span>
+  );
+}
+
+/** Tiny inline trend line; colour comes from `currentColor`. */
+export function Sparkline({ values, className }: { values: number[]; className?: string }) {
+  const width = 84;
+  const height = 28;
+  const max = Math.max(1, ...values);
+  const step = width / Math.max(1, values.length - 1);
+  const points = values.map((value, index) => `${(index * step).toFixed(1)},${(height - 2 - (value / max) * (height - 4)).toFixed(1)}`);
+  return (
+    <svg aria-hidden viewBox={`0 0 ${width} ${height}`} width={width} height={height} className={cn("shrink-0 overflow-visible", className)}>
+      <polygon points={`0,${height} ${points.join(" ")} ${width},${height}`} fill="currentColor" opacity="0.12" />
+      <polyline points={points.join(" ")} fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 export function Stat({
   label,
@@ -143,6 +169,8 @@ export function Stat({
   href,
   icon,
   tone = "blue",
+  change,
+  spark,
 }: {
   label: string;
   value: number | string;
@@ -150,6 +178,9 @@ export function Stat({
   href?: string;
   icon?: React.ReactNode;
   tone?: keyof typeof STAT_TONES;
+  /** Percentage change against the previous period; null means no earlier data. */
+  change?: number | null;
+  spark?: number[];
 }) {
   const t = STAT_TONES[tone];
   const body = (
@@ -163,8 +194,16 @@ export function Stat({
           </span>
         ) : null}
       </div>
-      <p className="relative mt-3 font-display text-[2.1rem] font-semibold leading-none tabular-nums tracking-tight text-foreground">{value}</p>
-      {hint ? <p className="relative mt-2 text-xs text-muted-foreground">{hint}</p> : null}
+      <div className="relative mt-3 flex items-end justify-between gap-3">
+        <p className="font-display text-[2.1rem] font-semibold leading-none tabular-nums tracking-tight text-foreground">{value}</p>
+        {spark && spark.length > 1 ? <Sparkline values={spark} className={t.text} /> : null}
+      </div>
+      {hint || change !== undefined ? (
+        <p className="relative mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+          {change !== undefined ? <Change value={change} /> : null}
+          {hint ? <span>{hint}</span> : null}
+        </p>
+      ) : null}
     </Card>
   );
   return href ? <Link href={href}>{body}</Link> : body;
