@@ -50,7 +50,6 @@ export default async function TeamTimesheetsPage({ searchParams }: { searchParam
           <Link href={`/admin/timesheets/team?week=${addDays(monday, 7)}`} className="rounded-full px-2 py-0.5 text-muted-foreground hover:bg-foreground/[0.05] hover:text-foreground" aria-label="Next week">
             →
           </Link>
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- CSV download from a route handler */}
           <a href={`/admin/files/export/timesheets?week=${monday}`} className="ml-auto inline-flex items-center gap-1.5 text-sm font-semibold text-[#2f56d8] hover:underline dark:text-[#8fb0ff]">
             <Download className="size-4" aria-hidden /> Export CSV
           </a>
