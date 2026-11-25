@@ -36,7 +36,7 @@ export function PlatformsStrip() {
           </p>
         </div>
         <div className="min-w-0 flex-1 py-6 md:py-9">
-          <Marquee durationSeconds={35}>
+          <Marquee durationSeconds={35} className="motion-reduce:overflow-x-auto">
             {PLATFORMS.map(({ name, icon }) => (
               <span
                 key={name}
