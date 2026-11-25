@@ -5,7 +5,7 @@ import { getPublishedPosts } from "@/lib/cms/public";
 import { faqJsonLd, HOME_DESCRIPTION, HOME_TITLE, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Hero } from "@/components/sections/hero";
-import { CapabilityTicker } from "@/components/sections/capability-ticker";
+import { PlatformsStrip } from "@/components/sections/home/platforms-strip";
 import { ServicesGrid } from "@/components/sections/home/services-grid";
 import { AboutCorporate } from "@/components/sections/home/about-corporate";
 import { DeferredSection } from "@/components/ui/deferred-section";
@@ -13,8 +13,8 @@ import { DeferredSection } from "@/components/ui/deferred-section";
 /**
  * Home page.
  *
- * Section order: video hero → capability ticker → services → about → why
- * Setuware → process → projects → tools → plans → skills band → contact →
+ * Section order: video hero → platforms strip → services → about → why
+ * Setuware → process → projects → plans → skills band → contact →
  * articles → FAQ. The footer carries the closing call to action.
  *
  * Load strategy:
@@ -42,11 +42,8 @@ export const metadata = pageMetadata({
 const WhyChoose = dynamic(() =>
   import("@/components/sections/home/why-choose").then((mod) => mod.WhyChoose),
 );
-const ProcessDark = dynamic(() =>
-  import("@/components/sections/process-dark").then((mod) => mod.ProcessDark),
-);
-const ToolsRow = dynamic(() =>
-  import("@/components/sections/tools-row").then((mod) => mod.ToolsRow),
+const ProcessSteps = dynamic(() =>
+  import("@/components/sections/home/process-steps").then((mod) => mod.ProcessSteps),
 );
 const SkillsGap = dynamic(() =>
   import("@/components/sections/skills-gap").then((mod) => mod.SkillsGap),
@@ -70,7 +67,7 @@ export default async function HomePage() {
   return (
     <>
       <Hero />
-      <CapabilityTicker />
+      <PlatformsStrip />
       <ServicesGrid />
       <AboutCorporate />
 
@@ -78,16 +75,12 @@ export default async function HomePage() {
         <WhyChoose />
       </DeferredSection>
 
-      <DeferredSection minHeight={820}>
-        <ProcessDark />
+      <DeferredSection minHeight={720}>
+        <ProcessSteps />
       </DeferredSection>
 
       <DeferredSection minHeight={760}>
         <SelectedProjects />
-      </DeferredSection>
-
-      <DeferredSection minHeight={200}>
-        <ToolsRow />
       </DeferredSection>
 
       <DeferredSection minHeight={760}>

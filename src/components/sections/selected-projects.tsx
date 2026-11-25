@@ -1,208 +1,89 @@
-"use client";
-
-import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
-import {
-  motion,
-  useScroll,
-  useSpring,
-  useTransform,
-  type MotionValue,
-} from "framer-motion";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { caseStudyPhoto } from "@/lib/case-study-photos";
 import { featuredCaseStudies } from "@/lib/content";
-import { images } from "@/lib/images";
-import { ImageReveal, Magnetic, SpotlightCard, useReducedMotionSafe } from "@/components/motion/primitives";
-import { TextReveal } from "@/components/motion/text-reveal";
+import { FadeUp, ImageReveal, Stagger, StaggerItem } from "@/components/motion/primitives";
+import { Eyebrow, SectionTitle } from "@/components/sections/home/shared";
 
-/**
- * The cards fanned out behind the lead project (Figma 24:2617, 24:3152–24:3156),
- * back to front. Offsets are distances from the front card's top edge, in
- * Figma pixels; the coloured band stands in for each card's cover image.
- *
- * `tuck` is how far (as a share of the card's own height) each card starts
- * pushed down behind the front card, and `tilt` the angle it starts at; both
- * scrub to zero as the stack scrolls into place.
- */
-const BACK_CARDS = [
-  {
-    // 24:2617 / 24:3152 — 926 wide, 131 above the front card.
-    className:
-      "top-0 inset-x-[11%] h-28 bg-[#f1f1f1] lg:inset-x-[calc(var(--s)*137)] lg:h-[calc(var(--s)*437)]",
-    cover: "bg-[#c9d3f1]",
-    tuck: 30,
-    tilt: -3.2,
-  },
-  {
-    // 24:3153 / 24:3154 — 1010 wide, 89 above.
-    className:
-      "top-3 inset-x-[7.5%] h-28 bg-[#f9f9f9] lg:top-[calc(var(--s)*42)] lg:inset-x-[calc(var(--s)*95)] lg:h-[calc(var(--s)*477)]",
-    cover:
-      "bg-[linear-gradient(90deg,#ea6f98_0%,#b56ae2_38%,#00b4de_68%,#08131c_100%)]",
-    tuck: 19,
-    tilt: 2.4,
-  },
-  {
-    // 24:3155 / 24:3156 — 1124 wide, 47 above.
-    className:
-      "top-6 inset-x-[3%] h-28 bg-[#f9f9f9] lg:top-[calc(var(--s)*84)] lg:inset-x-[calc(var(--s)*38)] lg:h-[calc(var(--s)*531)]",
-    cover: "bg-[linear-gradient(90deg,#e6f6f5_0%,#eef2f8_45%,#f6d4ec_100%)]",
-    tuck: 9,
-    tilt: -1.4,
-  },
-] as const;
-
-const CARD_SHADOW =
-  "shadow-[0_18px_50px_-18px_rgba(10,20,40,0.18)] lg:shadow-[0_calc(var(--s)*20)_calc(var(--s)*60)_calc(var(--s)*-20)_rgba(10,20,40,0.18)]";
-
-/**
- * "Selected Projects" (Figma 24:2681 → 24:3161, button 24:3105).
- *
- * The lead project sits on a stack of offset cards. The cards behind are
- * decorative and `aria-hidden`, so the stack reads as one item. Their motion
- * is scrubbed by scroll (through a spring, so a flick of the wheel still
- * lands softly): each layer starts tucked and slightly askew behind the front
- * card and settles into the fan as the stack reaches the middle of the view.
- */
-
-type BackCard = (typeof BACK_CARDS)[number];
-
-function FanCard({
-  card,
-  progress,
-  reduce,
-}: {
-  card: BackCard;
-  progress: MotionValue<number>;
-  reduce: boolean;
-}) {
-  const y = useTransform(progress, [0, 1], [`${card.tuck}%`, "0%"]);
-  const rotate = useTransform(progress, [0, 1], [card.tilt, 0]);
-  const scale = useTransform(progress, [0, 1], [0.96, 1]);
-
-  return (
-    <motion.div
-      aria-hidden
-      className={`absolute origin-bottom overflow-hidden rounded-[1.25rem] will-change-transform lg:rounded-[calc(var(--s)*20)] ${CARD_SHADOW} ${card.className}`}
-      style={reduce ? undefined : { y, rotate, scale }}
-    >
-      <div
-        className={`h-full w-[49%] lg:h-[calc(var(--s)*442)] lg:w-[calc(var(--s)*589)] ${card.cover}`}
-      />
-    </motion.div>
-  );
-}
-
+/** Home-page portfolio: compact cards for the featured client projects. */
 export function SelectedProjects() {
-  const lead = featuredCaseStudies[0];
-  const stackRef = React.useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotionSafe() ?? false;
-  const { scrollYProgress } = useScroll({
-    target: stackRef,
-    offset: ["start end", "center 0.6"],
-  });
-  const progress = useSpring(scrollYProgress, { stiffness: 90, damping: 24, mass: 0.6 });
-  // The whole stack rises a little while the layers fan out of it, so the
-  // back cards travel further than the front one and the stack reads as depth.
-  const stackY = useTransform(progress, [0, 1], [56, 0]);
-
+  const projects = featuredCaseStudies.slice(0, 4);
   return (
     <section
       id="work"
       aria-labelledby="projects-heading"
-      className="relative overflow-hidden bg-background py-20 md:py-28 lg:pt-[calc(var(--s)*139)] lg:pb-[calc(var(--s)*124)]"
+      className="relative overflow-hidden bg-[#f5f7fc] py-20 md:py-24 dark:bg-[#080c1c]"
     >
       <div className="container-figma">
-        <TextReveal
-          as="h2"
-          id="projects-heading"
-          className="text-center text-3xl leading-tight font-bold tracking-[-0.04em] text-foreground sm:text-[2.6rem] lg:text-[calc(var(--s)*58)] lg:leading-[calc(var(--s)*72)]"
-        >
-          Selected work
-        </TextReveal>
-
-        <motion.div
-          ref={stackRef}
-          style={reduce ? undefined : { y: stackY }}
-          // flow-root keeps the front card's top margin inside the stack;
-          // collapsed through it, the back cards had no room to fan into.
-          className="relative mx-auto mt-12 flow-root max-w-[75rem] lg:mt-[calc(var(--s)*41)] lg:w-[calc(var(--s)*1200)] lg:max-w-none"
-        >
-          {/* Soft cyan glow behind the stack (24:2609). */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute top-[calc(var(--s)*362)] left-[calc(var(--s)*252)] hidden h-[calc(var(--s)*715)] w-[calc(var(--s)*1151)] rounded-full bg-[radial-gradient(closest-side,rgba(0,161,198,0.09),transparent)] lg:block"
-          />
-
-          {BACK_CARDS.map((card) => (
-            <FanCard key={card.cover} card={card} progress={progress} reduce={reduce} />
-          ))}
-
-          {/* Front card (24:3157 / 24:3158). */}
-          <SpotlightCard
-            as="article"
-            tilt={2}
-            glow="rgba(0,161,198,0.12)"
-            className={`group/card mt-9 grid overflow-hidden rounded-[1.25rem] bg-surface md:grid-cols-[49%_1fr] lg:mt-[calc(var(--s)*131)] lg:h-[calc(var(--s)*560)] lg:grid-cols-[calc(var(--s)*589)_1fr] lg:rounded-[calc(var(--s)*20)] ${CARD_SHADOW}`}
+        <FadeUp className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-2xl">
+            <Eyebrow>Our work</Eyebrow>
+            <SectionTitle>
+              <span id="projects-heading">Recent client projects</span>
+            </SectionTitle>
+          </div>
+          <Link
+            href="/work"
+            className="group inline-flex items-center gap-2 self-start text-sm font-semibold text-[#2f56d8] hover:text-[#1e3a8a] md:self-auto dark:text-[#7c9bff]"
           >
-            <div className="relative min-h-[18rem] bg-[linear-gradient(150deg,#9fb3b8,#d7dfe0)]">
-              <ImageReveal delay={0.15} className="absolute inset-0">
-                <div className="relative h-full w-full">
-                  <Image
-                    src={(lead && caseStudyPhoto(lead.slug)?.src) ?? images.caseStudyFeature.src}
-                    // The project photo's own description; the generic
-                    // placeholder stays decorative, since its slot alt
-                    // describes a different image.
-                    alt={(lead && caseStudyPhoto(lead.slug)?.alt) ?? ""}
-                    fill
-                    sizes="(min-width: 1024px) 589px, (min-width: 768px) 50vw, 90vw"
-                    className="object-cover transition-[scale] duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/card:scale-[1.04]"
-                  />
-                </div>
-              </ImageReveal>
-            </div>
+            View all projects
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden />
+          </Link>
+        </FadeUp>
 
-            <div className="flex flex-col p-7 md:p-9 lg:pt-[calc(var(--s)*57)] lg:pr-[calc(var(--s)*46)] lg:pb-[calc(var(--s)*73)] lg:pl-[calc(var(--s)*79)]">
-              <p className="mb-3 text-[0.8rem] font-semibold tracking-[0.08em] text-setu uppercase lg:mb-[calc(var(--s)*12)] lg:text-[calc(var(--s)*13)]">
-                {lead.sector}
-              </p>
-              <h3 className="max-w-[24rem] text-[1.6rem] leading-[1.36] font-semibold tracking-normal text-foreground lg:max-w-[calc(var(--s)*426)] lg:text-[calc(var(--s)*33)] lg:leading-[calc(var(--s)*45)]">
-                {lead.title}
-              </h3>
-              <p className="mt-4 max-w-[30rem] text-[0.95rem] leading-[1.9] tracking-[0.02em] text-foreground/70 lg:mt-[calc(var(--s)*17)] lg:max-w-[calc(var(--s)*485)] lg:text-[calc(var(--s)*15)] lg:leading-[calc(var(--s)*29)]">
-                {lead.summary}
-              </p>
-
-              <Magnetic strength={0.25} className="mt-8 w-fit lg:mt-auto">
-                <Link
-                  href={`/work/${lead.slug}`}
-                  className="group/btn inline-flex h-10 w-fit items-center gap-2.5 rounded-full border-[1.5px] border-foreground px-6 text-[15px] font-semibold text-foreground transition-colors hover:bg-foreground hover:text-background lg:h-[calc(var(--s)*40)] lg:gap-[calc(var(--s)*10)] lg:px-[calc(var(--s)*26)] lg:text-[calc(var(--s)*15)]"
-                >
-                  View case study
-                  <ArrowUpRight
-                    className="size-4 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 lg:size-[calc(var(--s)*18)]"
-                    aria-hidden
-                  />
-                </Link>
-              </Magnetic>
-            </div>
-          </SpotlightCard>
-        </motion.div>
-
-        {/* "View all projects" pill (24:3105). */}
-        <div className="mt-10 flex justify-center lg:mt-[calc(var(--s)*70)]">
-          <Magnetic>
-            <Link
-              href="/work"
-              className="inline-flex h-10 min-w-[14.4rem] items-center justify-center rounded-full bg-black px-8 text-[15px] font-semibold text-white transition-colors hover:bg-setu dark:bg-foreground dark:text-background lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*230)] lg:min-w-0 lg:px-0 lg:text-[calc(var(--s)*15)]"
-            >
-              View all projects
-            </Link>
-          </Magnetic>
-        </div>
+        <Stagger className="mt-12 grid gap-6 md:grid-cols-2">
+          {projects.map((study, i) => {
+            const photo = caseStudyPhoto(study.slug);
+            return (
+              <StaggerItem key={study.slug}>
+                <article className="group relative h-full overflow-hidden rounded-2xl border border-[#e3e8f5] bg-white shadow-[0_1px_2px_rgba(15,19,48,0.04),0_18px_40px_-28px_rgba(15,19,48,0.35)] transition-[transform,box-shadow] duration-500 hover:-translate-y-1.5 hover:shadow-[0_30px_60px_-30px_rgba(29,78,216,0.45)] dark:border-white/10 dark:bg-[#0d1226]">
+                  {photo ? (
+                    <ImageReveal delay={i * 0.08} className="relative aspect-[16/9] overflow-hidden bg-[#eef2fb] dark:bg-white/5">
+                      <Image
+                        src={photo.src}
+                        alt={photo.alt}
+                        fill
+                        sizes="(min-width: 768px) 40rem, 92vw"
+                        className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                      />
+                      <div aria-hidden className="absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,rgba(11,15,42,0.55))] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                      <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-[#2f56d8] backdrop-blur dark:bg-[#0d1226]/85 dark:text-[#9db4ff]">
+                        {study.sector}
+                      </span>
+                    </ImageReveal>
+                  ) : null}
+                  <div className="p-6">
+                    <p className="text-sm font-semibold text-[#5a6180] dark:text-white/60">
+                      {study.client} · {study.year}
+                    </p>
+                    <h3 className="mt-1.5 text-[1.2rem] font-bold leading-snug text-[#0f1330] dark:text-white">
+                      <Link href={`/work/${study.slug}`} className="after:absolute after:inset-0">
+                        {study.title}
+                      </Link>
+                    </h3>
+                    <p className="mt-2 line-clamp-2 text-[0.95rem] leading-relaxed text-[#5a6180] dark:text-white/65">
+                      {study.summary}
+                    </p>
+                    <div className="mt-5 flex items-center justify-between gap-4">
+                      <ul className="flex flex-wrap gap-1.5">
+                        {study.stack.slice(0, 3).map((tech) => (
+                          <li key={tech} className="rounded-md bg-[#f1f4fb] px-2 py-1 text-xs font-medium text-[#3b4366] dark:bg-white/5 dark:text-white/70">
+                            {tech}
+                          </li>
+                        ))}
+                      </ul>
+                      <span aria-hidden className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-[#eef2ff] text-[#2f56d8] transition-[background-color,color,transform] duration-300 group-hover:rotate-45 group-hover:bg-[#2f56d8] group-hover:text-white dark:bg-white/10 dark:text-white">
+                        <ArrowUpRight className="size-5" />
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              </StaggerItem>
+            );
+          })}
+        </Stagger>
       </div>
     </section>
   );

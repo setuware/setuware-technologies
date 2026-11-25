@@ -38,12 +38,12 @@ export function AboutCorporate() {
         <FadeUp delay={0.1}>
           <Eyebrow>About Setuware</Eyebrow>
           <SectionTitle>
-            One team, from the first call to long after launch
+            The bridge between your business idea and a working digital product
           </SectionTitle>
           <p className="mt-5 text-[1.02rem] leading-relaxed text-[#5a6180] dark:text-white/70">
-            We are a Gurugram studio. One project manager runs your job from the first call to
-            launch, and the same team designs, builds and supports it. Every quote is fixed and in
-            writing before work starts.
+            Setuware Technologies is a software development company in Gurugram. We build websites,
+            online stores, mobile apps and business software for companies that want one
+            accountable partner from planning to launch.
           </p>
           <ul className="mt-7 grid gap-3 sm:grid-cols-2">
             {POINTS.map((point) => (
