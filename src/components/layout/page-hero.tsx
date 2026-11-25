@@ -45,18 +45,18 @@ export function PageHero({
         className={cn(
           // `dark` flips the semantic colour tokens for everything inside,
           // so headings, breadcrumbs and buttons read light on the footage.
-          "dark relative isolate overflow-hidden bg-[#05070d] pb-16 pt-32 text-foreground md:pb-20 md:pt-40",
+          "dark relative isolate overflow-hidden bg-[#0b1638] pb-16 pt-32 text-foreground md:pb-20 md:pt-40",
           className,
         )}
       >
         <HeroBackdrop sources={media.sources} poster={media.poster} tone="dark" />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(5,7,13,0.55)_0%,rgba(5,7,13,0.62)_55%,rgba(5,7,13,0.85)_100%)]"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(11,22,56,0.78)_0%,rgba(18,38,104,0.7)_55%,rgba(11,22,56,0.9)_100%)]"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_80%_20%,rgba(0,161,198,0.18),transparent_70%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_80%_20%,rgba(59,108,246,0.28),transparent_70%)]"
         />
 
         <div className="container-page relative">

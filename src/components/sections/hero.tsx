@@ -42,19 +42,15 @@ export function Hero() {
   return (
     // The header is fixed and solid, so the hero starts below it.
     <section className="pt-16 md:pt-18 lg:pt-[calc(var(--s)*72)]">
-      <div className="relative isolate overflow-hidden bg-[#0a0d16]">
+      <div className="relative isolate overflow-hidden bg-[#0b1638]">
         {envSources.length === 0 && committed.sources.length > 0 ? (
           <HeroMedia>
             <HeroVideoReel
               clips={[
-                {
-                  sources: committed.sources,
-                  poster: heroBackdropPoster() ?? committed.poster ?? images.heroBackdrop.src,
-                },
-                pageVideo("work"),
-                pageVideo("services"),
-                pageVideo("process"),
                 pageVideo("about"),
+                pageVideo("process"),
+                pageVideo("careers"),
+                pageVideo("contact"),
               ]}
             />
           </HeroMedia>
@@ -80,7 +76,7 @@ export function Hero() {
             </HeroMedia>
             {/* Scrim stays outside the moving layer so contrast never shifts. */}
             <div
-              className="absolute inset-0 bg-[linear-gradient(95deg,rgba(6,9,18,0.92)_0%,rgba(6,9,18,0.72)_48%,rgba(6,9,18,0.42)_100%)]"
+              className="absolute inset-0 bg-[linear-gradient(95deg,rgba(11,22,56,0.94)_0%,rgba(18,38,104,0.78)_48%,rgba(29,78,216,0.35)_100%)]"
               aria-hidden
             />
           </>
@@ -122,7 +118,7 @@ export function Hero() {
                 <ButtonLink
                   href="/contact"
                   variant="ghost"
-                  className="h-11 rounded-full bg-setu px-6 font-semibold text-white hover:bg-setu-dark lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*202)] lg:justify-start lg:gap-[calc(var(--s)*10)] lg:pl-[calc(var(--s)*39)] lg:pr-0 lg:text-[calc(var(--s)*15)] lg:leading-[normal] dark:hover:bg-setu-dark"
+                  className="h-11 rounded-full bg-[linear-gradient(100deg,#2f56d8,#1477c0_55%,#0a8ea6)] px-6 font-semibold text-white shadow-[0_8px_24px_-10px_rgba(47,86,216,0.9)] transition-[filter,box-shadow] hover:brightness-110 lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*202)] lg:justify-start lg:gap-[calc(var(--s)*10)] lg:pl-[calc(var(--s)*39)] lg:pr-0 lg:text-[calc(var(--s)*15)] lg:leading-[normal]"
                 >
                   Start a project
                   <ArrowRight

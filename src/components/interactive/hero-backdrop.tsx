@@ -139,8 +139,8 @@ export function HeroBackdrop({ sources, poster, tone = "page" }: HeroBackdropPro
         <>
           {/* Phones: copy spans the full width, so a light vertical scrim keeps
               the footage visible; desktop darkens only the copy side. */}
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,9,18,0.35)_0%,rgba(6,9,18,0.55)_45%,rgba(6,9,18,0.8)_100%)] lg:bg-[linear-gradient(95deg,rgba(6,9,18,0.82)_0%,rgba(6,9,18,0.45)_42%,rgba(6,9,18,0)_75%)]" />
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(to_top,rgba(6,9,18,0.7),transparent)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,22,56,0.55)_0%,rgba(16,32,88,0.68)_45%,rgba(11,22,56,0.88)_100%)] lg:bg-[linear-gradient(100deg,rgba(11,22,56,0.93)_0%,rgba(18,38,104,0.75)_42%,rgba(29,78,216,0.3)_100%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(to_top,rgba(11,22,56,0.7),transparent)]" />
         </>
       ) : (
         <>
@@ -234,7 +234,7 @@ export interface HeroClip {
   poster?: string;
 }
 
-const REEL_MS = 8000;
+const REEL_MS = 7000;
 
 /**
  * Several background clips that crossfade into one another behind the
@@ -324,8 +324,8 @@ export function HeroVideoReel({ clips }: { clips: readonly HeroClip[] }) {
           </video>
         );
       })}
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,9,18,0.35)_0%,rgba(6,9,18,0.55)_45%,rgba(6,9,18,0.8)_100%)] lg:bg-[linear-gradient(95deg,rgba(6,9,18,0.82)_0%,rgba(6,9,18,0.45)_42%,rgba(6,9,18,0)_75%)]" />
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(to_top,rgba(6,9,18,0.7),transparent)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,22,56,0.55)_0%,rgba(16,32,88,0.68)_45%,rgba(11,22,56,0.88)_100%)] lg:bg-[linear-gradient(100deg,rgba(11,22,56,0.93)_0%,rgba(18,38,104,0.75)_42%,rgba(29,78,216,0.3)_100%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(to_top,rgba(11,22,56,0.7),transparent)]" />
     </div>
   );
 }
