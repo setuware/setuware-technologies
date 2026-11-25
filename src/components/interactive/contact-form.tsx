@@ -139,7 +139,8 @@ export function ContactForm() {
   useEffect(() => {
     if (status !== "done") return;
     doneRef.current?.focus({ preventScroll: true });
-    doneRef.current?.scrollIntoView?.({ block: "center", behavior: "smooth" });
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    doneRef.current?.scrollIntoView?.({ block: "center", behavior: reduce ? "auto" : "smooth" });
   }, [status]);
 
   if (status === "done") {
