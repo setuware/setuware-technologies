@@ -85,6 +85,21 @@ describe("repeating tasks", () => {
     expect(listTasks({ q: "Weekly report" })).toHaveLength(2);
   });
 
+  it("keeps a monthly series on its starting day after a short month", () => {
+    expect(nextDue("2099-02-28", "monthly", "2099-01-01", 31)).toBe("2099-03-31");
+    const first = createTask({ title: "Invoice run", dueDate: "2099-01-31", repeat: "monthly" }, asha);
+    moveTask(first, "done");
+    const feb = getTask(getTask(first)!.next_id!)!;
+    expect(feb.due_date).toBe("2099-02-28");
+    moveTask(feb.id, "done");
+    expect(getTask(getTask(feb.id)!.next_id!)!.due_date).toBe("2099-03-31");
+  });
+
+  it("starts the series when a repeating task is created as done", () => {
+    const id = createTask({ title: "Backup check", dueDate: "2099-05-01", repeat: "weekly", status: "done" }, asha);
+    expect(getTask(getTask(id)!.next_id!)!).toMatchObject({ status: "todo", due_date: "2099-05-08" });
+  });
+
   it("leaves one-off tasks alone", () => {
     const id = createTask({ title: "One-off" }, asha);
     moveTask(id, "done");

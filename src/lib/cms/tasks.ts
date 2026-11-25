@@ -177,17 +177,19 @@ export function createTask(input: TaskInput, createdBy: number): number {
       now,
       status === "done" ? now : null,
     );
-  return Number(result.lastInsertRowid);
+  const id = Number(result.lastInsertRowid);
+  if (status === "done") spawnRepeat(id, localDay());
+  return id;
 }
 
 /** Next due date of a repeating task: one step on from `from`, and not before `today`. */
-export function nextDue(from: string, repeat: Repeat, today: string): string {
+export function nextDue(from: string, repeat: Repeat, today: string, anchor = Number(from.slice(8, 10))): string {
   const step = (day: string): string => {
     if (repeat === "daily") return shiftDay(day, 1);
     if (repeat === "weekly") return shiftDay(day, 7);
-    const [year, month, date] = day.split("-").map(Number);
+    const [year, month] = day.split("-").map(Number);
     const last = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
-    return new Date(Date.UTC(year, month, Math.min(date, last))).toISOString().slice(0, 10);
+    return new Date(Date.UTC(year, month, Math.min(anchor, last))).toISOString().slice(0, 10);
   };
   let next = step(from);
   for (let guard = 0; next < today && guard < 400; guard++) next = step(next);
@@ -198,6 +200,22 @@ export function nextDue(from: string, repeat: Repeat, today: string): string {
 function spawnRepeat(id: number, today: string): number | null {
   const task = getTask(id);
   if (!task || !task.repeat || task.status !== "done" || task.next_id) return null;
+  const db = getDb();
+  // Claim the slot first so overlapping completions can't both create a copy.
+  if (!db.prepare("UPDATE tasks SET next_id = 0 WHERE id = ? AND next_id IS NULL").run(id).changes) return null;
+  // Monthly series keep the day of the month they started on (31st stays 31st after February).
+  const first =
+    task.repeat === "monthly"
+      ? (db
+          .prepare(
+            `WITH RECURSIVE chain(id, due_date, depth) AS (
+               SELECT id, due_date, 0 FROM tasks WHERE id = ?
+               UNION ALL SELECT t.id, t.due_date, c.depth + 1 FROM tasks t JOIN chain c ON t.next_id = c.id WHERE c.depth < 1000
+             ) SELECT due_date FROM chain WHERE due_date IS NOT NULL ORDER BY depth DESC LIMIT 1`,
+          )
+          .get(id) as { due_date: string } | undefined)
+      : undefined;
+  const from = task.due_date ?? today;
   const next = createTask(
     {
       title: task.title,
@@ -205,7 +223,7 @@ function spawnRepeat(id: number, today: string): number | null {
       priority: task.priority,
       assigneeId: task.assignee_id,
       reviewerId: task.reviewer_id,
-      dueDate: nextDue(task.due_date ?? today, task.repeat, today),
+      dueDate: nextDue(from, task.repeat, today, Number((first?.due_date ?? from).slice(8, 10))),
       project: task.project,
       entity: task.entity,
       entityId: task.entity_id,
@@ -214,7 +232,6 @@ function spawnRepeat(id: number, today: string): number | null {
     },
     task.created_by,
   );
-  const db = getDb();
   db.prepare("INSERT INTO task_items (task_id,body,position) SELECT ?, body, position FROM task_items WHERE task_id = ?").run(next, id);
   db.prepare("UPDATE tasks SET next_id = ? WHERE id = ?").run(next, id);
   addNote("task", next, "system", "Setuware", `Repeats ${task.repeat}: created when #${id} was done`);
