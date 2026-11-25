@@ -210,7 +210,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
                   return (
                     <tr key={row.userId ?? "none"} className="hover:bg-foreground/[0.03]">
                       <td className="px-5 py-3">
-                        <Link href={link({ view: "list", who: whoKey, due: undefined, status: undefined })} className="flex items-center gap-2 font-semibold text-foreground hover:underline">
+                        <Link href={`/admin/tasks?view=list&who=${whoKey}`} className="flex items-center gap-2 font-semibold text-foreground hover:underline">
                           {row.userId === null ? <span className="inline-flex size-7 items-center justify-center rounded-full border border-dashed border-border text-xs text-muted-foreground">?</span> : <Avatar name={row.name} size="sm" />}
                           <span className="min-w-0">
                             {row.name}
@@ -223,7 +223,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
                       <td className="px-5 py-3 text-right font-semibold tabular-nums text-foreground">{row.open}</td>
                       <td className="px-5 py-3 text-right tabular-nums">
                         {row.overdue ? (
-                          <Link href={link({ view: "list", who: whoKey, due: "overdue" })} className="font-semibold text-red-600 hover:underline dark:text-red-400">
+                          <Link href={`/admin/tasks?view=list&who=${whoKey}&due=overdue`} className="font-semibold text-red-600 hover:underline dark:text-red-400">
                             {row.overdue}
                           </Link>
                         ) : (
