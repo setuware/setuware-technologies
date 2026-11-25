@@ -88,9 +88,9 @@ describe("pageMetadata", () => {
 });
 
 describe("home page search snippet", () => {
-  it("leads with the brand and the company slogan", () => {
+  it("leads with the brand and the main search phrase", () => {
     expect(HOME_TITLE).toBe(
-      "Setuware Technologies - We act as a bridge between your business idea and a working digital product",
+      "Setuware Technologies | Website & App Development Company in Gurugram",
     );
     expect(HOME_DESCRIPTION.length).toBeGreaterThanOrEqual(100);
     expect(HOME_DESCRIPTION.length).toBeLessThanOrEqual(160);
@@ -206,12 +206,12 @@ describe("structured data", () => {
   it("starts every breadcrumb trail at Home and numbers positions from one", () => {
     const data = breadcrumbJsonLd([
       { name: "Work", path: "/work" },
-      { name: "Vanik", path: "/work/kirana-commerce-platform" },
+      { name: "My Engineering Expert", path: "/work/engineering-expert-learning-platform" },
     ]);
 
     expect(data.itemListElement.map((item) => item.position)).toEqual([1, 2, 3]);
     expect(data.itemListElement[0]).toMatchObject({ name: "Home", item: `${site.url}/` });
-    expect(data.itemListElement[2].item).toBe(`${site.url}/work/kirana-commerce-platform`);
+    expect(data.itemListElement[2].item).toBe(`${site.url}/work/engineering-expert-learning-platform`);
   });
 
   it("produces article data with author, publisher, image and dates", () => {
