@@ -6,7 +6,7 @@ const PAGES = [
   { path: "/services", name: "services" },
   { path: "/services/managed-hosting", name: "service detail" },
   { path: "/work", name: "work" },
-  { path: "/work/kirana-commerce-platform", name: "case study" },
+  { path: "/work/engineering-expert-learning-platform", name: "case study" },
   { path: "/pricing", name: "pricing" },
   { path: "/estimate", name: "estimator" },
   { path: "/contact", name: "contact" },

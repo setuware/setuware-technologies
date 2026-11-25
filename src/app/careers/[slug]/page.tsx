@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -50,21 +49,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   });
 }
 
-/**
- * `params` is read inside a Suspense boundary so navigations render the shell
- * instantly. Every listed role is prerendered by `generateStaticParams`, and
- * the proxy answers unknown slugs with a real 404.
- */
-export default function RolePage({ params }: { params: Promise<{ slug: string }> }) {
-  return (
-    <Suspense fallback={<div className="min-h-[70vh]" aria-busy="true" />}>
-      <Role params={params} />
-    </Suspense>
-  );
-}
-
-
-async function Role({ params }: { params: Promise<{ slug: string }> }) {
+export default async function Role({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const job = await getOpenJob(slug);
   if (!job) notFound();

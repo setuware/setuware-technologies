@@ -1,10 +1,10 @@
-import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Quote } from "lucide-react";
 
 import { caseStudyPhoto, caseStudyPhotos } from "@/lib/case-study-photos";
+import { DeviceShowcase } from "@/components/sections/work/device-showcase";
 import { caseStudies, getCaseStudy, getService } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -35,28 +35,11 @@ export async function generateMetadata({
     description: study.seoDescription ?? study.summary,
     path: `/work/${study.slug}`,
     type: "article",
-    ...(photo ? { image: { url: photo.src, width: 1200, height: 800, alt: photo.alt } } : {}),
+    ...(photo ? { image: { url: photo.src, width: photo.width, height: photo.height, alt: photo.alt } } : {}),
   });
 }
 
-/**
- * `params` is read inside a Suspense boundary so navigations render the shell
- * instantly. Every known slug is prerendered by `generateStaticParams`, so the
- * fallback only ever shows on the way to a 404.
- */
-export default function CaseStudyPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  return (
-    <Suspense fallback={<div className="min-h-[70vh]" aria-busy="true" />}>
-      <CaseStudy params={params} />
-    </Suspense>
-  );
-}
-
-async function CaseStudy({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CaseStudy({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const study = getCaseStudy(slug);
   if (!study) notFound();
@@ -75,100 +58,66 @@ async function CaseStudy({ params }: { params: Promise<{ slug: string }> }) {
 
   return (
     <>
-      <section
-        className={
-          photo
-            ? "dark relative isolate overflow-hidden bg-[#05070d] pb-16 pt-32 text-foreground md:pt-40"
-            : "relative overflow-hidden border-b border-border pb-14 pt-28 md:pt-36"
-        }
-      >
-        {photo ? (
-          <>
-            <Image
-              src={photo.src}
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              className="-z-20 object-cover"
-            />
-            <div
-              aria-hidden
-              className="absolute inset-0 -z-10 bg-[linear-gradient(95deg,rgba(5,7,13,0.92)_0%,rgba(5,7,13,0.75)_50%,rgba(5,7,13,0.45)_100%)]"
-            />
-          </>
-        ) : (
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[0.14]"
-            style={{
-              backgroundImage: `linear-gradient(135deg, ${study.accent[0]}, ${study.accent[1]})`,
-            }}
-            aria-hidden
-          />
-        )}
+      <section className="relative overflow-hidden border-b border-[#e3e8f3] bg-[linear-gradient(180deg,#eef3ff_0%,#f8faff_100%)] pb-16 pt-32 md:pb-20 md:pt-40 dark:border-white/10 dark:bg-[linear-gradient(180deg,#0b1230_0%,#070b1c_100%)]">
+        <div className="container-page relative grid items-center gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-14">
+          <div>
+            <nav aria-label="Breadcrumb" className="mb-6 text-xs text-slate-500 dark:text-slate-400">
+              <Link href="/" className="transition-colors hover:text-[#2f56d8]">
+                Home
+              </Link>
+              <span className="mx-1.5" aria-hidden>
+                /
+              </span>
+              <Link href="/work" className="transition-colors hover:text-[#2f56d8]">
+                Our work
+              </Link>
+              <span className="mx-1.5" aria-hidden>
+                /
+              </span>
+              <span className="text-[#0f1330] dark:text-white">{study.client}</span>
+            </nav>
 
-        <div className="container-page relative">
-          <nav aria-label="Breadcrumb" className="mb-6 text-xs text-muted-foreground">
-            <Link href="/work" className="transition-colors hover:text-foreground">
-              Our work
-            </Link>
-            <span className="mx-1.5" aria-hidden>
-              /
-            </span>
-            <span className="text-foreground">{study.client}</span>
-          </nav>
+            <p className="text-[0.8rem] font-semibold uppercase tracking-[0.08em] text-[#2f56d8] dark:text-[#7c9bff]">
+              {study.client} · {study.sector} · {study.year}
+            </p>
+            <h1 className="mt-4 text-4xl font-bold leading-[1.12] tracking-[-0.02em] text-[#0f1330] sm:text-[2.9rem] dark:text-white">
+              {study.title}
+            </h1>
+            <p className="mt-5 max-w-xl text-[1.05rem] leading-relaxed text-slate-600 dark:text-slate-300">
+              {study.summary}
+            </p>
 
-          <dl className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
-            <div className="flex items-center gap-2">
-              <dt className="uppercase tracking-wider text-muted-foreground">Industry</dt>
-              <dd>
-                <Badge className="border-setu/30 bg-setu/10 text-setu">{study.sector}</Badge>
-              </dd>
-            </div>
-            <div className="flex items-center gap-2">
-              <dt className="uppercase tracking-wider text-muted-foreground">Year</dt>
-              <dd>
-                <Badge tone="neutral">{study.year}</Badge>
-              </dd>
-            </div>
-          </dl>
+            {studyServices.length > 0 ? (
+              <ul className="mt-7 flex flex-wrap gap-2" aria-label="Services delivered">
+                {studyServices.map((service) => (
+                  <li key={service.slug}>
+                    <Link
+                      href={`/services/${service.slug}`}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-[#dbe3f7] bg-white px-3.5 py-1.5 text-[0.84rem] font-medium text-[#1e3a8a] transition-colors hover:border-[#2f56d8] dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+                    >
+                      {service.name}
+                      <ArrowUpRight className="size-3.5" aria-hidden />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
 
-          <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-[1.1] text-foreground sm:text-5xl">
-            {study.title}
-          </h1>
-          <p className="mt-4 max-w-2xl text-[1.05rem] leading-relaxed text-muted-foreground">
-            {study.summary}
-          </p>
-
-          {studyServices.length > 0 ? (
-            <ul className="mt-8 flex flex-wrap gap-2" aria-label="Services delivered">
-              {studyServices.map((service) => (
-                <li key={service.slug}>
-                  <Link
-                    href={`/services/${service.slug}`}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface/70 px-3.5 py-1.5 text-[0.84rem] font-medium text-foreground backdrop-blur transition-colors hover:border-setu/60"
-                  >
-                    {service.name}
-                    <ArrowUpRight className="size-3.5 text-setu" aria-hidden />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-
-          {study.website ? (
-            <div className="mt-8">
-              <ButtonLink
+            {study.website ? (
+              <a
                 href={study.website}
-                variant="secondary"
-                size="md"
-                className="rounded-full"
+                target="_blank"
+                rel="noopener"
+                className="mt-8 inline-flex h-11 items-center gap-2 rounded-md bg-[#2f56d8] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#1e3a8a]"
               >
                 Visit live site
                 <ArrowUpRight className="size-4" aria-hidden />
-              </ButtonLink>
-            </div>
-          ) : null}
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+            ) : null}
+          </div>
+
+          {photo ? <DeviceShowcase photo={photo} url={study.website} preload /> : null}
         </div>
       </section>
 
@@ -305,7 +254,7 @@ async function CaseStudy({ params }: { params: Promise<{ slug: string }> }) {
               href="/work"
               className="group inline-flex items-center gap-1.5 text-sm font-semibold text-setu"
             >
-              All case studies
+              All projects
               <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
             </Link>
           </div>
@@ -377,7 +326,7 @@ async function CaseStudy({ params }: { params: Promise<{ slug: string }> }) {
               <ArrowRight className="size-4" aria-hidden />
             </ButtonLink>
             <ButtonLink href="/work" size="lg" variant="secondary" className="rounded-full">
-              View all case studies
+              View all projects
             </ButtonLink>
           </div>
         </FadeUp>

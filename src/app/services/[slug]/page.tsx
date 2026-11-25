@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -70,24 +69,7 @@ const primaryCta =
 const secondaryCta =
   "inline-flex h-12 items-center justify-center gap-2 rounded-full border-[1.5px] border-setu px-7 text-[15px] font-semibold text-foreground transition-colors duration-200 hover:bg-setu hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu";
 
-/**
- * `params` is read inside a Suspense boundary so navigations render the shell
- * instantly. Every known slug is prerendered by `generateStaticParams`, so the
- * fallback only ever shows on the way to a 404.
- */
-export default function ServicePage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  return (
-    <Suspense fallback={<div className="min-h-[70vh]" aria-busy="true" />}>
-      <ServiceLanding params={params} />
-    </Suspense>
-  );
-}
-
-async function ServiceLanding({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ServiceLanding({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const service = getService(slug);
   if (!service) notFound();

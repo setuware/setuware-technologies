@@ -1899,196 +1899,6 @@ export interface CaseStudy {
 
 export const caseStudies: readonly CaseStudy[] = [
   {
-    slug: "kirana-commerce-platform",
-    seoTitle: "Grocery E-commerce Platform Case Study",
-    seoDescription:
-      "How we built one e-commerce platform for a 14-store grocery chain, handling 40,000 orders a month and launched in nine weeks. Read the case study.",
-    client: "Vanik Retail",
-    sector: "Retail / D2C",
-    title: "A grocery chain's 14-store network, online in nine weeks",
-    summary:
-      "Replaced three disconnected tools with one commerce platform handling 40,000 orders a month across 14 stores.",
-    year: "2026",
-    services: ["web-development", "managed-hosting"],
-    accent: ["#6366f1", "#22d3ee"],
-    challenge:
-      "Orders arrived by WhatsApp, inventory lived in spreadsheets, and every store quoted different prices. Peak evening traffic took the old site down roughly twice a week.",
-    approach: [
-      "Mapped the actual fulfilment process with store managers before design began",
-      "Built a Next.js storefront with per-store catalogues and slot-based delivery",
-      "Created a single inventory model synchronised with the existing billing software",
-      "Load-tested the platform to four times the forecast peak before launch",
-    ],
-    results: [
-      { label: "Orders / month", value: "40k" },
-      { label: "Checkout completion", value: "+31%" },
-      { label: "Page load (p75)", value: "1.1s" },
-      { label: "Downtime since launch", value: "0" },
-    ],
-    stack: ["Next.js", "PostgreSQL", "Redis", "Razorpay", "Cloudflare"],
-    quote: {
-      text: "The first Saturday rush used to be the scariest hour of our week. Now nobody mentions the website at all.",
-      author: "Rhea Vanik",
-      role: "Director, Vanik Retail",
-    },
-    featured: true,
-  },
-  {
-    slug: "field-service-mobile-app",
-    seoTitle: "Offline-First Field Service App Case Study",
-    seoDescription:
-      "A React Native field service app for 400 engineers that works offline in basements and tunnels, then syncs cleanly when the signal returns.",
-    client: "Arcline Utilities",
-    sector: "Field services",
-    title: "An offline-first field service app for 400 engineers",
-    summary:
-      "A React Native app that works without connectivity in basements and tunnels, and synchronises job data when the connection returns.",
-    year: "2025",
-    services: ["app-development", "product-design"],
-    accent: ["#8b5cf6", "#ec4899"],
-    challenge:
-      "Engineers filled paper job cards because the old app lost data whenever connectivity dropped. Back-office re-entry added two days to every billing cycle.",
-    approach: [
-      "Observed field engineers on site to identify where connectivity failed",
-      "Designed an offline-first data model with deterministic conflict rules",
-      "Built one React Native codebase for the mixed iOS and Android fleet",
-      "Enabled over-the-air updates so fixes reach engineers without an app store review",
-    ],
-    results: [
-      { label: "Paper job cards", value: "0" },
-      { label: "Billing cycle", value: "−2 days" },
-      { label: "Crash-free sessions", value: "99.8%" },
-      { label: "Engineers onboarded", value: "400+" },
-    ],
-    stack: ["React Native", "Expo", "SQLite", "Node.js", "AWS"],
-    quote: {
-      text: "It is the first tool our engineers have not asked us to replace.",
-      author: "Sandeep Rao",
-      role: "Head of Operations, Arcline",
-    },
-    featured: true,
-  },
-  {
-    slug: "clinic-support-desk-ai",
-    seoTitle: "AI Patient Support Assistant Case Study",
-    seoDescription:
-      "An AI support assistant for a clinic chain that answers 68% of patient questions from its own policies, with citations, and escalates the rest to staff.",
-    client: "Medinest Clinics",
-    sector: "Healthcare",
-    title: "An AI assistant that answers patients from approved clinic policies",
-    summary:
-      "A retrieval-based support assistant that resolves 68% of inbound questions with citations and escalates the rest to staff.",
-    year: "2026",
-    services: ["ai-integration", "web-development"],
-    accent: ["#f59e0b", "#ef4444"],
-    challenge:
-      "Front-desk staff answered the same forty questions throughout the day. An earlier generic chatbot had damaged patient trust by inventing appointment policies.",
-    approach: [
-      "Grounded every answer in the clinic's own approved documents",
-      "Built an evaluation set of 300 real questions with staff-written answers",
-      "Blocked responses below a confidence threshold and routed them to a human",
-      "Capped per-conversation cost and logged every citation for audit",
-    ],
-    results: [
-      { label: "Questions auto-resolved", value: "68%" },
-      { label: "Answer accuracy", value: "96%" },
-      { label: "Front-desk calls", value: "−44%" },
-      { label: "Cost / conversation", value: "₹2.10" },
-    ],
-    stack: ["Claude", "pgvector", "Next.js", "Python"],
-    featured: true,
-  },
-  {
-    slug: "fintech-dashboard-rebuild",
-    seoTitle: "Fintech Dashboard Performance Case Study",
-    seoDescription:
-      "How we re-architected queries and caching for a fintech reporting dashboard, taking its heaviest report from 48 seconds to under one second.",
-    client: "Ledgerloop",
-    sector: "Fintech / SaaS",
-    title: "A fintech reporting dashboard rebuilt for month-end volumes",
-    summary:
-      "Re-architected queries and caching to reduce the heaviest report from 48 seconds to under one second.",
-    year: "2025",
-    services: ["web-development", "support-maintenance"],
-    accent: ["#06b6d4", "#10b981"],
-    challenge:
-      "Month-end reporting ran unindexed aggregates over four years of ledger rows. Reports timed out, and customers had begun exporting data to Excel instead.",
-    approach: [
-      "Profiled the slowest ten queries against a production-sized dataset",
-      "Introduced materialised rollups with incremental refresh",
-      "Moved exports to a background worker with progress reporting",
-      "Added query budgets to CI so a regression fails the build",
-    ],
-    results: [
-      { label: "Heaviest report", value: "48s → 0.9s" },
-      { label: "Server cost", value: "−38%" },
-      { label: "Support tickets", value: "−61%" },
-      { label: "Month-end incidents", value: "0" },
-    ],
-    stack: ["Next.js", "PostgreSQL", "ClickHouse", "BullMQ"],
-    featured: false,
-  },
-  {
-    slug: "education-platform-hosting",
-    seoTitle: "Exam Platform Hosting & Load Testing Case Study",
-    seoDescription:
-      "Migrating an online exam platform to managed hosting and load-testing it to four times its worst day: 1,200 concurrent students, no incident.",
-    client: "Shiksha Bridge",
-    sector: "Education",
-    title: "An exam platform scaled for 1,200 concurrent students",
-    summary:
-      "Migrated an online exam platform to managed infrastructure and load-tested it to four times its previous peak.",
-    year: "2026",
-    services: ["managed-hosting", "support-maintenance"],
-    accent: ["#10b981", "#6366f1"],
-    challenge:
-      "Every exam window produced a partial outage, and the platform's actual capacity had never been measured.",
-    approach: [
-      "Measured actual capacity with a staged load test to 5,000 virtual users",
-      "Moved static and cacheable responses to the CDN edge",
-      "Separated the exam write path onto its own autoscaling pool",
-      "Wrote an incident runbook and rehearsed it with the client's team",
-    ],
-    results: [
-      { label: "Concurrent students", value: "1,200" },
-      { label: "Error rate at peak", value: "0.02%" },
-      { label: "p95 response", value: "180ms" },
-      { label: "Exam-day incidents", value: "0" },
-    ],
-    stack: ["AWS", "Terraform", "Cloudflare", "Grafana", "k6"],
-    featured: false,
-  },
-  {
-    slug: "logistics-brand-design-system",
-    seoTitle: "Logistics Design System Case Study",
-    seoDescription:
-      "One token-driven design system for a logistics company's website, customer portal and driver app, replacing three visual languages across three teams.",
-    client: "Pathway Freight",
-    sector: "Logistics",
-    title: "One design system across a website, portal and driver app",
-    summary:
-      "Replaced three inconsistent visual languages with a single token-driven design system shared by three teams.",
-    year: "2025",
-    services: ["product-design", "web-development"],
-    accent: ["#ec4899", "#6366f1"],
-    challenge:
-      "The website, customer portal and driver app had diverged so far that they no longer appeared to come from the same company.",
-    approach: [
-      "Audited every existing screen and catalogued the real component set",
-      "Defined tokens for colour, type, spacing and motion",
-      "Shipped the library as code with Storybook documentation",
-      "Migrated the website first to prove the system in production",
-    ],
-    results: [
-      { label: "Components unified", value: "142 → 38" },
-      { label: "New page build time", value: "−55%" },
-      { label: "Accessibility issues", value: "−90%" },
-      { label: "Teams on the system", value: "3" },
-    ],
-    stack: ["Figma", "Tailwind", "Storybook", "Next.js"],
-    featured: false,
-  },
-  {
     slug: "engineering-expert-learning-platform",
     seoTitle: "Engineering Exam Prep Platform Case Study",
     seoDescription:
@@ -2117,7 +1927,7 @@ export const caseStudies: readonly CaseStudy[] = [
     ],
     stack: ["Next.js"],
     website: "https://www.myengineeringexpert.com/",
-    featured: false,
+    featured: true,
   },
   {
     slug: "sanskar-kabir-couture-ecommerce",
@@ -2148,7 +1958,7 @@ export const caseStudies: readonly CaseStudy[] = [
     ],
     stack: ["Next.js", "Cloudinary", "Razorpay"],
     website: "https://sanskarandkabir.com/",
-    featured: false,
+    featured: true,
   },
 ];
 

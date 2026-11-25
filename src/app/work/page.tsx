@@ -1,47 +1,39 @@
 import { ArrowRight } from "lucide-react";
 
-import { caseStudies, getService } from "@/lib/content";
+import { caseStudies } from "@/lib/content";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { PageHero } from "@/components/layout/page-hero";
 import { FadeUp } from "@/components/motion/primitives";
 import { ButtonLink } from "@/components/ui/button";
 import { Section } from "@/components/ui/section";
-import { CaseStudyGrid, type CaseStudyCard } from "./case-study-grid";
+import { ProjectFeature } from "@/components/sections/work/project-feature";
 
 export const metadata = pageMetadata({
-  title: "Case Studies: Web, App & Software Projects",
+  title: "Our Work: Website & App Development Projects",
   description:
-    "Selected case studies from Setuware Technologies across e-commerce, mobile apps, AI assistants, dashboards and hosting, filterable by service or industry.",
+    "Client projects by Setuware Technologies: an engineering exam-preparation platform and a luxury fashion e-commerce store, with live sites and results.",
   path: "/work",
 });
 
 export default function WorkPage() {
-  const cards: CaseStudyCard[] = caseStudies.map((study) => ({
-    slug: study.slug,
-    client: study.client,
-    sector: study.sector,
-    title: study.title,
-    summary: study.summary,
-    year: study.year,
-    accent: study.accent,
-    results: study.results,
-    services: study.services.map((slug) => ({
-      slug,
-      name: getService(slug)?.name ?? slug,
-    })),
-  }));
-
   return (
     <>
       <PageHero
         video="work"
+        align="left"
         eyebrow="Our work"
-        title="Selected work"
-        description="Eight projects, each with the numbers: a grocery chain at 40,000 orders a month, a clinic AI resolving 68% of questions, an exam platform at 1,200 concurrent students. Challenge, approach, results — no vague claims."
+        title="Client projects"
+        description="Platforms we have designed, built and launched for our clients, each with the brief, our approach and the outcome."
       />
 
-      <CaseStudyGrid studies={cards} />
+      <Section className="bg-[#f5f7fc] dark:bg-[#080c1c]">
+        <div className="container-page flex flex-col gap-20 lg:gap-28">
+          {caseStudies.map((study, i) => (
+            <ProjectFeature key={study.slug} study={study} reverse={i % 2 === 1} headingLevel="h2" />
+          ))}
+        </div>
+      </Section>
 
       <Section surface="dots" className="py-16 md:py-20">
         <FadeUp y={20} className="container-page">
@@ -51,12 +43,11 @@ export default function WorkPage() {
                 Industries
               </span>
               <h2 className="mt-3 font-display text-2xl font-semibold leading-snug text-foreground sm:text-[1.75rem]">
-                Explore our work by sector
+                Solutions by industry
               </h2>
               <p className="mt-3 text-[0.97rem] leading-relaxed text-muted-foreground">
-                See what we built for retail, healthcare, education, manufacturing,
-                logistics and professional services — and what it changed for
-                each of them.
+                How we approach websites, stores and business software for retail,
+                healthcare, education, manufacturing and professional services.
               </p>
             </div>
             <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto">

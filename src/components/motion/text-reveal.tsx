@@ -58,6 +58,7 @@ export function TextReveal({
                 className="inline-block overflow-hidden pb-[0.12em] -mb-[0.12em] align-top"
               >
                 <motion.span
+                  data-reveal=""
                   className="inline-block will-change-transform"
                   initial={{ y: "110%", rotate: 4, opacity: 0 }}
                   animate={show ? { y: "0%", rotate: 0, opacity: 1 } : undefined}
