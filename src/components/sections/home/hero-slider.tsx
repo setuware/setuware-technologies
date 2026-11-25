@@ -42,26 +42,38 @@ const INTERVAL_MS = 6500;
  */
 export function HeroSlider() {
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [hasRotated, setHasRotated] = useState(false);
+  const paused = hovered || focused;
   const reduceMotion = useReducedMotionSafe();
 
   useEffect(() => {
     if (paused || reduceMotion) return;
-    const id = window.setTimeout(() => setIndex((i) => (i + 1) % SLIDES.length), INTERVAL_MS);
+    const id = window.setTimeout(() => {
+      setHasRotated(true);
+      setIndex((i) => (i + 1) % SLIDES.length);
+    }, INTERVAL_MS);
     return () => window.clearTimeout(id);
   }, [index, paused, reduceMotion]);
 
-  const go = (step: number) => setIndex((i) => (i + step + SLIDES.length) % SLIDES.length);
+  const show = (next: number) => {
+    setHasRotated(true);
+    setIndex(next);
+  };
+  const go = (step: number) => show((index + step + SLIDES.length) % SLIDES.length);
 
   return (
     <section
       aria-roledescription="carousel"
       aria-label="Highlights"
       className="relative isolate overflow-hidden bg-[#0b0f2a]"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocusCapture={() => setPaused(true)}
-      onBlurCapture={() => setPaused(false)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocusCapture={() => setFocused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocused(false);
+      }}
     >
       {SLIDES.map((slide, i) => (
         <div
@@ -107,7 +119,7 @@ export function HeroSlider() {
         <AnimatePresence mode="wait">
           <motion.div
             key={index}
-            initial={reduceMotion ? false : { opacity: 0, y: 28 }}
+            initial={reduceMotion || !hasRotated ? false : { opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             exit={reduceMotion ? undefined : { opacity: 0, y: -16 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
@@ -164,7 +176,7 @@ export function HeroSlider() {
               <button
                 key={slide.image}
                 type="button"
-                onClick={() => setIndex(i)}
+                onClick={() => show(i)}
                 aria-label={`Show slide ${i + 1}`}
                 aria-current={i === index}
                 className={cn(
