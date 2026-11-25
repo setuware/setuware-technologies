@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -56,20 +55,7 @@ const START_STEPS = [
 const CARD =
   "rounded-2xl border border-border bg-surface shadow-[0_1px_2px_rgb(15_23_42/0.04),0_10px_28px_-14px_rgb(15_23_42/0.14),0_28px_56px_-32px_rgb(15_23_42/0.12)]";
 
-/**
- * `params` is read inside a Suspense boundary so navigations render the shell
- * instantly. Every known slug is prerendered by `generateStaticParams`, so the
- * fallback only ever shows on the way to a 404.
- */
-export default function IndustryPage({ params }: { params: Promise<{ slug: string }> }) {
-  return (
-    <Suspense fallback={<div className="min-h-[70vh]" aria-busy="true" />}>
-      <IndustryContent params={params} />
-    </Suspense>
-  );
-}
-
-async function IndustryContent({ params }: { params: Promise<{ slug: string }> }) {
+export default async function IndustryContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const industry = getIndustry(slug);
   if (!industry) notFound();

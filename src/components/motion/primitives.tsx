@@ -54,6 +54,7 @@ export function FadeUp({
   const shown = { opacity: 1, y: 0, filter: "blur(0px)" };
   return (
     <motion.div
+      data-reveal=""
       className={className}
       initial={hidden}
       {...(immediate ? { animate: shown } : { whileInView: shown, viewport: VIEWPORT })}
@@ -110,6 +111,7 @@ export function StaggerItem({
   const Component = motion[as] as React.ElementType;
   return (
     <Component
+      data-reveal=""
       className={className}
       variants={{
         hidden: { opacity: 0, y, scale: 0.98, filter: "blur(8px)" },
@@ -154,12 +156,14 @@ export function ImageReveal({
   return (
     <motion.div
       ref={ref}
+      data-reveal=""
       className={cn("overflow-hidden", className)}
       initial={{ clipPath: from }}
       animate={inView ? { clipPath: "inset(0% 0% 0% 0%)" } : undefined}
       transition={{ duration: reduce ? 0 : DURATION.slow, ease: EASE_OUT, delay }}
     >
       <motion.div
+        data-reveal=""
         className="h-full w-full"
         initial={{ scale: 1.25 }}
         animate={inView ? { scale: 1 } : undefined}
@@ -351,6 +355,7 @@ export function LetterRise({ text, className }: { text: string; className?: stri
       {text.split("").map((ch, i) => (
         <span key={i} aria-hidden className="inline-block overflow-hidden align-bottom">
           <motion.span
+            data-reveal=""
             className="inline-block"
             initial={{ y: "105%" }}
             animate={inView ? { y: "0%" } : undefined}

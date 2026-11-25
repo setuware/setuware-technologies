@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -53,20 +52,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   });
 }
 
-/**
- * `params` is read inside a Suspense boundary so navigations render the shell
- * instantly. Every known slug is prerendered by `generateStaticParams`, so the
- * fallback only ever shows on the way to a 404.
- */
-export default function PostPage({ params }: { params: Promise<{ slug: string }> }) {
-  return (
-    <Suspense fallback={<div className="min-h-[70vh]" aria-busy="true" />}>
-      <PostArticle params={params} />
-    </Suspense>
-  );
-}
-
-async function PostArticle({ params }: { params: Promise<{ slug: string }> }) {
+export default async function PostArticle({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const found = await getPublishedPost(slug);
   if (!found) notFound();

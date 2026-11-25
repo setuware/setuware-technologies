@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -40,24 +39,7 @@ export async function generateMetadata({
   });
 }
 
-/**
- * `params` is read inside a Suspense boundary so navigations render the shell
- * instantly. Every known slug is prerendered by `generateStaticParams`, so the
- * fallback only ever shows on the way to a 404.
- */
-export default function CaseStudyPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  return (
-    <Suspense fallback={<div className="min-h-[70vh]" aria-busy="true" />}>
-      <CaseStudy params={params} />
-    </Suspense>
-  );
-}
-
-async function CaseStudy({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CaseStudy({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const study = getCaseStudy(slug);
   if (!study) notFound();

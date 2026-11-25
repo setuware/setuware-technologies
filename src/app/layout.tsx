@@ -18,6 +18,9 @@ import { MotionProvider } from "@/components/motion/motion-provider";
 
 import "./globals.css";
 
+const NOSCRIPT_CSS =
+  "[data-reveal],[data-in-view]{opacity:1!important;transform:none!important;filter:none!important;clip-path:none!important}";
+
 /**
  * `display: swap` plus a preconnect-free self-hosted subset: text is readable
  * on the first paint instead of waiting on a font download.
@@ -127,6 +130,10 @@ export default async function RootLayout({
         // attributes to <body> before React hydrates; ignore those diffs here.
         suppressHydrationWarning
       >
+        {/* Scroll-reveal animations start hidden and need JavaScript to play. */}
+        <noscript>
+          <style>{NOSCRIPT_CSS}</style>
+        </noscript>
         <ThemeProvider>
           <MotionProvider>
             <SiteChrome navbar={<Navbar links={navLinks} announcement={announcement} />} footer={<Footer />} widgets={<DeferredWidgets />}>

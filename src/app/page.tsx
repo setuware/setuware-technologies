@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import dynamic from "next/dynamic";
 
 import { faqs } from "@/lib/content";
@@ -60,17 +59,8 @@ const Articles = dynamic(() =>
 );
 const Faq = dynamic(() => import("@/components/sections/faq").then((mod) => mod.Faq));
 
-/**
- * The only awaited data on the page. Awaiting it in `HomePage` itself would
- * suspend the whole route behind `loading.tsx`, so without JavaScript the
- * hero would never leave the skeleton.
- */
-async function LatestArticles() {
-  const posts = (await getPublishedPosts()).slice(0, 3);
-  return <Articles posts={posts} />;
-}
-
-export default function HomePage() {
+export default async function HomePage() {
+  const latestPosts = (await getPublishedPosts()).slice(0, 3);
   return (
     <>
       <HeroSlider />
@@ -99,9 +89,7 @@ export default function HomePage() {
       </DeferredSection>
 
       <DeferredSection minHeight={720}>
-        <Suspense fallback={null}>
-          <LatestArticles />
-        </Suspense>
+        <Articles posts={latestPosts} />
       </DeferredSection>
 
       <DeferredSection minHeight={720}>

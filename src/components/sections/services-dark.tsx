@@ -255,6 +255,7 @@ export function ServicesDark() {
             return (
               <motion.li
                 key={service.slug}
+                data-reveal=""
                 className="w-[min(26rem,82vw)] shrink-0 snap-center"
                 variants={{
                   hidden: { opacity: 0, x: 140 },
