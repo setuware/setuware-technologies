@@ -430,6 +430,8 @@ const COLUMNS: [table: string, column: string, definition: string][] = [
   ["users", "joined_on", "TEXT"],
   ["users", "birthday", "TEXT"],
   ["users", "manager_id", "INTEGER"],
+  ["tasks", "repeat", "TEXT"],
+  ["tasks", "next_id", "INTEGER"],
 ];
 
 function addColumns(db: Database): void {

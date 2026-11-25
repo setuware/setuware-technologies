@@ -45,6 +45,7 @@ import {
   logTime,
   moveTask,
   PRIORITIES,
+  REPEATS,
   startTimer,
   STATUS_LABELS,
   stopTimer,
@@ -53,6 +54,7 @@ import {
   updateTask,
   type LinkedEntity,
   type Priority,
+  type Repeat,
   type Task,
   type TaskStatus,
 } from "@/lib/cms/tasks";
@@ -119,6 +121,11 @@ function estimateFrom(form: FormData): number | null {
   return Number.isFinite(hours) && hours > 0 ? Math.round(hours * 60) : null;
 }
 
+function repeatFrom(form: FormData): Repeat | null {
+  const value = text(form, "repeat", 10) as Repeat;
+  return REPEATS.includes(value) ? value : null;
+}
+
 const LINKS: Record<LinkedEntity, "leads" | "enquiries" | "applications"> = { lead: "leads", enquiry: "enquiries", application: "applications" };
 
 export async function createTaskAction(_previous: FormState, form: FormData): Promise<FormState> {
@@ -145,6 +152,7 @@ export async function createTaskAction(_previous: FormState, form: FormData): Pr
       entity: linked,
       entityId: linked ? Number(form.get("entity_id")) || null : null,
       estimateMinutes: estimateFrom(form),
+      repeat: repeatFrom(form),
     },
     user.id,
   );
@@ -179,6 +187,7 @@ export async function updateTaskAction(_previous: FormState, form: FormData): Pr
   if (status !== task.status && TASK_STATUSES.includes(status)) changes.push(`Moved from ${STATUS_LABELS[task.status]} to ${STATUS_LABELS[status]}`);
   if (priority !== task.priority && PRIORITIES.includes(priority)) changes.push(`Priority set to ${priority}`);
   if ((dueDate || null) !== task.due_date) changes.push(dueDate ? `Due date set to ${dueDate}` : "Due date removed");
+  if (form.has("repeat") && repeatFrom(form) !== task.repeat) changes.push(repeatFrom(form) ? `Set to repeat ${repeatFrom(form)}` : "No longer repeats");
   updateTask(id, {
     title,
     description: form.has("description") ? text(form, "description", 10_000) : task.description,
@@ -189,6 +198,7 @@ export async function updateTaskAction(_previous: FormState, form: FormData): Pr
     dueDate: dueDate || null,
     project: form.has("project") ? text(form, "project", 80) : task.project,
     estimateMinutes: form.has("estimate_hours") ? estimateFrom(form) : task.estimate_minutes,
+    repeat: form.has("repeat") ? repeatFrom(form) : task.repeat,
   });
   for (const change of changes) addNote("task", id, "status", user.name, change);
   if (assigneeId !== task.assignee_id) {
@@ -259,6 +269,54 @@ export async function moveTaskAction(id: number, status: string, beforeId: numbe
   }
   refresh();
   return {};
+}
+
+/** List view: apply one change to every ticked task the person may change. */
+export async function bulkTaskAction(form: FormData): Promise<void> {
+  const user = await requireUser();
+  const op = text(form, "bulk_op", 20);
+  const value = text(form, "bulk_value", 20);
+  const tasks = form
+    .getAll("ids")
+    .map(Number)
+    .filter(Boolean)
+    .slice(0, 200)
+    .map(getTask)
+    .filter((task): task is Task => canSeeTask(user, task));
+  const canAssign = can(user, "tasks.assign") || seesAll(user, "tasks");
+  let changed = 0;
+  for (const task of tasks) {
+    if (op === "status" && TASK_STATUSES.includes(value as TaskStatus)) {
+      const status = allowedStatus(user, task, value as TaskStatus);
+      if (status === task.status) continue;
+      updateTask(task.id, { status });
+      addNote("task", task.id, "status", user.name, `Moved from ${STATUS_LABELS[task.status]} to ${STATUS_LABELS[status]} (bulk)`);
+      if (status === "review") askForReview(task, user);
+      if (status === "done" && task.created_by !== user.id) notify(task.created_by, `Done: ${task.title}`, [`${user.name} marked "${task.title}" as done.`], `/admin/tasks/${task.id}`, "Open the task");
+    } else if (op === "priority" && (PRIORITIES as readonly string[]).includes(value)) {
+      if (value === task.priority) continue;
+      updateTask(task.id, { priority: value as Priority });
+      addNote("task", task.id, "status", user.name, `Priority set to ${value} (bulk)`);
+    } else if (op === "due" && (value === "" || DAY.test(value))) {
+      if ((value || null) === task.due_date) continue;
+      updateTask(task.id, { dueDate: value || null });
+      addNote("task", task.id, "status", user.name, value ? `Due date set to ${value} (bulk)` : "Due date removed (bulk)");
+    } else if (op === "assign") {
+      const id = Number(value) || null;
+      const member = id ? getUser(id) : null;
+      if (id === task.assignee_id || (id && !member?.active) || (id !== user.id && id !== null && !canAssign)) continue;
+      updateTask(task.id, { assigneeId: id, ...(task.reviewer_id === id ? { reviewerId: null } : {}) });
+      addNote("task", task.id, "assign", user.name, member ? `Assigned to ${member.name} (bulk)` : "Unassigned (bulk)");
+      if (id && id !== user.id) notify(id, `Task assigned to you: ${task.title}`, [`${user.name} assigned you: ${task.title}.`], `/admin/tasks/${task.id}`, "Open the task");
+    } else if (op === "delete") {
+      if (task.created_by !== user.id && !seesAll(user, "tasks")) continue;
+      deleteTask(task.id);
+      audit(user.name, "deleted task", "task", task.title);
+    } else continue;
+    changed++;
+  }
+  if (changed) audit(user.name, "bulk update", "task", `${changed} × ${op}${value ? ` → ${value}` : ""}`);
+  refresh();
 }
 
 export async function deleteTaskAction(form: FormData): Promise<void> {

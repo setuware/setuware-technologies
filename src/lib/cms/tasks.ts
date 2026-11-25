@@ -1,3 +1,5 @@
+import { localDay } from "./attendance";
+import { addNote } from "./crm";
 import { getDb } from "./db";
 
 /** Team tasks: board, checklist, time tracking and links to CRM records. */
@@ -8,6 +10,9 @@ export const STATUS_LABELS: Record<TaskStatus, string> = { todo: "To do", in_pro
 
 export const PRIORITIES = ["urgent", "high", "normal", "low"] as const;
 export type Priority = (typeof PRIORITIES)[number];
+
+export const REPEATS = ["daily", "weekly", "monthly"] as const;
+export type Repeat = (typeof REPEATS)[number];
 
 export type LinkedEntity = "lead" | "enquiry" | "application";
 
@@ -28,6 +33,9 @@ export interface Task {
   entity: LinkedEntity | null;
   entity_id: number | null;
   estimate_minutes: number | null;
+  repeat: Repeat | null;
+  /** The next copy of a repeating task, once this one is done. */
+  next_id: number | null;
   position: number;
   created_at: string;
   updated_at: string;
@@ -57,6 +65,19 @@ export interface TaskFilter {
   entityId?: number;
   /** Include tasks finished more than 14 days ago. */
   oldDone?: boolean;
+  /** Open tasks by due date, relative to `today`. */
+  due?: DueFilter;
+  today?: string;
+  unassigned?: boolean;
+}
+
+export const DUE_FILTERS = ["overdue", "today", "week", "none"] as const;
+export type DueFilter = (typeof DUE_FILTERS)[number];
+
+function shiftDay(day: string, days: number): string {
+  const date = new Date(`${day}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
 }
 
 export function listTasks(filter: TaskFilter = {}): Task[] {
@@ -83,6 +104,17 @@ export function listTasks(filter: TaskFilter = {}): Task[] {
   if (filter.entity && filter.entityId) {
     where.push("t.entity = ? AND t.entity_id = ?");
     params.push(filter.entity, filter.entityId);
+  }
+  if (filter.unassigned) where.push("t.assignee_id IS NULL");
+  if (filter.due) {
+    const today = filter.today ?? new Date().toISOString().slice(0, 10);
+    where.push("t.status != 'done'");
+    if (filter.due === "none") where.push("t.due_date IS NULL");
+    else {
+      const [from, to] = filter.due === "overdue" ? ["0000-00-00", shiftDay(today, -1)] : filter.due === "today" ? [today, today] : [today, shiftDay(today, 6)];
+      where.push("t.due_date BETWEEN ? AND ?");
+      params.push(from, to);
+    }
   }
   if (filter.q) {
     where.push("(t.title LIKE ? OR t.description LIKE ? OR t.project LIKE ?)");
@@ -114,15 +146,18 @@ export interface TaskInput {
   entity?: LinkedEntity | null;
   entityId?: number | null;
   estimateMinutes?: number | null;
+  repeat?: Repeat | null;
 }
+
+const repeatOf = (value: unknown): Repeat | null => (REPEATS.includes(value as Repeat) ? (value as Repeat) : null);
 
 export function createTask(input: TaskInput, createdBy: number): number {
   const now = new Date().toISOString();
   const status = input.status && TASK_STATUSES.includes(input.status) ? input.status : "todo";
   const result = getDb()
     .prepare(
-      `INSERT INTO tasks (title,description,status,priority,assignee_id,reviewer_id,created_by,due_date,project,entity,entity_id,estimate_minutes,position,created_at,updated_at,completed_at)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?)`,
+      `INSERT INTO tasks (title,description,status,priority,assignee_id,reviewer_id,created_by,due_date,project,entity,entity_id,estimate_minutes,repeat,position,created_at,updated_at,completed_at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?)`,
     )
     .run(
       input.title,
@@ -137,6 +172,7 @@ export function createTask(input: TaskInput, createdBy: number): number {
       input.entity && input.entityId ? input.entity : null,
       input.entity && input.entityId ? input.entityId : null,
       input.estimateMinutes ?? null,
+      repeatOf(input.repeat),
       now,
       now,
       status === "done" ? now : null,
@@ -144,7 +180,49 @@ export function createTask(input: TaskInput, createdBy: number): number {
   return Number(result.lastInsertRowid);
 }
 
-export function updateTask(id: number, input: Partial<TaskInput>): void {
+/** Next due date of a repeating task: one step on from `from`, and not before `today`. */
+export function nextDue(from: string, repeat: Repeat, today: string): string {
+  const step = (day: string): string => {
+    if (repeat === "daily") return shiftDay(day, 1);
+    if (repeat === "weekly") return shiftDay(day, 7);
+    const [year, month, date] = day.split("-").map(Number);
+    const last = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+    return new Date(Date.UTC(year, month, Math.min(date, last))).toISOString().slice(0, 10);
+  };
+  let next = step(from);
+  for (let guard = 0; next < today && guard < 400; guard++) next = step(next);
+  return next;
+}
+
+/** Creates the next copy of a finished repeating task (once), with a fresh checklist. */
+function spawnRepeat(id: number, today: string): number | null {
+  const task = getTask(id);
+  if (!task || !task.repeat || task.status !== "done" || task.next_id) return null;
+  const next = createTask(
+    {
+      title: task.title,
+      description: task.description,
+      priority: task.priority,
+      assigneeId: task.assignee_id,
+      reviewerId: task.reviewer_id,
+      dueDate: nextDue(task.due_date ?? today, task.repeat, today),
+      project: task.project,
+      entity: task.entity,
+      entityId: task.entity_id,
+      estimateMinutes: task.estimate_minutes,
+      repeat: task.repeat,
+    },
+    task.created_by,
+  );
+  const db = getDb();
+  db.prepare("INSERT INTO task_items (task_id,body,position) SELECT ?, body, position FROM task_items WHERE task_id = ?").run(next, id);
+  db.prepare("UPDATE tasks SET next_id = ? WHERE id = ?").run(next, id);
+  addNote("task", next, "system", "Setuware", `Repeats ${task.repeat}: created when #${id} was done`);
+  return next;
+}
+
+/** Saves changes; returns the id of the next copy when a repeating task was just finished. */
+export function updateTask(id: number, input: Partial<TaskInput>): number | null {
   const sets: string[] = [];
   const params: unknown[] = [];
   const set = (column: string, value: unknown) => {
@@ -159,16 +237,18 @@ export function updateTask(id: number, input: Partial<TaskInput>): void {
   if (input.dueDate !== undefined) set("due_date", input.dueDate || null);
   if (input.project !== undefined) set("project", input.project);
   if (input.estimateMinutes !== undefined) set("estimate_minutes", input.estimateMinutes);
+  if (input.repeat !== undefined) set("repeat", repeatOf(input.repeat));
   if (input.status && TASK_STATUSES.includes(input.status)) {
     set("status", input.status);
     sets.push("completed_at = CASE WHEN ? = 'done' THEN COALESCE(completed_at, ?) ELSE NULL END");
     params.push(input.status, new Date().toISOString());
   }
-  if (!sets.length) return;
+  if (!sets.length) return null;
   set("updated_at", new Date().toISOString());
   getDb()
     .prepare(`UPDATE tasks SET ${sets.join(", ")} WHERE id = ?`)
     .run(...params, id);
+  return input.status === "done" ? spawnRepeat(id, localDay()) : null;
 }
 
 /** Moves a task to a column, placed before `beforeId` (or at the end). */
@@ -205,6 +285,46 @@ export function taskCounts(userId: number, today: string): { open: number; dueTo
     .get(today, today, userId) as { open: number; dueToday: number | null; overdue: number | null };
   const toReview = (getDb().prepare("SELECT COUNT(*) AS n FROM tasks WHERE reviewer_id = ? AND status = 'review'").get(userId) as { n: number }).n;
   return { open: row.open, dueToday: row.dueToday ?? 0, overdue: row.overdue ?? 0, toReview };
+}
+
+export interface Workload {
+  userId: number | null;
+  name: string;
+  open: number;
+  overdue: number;
+  dueWeek: number;
+  inReview: number;
+  /** Estimated minutes still to spend on open tasks (estimate minus logged). */
+  remaining: number;
+  /** Open tasks with no estimate. */
+  unestimated: number;
+}
+
+/** Open work per active person (plus an "Unassigned" row when there is any). */
+export function workload(today: string, userIds?: number[]): Workload[] {
+  const weekEnd = shiftDay(today, 6);
+  const rows = getDb()
+    .prepare(
+      `SELECT t.assignee_id AS userId, COALESCE(u.name, 'Unassigned') AS name, COUNT(*) AS open,
+        SUM(CASE WHEN t.due_date < ? THEN 1 ELSE 0 END) AS overdue,
+        SUM(CASE WHEN t.due_date BETWEEN ? AND ? THEN 1 ELSE 0 END) AS dueWeek,
+        SUM(CASE WHEN t.status = 'review' THEN 1 ELSE 0 END) AS inReview,
+        SUM(CASE WHEN t.estimate_minutes IS NULL THEN 1 ELSE 0 END) AS unestimated,
+        SUM(MAX(0, COALESCE(t.estimate_minutes, 0) - (SELECT COALESCE(SUM(minutes),0) FROM time_entries e WHERE e.task_id = t.id))) AS remaining
+       FROM tasks t LEFT JOIN users u ON u.id = t.assignee_id
+       WHERE t.status != 'done' AND (t.assignee_id IS NULL OR u.active = 1)
+       GROUP BY t.assignee_id`,
+    )
+    .all(today, today, weekEnd) as unknown as Workload[];
+  const people = getDb().prepare("SELECT id, name FROM users WHERE active = 1 ORDER BY name").all() as { id: number; name: string }[];
+  const byId = new Map(rows.map((row) => [row.userId, row]));
+  const empty = { open: 0, overdue: 0, dueWeek: 0, inReview: 0, remaining: 0, unestimated: 0 };
+  const list = people
+    .filter((person) => !userIds || userIds.includes(person.id))
+    .map((person) => ({ ...empty, ...byId.get(person.id), userId: person.id, name: person.name }));
+  list.sort((a, b) => b.overdue - a.overdue || b.open - a.open || a.name.localeCompare(b.name));
+  const unassigned = byId.get(null);
+  return unassigned && !userIds ? [...list, unassigned] : list;
 }
 
 /* -------------------------------- checklist -------------------------------- */
