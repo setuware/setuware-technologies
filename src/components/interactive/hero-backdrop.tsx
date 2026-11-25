@@ -110,7 +110,6 @@ export function HeroBackdrop({ sources, poster, tone = "page" }: HeroBackdropPro
           )}
           poster={poster}
           preload="metadata"
-          autoPlay
           muted
           loop
           playsInline
