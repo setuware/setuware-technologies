@@ -24,17 +24,10 @@ export function Eyebrow({
       <span
         aria-hidden
         className={cn(
-          "relative inline-block h-3 w-6 rounded-full",
-          light ? "bg-white/90" : "bg-[#2f56d8] dark:bg-[#7c9bff]",
+          "inline-block h-[2px] w-7 rounded-full",
+          light ? "bg-[linear-gradient(90deg,#7dd3fc,#ffffff)]" : "bg-[linear-gradient(90deg,#38bdf8,#2f56d8)]",
         )}
-      >
-        <span
-          className={cn(
-            "absolute right-0.5 top-0.5 size-2 rounded-full",
-            light ? "bg-[#2f56d8]" : "bg-white",
-          )}
-        />
-      </span>
+      />
       {children}
     </p>
   );

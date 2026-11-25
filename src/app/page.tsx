@@ -4,7 +4,7 @@ import { faqs } from "@/lib/content";
 import { getPublishedPosts } from "@/lib/cms/public";
 import { faqJsonLd, HOME_DESCRIPTION, HOME_TITLE, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
-import { HeroSlider } from "@/components/sections/home/hero-slider";
+import { HomeHero } from "@/components/sections/home/hero";
 import { PlatformsStrip } from "@/components/sections/home/platforms-strip";
 import { ServicesGrid } from "@/components/sections/home/services-grid";
 import { AboutCorporate } from "@/components/sections/home/about-corporate";
@@ -13,7 +13,7 @@ import { DeferredSection } from "@/components/ui/deferred-section";
 /**
  * Home page.
  *
- * Section order: hero slider → platforms strip → services → about → why
+ * Section order: static hero → platforms strip → services → about → why
  * Setuware → process → projects → plans → contact → articles → FAQ. The
  * footer carries the closing call to action.
  *
@@ -63,7 +63,7 @@ export default async function HomePage() {
   const latestPosts = (await getPublishedPosts()).slice(0, 3);
   return (
     <>
-      <HeroSlider />
+      <HomeHero />
       <PlatformsStrip />
       <ServicesGrid />
       <AboutCorporate />

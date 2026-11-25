@@ -5,7 +5,7 @@ test.describe("navigation and rendering", () => {
     await page.goto("/");
 
     await expect(
-      page.getByRole("heading", { level: 1, name: /website, app and custom software development in gurugram/i }),
+      page.getByRole("heading", { level: 1, name: /websites, apps & custom software/i }),
     ).toBeVisible();
     await expect(
       page.getByRole("heading", { level: 2, name: /from ideas to\s+production-ready software/i }),

@@ -88,9 +88,9 @@ describe("pageMetadata", () => {
 });
 
 describe("home page search snippet", () => {
-  it("leads with the brand and the main search phrase", () => {
+  it("leads with the brand and the company slogan", () => {
     expect(HOME_TITLE).toBe(
-      "Setuware Technologies | Website & App Development Company in Gurugram",
+      "Setuware Technologies - We act as a bridge between your business idea and a working digital product",
     );
     expect(HOME_DESCRIPTION.length).toBeGreaterThanOrEqual(100);
     expect(HOME_DESCRIPTION.length).toBeLessThanOrEqual(160);

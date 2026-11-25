@@ -11,13 +11,13 @@ export function ProcessSteps() {
     <section id="process" className="relative overflow-hidden bg-white py-20 dark:bg-surface lg:py-28">
       <div className="container-figma">
         <FadeUp className="mx-auto max-w-[44rem] text-center">
-          <Eyebrow className="justify-center">A refined process</Eyebrow>
+          <Eyebrow className="justify-center">How we work</Eyebrow>
           <SectionTitle>
-            How we take your project from idea to <span className="text-[#2f56d8] dark:text-[#7c9bff]">launch</span>
+            Six steps, from a 30-minute call to <span className="text-[#2f56d8] dark:text-[#7c9bff]">three months of support</span>
           </SectionTitle>
           <p className="mt-4 text-[1.02rem] leading-relaxed text-[#5a6180] dark:text-white/70">
-            A clear, six-step delivery process with a defined output at every stage, so you always
-            know what is happening and what comes next.
+            Each step ends with something you can see and approve. You know the price and the dates
+            before we start, and nothing moves without your sign-off.
           </p>
         </FadeUp>
 

@@ -19,11 +19,11 @@ export function WhyChoose() {
         <FadeUp>
           <Eyebrow light>Why Setuware</Eyebrow>
           <SectionTitle light>
-            A technology partner you can rely on, <span className="text-[#7c9bff]">from day one</span>
+            One office in Gurugram. <span className="text-[#7c9bff]">Every skill your project needs.</span>
           </SectionTitle>
           <p className="mt-5 max-w-[30rem] text-[1.02rem] leading-relaxed text-white/70">
-            Clear proposals, one accountable team and software you fully own. That is how we work
-            on every project, from a five-page website to a multi-module business platform.
+            Strategy, design, engineering and support sit in the same room, so nothing gets lost
+            between agencies. You get clear proposals, one accountable team and software you fully own.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link href="/book" className="group inline-flex h-12 items-center gap-2 rounded-full bg-[linear-gradient(110deg,#3b6cf6,#1d4ed8)] px-7 text-sm font-semibold text-white transition-[filter] hover:brightness-110">

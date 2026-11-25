@@ -40,9 +40,9 @@ export function ServicesGrid() {
       <div className="container-figma relative">
         <FadeUp className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-[44rem]">
-            <Eyebrow>All services</Eyebrow>
+            <Eyebrow>What we build</Eyebrow>
             <SectionTitle>
-              Digital services for <span className="text-[#2f56d8] dark:text-[#7c9bff]">every stage of growth</span>
+              From ideas to <span className="text-[#2f56d8] dark:text-[#7c9bff]">production-ready software</span>, under one roof
             </SectionTitle>
           </div>
           <Link
