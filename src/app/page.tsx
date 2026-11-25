@@ -4,18 +4,18 @@ import { faqs } from "@/lib/content";
 import { getPublishedPosts } from "@/lib/cms/public";
 import { faqJsonLd, HOME_DESCRIPTION, HOME_TITLE, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
-import { Hero } from "@/components/sections/hero";
-import { CapabilityTicker } from "@/components/sections/capability-ticker";
-import { AboutPreview } from "@/components/sections/about-preview";
-import { ServicesDark } from "@/components/sections/services-dark";
+import { HeroSlider } from "@/components/sections/home/hero-slider";
+import { PlatformsStrip } from "@/components/sections/home/platforms-strip";
+import { ServicesGrid } from "@/components/sections/home/services-grid";
+import { AboutCorporate } from "@/components/sections/home/about-corporate";
 import { DeferredSection } from "@/components/ui/deferred-section";
 
 /**
  * Home page.
  *
- * Section order: hero → capability ticker → about → services → process →
- * projects → tools → plans → team → articles → FAQ. The footer carries the
- * closing call to action.
+ * Section order: hero slider → platforms strip → services → about → why
+ * Setuware → process → projects → plans → contact → articles → FAQ. The
+ * footer carries the closing call to action.
  *
  * Load strategy:
  *  - Every section's markup is in the static HTML, so the full page is
@@ -39,20 +39,20 @@ export const metadata = pageMetadata({
   path: "/",
 });
 
-const ProcessDark = dynamic(() =>
-  import("@/components/sections/process-dark").then((mod) => mod.ProcessDark),
+const WhyChoose = dynamic(() =>
+  import("@/components/sections/home/why-choose").then((mod) => mod.WhyChoose),
+);
+const ProcessSteps = dynamic(() =>
+  import("@/components/sections/home/process-steps").then((mod) => mod.ProcessSteps),
 );
 const SelectedProjects = dynamic(() =>
   import("@/components/sections/selected-projects").then((mod) => mod.SelectedProjects),
 );
-const ToolsRow = dynamic(() =>
-  import("@/components/sections/tools-row").then((mod) => mod.ToolsRow),
-);
 const FlexiblePlans = dynamic(() =>
   import("@/components/sections/flexible-plans").then((mod) => mod.FlexiblePlans),
 );
-const SkillsGap = dynamic(() =>
-  import("@/components/sections/skills-gap").then((mod) => mod.SkillsGap),
+const ContactBand = dynamic(() =>
+  import("@/components/sections/home/contact-band").then((mod) => mod.ContactBand),
 );
 const Articles = dynamic(() =>
   import("@/components/sections/articles").then((mod) => mod.Articles),
@@ -63,29 +63,29 @@ export default async function HomePage() {
   const latestPosts = (await getPublishedPosts()).slice(0, 3);
   return (
     <>
-      <Hero />
-      <CapabilityTicker />
-      <AboutPreview />
-      <ServicesDark />
+      <HeroSlider />
+      <PlatformsStrip />
+      <ServicesGrid />
+      <AboutCorporate />
 
-      <DeferredSection minHeight={820}>
-        <ProcessDark />
+      <DeferredSection minHeight={720}>
+        <WhyChoose />
+      </DeferredSection>
+
+      <DeferredSection minHeight={720}>
+        <ProcessSteps />
       </DeferredSection>
 
       <DeferredSection minHeight={760}>
         <SelectedProjects />
       </DeferredSection>
 
-      <DeferredSection minHeight={200}>
-        <ToolsRow />
-      </DeferredSection>
-
       <DeferredSection minHeight={760}>
         <FlexiblePlans />
       </DeferredSection>
 
-      <DeferredSection minHeight={520}>
-        <SkillsGap />
+      <DeferredSection minHeight={900}>
+        <ContactBand />
       </DeferredSection>
 
       <DeferredSection minHeight={720}>
