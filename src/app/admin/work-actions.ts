@@ -30,7 +30,7 @@ import {
   type Location,
   type Mode,
 } from "@/lib/cms/attendance";
-import { decideSheet, isLocked, reopenSheet, setCell, submitSheet, weekDays, weekStart } from "@/lib/cms/timesheets";
+import { decideSheet, hasLockedTime, isLocked, reopenSheet, setCell, submitSheet, weekDays, weekStart } from "@/lib/cms/timesheets";
 import { addNote } from "@/lib/cms/crm";
 import { approversFor, mayApproveFor, notify } from "@/lib/cms/notify";
 import { requireUser } from "@/lib/cms/session";
@@ -280,7 +280,7 @@ export async function bulkTaskAction(form: FormData): Promise<void> {
     .getAll("ids")
     .map(Number)
     .filter(Boolean)
-    .slice(0, 200)
+    .slice(0, 500)
     .map(getTask)
     .filter((task): task is Task => canSeeTask(user, task));
   const canAssign = can(user, "tasks.assign") || seesAll(user, "tasks");
@@ -309,7 +309,7 @@ export async function bulkTaskAction(form: FormData): Promise<void> {
       addNote("task", task.id, "assign", user.name, member ? `Assigned to ${member.name} (bulk)` : "Unassigned (bulk)");
       if (id && id !== user.id) notify(id, `Task assigned to you: ${task.title}`, [`${user.name} assigned you: ${task.title}.`], `/admin/tasks/${task.id}`, "Open the task");
     } else if (op === "delete") {
-      if (task.created_by !== user.id && !seesAll(user, "tasks")) continue;
+      if ((task.created_by !== user.id && !seesAll(user, "tasks")) || hasLockedTime(task.id)) continue;
       deleteTask(task.id);
       audit(user.name, "deleted task", "task", task.title);
     } else continue;
