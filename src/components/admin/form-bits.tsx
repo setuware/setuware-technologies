@@ -14,7 +14,9 @@ export function SubmitButton({
   name,
   value,
   className,
+  onClick,
 }: {
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
   children: React.ReactNode;
   pendingLabel?: string;
   variant?: keyof typeof buttonClass;
@@ -24,7 +26,7 @@ export function SubmitButton({
 }) {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" name={name} value={value} disabled={pending} className={cn(buttonClass[variant], className)}>
+    <button type="submit" name={name} value={value} disabled={pending} onClick={onClick} className={cn(buttonClass[variant], className)}>
       {pending ? (
         <>
           <Loader2 className="size-4 animate-spin" aria-hidden />

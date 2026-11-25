@@ -12,3 +12,24 @@ export function hours(minutes: number): string {
   const m = minutes % 60;
   return h ? `${h}h${m ? ` ${m}m` : ""}` : `${m}m`;
 }
+
+export const DUE_GROUPS = [
+  ["overdue", "Overdue"],
+  ["today", "Due today"],
+  ["week", "Next 7 days"],
+  ["later", "Later"],
+  ["none", "No due date"],
+  ["done", "Done"],
+] as const;
+export type DueGroup = (typeof DUE_GROUPS)[number][0];
+
+/** Which due-date bucket a task falls in, for the grouped list. */
+export function dueGroup(task: { status: string; due_date: string | null }, today: string): DueGroup {
+  if (task.status === "done") return "done";
+  if (!task.due_date) return "none";
+  if (task.due_date < today) return "overdue";
+  if (task.due_date === today) return "today";
+  const week = new Date(`${today}T12:00:00Z`);
+  week.setUTCDate(week.getUTCDate() + 6);
+  return task.due_date <= week.toISOString().slice(0, 10) ? "week" : "later";
+}

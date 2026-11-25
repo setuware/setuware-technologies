@@ -443,3 +443,13 @@ html.has-custom-cursor [contenteditable]:not([contenteditable="false"]) * {
   60% { transform: rotate(8deg); }
   75% { transform: rotate(-4deg); }
 }
+
+/*
+ * Admin tables on phones: the desktop px-5 cell padding leaves too little
+ * room for names and status badges. Unlayered, so it beats the utility.
+ */
+@media (max-width: 639px) {
+  [data-admin-content] :is(th, td)[class*="px-5"] {
+    padding-inline: 0.75rem;
+  }
+}

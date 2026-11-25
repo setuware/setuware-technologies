@@ -147,6 +147,17 @@ export function NewTaskForm({
           <input id="estimate_hours" name="estimate_hours" type="number" min="0" step="0.25" placeholder="e.g. 2.5" className={inputClass} />
         </div>
         <div>
+          <label htmlFor="repeat" className={LABEL}>
+            Repeat
+          </label>
+          <select id="repeat" name="repeat" defaultValue="" className={inputClass}>
+            <option value="">Doesn’t repeat</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+        <div>
           <label htmlFor="status" className={LABEL}>
             Column
           </label>
@@ -180,7 +191,7 @@ export function TaskPanel({
   /** Changes when the task changes on the server, so the fields show the saved values. */
   version: string;
   reviewers: Member[];
-  task: { id: number; status: string; priority: string; assignee_id: number | null; reviewer_id: number | null; due_date: string | null; project: string; estimate_minutes: number | null };
+  task: { id: number; status: string; priority: string; assignee_id: number | null; reviewer_id: number | null; due_date: string | null; project: string; estimate_minutes: number | null; repeat?: string | null };
   team: Member[];
   me: Member;
   canAssign: boolean;
@@ -260,6 +271,17 @@ export function TaskPanel({
             defaultValue={task.estimate_minutes ? task.estimate_minutes / 60 : ""}
             className={inputClass}
           />
+        </div>
+        <div>
+          <label htmlFor="repeat" className={LABEL}>
+            Repeat
+          </label>
+          <select id="repeat" name="repeat" defaultValue={task.repeat ?? ""} className={inputClass}>
+            <option value="">Doesn’t repeat</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
         </div>
       </div>
       </div>

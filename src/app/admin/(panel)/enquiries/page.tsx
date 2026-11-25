@@ -42,8 +42,8 @@ export default async function EnquiriesPage({
           ) : null
         }
       />
-      <form className="mb-4 flex flex-col gap-2 sm:flex-row">
-        <input name="q" defaultValue={q} placeholder="Search name, email, phone, message…" className={`${inputClass} sm:max-w-xs`} />
+      <form className="mb-4 grid grid-cols-2 gap-2 sm:flex sm:flex-row">
+        <input name="q" defaultValue={q} placeholder="Search name, email, phone, message…" className={`${inputClass} col-span-2 sm:max-w-xs`} />
         <select name="kind" defaultValue={kind} className={`${inputClass} sm:w-56`}>
           <option value="">All sources</option>
           {Object.entries(KINDS).map(([value, label]) => (

@@ -46,7 +46,7 @@ export default async function MyTimesheetPage({ searchParams }: { searchParams: 
         }
       />
 
-      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3 max-sm:[&>:last-child]:col-span-2">
         <Stat label="Logged on tasks" value={hm(logged)} icon={<Clock3 className="size-4" />} tone="blue" />
         <Stat label="At work (attendance)" value={hm(atWork.reduce((sum, minutes) => sum + minutes, 0))} icon={<CalendarRange className="size-4" />} tone="teal" />
         <Stat label="Expected" value={hm(expectedMinutes(monday, user.id))} hint="Working days × full-day hours, minus leave and holidays" icon={<Target className="size-4" />} tone="violet" />

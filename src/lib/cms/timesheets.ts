@@ -70,6 +70,14 @@ export function isLocked(userId: number, day: string): boolean {
   return status === "submitted" || status === "approved";
 }
 
+/** True when hours logged on the task fall in anyone's submitted or approved week. */
+export function hasLockedTime(taskId: number): boolean {
+  const rows = getDb()
+    .prepare(`SELECT DISTINCT e.user_id AS userId, ${DAY_SQL} AS day FROM time_entries e WHERE e.task_id = ? AND e.ended_at IS NOT NULL`)
+    .all(taskId) as { userId: number; day: string }[];
+  return rows.some((row) => isLocked(row.userId, row.day));
+}
+
 export function sheetRows(userId: number, monday: string, extraTaskIds: number[] = []): SheetRow[] {
   const days = weekDays(monday);
   const entries = getDb()

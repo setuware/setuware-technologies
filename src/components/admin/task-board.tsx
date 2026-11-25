@@ -2,7 +2,7 @@
 
 import { useActionState, useState, useTransition } from "react";
 import Link from "next/link";
-import { CalendarClock, CheckSquare, Clock3, Link2, Plus } from "lucide-react";
+import { CalendarClock, CheckSquare, Clock3, Link2, Plus, Repeat2 } from "lucide-react";
 
 import { moveTaskAction, createTaskAction } from "@/app/admin/work-actions";
 import type { FormState } from "@/app/admin/actions";
@@ -25,6 +25,7 @@ export interface BoardTask {
   estimate_minutes: number | null;
   items_total: number;
   items_done: number;
+  repeat?: string | null;
 }
 
 export const COLUMNS = [
@@ -62,6 +63,8 @@ export function TaskCard({ task, today, dragging, onDragStart, onMove }: {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
     .join("");
+  const overdue = Boolean(task.due_date && task.status !== "done" && task.due_date < today);
+  const urgent = task.priority === "urgent" && task.status !== "done";
   return (
     <div
       draggable={Boolean(onDragStart)}
@@ -74,12 +77,17 @@ export function TaskCard({ task, today, dragging, onDragStart, onMove }: {
         "group rounded-xl border border-border/80 bg-surface p-3 shadow-[0_1px_2px_rgb(15_23_42/0.05)] transition-[box-shadow,opacity,border-color] hover:border-foreground/20 hover:shadow-[0_8px_20px_-12px_rgb(15_23_42/0.35)]",
         onDragStart && "cursor-grab active:cursor-grabbing",
         dragging && "opacity-40",
+        overdue && "border-l-[3px] border-l-red-500 bg-red-500/[0.03]",
+        urgent && !overdue && "border-l-[3px] border-l-orange-500",
       )}
     >
       <div className="mb-1.5 flex items-center gap-1.5">
         <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide", PRIORITY_STYLE[task.priority])}>{task.priority}</span>
         {task.project ? <span className="truncate rounded-full bg-foreground/[0.05] px-2 py-0.5 text-[10px] font-medium text-muted-foreground">{task.project}</span> : null}
-        {task.entity ? <Link2 className="ml-auto size-3.5 text-muted-foreground" aria-label={`Linked ${task.entity}`} /> : null}
+        <span className="ml-auto flex items-center gap-1.5 text-muted-foreground">
+          {task.repeat ? <Repeat2 className="size-3.5" aria-label={`Repeats ${task.repeat}`} /> : null}
+          {task.entity ? <Link2 className="size-3.5" aria-label={`Linked ${task.entity}`} /> : null}
+        </span>
       </div>
       <Link href={`/admin/tasks/${task.id}`} className="block text-sm font-semibold leading-snug text-foreground hover:underline" draggable={false}>
         {task.title}
@@ -217,6 +225,7 @@ export function TaskBoard({ tasks: initial, today }: { tasks: BoardTask[]; today
       <div className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:px-0 xl:grid xl:grid-cols-4 xl:overflow-visible">
         {COLUMNS.map((column) => {
           const items = tasks.filter((task) => task.status === column.key);
+          const late = column.key === "done" ? 0 : items.filter((task) => task.due_date && task.due_date < today).length;
           return (
             <section
               key={column.key}
@@ -245,7 +254,8 @@ export function TaskBoard({ tasks: initial, today }: { tasks: BoardTask[]; today
               <header className="mb-2 flex items-center gap-2 px-1.5 pt-1">
                 <span className={cn("size-2 rounded-full", column.tone)} aria-hidden />
                 <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-foreground">{column.label}</h2>
-                <span className="ml-auto rounded-full bg-foreground/[0.06] px-2 py-0.5 text-[11px] font-semibold tabular-nums text-muted-foreground">{items.length}</span>
+                {late ? <span className="ml-auto rounded-full bg-red-500/10 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-red-600 dark:text-red-400">{late} overdue</span> : null}
+                <span className={cn("rounded-full bg-foreground/[0.06] px-2 py-0.5 text-[11px] font-semibold tabular-nums text-muted-foreground", !late && "ml-auto")}>{items.length}</span>
               </header>
               <div className="flex min-h-24 flex-1 flex-col gap-2">
                 {items.map((task) => (

@@ -72,7 +72,7 @@ export function StatusBadge({ status }: { status: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ring-1 ring-inset ring-current/10",
+        "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ring-1 ring-inset ring-current/10",
         TONES[status] ?? "bg-slate-500/12 text-slate-600",
       )}
     >
@@ -130,11 +130,37 @@ export function timeAgo(iso: string, now = Date.now()): string {
 }
 
 const STAT_TONES = {
-  blue: { tile: "from-[#2f56d8] to-[#4f7cff]", glow: "bg-[#2f56d8]/10" },
-  teal: { tile: "from-[#0a8ea6] to-[#22c3e6]", glow: "bg-[#0a8ea6]/10" },
-  violet: { tile: "from-[#7c3aed] to-[#a78bfa]", glow: "bg-[#7c3aed]/10" },
-  amber: { tile: "from-[#f59e0b] to-[#fb923c]", glow: "bg-[#f59e0b]/10" },
+  blue: { tile: "from-[#2f56d8] to-[#4f7cff]", glow: "bg-[#2f56d8]/10", text: "text-[#2f56d8] dark:text-[#8fb0ff]" },
+  teal: { tile: "from-[#0a8ea6] to-[#22c3e6]", glow: "bg-[#0a8ea6]/10", text: "text-[#0a8ea6] dark:text-[#5fd0ec]" },
+  violet: { tile: "from-[#7c3aed] to-[#a78bfa]", glow: "bg-[#7c3aed]/10", text: "text-[#7c3aed] dark:text-[#c4b5fd]" },
+  amber: { tile: "from-[#f59e0b] to-[#fb923c]", glow: "bg-[#f59e0b]/10", text: "text-[#f59e0b] dark:text-[#fcd34d]" },
 } as const;
+
+/** ▲/▼ percentage against the previous period. */
+export function Change({ value, label = "vs previous" }: { value: number | null; label?: string }) {
+  if (value === null) return <span className="font-semibold text-emerald-600 dark:text-emerald-400">New</span>;
+  const tone = value > 0 ? "text-emerald-600 dark:text-emerald-400" : value < 0 ? "text-red-600 dark:text-red-400" : "text-muted-foreground";
+  return (
+    <span className={cn("inline-flex items-center gap-1 font-semibold tabular-nums", tone)} title={label}>
+      {value > 0 ? "▲" : value < 0 ? "▼" : "•"} {Math.abs(value)}%<span className="sr-only"> {label}</span>
+    </span>
+  );
+}
+
+/** Tiny inline trend line; colour comes from `currentColor`. */
+export function Sparkline({ values, className }: { values: number[]; className?: string }) {
+  const width = 84;
+  const height = 28;
+  const max = Math.max(1, ...values);
+  const step = width / Math.max(1, values.length - 1);
+  const points = values.map((value, index) => `${(index * step).toFixed(1)},${(height - 2 - (value / max) * (height - 4)).toFixed(1)}`);
+  return (
+    <svg aria-hidden viewBox={`0 0 ${width} ${height}`} width={width} height={height} className={cn("shrink-0 overflow-visible", className)}>
+      <polygon points={`0,${height} ${points.join(" ")} ${width},${height}`} fill="currentColor" opacity="0.12" />
+      <polyline points={points.join(" ")} fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 export function Stat({
   label,
@@ -143,6 +169,8 @@ export function Stat({
   href,
   icon,
   tone = "blue",
+  change,
+  spark,
 }: {
   label: string;
   value: number | string;
@@ -150,21 +178,32 @@ export function Stat({
   href?: string;
   icon?: React.ReactNode;
   tone?: keyof typeof STAT_TONES;
+  /** Percentage change against the previous period; null means no earlier data. */
+  change?: number | null;
+  spark?: number[];
 }) {
   const t = STAT_TONES[tone];
   const body = (
-    <Card className="group relative h-full overflow-hidden p-5 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-[0_18px_40px_-20px_rgb(15_23_42/0.35)]">
+    <Card className="group relative h-full overflow-hidden p-4 sm:p-5 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-[0_18px_40px_-20px_rgb(15_23_42/0.35)]">
       <span aria-hidden className={cn("pointer-events-none absolute -right-8 -top-8 size-28 rounded-full blur-2xl", t.glow)} />
       <div className="relative flex items-start justify-between gap-3">
-        <p className="text-[0.8rem] font-medium text-muted-foreground">{label}</p>
+        <p className="text-[0.8rem] font-medium leading-snug text-muted-foreground">{label}</p>
         {icon ? (
-          <span className={cn("inline-flex size-9 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-[0_8px_16px_-8px_rgb(15_23_42/0.5)]", t.tile)}>
+          <span className={cn("inline-flex size-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br sm:size-9 text-white shadow-[0_8px_16px_-8px_rgb(15_23_42/0.5)]", t.tile)}>
             {icon}
           </span>
         ) : null}
       </div>
-      <p className="relative mt-3 font-display text-[2.1rem] font-semibold leading-none tabular-nums tracking-tight text-foreground">{value}</p>
-      {hint ? <p className="relative mt-2 text-xs text-muted-foreground">{hint}</p> : null}
+      <div className="relative mt-2 flex items-end justify-between gap-3 sm:mt-3">
+        <p className="font-display text-[1.65rem] font-semibold sm:text-[2.1rem] leading-none tabular-nums tracking-tight text-foreground">{value}</p>
+        {spark && spark.length > 1 ? <Sparkline values={spark} className={cn("hidden sm:block", t.text)} /> : null}
+      </div>
+      {hint || change !== undefined ? (
+        <p className="relative mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+          {change !== undefined ? <Change value={change} /> : null}
+          {hint ? <span>{hint}</span> : null}
+        </p>
+      ) : null}
     </Card>
   );
   return href ? <Link href={href}>{body}</Link> : body;

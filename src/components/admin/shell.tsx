@@ -75,6 +75,14 @@ const NAV = [
   { group: "Settings", href: "/admin/settings", label: "Site settings", Icon: Settings, area: "settings.manage" },
 ] as const;
 
+/** Shortcuts in the phone tab bar, when the user can see them. */
+const TAB_LABELS: Record<string, string> = {
+  "/admin": "Home",
+  "/admin/tasks": "Tasks",
+  "/admin/enquiries": "Enquiries",
+  "/admin/attendance": "Attendance",
+};
+
 export function AdminShell({
   user,
   areas,
@@ -108,6 +116,7 @@ export function AdminShell({
   const items = NAV.filter((item) => item.area === null || areas.includes(item.area));
 
   const groups = [...new Set(items.map((item) => item.group))];
+  const tabs = items.filter((item) => item.href in TAB_LABELS);
   // The most specific matching link is the active one (/admin/attendance vs /admin/attendance/team).
   const activeHref = items
     .map((item) => item.href as string)
@@ -286,12 +295,15 @@ export function AdminShell({
       ) : null}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="dark flex items-center justify-between bg-[#0b1020] px-4 py-3 text-white lg:hidden">
+        <header className="dark sticky top-0 z-40 flex items-center justify-between bg-[#0b1020] px-4 py-3 text-white lg:hidden">
           <Link href="/admin" className="flex items-center gap-2">
             <LogoMark className="size-8" />
             <span className="font-[family-name:var(--font-brand)] font-bold tracking-[0.06em]">ADMIN</span>
           </Link>
-          <div className="ml-auto mr-2">{presenceBar}</div>
+          <div className="ml-auto mr-1">{presenceBar}</div>
+          <Link href="/admin/search" aria-label="Search the admin" className="rounded-lg p-2 hover:bg-white/10">
+            <Search className="size-5" aria-hidden />
+          </Link>
           <button type="button" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen(!open)} className="rounded-lg p-2 hover:bg-white/10">
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
@@ -315,9 +327,38 @@ export function AdminShell({
               <ExternalLink className="size-3.5" aria-hidden /> View website
             </a>
           </div>
-          <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-10 lg:py-9">{children}</div>
+          <div data-admin-content className="mx-auto w-full max-w-6xl px-4 pb-28 pt-5 sm:px-6 sm:pt-6 lg:px-10 lg:py-9">{children}</div>
         </div>
       </div>
+
+      <nav
+        aria-label="Quick links"
+        className="fixed inset-x-0 bottom-0 z-40 grid border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+        style={{ gridTemplateColumns: `repeat(${tabs.length + 1}, minmax(0, 1fr))` }}
+      >
+        {tabs.map(({ href, Icon }) => {
+          const active = href === activeHref;
+          const count = badges[href];
+          return (
+            <Link
+              key={href}
+              href={href}
+              aria-current={active ? "page" : undefined}
+              className={cn("relative flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold", active ? "text-[#2f56d8] dark:text-[#8fb0ff]" : "text-muted-foreground")}
+            >
+              <Icon className="size-5" aria-hidden />
+              {TAB_LABELS[href]}
+              {count ? (
+                <span className="absolute left-1/2 top-1.5 ml-2 min-w-4 rounded-full bg-red-500 px-1 text-center text-[10px] font-bold leading-4 text-white">{count}</span>
+              ) : null}
+            </Link>
+          );
+        })}
+        <button type="button" onClick={() => setOpen(true)} className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold text-muted-foreground">
+          <Menu className="size-5" aria-hidden />
+          More
+        </button>
+      </nav>
     </div>
   );
 }

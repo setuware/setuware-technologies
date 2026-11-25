@@ -99,7 +99,22 @@ last 14. To run it daily at 2 am, add this with `crontab -e`:
 - **Create** from Tasks → New task, with "Add a task" on the board, or from a
   lead, enquiry or applicant page (the task stays linked to it).
 - **Board**: drag cards between columns; on phones use "Move to" on the card.
-  Done tasks stay on the board for 14 days.
+  Done tasks stay on the board for 14 days. Overdue cards have a red edge,
+  urgent ones an orange edge, and each column shows how many are overdue.
+- **Quick filters**: Overdue, Due today, Next 7 days, No due date, In review
+  and (for "All records") Unassigned, plus a status filter and "Show older
+  done" for tasks finished more than 14 days ago.
+- **List**: tasks grouped into Overdue / Due today / Next 7 days / Later /
+  No due date / Done. Tick tasks to change status, priority, due date or
+  assignee, or delete them, in one go. The same rules apply as for one task:
+  you can only change tasks you can see, only "Assign to others" roles can
+  assign colleagues, and only the creator (or "All records" roles) can delete.
+- **Team** (roles with "All records"): each person's open, overdue, next-7-day
+  and in-review tasks and estimated hours left, plus the unassigned queue.
+  Click a name to see their tasks.
+- **Repeat**: a task can repeat daily, weekly or monthly. When it's done, the
+  next copy is created once, with the due date moved on (skipping dates that
+  have already passed) and the checklist unticked.
 - **Who sees what**: everyone sees tasks assigned to them or created by them.
   "Assign to others" lets a role give tasks to colleagues; "All records" shows
   everyone's tasks.
