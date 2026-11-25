@@ -11,23 +11,23 @@ import { useReducedMotionSafe } from "@/components/motion/primitives";
 
 const SLIDES = [
   {
-    eyebrow: "Websites, apps & custom software",
-    title: "From ideas to production-ready software.",
-    body: "Setuware Technologies is a Gurugram-based digital studio. We design and engineer websites, e-commerce platforms, mobile apps and custom software for businesses ready to grow online.",
+    eyebrow: "Software development company, Gurugram",
+    title: "Websites, apps and software that move your business forward.",
+    body: "We design, build and support digital products for growing businesses, with a fixed-price proposal and one accountable team.",
     image: "/images/photos/hero-backdrop.jpg",
     cta: { label: "Start a project", href: "/contact" },
   },
   {
-    eyebrow: "One accountable team",
-    title: "Your technology partner for growth.",
-    body: "Product strategy, design, engineering and marketing work together in one team, from your first website to enterprise software.",
+    eyebrow: "Design, engineering and support",
+    title: "One team from first brief to launch.",
+    body: "Strategy, design, development and post-launch support, managed by a single project lead.",
     image: "/images/team/team-workshop.jpg",
     cta: { label: "Explore services", href: "/services" },
   },
   {
     eyebrow: "Custom software, ERP & CRM",
-    title: "Business systems built around you.",
-    body: "Bespoke ERP, CRM and automation that bring sales, inventory, finance and reporting into a single platform.",
+    title: "Business systems built around how you work.",
+    body: "ERP, CRM and automation that connect sales, inventory, finance and reporting in one place.",
     image: "/images/team/team-laptop.jpg",
     cta: { label: "Book a consultation", href: "/book" },
   },
@@ -115,7 +115,7 @@ export function HeroSlider() {
       <h1 className="sr-only">
         Setuware Technologies: website, app and custom software development in Gurugram
       </h1>
-      <div className="container-figma relative flex min-h-[34rem] flex-col justify-center py-20 lg:min-h-[40rem]">
+      <div className="container-figma relative flex min-h-[36rem] flex-col justify-center pb-20 pt-32 lg:min-h-[44rem] lg:pt-36">
         <AnimatePresence mode="wait">
           <motion.div
             key={index}

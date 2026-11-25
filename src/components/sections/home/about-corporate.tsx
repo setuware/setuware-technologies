@@ -41,10 +41,9 @@ export function AboutCorporate() {
             The bridge between your business idea and a working digital product
           </SectionTitle>
           <p className="mt-5 text-[1.02rem] leading-relaxed text-[#5a6180] dark:text-white/70">
-            Setuware Technologies is a Gurugram-based studio that designs and engineers websites,
-            e-commerce platforms, mobile apps and custom software. We work with startups, growing
-            businesses and established teams that need one accountable partner from planning to
-            launch and beyond.
+            Setuware Technologies is a software development company in Gurugram. We build websites,
+            online stores, mobile apps and business software for companies that want one
+            accountable partner from planning to launch.
           </p>
           <ul className="mt-7 grid gap-3 sm:grid-cols-2">
             {POINTS.map((point) => (

@@ -42,7 +42,7 @@ export function ServicesGrid() {
           <div className="max-w-[44rem]">
             <Eyebrow>All services</Eyebrow>
             <SectionTitle>
-              End-to-end digital services, <span className="text-[#2f56d8] dark:text-[#7c9bff]">designed, built and supported</span> by one team
+              Digital services for <span className="text-[#2f56d8] dark:text-[#7c9bff]">every stage of growth</span>
             </SectionTitle>
           </div>
           <Link

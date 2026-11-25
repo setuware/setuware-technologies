@@ -48,9 +48,9 @@ export default function ServicesPage() {
         video="services"
         eyebrow="Services"
         title="Web, app and software development services"
-        description="Landing pages from ₹4,999, websites from ₹14,999, apps from ₹34,999. One team in Gurugram does the strategy, design, build and support — and quotes a fixed price before starting."
+        description="Strategy, design, engineering and support from one team in Gurugram, with a fixed-price proposal agreed before work begins."
       >
-        <nav aria-label="Service groups" className="mt-8 flex flex-wrap justify-center gap-2">
+        <nav aria-label="Service groups" className="mt-8 flex flex-wrap gap-2">
           {groups.map((group, index) => (
             <a
               key={group.id}

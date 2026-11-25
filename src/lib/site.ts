@@ -32,7 +32,7 @@ export const site = {
   },
   /** Approximate map position of the MG Road, Gurugram office (structured data). */
   geo: { latitude: 28.4795, longitude: 77.0806 },
-  founded: "2020",
+  founded: "2026-08-04",
   /** Company profiles (confirmed by the owner). Founder links live in src/lib/team.ts. */
   social: {
     linkedin: "https://www.linkedin.com/company/setuware-technologies/",

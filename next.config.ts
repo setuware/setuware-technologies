@@ -57,7 +57,7 @@ const nextConfig: NextConfig = {
   images: {
     // AVIF first, WebP second: both are far smaller than JPEG at equal quality.
     formats: ["image/avif", "image/webp"],
-    deviceSizes: [360, 480, 640, 828, 1080, 1200, 1600, 1920],
+    deviceSizes: [360, 480, 640, 828, 1080, 1200, 1600, 1920, 2560],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
@@ -79,6 +79,18 @@ const nextConfig: NextConfig = {
         as: "*.css",
       },
     },
+  },
+
+  // Retired sample case studies; send old links and search results to the portfolio.
+  async redirects() {
+    return [
+      "kirana-commerce-platform",
+      "field-service-mobile-app",
+      "clinic-support-desk-ai",
+      "fintech-dashboard-rebuild",
+      "education-platform-hosting",
+      "logistics-brand-design-system",
+    ].map((slug) => ({ source: `/work/${slug}`, destination: "/work", permanent: true }));
   },
 
   async headers() {

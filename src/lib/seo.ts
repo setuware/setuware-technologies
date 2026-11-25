@@ -37,15 +37,12 @@ export const DEFAULT_OG_IMAGE = {
 } as const;
 
 /**
- * Home page title and description; also the site-wide defaults.
- *
- * The title is the brand plus the company slogan, matching the LinkedIn page,
- * so Google shows "Setuware Technologies - We act as a bridge between your …".
- * It is longer than 60 characters on purpose; Google trims the end.
+ * Home page title and description; also the site-wide defaults. The title
+ * leads with the brand, then the search phrase prospects use.
  */
-export const HOME_TITLE = `${site.name} - ${site.slogan.replace(/\.$/, "")}`;
+export const HOME_TITLE = `${site.name} | Website & App Development Company in Gurugram`;
 export const HOME_DESCRIPTION =
-  "We act as a bridge between your business idea and a working digital product: websites, online stores, mobile apps and custom software at fixed prices.";
+  "Website, e-commerce, mobile app and custom software development company in Gurugram. Fixed-price proposals and support after launch. Free consultation.";
 
 /** Square brand mark (`app/apple-icon.tsx`), used as the schema.org logo. */
 export const LOGO_URL = absolute("/apple-icon");

@@ -202,11 +202,11 @@ describe("Marquee", () => {
   it("duplicates its children and hides the copy from screen readers", () => {
     const { container } = render(
       <Marquee>
-        <span>Vanik Retail</span>
+        <span>Next.js</span>
       </Marquee>,
     );
 
-    expect(screen.getAllByText("Vanik Retail")).toHaveLength(2);
+    expect(screen.getAllByText("Next.js")).toHaveLength(2);
     expect(container.querySelectorAll("[aria-hidden='true']").length).toBe(1);
   });
 });

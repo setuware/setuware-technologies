@@ -1,54 +1,38 @@
 /**
- * Cover photos for the case studies. 1200×800, cropped from the originals.
- * Stock covers are Pexels (free licence; no attribution required) and carry
- * their Pexels id; covers using the client's own photography omit it.
+ * Visuals for the case studies: screenshots of the live client sites,
+ * captured at 1440×900 (desktop, 2400×1500 JPEG) and 390×844 (mobile, 2×).
  */
 export interface CaseStudyPhoto {
   src: string;
   alt: string;
-  /** https://www.pexels.com/photo/<id>/ — kept for the record, not displayed. */
-  pexelsId?: number;
+  width: number;
+  height: number;
+  /** Phone-width screenshot of the same site. */
+  mobile?: { src: string; width: number; height: number };
 }
 
 export const caseStudyPhotos: Record<string, CaseStudyPhoto> = {
-  "kirana-commerce-platform": {
-    src: "/images/work/kirana-commerce-platform.jpg",
-    alt: "Supermarket aisles stocked with groceries",
-    pexelsId: 32550092,
-  },
-  "field-service-mobile-app": {
-    src: "/images/work/field-service-mobile-app.jpg",
-    alt: "A technician servicing network equipment",
-    pexelsId: 442154,
-  },
-  "clinic-support-desk-ai": {
-    src: "/images/work/clinic-support-desk-ai.jpg",
-    alt: "A doctor and a patient reviewing information on a tablet",
-    pexelsId: 4266947,
-  },
-  "fintech-dashboard-rebuild": {
-    src: "/images/work/fintech-dashboard-rebuild.jpg",
-    alt: "Financial charts on a laptop and tablet on an office desk",
-    pexelsId: 5831664,
-  },
-  "education-platform-hosting": {
-    src: "/images/work/education-platform-hosting.jpg",
-    alt: "Students working on laptops in a lecture hall",
-    pexelsId: 8199165,
-  },
-  "logistics-brand-design-system": {
-    src: "/images/work/logistics-brand-design-system.jpg",
-    alt: "A delivery van loaded with parcels",
-    pexelsId: 6407553,
-  },
   "engineering-expert-learning-platform": {
-    src: "/images/work/engineering-expert-learning-platform.jpg",
-    alt: "Two university students studying together with a laptop in a library",
-    pexelsId: 8199667,
+    src: "/images/work/engineering-expert-learning-platform-desktop.jpg",
+    alt: "My Engineering Expert home page: course search, live classes and on-demand video",
+    width: 2400,
+    height: 1500,
+    mobile: {
+      src: "/images/work/engineering-expert-learning-platform-mobile.jpg",
+      width: 780,
+      height: 1688,
+    },
   },
   "sanskar-kabir-couture-ecommerce": {
-    src: "/images/work/sanskar-kabir-couture-ecommerce.jpg",
-    alt: "A model wearing the ivory Moti Bagh sherwani with pearl and zardozi work",
+    src: "/images/work/sanskar-kabir-couture-ecommerce-desktop.jpg",
+    alt: "Sanskar & Kabir online store: occasionwear collections and the occasion edit",
+    width: 2400,
+    height: 1500,
+    mobile: {
+      src: "/images/work/sanskar-kabir-couture-ecommerce-mobile.jpg",
+      width: 780,
+      height: 1688,
+    },
   },
 };
 

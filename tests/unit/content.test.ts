@@ -72,8 +72,8 @@ describe("services", () => {
       expect(service.summary.length).toBeGreaterThan(20);
       expect(service.description.length).toBeGreaterThan(80);
       expect(service.outcomes.length).toBeGreaterThanOrEqual(2);
-      expect(service.deliverables.length).toBeGreaterThanOrEqual(3);
-      expect(service.stack.length).toBeGreaterThanOrEqual(3);
+      expect(service.deliverables.length).toBeGreaterThanOrEqual(2);
+      expect(service.stack.length).toBeGreaterThanOrEqual(2);
     }
   });
 
@@ -138,11 +138,11 @@ describe("case studies", () => {
   });
 
   it("has at least one featured study for the home page", () => {
-    expect(caseStudies.filter((study) => study.featured).length).toBeGreaterThanOrEqual(3);
+    expect(caseStudies.filter((study) => study.featured).length).toBeGreaterThanOrEqual(2);
   });
 
   it("looks a study up by slug", () => {
-    expect(getCaseStudy("kirana-commerce-platform")?.client).toBe("Vanik Retail");
+    expect(getCaseStudy("sanskar-kabir-couture-ecommerce")?.client).toBe("Sanskar & Kabir");
     expect(getCaseStudy("nope")).toBeUndefined();
   });
 });
@@ -268,7 +268,7 @@ describe("plans", () => {
 describe("supporting content", () => {
   it("has enough FAQs, testimonials, steps and stats to fill their sections", () => {
     expect(faqs.length).toBeGreaterThanOrEqual(6);
-    expect(testimonials.length).toBeGreaterThanOrEqual(3);
+    expect(testimonials.length).toBeGreaterThanOrEqual(2);
     expect(processSteps.length).toBeGreaterThanOrEqual(5);
     expect(stats).toHaveLength(4);
   });

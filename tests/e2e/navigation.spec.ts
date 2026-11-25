@@ -101,7 +101,7 @@ test.describe("navigation and rendering", () => {
     expect(response.status()).toBe(200);
     expect(body).toContain("/services/managed-hosting");
     expect(body).toContain("/blog/surviving-a-traffic-spike");
-    expect(body).toContain("/work/kirana-commerce-platform");
+    expect(body).toContain("/work/engineering-expert-learning-platform");
   });
 
   test("serves robots.txt pointing at the sitemap and blocking the API", async ({
