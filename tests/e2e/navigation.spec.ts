@@ -5,7 +5,7 @@ test.describe("navigation and rendering", () => {
     await page.goto("/");
 
     await expect(
-      page.getByRole("heading", { level: 1, name: /website, app and custom software development in gurugram/i }),
+      page.getByRole("heading", { level: 1, name: /website & app development company in gurugram/i }),
     ).toBeVisible();
     await expect(
       page.getByRole("heading", { level: 2, name: /from ideas to\s+production-ready software/i }),
@@ -29,7 +29,7 @@ test.describe("navigation and rendering", () => {
     expect(html).toContain("A refined process");
     expect(html).toContain("Selected Projects");
     expect(html).toContain("Flexible plans");
-    expect(html).toContain("Tell us about your project");
+    expect(html).toContain("Real words, real people");
     expect(html).toContain("Frequently Asked");
   });
 
@@ -101,7 +101,7 @@ test.describe("navigation and rendering", () => {
     expect(response.status()).toBe(200);
     expect(body).toContain("/services/managed-hosting");
     expect(body).toContain("/blog/surviving-a-traffic-spike");
-    expect(body).toContain("/work/engineering-expert-learning-platform");
+    expect(body).toContain("/work/kirana-commerce-platform");
   });
 
   test("serves robots.txt pointing at the sitemap and blocking the API", async ({
