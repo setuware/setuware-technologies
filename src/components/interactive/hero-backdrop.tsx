@@ -236,6 +236,12 @@ export interface HeroClip {
 
 const REEL_MS = 7000;
 
+// Read directly: the hook reports `false` until after hydration, which would
+// let the first clip start for a frame for reduced-motion visitors.
+const reducedMotionNow = () =>
+  typeof window.matchMedia === "function" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 /**
  * Several background clips that crossfade into one another behind the
  * homepage headline. Only the visible clip plays; the next one preloads.
@@ -274,7 +280,7 @@ export function HeroVideoReel({ clips }: { clips: readonly HeroClip[] }) {
   }, []);
 
   useEffect(() => {
-    if (!playing || count < 2) return;
+    if (!playing || count < 2 || reducedMotionNow()) return;
     const timer = window.setTimeout(() => setActive((index) => (index + 1) % count), REEL_MS);
     return () => window.clearTimeout(timer);
   }, [active, playing, count]);
@@ -284,7 +290,7 @@ export function HeroVideoReel({ clips }: { clips: readonly HeroClip[] }) {
       if (!video) return;
       video.muted = true;
       video.defaultMuted = true;
-      if (playing && index === active) {
+      if (playing && index === active && !reducedMotionNow()) {
         video.currentTime = 0;
         void video.play().catch(() => {
           // Autoplay refused: the poster frame stays.
