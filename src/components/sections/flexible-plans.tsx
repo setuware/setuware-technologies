@@ -44,7 +44,7 @@ const DESIGN_COPY: Record<
   },
   "website-build": {
     name: "Business Website",
-    tagline: "Up to 8 pages on WordPress or Next.js, from ₹14,999.",
+    tagline: "Up to 8 pages on WordPress or Next.js, from ₹9,999.",
     features: [
       "Up to 8 pages",
       "Mobile-responsive design",

@@ -94,7 +94,7 @@ interface ServiceRate {
 // TODO(owner): confirm the per-page rate for business-websites and the base and
 // per-unit rates for ecommerce-stores, seo-marketing and custom-software.
 // Business websites is anchored to the published Website Build package (from
-// ₹14,999); the single-page Landing Page package (from ₹4,999) is a fixed
+// ₹9,999); the single-page Landing Page package (from ₹4,999) is a fixed
 // package outside the estimator. The other three are placeholders, not
 // published prices.
 export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {

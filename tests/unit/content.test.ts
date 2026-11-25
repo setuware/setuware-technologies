@@ -248,11 +248,11 @@ describe("plans", () => {
     expect(quoted).toHaveLength(1);
   });
 
-  it("leads with the landing page, the cheapest package", () => {
+  it("orders priced packages from the landing page up", () => {
     const prices = projectPackages
       .map((plan) => plan.setupFrom ?? 0)
       .filter((price) => price > 0);
-    expect(Math.min(...prices)).toBe(projectPackages[0]?.setupFrom);
+    expect([...prices].sort((a, b) => a - b)).toEqual(prices);
     expect(projectPackages[0]?.id).toBe("landing-page");
     expect(SERVICE_RATES["business-websites"].base).toBe(
       projectPackages.find((plan) => plan.id === "website-build")?.setupFrom,

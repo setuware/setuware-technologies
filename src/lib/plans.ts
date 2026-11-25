@@ -19,7 +19,7 @@ export interface Plan {
 /** Cheapest published build package: a single-page site. */
 export const LANDING_PAGE_FROM = 4_999;
 /** The full business website package. The estimator's business-websites base matches it. */
-export const WEBSITE_FROM = 14_999;
+export const WEBSITE_FROM = 9_999;
 
 export const projectPackages: readonly Plan[] = [
   {
