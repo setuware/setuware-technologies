@@ -44,7 +44,7 @@ const DESIGN_COPY: Record<
   },
   "website-build": {
     name: "Business Website",
-    tagline: "Up to 8 pages on WordPress or Next.js, from ₹14,999.",
+    tagline: "Up to 8 pages on WordPress or Next.js, from ₹9,999.",
     features: [
       "Up to 8 pages",
       "Mobile-responsive design",
@@ -56,7 +56,7 @@ const DESIGN_COPY: Record<
   },
   "full-application-build": {
     name: "Full Application",
-    tagline: "Stores, portals and apps with logins and payments, from ₹34,999.",
+    tagline: "Web and mobile apps with logins and payments, from ₹9,999.",
     features: [
       "User accounts and admin dashboard",
       "Secure payment integration",

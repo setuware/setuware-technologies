@@ -94,7 +94,7 @@ interface ServiceRate {
 // TODO(owner): confirm the per-page rate for business-websites and the base and
 // per-unit rates for ecommerce-stores, seo-marketing and custom-software.
 // Business websites is anchored to the published Website Build package (from
-// ₹14,999); the single-page Landing Page package (from ₹4,999) is a fixed
+// ₹9,999); the single-page Landing Page package (from ₹4,999) is a fixed
 // package outside the estimator. The other three are placeholders, not
 // published prices.
 export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
@@ -118,7 +118,7 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "web-development": {
     label: "Web application development",
-    base: 49_999,
+    base: 9_999,
     perScope: 7_500,
     scopeNoun: "pages",
     baseWeeks: 3,
@@ -127,7 +127,7 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "app-development": {
     label: "Mobile app development",
-    base: 74_999,
+    base: 9_999,
     perScope: 9_000,
     scopeNoun: "screens",
     baseWeeks: 4,

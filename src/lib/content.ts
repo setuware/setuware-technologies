@@ -26,7 +26,7 @@ export const serviceGroups: readonly ServiceGroupInfo[] = [
     id: "build",
     label: "Build",
     title: "Websites, stores and apps",
-    description: "Websites from ₹14,999, stores on Shopify or WooCommerce, portals and apps on Next.js — every one reviewed on a staging link first.",
+    description: "Websites from ₹9,999, stores on Shopify or WooCommerce, portals and apps on Next.js — every one reviewed on a staging link first.",
   },
   {
     id: "grow",
@@ -143,7 +143,7 @@ export const services: readonly Service[] = [
     slug: "business-websites",
     name: "Business websites",
     shortName: "Website",
-    summary: "Company websites from ₹14,999, live in 3–6 weeks, on WordPress or Next.js.",
+    summary: "Company websites from ₹9,999, live in 3–6 weeks, on WordPress or Next.js.",
     description:
       "A company website that says what you do in one screen, loads fast on a phone, and lets your team change the text without calling us. Built on WordPress or Next.js, with a CMS, technical SEO and enquiry tracking switched on before launch — and Lighthouse 90+ on mobile at launch. You review it on a staging link; it goes live only when you sign off.",
     icon: "globe",
@@ -178,7 +178,7 @@ export const services: readonly Service[] = [
     group: "build",
     headline: "Business websites that build credibility and generate leads",
     subheadline:
-      "We build company websites on WordPress or Next.js, from ₹14,999, live in 3–6 weeks. Your team edits the content; we handle the speed, the SEO and the forms.",
+      "We build company websites on WordPress or Next.js, from ₹9,999, live in 3–6 weeks. Your team edits the content; we handle the speed, the SEO and the forms.",
     seoTitle: "Business Website Development in Gurugram",
     seoDescription:
       "Responsive business websites and landing pages on WordPress or Next.js, with technical SEO, analytics and an easy-to-use CMS. Based in Gurugram.",
@@ -276,7 +276,7 @@ export const services: readonly Service[] = [
       },
     ],
     priceNote:
-      "Landing pages start at ₹4,999 and are typically live within a week. Complete business websites start at ₹14,999 and take three to six weeks, with the final price set by page count, copywriting and additional features.",
+      "Landing pages start at ₹4,999 and are typically live within a week. Complete business websites start at ₹9,999 and take three to six weeks, with the final price set by page count, copywriting and additional features.",
     commitments: [
       "Lighthouse score of 90+ on mobile at launch",
       "Enquiry tracking from day one",
@@ -287,7 +287,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does a business website cost?",
         answer:
-          "Landing pages start at ₹4,999 and complete business websites at ₹14,999. The final price depends on page count, copywriting and features such as online booking or multilingual content.",
+          "Landing pages start at ₹4,999 and complete business websites at ₹9,999. The final price depends on page count, copywriting and features such as online booking or multilingual content.",
       },
       {
         question: "Should I choose WordPress or Next.js?",
@@ -493,12 +493,12 @@ export const services: readonly Service[] = [
     slug: "web-development",
     name: "Web application development",
     shortName: "Web app",
-    summary: "Portals, dashboards and SaaS on Next.js and PostgreSQL, from ₹34,999.",
+    summary: "Portals, dashboards and SaaS on Next.js and PostgreSQL, from ₹9,999.",
     description:
       "Customer portals, booking systems and SaaS products on Next.js, TypeScript and PostgreSQL. We build in weekly sprints, demo working software every week, and keep a staging copy separate from production — so you see progress, not slide decks.",
     icon: "code",
     accent: ["#8b5cf6", "#6366f1"],
-    priceFrom: 49_999,
+    priceFrom: 9_999,
     typicalTimeline: "8–12 weeks",
     outcomes: [
       "Working software from the first sprint",
@@ -636,7 +636,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does a web application cost?",
         answer:
-          "Web applications start at ₹49,999 for a focused MVP. A fixed quote is provided after a scoping call.",
+          "Web applications start at ₹9,999 for a focused MVP. A fixed quote is provided after a scoping call.",
       },
       {
         question: "Do you work on a fixed-price or hourly basis?",
@@ -675,7 +675,7 @@ export const services: readonly Service[] = [
       "One codebase, two stores: React Native or Flutter, with offline support for dead zones, push notifications and crash monitoring. We handle the App Store and Play Store submissions, the screenshots and the review replies — you get the app in your own developer accounts.",
     icon: "smartphone",
     accent: ["#8b5cf6", "#ec4899"],
-    priceFrom: 74_999,
+    priceFrom: 9_999,
     typicalTimeline: "8–16 weeks",
     outcomes: [
       "One codebase for iOS and Android",
@@ -812,7 +812,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does a mobile app cost?",
         answer:
-          "Mobile apps start at ₹74,999. The final price depends on the number of screens, integrations, offline requirements and the admin backend.",
+          "Mobile apps start at ₹9,999. The final price depends on the number of screens, integrations, offline requirements and the admin backend.",
       },
       {
         question: "Does the app need a backend?",
@@ -2074,7 +2074,7 @@ export const faqs: readonly Faq[] = [
     group: "Before you start",
     question: "How much does a website cost?",
     answer:
-      "Landing pages start at ₹4,999 and complete business websites at ₹14,999. Larger projects are quoted after a short discovery call.",
+      "Landing pages start at ₹4,999 and complete business websites at ₹9,999. Larger projects are quoted after a short discovery call.",
   },
   {
     group: "Before you start",

@@ -120,7 +120,7 @@ export function BookingWidget() {
   }
 
   return (
-    <div className="grid overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_1px_2px_rgb(15_23_42/0.04),0_16px_40px_-24px_rgb(15_23_42/0.18)] lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+    <div className="grid grid-cols-[minmax(0,1fr)] overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_1px_2px_rgb(15_23_42/0.04),0_16px_40px_-24px_rgb(15_23_42/0.18)] lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
       {/* Day and time */}
       <div className="border-b border-border p-5 md:p-7 lg:border-b-0 lg:border-r">
         <h2 className="text-[0.95rem] font-semibold text-foreground">Choose a day</h2>

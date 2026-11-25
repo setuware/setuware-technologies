@@ -116,8 +116,7 @@ describe("answers", () => {
   it("quotes the published package prices in rupees", () => {
     const { text } = pricingReply();
     expect(text).toContain("₹4,999");
-    expect(text).toContain("₹14,999");
-    expect(text).toContain("₹34,999");
+    expect(text).toContain("₹9,999");
     expect(text).toMatch(/Enterprise[^\n]*quoted/);
   });
 

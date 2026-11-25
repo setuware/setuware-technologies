@@ -31,7 +31,7 @@ describe("estimateProject", () => {
 
     expect(result.breakdown.base).toBe(rate.base);
     expect(result.breakdown.scope).toBe(10 * rate.perScope);
-    // Totals are rounded to the nearest ₹1,000; bases such as ₹49,999 are not.
+    // Totals are rounded to the nearest ₹1,000; bases such as ₹9,999 are not.
     expect(result.total).toBe(Math.round((rate.base + 10 * rate.perScope) / 1_000) * 1_000);
     expect(result.currency).toBe("INR");
   });

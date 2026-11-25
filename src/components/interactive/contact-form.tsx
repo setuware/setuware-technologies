@@ -78,6 +78,7 @@ export function ContactForm() {
   const [consent, setConsent] = useState(false);
   const mountedAt = useRef<number>(0);
   const formRef = useRef<HTMLFormElement>(null);
+  const doneRef = useRef<HTMLDivElement>(null);
 
   // Prefill from the link that brought them here (`?service=` / `?intent=audit`).
   useEffect(() => {
@@ -133,10 +134,21 @@ export function ContactForm() {
     setErrors(result.fields ?? {});
   };
 
+  // The form collapses into a short confirmation; bring it into view so the
+  // visitor is not left looking at whatever sat below the form.
+  useEffect(() => {
+    if (status !== "done") return;
+    doneRef.current?.focus({ preventScroll: true });
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    doneRef.current?.scrollIntoView?.({ block: "center", behavior: reduce ? "auto" : "smooth" });
+  }, [status]);
+
   if (status === "done") {
     return (
       <div
-        className="rounded-2xl border border-emerald-500/25 bg-emerald-500/10 p-7 text-center"
+        ref={doneRef}
+        tabIndex={-1}
+        className="scroll-mt-28 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 p-7 text-center outline-none"
         role="status"
       >
         <span className="mx-auto inline-flex size-12 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">

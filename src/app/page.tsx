@@ -4,7 +4,7 @@ import { faqs } from "@/lib/content";
 import { getPublishedPosts } from "@/lib/cms/public";
 import { faqJsonLd, HOME_DESCRIPTION, HOME_TITLE, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
-import { HeroSlider } from "@/components/sections/home/hero-slider";
+import { Hero } from "@/components/sections/hero";
 import { PlatformsStrip } from "@/components/sections/home/platforms-strip";
 import { ServicesGrid } from "@/components/sections/home/services-grid";
 import { AboutCorporate } from "@/components/sections/home/about-corporate";
@@ -13,9 +13,9 @@ import { DeferredSection } from "@/components/ui/deferred-section";
 /**
  * Home page.
  *
- * Section order: hero slider → platforms strip → services → about → why
- * Setuware → process → projects → plans → contact → articles → FAQ. The
- * footer carries the closing call to action.
+ * Section order: video hero → platforms strip → services → about → why
+ * Setuware → process → projects → plans → skills band → contact →
+ * articles → FAQ. The footer carries the closing call to action.
  *
  * Load strategy:
  *  - Every section's markup is in the static HTML, so the full page is
@@ -45,6 +45,9 @@ const WhyChoose = dynamic(() =>
 const ProcessSteps = dynamic(() =>
   import("@/components/sections/home/process-steps").then((mod) => mod.ProcessSteps),
 );
+const SkillsGap = dynamic(() =>
+  import("@/components/sections/skills-gap").then((mod) => mod.SkillsGap),
+);
 const SelectedProjects = dynamic(() =>
   import("@/components/sections/selected-projects").then((mod) => mod.SelectedProjects),
 );
@@ -63,7 +66,7 @@ export default async function HomePage() {
   const latestPosts = (await getPublishedPosts()).slice(0, 3);
   return (
     <>
-      <HeroSlider />
+      <Hero />
       <PlatformsStrip />
       <ServicesGrid />
       <AboutCorporate />
@@ -82,6 +85,10 @@ export default async function HomePage() {
 
       <DeferredSection minHeight={760}>
         <FlexiblePlans />
+      </DeferredSection>
+
+      <DeferredSection minHeight={520}>
+        <SkillsGap />
       </DeferredSection>
 
       <DeferredSection minHeight={900}>

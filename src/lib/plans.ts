@@ -19,7 +19,7 @@ export interface Plan {
 /** Cheapest published build package: a single-page site. */
 export const LANDING_PAGE_FROM = 4_999;
 /** The full business website package. The estimator's business-websites base matches it. */
-export const WEBSITE_FROM = 14_999;
+export const WEBSITE_FROM = 9_999;
 
 export const projectPackages: readonly Plan[] = [
   {
@@ -59,11 +59,11 @@ export const projectPackages: readonly Plan[] = [
   {
     id: "full-application-build",
     name: "Full Application Build",
-    tagline: "Online stores, web apps and mobile apps.",
+    tagline: "Web apps, portals and mobile apps.",
     monthly: null,
-    setupFrom: 34_999,
+    setupFrom: 9_999,
     highlight: true,
-    bestFor: "Portals, SaaS products, mobile apps and stores with accounts and payments",
+    bestFor: "Portals, SaaS products and mobile apps with accounts and payments",
     features: [
       "Front end, back end and database",
       "Scalable cloud infrastructure",

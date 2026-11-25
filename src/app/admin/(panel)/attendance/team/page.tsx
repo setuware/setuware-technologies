@@ -226,7 +226,6 @@ export default async function TeamAttendancePage({ searchParams }: { searchParam
               →
             </Link>
           </div>
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- CSV download from a route handler */}
           <a href={`/admin/files/export/attendance?month=${month}${role ? `&role=${role}` : ""}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#2f56d8] hover:underline dark:text-[#8fb0ff]">
             <Download className="size-4" aria-hidden /> Export CSV
           </a>

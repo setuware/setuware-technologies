@@ -2,7 +2,7 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 import { images } from "@/lib/images";
-import { committedVideo, heroBackdropPoster, heroBackdropSources } from "@/lib/media";
+import { committedVideo, heroBackdropPoster, heroBackdropSources, pageVideo } from "@/lib/media";
 import { ButtonLink } from "@/components/ui/button";
 import { FadeUp, Magnetic } from "@/components/motion/primitives";
 import { TextReveal } from "@/components/motion/text-reveal";
@@ -10,6 +10,7 @@ import {
   HeroBackdrop,
   HeroMedia,
   HeroScrollFade,
+  HeroVideoReel,
 } from "@/components/interactive/hero-backdrop";
 
 /**
@@ -42,7 +43,22 @@ export function Hero() {
     // The header is fixed and solid, so the hero starts below it.
     <section className="pt-16 md:pt-18 lg:pt-[calc(var(--s)*72)]">
       <div className="relative isolate overflow-hidden bg-[#0a0d16]">
-        {videoSources.length > 0 ? (
+        {envSources.length === 0 && committed.sources.length > 0 ? (
+          <HeroMedia>
+            <HeroVideoReel
+              clips={[
+                {
+                  sources: committed.sources,
+                  poster: heroBackdropPoster() ?? committed.poster ?? images.heroBackdrop.src,
+                },
+                pageVideo("work"),
+                pageVideo("services"),
+                pageVideo("process"),
+                pageVideo("about"),
+              ]}
+            />
+          </HeroMedia>
+        ) : videoSources.length > 0 ? (
           <HeroMedia>
             <HeroBackdrop
               sources={videoSources}

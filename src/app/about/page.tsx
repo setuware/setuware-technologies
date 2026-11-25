@@ -150,8 +150,8 @@ export default function AboutPage() {
         video="about"
         align="left"
         eyebrow={`About ${site.name}`}
-        title="A software development company built around your business"
-        description={`${site.name} designs, builds and supports websites, online stores, mobile apps and business software from ${site.address.street}, ${site.address.city}. Every engagement starts with a free consultation and a fixed-price proposal.`}
+        title="A Gurugram studio that builds websites, stores and apps"
+        description={`${site.name} is a studio on ${site.address.street}, ${site.address.city}. We design and build websites, online stores, mobile apps and custom software — and support them after launch. Every project starts with a free 30-minute call and a fixed-price quote in writing.`}
         className="pb-28 md:pb-32"
       >
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
