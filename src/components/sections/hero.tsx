@@ -47,7 +47,10 @@ export function Hero() {
           <HeroMedia>
             <HeroVideoReel
               clips={[
-                { sources: committed.sources, poster: committed.poster ?? images.heroBackdrop.src },
+                {
+                  sources: committed.sources,
+                  poster: heroBackdropPoster() ?? committed.poster ?? images.heroBackdrop.src,
+                },
                 pageVideo("work"),
                 pageVideo("services"),
                 pageVideo("process"),
