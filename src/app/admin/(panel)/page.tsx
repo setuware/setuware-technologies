@@ -66,7 +66,10 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
 
   const showAnalytics = can(user, "analytics");
   const metrics = periodMetrics(range);
-  const funnel = showAnalytics && showEnquiries ? enquiryFunnel(range) : [];
+  // Org-wide trends only for people who see every enquiry / application.
+  const teamEnquiries = showEnquiries && seesAll(user, "enquiries");
+  const teamApplications = showApplications && seesAll(user, "applications");
+  const funnel = showAnalytics && teamEnquiries ? enquiryFunnel(range) : [];
   const queue = attention({
     enquiries: showEnquiries && !seesAll(user, "enquiries") ? user.name : null,
     applications: showApplications && !seesAll(user, "applications") ? user.name : null,
@@ -91,7 +94,8 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const lateToday = board.filter((row) => row.late);
   const seesTeamWork = seesAll(user, "tasks");
   const risks = seesTeamWork ? projectsAtRisk(today).slice(0, 5) : [];
-  const overdueTeam = seesTeamWork || scope.ids.length ? overdueByPerson(today, seesTeamWork ? undefined : scope.ids).slice(0, 5) : [];
+  // Only people who see every task; managers can't open their reports' tasks from here.
+  const overdueTeam = seesTeamWork ? overdueByPerson(today).slice(0, 5) : [];
   const rangeHref = (next: Range) => (next === 30 ? "/admin" : `/admin?range=${next}`);
 
   const pipeline = showEnquiries
@@ -278,7 +282,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             tone="violet"
           />
         ) : null}
-        {showEnquiries ? (
+        {teamEnquiries ? (
           <Stat
             label="Enquiries"
             value={metrics.enquiries.current}
@@ -290,7 +294,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             tone="blue"
           />
         ) : null}
-        {showEnquiries ? (
+        {teamEnquiries ? (
           <Stat
             label="Won deals"
             value={metrics.won.current}
@@ -302,7 +306,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             tone="teal"
           />
         ) : null}
-        {showApplications ? (
+        {teamApplications ? (
           <Stat
             label="Job applications"
             value={metrics.applications.current}
@@ -349,7 +353,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         ) : null}
       </div>
 
-      {showAnalytics || showEnquiries ? (
+      {showAnalytics || teamEnquiries ? (
         <div className="mt-6 grid gap-6 lg:grid-cols-3">
           <Card className={`p-5 sm:p-6 ${funnel.length ? "lg:col-span-2" : "lg:col-span-3"}`}>
             <div className="mb-3 flex items-center justify-between">
@@ -364,8 +368,8 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
               labels={metrics.labels}
               series={[
                 ...(showAnalytics ? [{ label: "Visits", values: metrics.visits.series, colour: "#7c3aed" }] : []),
-                ...(showEnquiries ? [{ label: "Enquiries", values: metrics.enquiries.series, colour: "#2f56d8" }] : []),
-                ...(showApplications ? [{ label: "Applications", values: metrics.applications.series, colour: "#f59e0b" }] : []),
+                ...(teamEnquiries ? [{ label: "Enquiries", values: metrics.enquiries.series, colour: "#2f56d8" }] : []),
+                ...(teamApplications ? [{ label: "Applications", values: metrics.applications.series, colour: "#f59e0b" }] : []),
               ]}
             />
           </Card>
