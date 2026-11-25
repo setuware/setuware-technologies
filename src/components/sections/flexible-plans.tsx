@@ -56,7 +56,7 @@ const DESIGN_COPY: Record<
   },
   "full-application-build": {
     name: "Full Application",
-    tagline: "Stores, portals and apps with logins and payments, from ₹34,999.",
+    tagline: "Stores, portals and apps with logins and payments, from ₹9,999.",
     features: [
       "User accounts and admin dashboard",
       "Secure payment integration",

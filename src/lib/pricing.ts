@@ -118,7 +118,7 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "web-development": {
     label: "Web application development",
-    base: 49_999,
+    base: 9_999,
     perScope: 7_500,
     scopeNoun: "pages",
     baseWeeks: 3,
@@ -127,7 +127,7 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "app-development": {
     label: "Mobile app development",
-    base: 74_999,
+    base: 9_999,
     perScope: 9_000,
     scopeNoun: "screens",
     baseWeeks: 4,

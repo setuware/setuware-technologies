@@ -57,7 +57,7 @@ const CARD_COPY: Record<ServiceKey, { name: string; description: string }> = {
   "web-development": {
     name: "Web applications",
     description:
-      "Portals, dashboards and SaaS on Next.js and PostgreSQL, from ₹34,999.",
+      "Portals, dashboards and SaaS on Next.js and PostgreSQL, from ₹9,999.",
   },
   "app-development": {
     name: "Mobile apps",
@@ -201,7 +201,7 @@ export function ServicesDark() {
             </TextReveal>
             <FadeUp delay={0.25} y={20}>
               <p className="mt-4 text-[0.95rem] leading-relaxed text-muted-foreground">
-                Websites from ₹14,999, apps from ₹34,999 — every price in
+                Websites from ₹14,999, apps from ₹9,999 — every price in
                 writing before we start.
               </p>
             </FadeUp>

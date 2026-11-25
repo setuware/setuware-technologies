@@ -61,7 +61,7 @@ export const projectPackages: readonly Plan[] = [
     name: "Full Application Build",
     tagline: "Online stores, web apps and mobile apps.",
     monthly: null,
-    setupFrom: 34_999,
+    setupFrom: 9_999,
     highlight: true,
     bestFor: "Portals, SaaS products, mobile apps and stores with accounts and payments",
     features: [
