@@ -48,7 +48,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
         description={`Visits, leads and content performance over the last ${range} days, compared with the ${range} days before.`}
         actions={<RangeTabs value={range} href={rangeHref} />}
       />
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5 max-sm:[&>:last-child]:col-span-2">
         <Stat
           label="Visits"
           value={metrics.visits.current.toLocaleString("en-IN")}

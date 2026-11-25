@@ -62,8 +62,8 @@ export default async function LeadsPage({
               : "Not synced yet; the first sync starts in the background."}
       </div>
 
-      <form className="mb-4 flex flex-col gap-2 lg:flex-row">
-        <input name="q" defaultValue={q} placeholder="Search name, email, phone, company…" className={`${inputClass} lg:max-w-xs`} />
+      <form className="mb-4 grid grid-cols-2 gap-2 lg:flex lg:flex-row">
+        <input name="q" defaultValue={q} placeholder="Search name, email, phone, company…" className={`${inputClass} col-span-2 lg:max-w-xs`} />
         <select name="status" defaultValue={status} className={`${inputClass} lg:w-52`}>
           <option value="">All statuses</option>
           {statuses.map((value) => (
@@ -81,7 +81,7 @@ export default async function LeadsPage({
             <input type="checkbox" name="mine" value="1" defaultChecked={Boolean(mine)} className="size-4 accent-[#2f56d8]" /> My leads
           </label>
         ) : null}
-        <button className={buttonClass.secondary}>Filter</button>
+        <button className={all ? buttonClass.secondary : `${buttonClass.secondary} col-span-2`}>Filter</button>
       </form>
 
       <Card className="overflow-hidden">

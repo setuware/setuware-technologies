@@ -40,8 +40,8 @@ export default async function ApplicationsPage({
           ) : null
         }
       />
-      <form className="mb-4 flex flex-col gap-2 sm:flex-row">
-        <input name="q" defaultValue={q} placeholder="Search name, email, phone…" className={`${inputClass} sm:max-w-xs`} />
+      <form className="mb-4 grid grid-cols-2 gap-2 sm:flex sm:flex-row">
+        <input name="q" defaultValue={q} placeholder="Search name, email, phone…" className={`${inputClass} col-span-2 sm:max-w-xs`} />
         <select name="job" defaultValue={job} className={`${inputClass} sm:w-56`}>
           <option value="">All roles</option>
           {jobs.map((item) => (
@@ -58,7 +58,7 @@ export default async function ApplicationsPage({
             </option>
           ))}
         </select>
-        <button className={buttonClass.secondary}>Filter</button>
+        <button className={`${buttonClass.secondary} col-span-2`}>Filter</button>
       </form>
       <Card className="overflow-hidden">
         {items.length === 0 ? (

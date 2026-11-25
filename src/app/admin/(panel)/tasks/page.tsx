@@ -70,9 +70,9 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
             </Link>
           ))}
         </nav>
-        <form className="flex flex-1 flex-col gap-2 sm:flex-row">
+        <form className="grid flex-1 grid-cols-2 gap-2 sm:flex sm:flex-row">
             <input type="hidden" name="view" value={view} />
-            <select name="who" defaultValue={who} className={`${inputClass} sm:w-48`} aria-label="Whose tasks">
+            <select name="who" defaultValue={who} className={`${inputClass} col-span-2 sm:w-48`} aria-label="Whose tasks">
               <option value="mine">Assigned to me</option>
               <option value="review">Waiting for my review</option>
               <option value="created">I created / mine</option>

@@ -31,8 +31,8 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
           </Link>
         }
       />
-      <form className="mb-4 flex flex-col gap-2 sm:flex-row">
-        <input name="q" defaultValue={q} placeholder="Search titles, categories…" className={`${inputClass} sm:max-w-xs`} />
+      <form className="mb-4 grid grid-cols-2 gap-2 sm:flex sm:flex-row">
+        <input name="q" defaultValue={q} placeholder="Search titles, categories…" className={`${inputClass} col-span-2 sm:max-w-xs`} />
         <select name="status" defaultValue={status} className={`${inputClass} sm:w-44`}>
           <option value="">All statuses</option>
           <option value="published">Published</option>

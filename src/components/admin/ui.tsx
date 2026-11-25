@@ -72,7 +72,7 @@ export function StatusBadge({ status }: { status: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ring-1 ring-inset ring-current/10",
+        "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ring-1 ring-inset ring-current/10",
         TONES[status] ?? "bg-slate-500/12 text-slate-600",
       )}
     >
@@ -184,19 +184,19 @@ export function Stat({
 }) {
   const t = STAT_TONES[tone];
   const body = (
-    <Card className="group relative h-full overflow-hidden p-5 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-[0_18px_40px_-20px_rgb(15_23_42/0.35)]">
+    <Card className="group relative h-full overflow-hidden p-4 sm:p-5 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-[0_18px_40px_-20px_rgb(15_23_42/0.35)]">
       <span aria-hidden className={cn("pointer-events-none absolute -right-8 -top-8 size-28 rounded-full blur-2xl", t.glow)} />
       <div className="relative flex items-start justify-between gap-3">
-        <p className="text-[0.8rem] font-medium text-muted-foreground">{label}</p>
+        <p className="text-[0.8rem] font-medium leading-snug text-muted-foreground">{label}</p>
         {icon ? (
-          <span className={cn("inline-flex size-9 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-[0_8px_16px_-8px_rgb(15_23_42/0.5)]", t.tile)}>
+          <span className={cn("inline-flex size-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br sm:size-9 text-white shadow-[0_8px_16px_-8px_rgb(15_23_42/0.5)]", t.tile)}>
             {icon}
           </span>
         ) : null}
       </div>
-      <div className="relative mt-3 flex items-end justify-between gap-3">
-        <p className="font-display text-[2.1rem] font-semibold leading-none tabular-nums tracking-tight text-foreground">{value}</p>
-        {spark && spark.length > 1 ? <Sparkline values={spark} className={t.text} /> : null}
+      <div className="relative mt-2 flex items-end justify-between gap-3 sm:mt-3">
+        <p className="font-display text-[1.65rem] font-semibold sm:text-[2.1rem] leading-none tabular-nums tracking-tight text-foreground">{value}</p>
+        {spark && spark.length > 1 ? <Sparkline values={spark} className={cn("hidden sm:block", t.text)} /> : null}
       </div>
       {hint || change !== undefined ? (
         <p className="relative mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">

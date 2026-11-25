@@ -265,7 +265,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         </div>
         <RangeTabs value={range} href={rangeHref} />
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {showAnalytics ? (
           <Stat
             label="Website visits"
@@ -602,11 +602,11 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
 
 function MiniStat({ label, value, hint, href, icon }: { label: string; value: number; hint: string; href: string; icon: React.ReactNode }) {
   return (
-    <Link href={href} className="flex items-center gap-3 rounded-xl border border-border/80 bg-surface px-4 py-3 transition-colors hover:border-foreground/15">
+    <Link href={href} className="flex items-center gap-3 rounded-xl border border-border/80 bg-surface px-3 py-3 sm:px-4 transition-colors hover:border-foreground/15">
       <span className="inline-flex size-8 items-center justify-center rounded-lg bg-foreground/[0.05] text-muted-foreground">{icon}</span>
       <span className="min-w-0">
         <span className="block text-xs text-muted-foreground">{label}</span>
-        <span className="block truncate text-sm">
+        <span className="block text-sm leading-snug">
           <strong className="font-semibold tabular-nums text-foreground">{value}</strong> <span className="text-xs text-muted-foreground">{hint}</span>
         </span>
       </span>
