@@ -228,3 +228,104 @@ export function HeroScrollFade({
     </motion.div>
   );
 }
+
+export interface HeroClip {
+  sources: readonly VideoSource[];
+  poster?: string;
+}
+
+const REEL_MS = 8000;
+
+/**
+ * Several background clips that crossfade into one another behind the
+ * homepage headline. Only the visible clip plays; the next one preloads.
+ * Paused off-screen and in hidden tabs; reduced motion keeps the first poster.
+ */
+export function HeroVideoReel({ clips }: { clips: readonly HeroClip[] }) {
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const reduceMotion = usePrefersReducedMotion();
+  const [active, setActive] = useState(0);
+  const [onScreen, setOnScreen] = useState(true);
+  const playing = onScreen && !reduceMotion;
+  const count = clips.length;
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+    let intersecting = true;
+    const update = () => setOnScreen(intersecting && !document.hidden);
+    const observer =
+      typeof IntersectionObserver === "function"
+        ? new IntersectionObserver(
+            (entries) => {
+              for (const entry of entries) intersecting = entry.isIntersecting;
+              update();
+            },
+            { threshold: 0.05 },
+          )
+        : null;
+    observer?.observe(wrapper);
+    document.addEventListener("visibilitychange", update);
+    return () => {
+      observer?.disconnect();
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!playing || count < 2) return;
+    const timer = window.setTimeout(() => setActive((index) => (index + 1) % count), REEL_MS);
+    return () => window.clearTimeout(timer);
+  }, [active, playing, count]);
+
+  useEffect(() => {
+    videoRefs.current.forEach((video, index) => {
+      if (!video) return;
+      video.muted = true;
+      video.defaultMuted = true;
+      if (playing && index === active) {
+        video.currentTime = 0;
+        void video.play().catch(() => {
+          // Autoplay refused: the poster frame stays.
+        });
+      } else {
+        video.pause();
+      }
+    });
+  }, [active, playing]);
+
+  return (
+    <div ref={wrapperRef} className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+      {clips.map((clip, index) => {
+        const isActive = index === active;
+        const isNext = index === (active + 1) % count;
+        return (
+          <video
+            key={clip.poster ?? index}
+            ref={(element) => {
+              videoRefs.current[index] = element;
+            }}
+            className={cn(
+              "absolute inset-0 size-full object-cover transition-opacity duration-[1600ms] ease-in-out",
+              isActive ? "opacity-100" : "opacity-0",
+            )}
+            poster={clip.poster}
+            preload={isActive || isNext ? "auto" : "none"}
+            muted
+            loop
+            playsInline
+            disablePictureInPicture
+            tabIndex={-1}
+          >
+            {clip.sources.map((source) => (
+              <source key={source.src} src={source.src} type={source.type} />
+            ))}
+          </video>
+        );
+      })}
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,9,18,0.35)_0%,rgba(6,9,18,0.55)_45%,rgba(6,9,18,0.8)_100%)] lg:bg-[linear-gradient(95deg,rgba(6,9,18,0.82)_0%,rgba(6,9,18,0.45)_42%,rgba(6,9,18,0)_75%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(to_top,rgba(6,9,18,0.7),transparent)]" />
+    </div>
+  );
+}
