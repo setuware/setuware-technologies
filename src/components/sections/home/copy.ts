@@ -27,12 +27,3 @@ export const BENEFITS = [
   { title: "Built for search", body: "Technical SEO and analytics configured before launch." },
   { title: "Support after launch", body: "Three months of support included, with maintenance plans available." },
 ] as const;
-
-export const PROCESS_PHOTOS = [
-  "/images/team/client-meeting.jpg",
-  "/images/photos/case-study-feature.jpg",
-  "/images/services/product-design.jpg",
-  "/images/services/web-development.jpg",
-  "/images/photos/service-cloud.jpg",
-  "/images/services/support-maintenance.jpg",
-] as const;

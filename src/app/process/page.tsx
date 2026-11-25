@@ -244,7 +244,7 @@ export default function ProcessPage() {
         title="How we deliver every project"
         description="Six stages, each ending with something you can see and approve. You know the price and the dates before we start, and nothing moves without your sign-off."
       >
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <ButtonLink
             href="/contact"
             size="lg"
