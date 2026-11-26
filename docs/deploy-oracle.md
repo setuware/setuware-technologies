@@ -112,7 +112,28 @@ npm run mail:test
 After changing settings: `pm2 restart setuware --update-env` (pm2) or
 `sudo systemctl restart setuware` (systemd).
 
-## 5. Google search
+## 5. Team portal on core.setuware.in
+
+The admin and employee portal can run on its own address. The same app serves
+both hosts; it routes by the `Host` header.
+
+1. **Cloudflare:** either add DNS `CNAME core → setuware.in` (proxied), or, with
+   a cloudflared tunnel, add a public hostname `core.setuware.in →
+   http://localhost:3000`.
+2. **nginx** (DNS route only): add `core.setuware.in` to the `server_name` of
+   the main server block (see `deploy/nginx-setuware.conf`), then
+   `sudo nginx -t && sudo systemctl reload nginx`. Cloudflare Full (strict)
+   needs the origin certificate to cover it (Cloudflare Origin Certificates for
+   `*.setuware.in` do; with Certbot run `sudo certbot --nginx --expand -d
+   setuware.in -d www.setuware.in -d core.setuware.in`).
+3. **App:** check `curl -sI https://core.setuware.in/api/health`, then set
+   `PORTAL_URL=https://core.setuware.in` in the settings file and restart.
+
+After that `core.setuware.in` opens the portal, `setuware.in/admin/*`
+redirects there, login/invite/notification e-mails link to it and crawlers are
+blocked. Everyone signs in once more on the new address.
+
+## 6. Google search
 
 `NEXT_PUBLIC_SITE_URL` must be `https://setuware.in`. It sets the canonical
 URLs, the sitemap and the structured data; a wrong value tells Google the site

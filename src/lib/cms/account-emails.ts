@@ -1,6 +1,7 @@
 import { randomInt } from "node:crypto";
 
 import type { EmailContent } from "@/lib/email-templates";
+import { adminUrl, portalUrl } from "@/lib/portal";
 import { site } from "@/lib/site";
 
 /**
@@ -14,7 +15,8 @@ const esc = (value: string) =>
 
 const first = (name: string) => name.trim().split(/\s+/)[0] ?? name;
 const host = () => site.url.replace(/^https?:\/\//, "");
-export const loginUrl = () => `${site.url}/admin/login`;
+export const loginUrl = () => adminUrl("/login");
+const portalHost = () => portalUrl().replace(/^https?:\/\//, "");
 
 /** Letters without look-alikes (no I, l, O, 0, 1). */
 const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz";
@@ -121,7 +123,7 @@ export interface NewMember {
 export function credentialsEmail(member: NewMember, password: string, from: string): EmailContent {
   return render({
     subject: `Your ${site.name} admin login details`,
-    preheader: `Sign in at ${host()}/admin with the temporary password inside.`,
+    preheader: `Sign in at ${portalHost()}/admin with the temporary password inside.`,
     heading: "Your login details",
     intro: [
       `Hi ${first(member.name)},`,

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { KNOWN_SLUGS } from "@/lib/routes";
 import { openJobBySlug, publishedPostBySlug } from "@/lib/cms/store";
+import { routePortal } from "@/lib/portal";
 
 /**
  * Returns a real 404 for unknown content slugs.
@@ -43,6 +44,15 @@ async function notFoundPage(origin: string): Promise<string> {
 }
 
 export async function proxy(request: NextRequest) {
+  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  const portal = routePortal(host, request.nextUrl.pathname, request.nextUrl.search);
+  if (portal.type === "redirect") return NextResponse.redirect(portal.url, 308);
+  if (portal.type === "robots") {
+    return new NextResponse("User-agent: *\nDisallow: /\n", {
+      headers: { "content-type": "text/plain; charset=utf-8", "x-robots-tag": "noindex" },
+    });
+  }
+
   const segments = request.nextUrl.pathname.split("/").filter(Boolean);
   if (segments.length !== 2) return NextResponse.next();
 
@@ -85,5 +95,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/services/:slug", "/work/:slug", "/blog/:slug", "/industries/:slug", "/careers/:slug"],
+  // Everything except build assets: the portal host check needs every page.
+  matcher: ["/((?!_next/static|_next/image).*)"],
 };
