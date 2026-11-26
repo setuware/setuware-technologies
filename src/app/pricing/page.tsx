@@ -363,7 +363,7 @@ export default function PricingPage() {
                         <span className="text-[0.92rem] font-semibold text-foreground transition-colors group-hover:text-setu">
                           {title}
                         </span>
-                        <span className="text-xs font-semibold text-[#00708c] dark:text-setu">{price}</span>
+                        <span className="text-xs font-semibold text-[#2448c0] dark:text-setu">{price}</span>
                       </span>
                       <span className="mt-0.5 block text-[0.83rem] leading-snug text-muted-foreground">
                         {body}

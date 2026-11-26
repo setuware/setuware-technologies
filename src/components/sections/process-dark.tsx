@@ -142,7 +142,7 @@ function ProcessRow({
           <motion.span
             aria-hidden
             data-step={step.step}
-            className="absolute -inset-px flex items-center justify-center rounded-full border border-setu/40 bg-[#e8f7fb] text-[#007a96] before:content-[attr(data-step)] dark:bg-[#0b2a33] dark:text-setu"
+            className="absolute -inset-px flex items-center justify-center rounded-full border border-setu/40 bg-[#e8f7fb] text-[#2448c0] before:content-[attr(data-step)] dark:bg-[#0f1a4a] dark:text-setu"
             style={{ opacity: lit }}
           />
         </span>

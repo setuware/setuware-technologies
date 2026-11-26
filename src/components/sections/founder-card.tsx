@@ -78,7 +78,7 @@ export function FounderCard({ person }: { person: TeamMember }) {
       />
       <div className="relative grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.4fr)]">
         {/* Portrait panel */}
-        <div className="flex flex-col items-center justify-center gap-5 border-b border-border bg-[linear-gradient(160deg,#effafd,#f6fbfe_60%,#eef6fc)] px-6 py-10 text-center sm:py-12 lg:border-r lg:border-b-0 lg:py-16 dark:bg-[linear-gradient(160deg,#08202a,var(--surface))]">
+        <div className="flex flex-col items-center justify-center gap-5 border-b border-border bg-[linear-gradient(160deg,#effafd,#f6fbfe_60%,#eef6fc)] px-6 py-10 text-center sm:py-12 lg:border-r lg:border-b-0 lg:py-16 dark:bg-[linear-gradient(160deg,#0d1640,var(--surface))]">
           <Portrait person={person} />
           <p className="inline-flex items-center gap-1.5 rounded-full border border-setu/20 bg-white/80 px-3 py-1 text-xs font-semibold text-foreground/80 dark:bg-surface/80">
             <MapPin className="size-3.5 text-setu" aria-hidden />

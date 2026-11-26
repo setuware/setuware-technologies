@@ -103,7 +103,7 @@ function PlanCard({ plan }: { plan: Plan }) {
           {copy.name ?? plan.name}
         </h3>
         {plan.highlight ? (
-          <span className="rounded-full bg-[#00708c] px-2.5 py-0.5 text-[11px] font-semibold text-white">
+          <span className="rounded-full bg-[#2448c0] px-2.5 py-0.5 text-[11px] font-semibold text-white">
             Recommended
           </span>
         ) : null}

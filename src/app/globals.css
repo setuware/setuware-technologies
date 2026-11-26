@@ -12,8 +12,8 @@
   --radius-card: 1rem;
 
   /* Figma palette */
-  --color-setu: #00a1c6;
-  --color-setu-dark: #0089a9;
+  --color-setu: #2f56d8;
+  --color-setu-dark: #2448c0;
   --color-ink: #0a0a0a;
 
   --color-brand-50: #eff6ff;
@@ -29,7 +29,7 @@
   --color-brand-950: #172554;
 
   --color-accent-400: #22d3ee;
-  --color-accent-500: #06b6d4;
+  --color-accent-500: #3b6cf6;
   --color-accent-600: #0891b2;
 
   --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
