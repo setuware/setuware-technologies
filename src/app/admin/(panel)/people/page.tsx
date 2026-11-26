@@ -26,7 +26,7 @@ export default async function PeoplePage({ searchParams }: { searchParams: Promi
   const everyone = listUsers().filter((member) => member.active);
   const board = new Map(todayBoard(everyone).map((row) => [row.userId, row]));
   const needle = q.trim().toLowerCase();
-  const people = everyone.filter((member) => !needle || [member.name, member.designation, member.department, member.email].some((value) => value.toLowerCase().includes(needle)));
+  const people = everyone.filter((member) => !needle || [member.name, member.designation, member.department, member.email, member.location, ...member.skills].some((value) => value.toLowerCase().includes(needle)));
   const departments = [...new Set(people.map((member) => member.department || "Other"))].sort((a, b) => (a === "Other" ? 1 : b === "Other" ? -1 : a.localeCompare(b)));
   const nameOf = (id: number | null) => everyone.find((member) => member.id === id)?.name;
 
@@ -34,7 +34,7 @@ export default async function PeoplePage({ searchParams }: { searchParams: Promi
     <>
       <PageHeader title="Team directory" description={`${everyone.length} people. Who does what, who they report to, and who’s in today.`} />
       <form className="mb-5">
-        <input name="q" defaultValue={q} placeholder="Search by name, role, department or email…" aria-label="Search people" className={`${inputClass} max-w-md`} />
+        <input name="q" defaultValue={q} placeholder="Search by name, role, department, skill or email…" aria-label="Search people" className={`${inputClass} max-w-md`} />
       </form>
       {departments.map((department) => (
         <section key={department} className="mb-7">

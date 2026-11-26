@@ -40,7 +40,7 @@ async function Gate({ children }: { children: React.ReactNode }) {
   const sheetsWaiting = areas.includes("timesheets") ? pendingSheets().filter((id) => mayApproveFor(user, id, "timesheets.approve")).length : 0;
   return (
     <AdminShell
-      user={{ name: user.name, email: user.email, roleLabel: user.roleName }}
+      user={{ id: user.id, name: user.name, email: user.email, roleLabel: user.roleName }}
       areas={areas}
       unread={unreadCount(user.id)}
       presence={{

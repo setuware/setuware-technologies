@@ -319,6 +319,13 @@ CREATE TABLE IF NOT EXISTS notifications (
   read_at TEXT
 );
 CREATE INDEX IF NOT EXISTS notifications_user ON notifications(user_id, read_at, created_at);
+CREATE TABLE IF NOT EXISTS work_updates (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  body TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS work_updates_user ON work_updates(user_id, created_at);
 CREATE TABLE IF NOT EXISTS projects (
   id INTEGER PRIMARY KEY,
   name TEXT NOT NULL UNIQUE COLLATE NOCASE,
@@ -430,6 +437,12 @@ const COLUMNS: [table: string, column: string, definition: string][] = [
   ["users", "joined_on", "TEXT"],
   ["users", "birthday", "TEXT"],
   ["users", "manager_id", "INTEGER"],
+  ["users", "bio", "TEXT NOT NULL DEFAULT ''"],
+  ["users", "skills", "TEXT NOT NULL DEFAULT ''"],
+  ["users", "location", "TEXT NOT NULL DEFAULT ''"],
+  ["users", "emergency_contact", "TEXT NOT NULL DEFAULT ''"],
+  ["users", "employee_code", "TEXT NOT NULL DEFAULT ''"],
+  ["users", "employment_type", "TEXT NOT NULL DEFAULT ''"],
   ["tasks", "repeat", "TEXT"],
   ["tasks", "next_id", "INTEGER"],
 ];

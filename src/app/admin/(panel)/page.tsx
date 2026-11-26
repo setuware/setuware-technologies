@@ -8,6 +8,7 @@ import { getDb } from "@/lib/cms/db";
 import { formatMinutes, listRequests, localDay, localTime, presence, todayBoard, workedMinutes, type BoardRow } from "@/lib/cms/attendance";
 import { attention, enquiryFunnel, overdueByPerson, parseRange, periodMetrics, projectsAtRisk, type Range } from "@/lib/cms/insights";
 import { mayApproveFor, teamScope } from "@/lib/cms/notify";
+import { listUpdates } from "@/lib/cms/people";
 import { pendingSheets } from "@/lib/cms/timesheets";
 import { listTasks, taskCounts } from "@/lib/cms/tasks";
 import { requireUser } from "@/lib/cms/session";
@@ -229,6 +230,8 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           )}
         </div>
       </Card>
+
+      <TeamUpdates />
 
       {attentionItems.length ? (
         <Card className="mb-6 overflow-hidden">
@@ -659,5 +662,39 @@ function Row({ href, name, sub, when, status }: { href: string; name: string; su
         </span>
       </Link>
     </li>
+  );
+}
+
+function TeamUpdates() {
+  const updates = listUpdates({ limit: 3 });
+  return (
+    <Card className="mb-6 p-5 sm:p-6">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h2 className="text-sm font-semibold text-foreground">Latest team updates</h2>
+        <Link href="/admin/updates" className="inline-flex items-center gap-1 text-xs font-semibold text-[#2f56d8] hover:underline dark:text-[#8fb0ff]">
+          {updates.length ? "See all" : "Post an update"} <ArrowRight className="size-3.5" aria-hidden />
+        </Link>
+      </div>
+      {updates.length ? (
+        <ul className="grid gap-4 md:grid-cols-3">
+          {updates.map((update) => (
+            <li key={update.id} className="flex gap-3">
+              <Avatar name={update.name} size="sm" />
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">
+                  <Link href={`/admin/people/${update.user_id}`} className="font-semibold text-foreground hover:underline">
+                    {update.name}
+                  </Link>{" "}
+                  · {timeAgo(update.created_at)}
+                </p>
+                <p className="mt-1 line-clamp-3 break-words text-sm text-foreground">{update.body}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-sm text-muted-foreground">Nobody has posted yet. Share what you worked on so the team can see it.</p>
+      )}
+    </Card>
   );
 }
