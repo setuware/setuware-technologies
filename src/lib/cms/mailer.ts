@@ -1,3 +1,4 @@
+import type { EmailContent } from "@/lib/email-templates";
 import { emailConfigured, getTransporter, senderAddress } from "@/lib/lead-email";
 import { site } from "@/lib/site";
 
@@ -18,6 +19,18 @@ ${lines.map((line) => `<p style="margin:16px 0 0;font:400 15px/1.6 Arial,sans-se
 </td></tr></table></body></html>`;
   try {
     await getTransporter().sendMail({ from: { name: `${site.name} Admin`, address: senderAddress() }, to, subject, text, html });
+    return true;
+  } catch (error) {
+    console.error("[admin] account email failed", error instanceof Error ? error.message : error);
+    return false;
+  }
+}
+
+/** A ready-made account e-mail (see ./account-emails.ts). Resolves to whether it was sent. */
+export async function sendEmail(to: string, content: EmailContent, replyTo?: string): Promise<boolean> {
+  if (!emailConfigured()) return false;
+  try {
+    await getTransporter().sendMail({ from: { name: site.name, address: senderAddress() }, to, ...(replyTo ? { replyTo } : {}), ...content });
     return true;
   } catch (error) {
     console.error("[admin] account email failed", error instanceof Error ? error.message : error);

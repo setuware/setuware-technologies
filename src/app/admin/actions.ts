@@ -33,6 +33,7 @@ import {
   setPassword,
   signIn,
   signOut,
+  updateProfile,
   updateUser,
   verifyPassword,
   type Role,
@@ -60,7 +61,8 @@ import {
   type PostInput,
 } from "@/lib/cms/store";
 import { saveUpload, UploadError } from "@/lib/cms/uploads";
-import { sendAccountEmail } from "@/lib/cms/mailer";
+import { credentialsEmail, generatePassword, inviteEmail, welcomeEmail } from "@/lib/cms/account-emails";
+import { sendAccountEmail, sendEmail } from "@/lib/cms/mailer";
 import { notify } from "@/lib/cms/notify";
 import { deleteRole, getRole, roleInUse, saveRole } from "@/lib/cms/rbac";
 import { getLead, leadStatuses, syncLeads, type CrmLead } from "@/lib/cms/crm-leads";
@@ -90,6 +92,8 @@ export interface FormState {
   step?: "code";
   /** Invite / reset link to copy when e-mail is not available. */
   link?: string;
+  /** Temporary password to share by hand when it could not be e-mailed. */
+  password?: string;
   /** Recovery codes, shown once after turning on 2-step verification. */
   codes?: string[];
 }
@@ -355,57 +359,99 @@ export async function deleteJobAction(form: FormData): Promise<void> {
 /* -------------------------------------------------------------------------- */
 
 
-/** Adds a team member by invite link (default) or with a temporary password. */
+/**
+ * Adds a team member. By default it generates a temporary password and
+ * e-mails the login details; "invite" e-mails a link to choose a password
+ * instead. A welcome e-mail with their role and first-day steps follows.
+ */
 export async function createUserAction(_previous: FormState, form: FormData): Promise<FormState> {
   const owner = await requireUser("users.manage");
   const email = text(form, "email", 254).toLowerCase();
   const name = text(form, "name", 80);
   const role = text(form, "role") as Role;
-  const method = form.get("method") === "password" ? "password" : "invite";
-  const password = String(form.get("password") ?? "");
+  const method = form.get("method") === "invite" ? "invite" : "credentials";
+  const password = method === "credentials" ? String(form.get("password") ?? "").trim() || generatePassword() : "";
+  const joinedOn = text(form, "joined_on", 10);
+  const managerId = Number(form.get("manager_id")) || null;
   const fields: Record<string, string> = {};
   if (!/^\S+@\S+\.\S+$/.test(email)) fields.email = "Enter a valid email.";
   if (name.length < 2) fields.name = "Enter a name.";
   if (!getRole(role)) fields.role = "Choose a role.";
-  if (method === "password") {
+  if (password) {
     const problem = passwordProblem(password);
     if (problem) fields.password = problem;
   }
+  if (joinedOn && !/^\d{4}-\d{2}-\d{2}$/.test(joinedOn)) fields.joined_on = "Choose a valid date.";
+  if (managerId && !getUser(managerId)) fields.manager_id = "Choose someone on the team.";
   if (getUserByEmail(email)) fields.email = "This email already has an account.";
   if (Object.keys(fields).length) return { error: "Please fix the highlighted fields.", fields };
 
-  const user = await createUser({ email, name, role, ...(method === "password" ? { password } : {}) });
+  const user = await createUser({ email, name, role, ...(password ? { password } : {}) });
+  const profile = { designation: text(form, "designation", 80), department: text(form, "department", 60), joinedOn: joinedOn || null, managerId };
+  if (profile.designation || profile.department || profile.joinedOn || profile.managerId) {
+    updateProfile(user.id, { ...profile, phone: "", birthday: null });
+  }
   audit(owner.name, "added team member", "user", `${name} (${role}, ${method})`);
   refresh();
-  if (method === "password") {
-    return { ok: `${name} can sign in at /admin with the temporary password; they will be asked to choose their own.` };
-  }
-  return { ...(await sendInvite(user.id, owner.name)) };
+
+  const access = password ? await emailCredentials(user.id, password, owner) : await sendInvite(user.id, owner);
+  if (form.get("welcome") !== "on") return access;
+  const welcomed = await emailWelcome(user.id, owner);
+  if (!welcomed || !access.ok) return access;
+  return access.password ? access : { ...access, ok: `${access.ok} A welcome email was sent too.` };
 }
 
-async function sendInvite(userId: number, from: string): Promise<FormState> {
+async function emailCredentials(userId: number, password: string, sender: AdminUser): Promise<FormState> {
+  const user = getUser(userId);
+  if (!user) return { error: "User not found." };
+  const sent = await sendEmail(user.email, credentialsEmail(user, password, sender.name), sender.email);
+  return sent
+    ? { ok: `Login details emailed to ${user.email}. They will choose their own password at first sign-in.` }
+    : { ok: "Email is not set up, so share these login details privately (they must change the password at first sign-in).", password, link: `${site.url}/admin/login` };
+}
+
+async function emailWelcome(userId: number, sender: AdminUser): Promise<boolean> {
+  const user = getUser(userId);
+  if (!user) return false;
+  const manager = user.managerId ? getUser(user.managerId) : null;
+  return sendEmail(user.email, welcomeEmail({ ...user, managerName: manager?.name }, sender.name), sender.email);
+}
+
+async function sendInvite(userId: number, sender: AdminUser): Promise<FormState> {
   const user = getUser(userId);
   if (!user) return { error: "User not found." };
   const token = createPasswordToken(user.id, "invite");
   const url = `${site.url}/admin/set-password?token=${token}`;
-  const sent = await sendAccountEmail(
-    user.email,
-    `${from} invited you to Setuware Admin`,
-    [
-      `Hi ${user.name.split(" ")[0]},`,
-      `${from} has given you access to the Setuware Technologies admin as ${user.roleName}.`,
-      "Choose your password to get started. The link works once and expires in 3 days.",
-    ],
-    { url, label: "Set up my account" },
-  );
+  const sent = await sendEmail(user.email, inviteEmail(user, url, sender.name), sender.email);
   return sent
     ? { ok: `Invite emailed to ${user.email}.`, link: url }
     : { ok: "Email is not set up, so copy this invite link and send it to them (WhatsApp works).", link: url };
 }
 
+/** Sets a fresh temporary password and e-mails the login details. */
+export async function emailLoginDetailsAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const owner = await requireUser("users.manage");
+  const user = getUser(Number(form.get("id")));
+  if (!user) return { error: "User not found." };
+  const password = generatePassword();
+  await setPassword(user.id, password, true);
+  audit(owner.name, "emailed login details", "user", user.email);
+  refresh();
+  return emailCredentials(user.id, password, owner);
+}
+
+export async function sendWelcomeAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const owner = await requireUser("users.manage");
+  const user = getUser(Number(form.get("id")));
+  if (!user) return { error: "User not found." };
+  const sent = await emailWelcome(user.id, owner);
+  if (sent) audit(owner.name, "sent welcome email", "user", user.email);
+  return sent ? { ok: `Welcome email sent to ${user.email}.` } : { error: "Email is not set up on the server, so the welcome email could not be sent." };
+}
+
 export async function resendInviteAction(_previous: FormState, form: FormData): Promise<FormState> {
   const owner = await requireUser("users.manage");
-  const state = await sendInvite(Number(form.get("id")), owner.name);
+  const state = await sendInvite(Number(form.get("id")), owner);
   audit(owner.name, "sent invite", "user", `#${form.get("id")}`);
   return state;
 }
