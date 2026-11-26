@@ -6,7 +6,7 @@
  * can never disagree. All money is in paise-free whole INR.
  */
 
-import { carePlans, LANDING_PAGE_FROM, WEBSITE_FROM } from "./plans";
+import { APP_BUILD_FROM, carePlans, LANDING_PAGE_FROM, WEBSITE_FROM } from "./plans";
 import { formatINR } from "./utils";
 
 export type ServiceKey =
@@ -94,7 +94,8 @@ interface ServiceRate {
 // TODO(owner): confirm the per-page rate for business-websites and the base and
 // per-unit rates for ecommerce-stores, seo-marketing and custom-software.
 // Business websites is anchored to the published Website Build package (from
-// ₹9,999); the single-page Landing Page package (from ₹4,999) is a fixed
+// ₹9,999) and web-development to the Full Application Build (from ₹19,999);
+// the single-page Landing Page package (from ₹4,999) is a fixed
 // package outside the estimator. The other three are placeholders, not
 // published prices.
 export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
@@ -109,7 +110,7 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "ecommerce-stores": {
     label: "E-commerce stores",
-    base: 24_999,
+    base: 29_999,
     perScope: 2_000,
     scopeNoun: "product categories",
     baseWeeks: 3,
@@ -118,7 +119,7 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "web-development": {
     label: "Web application development",
-    base: 9_999,
+    base: APP_BUILD_FROM,
     perScope: 7_500,
     scopeNoun: "pages",
     baseWeeks: 3,
@@ -127,7 +128,7 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "app-development": {
     label: "Mobile app development",
-    base: 9_999,
+    base: 29_999,
     perScope: 9_000,
     scopeNoun: "screens",
     baseWeeks: 4,
@@ -145,7 +146,7 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "seo-marketing": {
     label: "SEO & digital marketing",
-    base: 7_999,
+    base: 9_999,
     perScope: 1_000,
     scopeNoun: "pages",
     baseWeeks: 1,
@@ -154,7 +155,7 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "custom-software": {
     label: "Custom software, ERP & CRM",
-    base: 59_999,
+    base: 79_999,
     perScope: 10_000,
     scopeNoun: "modules",
     baseWeeks: 4,
@@ -163,7 +164,7 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "ai-integration": {
     label: "AI & automation",
-    base: 29_999,
+    base: 39_999,
     perScope: 4_000,
     scopeNoun: "workflows",
     baseWeeks: 3,
@@ -172,7 +173,7 @@ export const SERVICE_RATES: Record<ServiceKey, ServiceRate> = {
   },
   "product-design": {
     label: "UI/UX & branding",
-    base: 9_999,
+    base: 12_999,
     perScope: 1_500,
     scopeNoun: "screens",
     baseWeeks: 2,
