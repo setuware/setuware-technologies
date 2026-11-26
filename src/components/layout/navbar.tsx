@@ -140,7 +140,7 @@ export function Navbar({ links, announcement }: NavbarProps) {
             ? "border-b border-white/10 bg-[#0b1020]/90 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.6)] backdrop-blur-xl"
             : "border-b border-white/10 bg-[#0b1020]",
           // Brand hairline along the top edge, in the logo's blue-to-teal.
-          "before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-[linear-gradient(90deg,#1d3fae,#1468ad_50%,#0a8ea6)]",
+          "before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-[linear-gradient(90deg,#1d3fae,#1468ad_50%,#3b6cf6)]",
         )}
         initial={false}
         animate={{ y: hidden ? "-100%" : "0%" }}
@@ -203,7 +203,7 @@ export function Navbar({ links, announcement }: NavbarProps) {
                 href="/contact"
                 size="sm"
                 variant="ghost"
-                className="hidden rounded-full bg-[linear-gradient(100deg,#2f56d8,#1477c0_55%,#0a8ea6)] font-semibold text-white shadow-[0_8px_24px_-10px_rgba(47,86,216,0.9)] transition-[filter,box-shadow] hover:brightness-110 hover:shadow-[0_10px_24px_-10px_rgba(29,63,174,0.9)] sm:inline-flex lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*202)] lg:justify-start lg:gap-[calc(var(--s)*10)] lg:pl-[calc(var(--s)*39)] lg:pr-0 lg:text-[calc(var(--s)*15)] lg:leading-[normal]"
+                className="hidden rounded-full bg-[linear-gradient(100deg,#2f56d8,#1477c0_55%,#3b6cf6)] font-semibold text-white shadow-[0_8px_24px_-10px_rgba(47,86,216,0.9)] transition-[filter,box-shadow] hover:brightness-110 hover:shadow-[0_10px_24px_-10px_rgba(29,63,174,0.9)] sm:inline-flex lg:h-[calc(var(--s)*40)] lg:w-[calc(var(--s)*202)] lg:justify-start lg:gap-[calc(var(--s)*10)] lg:pl-[calc(var(--s)*39)] lg:pr-0 lg:text-[calc(var(--s)*15)] lg:leading-[normal]"
               >
                 Start A Project
                 <ArrowRight
@@ -418,7 +418,7 @@ function AnnouncementBar({ text, link, linkLabel }: { text: string; link: string
   }, [key]);
   if (hidden) return null;
   return (
-    <div className="relative bg-[linear-gradient(100deg,#1d3fae,#1468ad_55%,#0a8ea6)] px-10 py-2 text-center text-[0.8rem] font-medium text-white">
+    <div className="relative bg-[linear-gradient(100deg,#1d3fae,#1468ad_55%,#3b6cf6)] px-10 py-2 text-center text-[0.8rem] font-medium text-white">
       <span>{text}</span>
       {link ? (
         <a href={link} className="ml-2 font-semibold underline decoration-white/50 underline-offset-4 hover:decoration-white">

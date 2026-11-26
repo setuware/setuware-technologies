@@ -88,9 +88,9 @@ function PlanCard({ plan }: { plan: Plan }) {
     <SpotlightCard
       as="article"
       tilt={0}
-      glow={plan.highlight ? "rgba(255,255,255,0.45)" : "rgba(0,161,198,0.16)"}
+      glow={plan.highlight ? "rgba(255,255,255,0.45)" : "rgba(47,86,216,0.16)"}
       className={cn(
-        "flex flex-col rounded-[20px] border border-[rgba(0,161,198,0.15)] px-6 pb-5 pt-7 text-black transition-[translate,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_24px_48px_-24px_rgba(0,161,198,0.45)] motion-safe:hover:-translate-y-1 dark:text-white",
+        "flex flex-col rounded-[20px] border border-[rgba(47,86,216,0.15)] px-6 pb-5 pt-7 text-black transition-[translate,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_24px_48px_-24px_rgba(47,86,216,0.45)] motion-safe:hover:-translate-y-1 dark:text-white",
         "lg:rounded-[calc(var(--s)*20)] lg:px-[calc(var(--s)*40)] lg:pb-[calc(var(--s)*20)] lg:pt-[calc(var(--s)*32)]",
         plan.highlight
           ? "bg-[linear-gradient(125deg,#d6def1_0%,#d4e7f4_48%,#d3dbf0_100%)] dark:bg-[linear-gradient(125deg,#1b2c4a_0%,#16384a_48%,#1a2744_100%)]"
@@ -103,7 +103,7 @@ function PlanCard({ plan }: { plan: Plan }) {
           {copy.name ?? plan.name}
         </h3>
         {plan.highlight ? (
-          <span className="rounded-full bg-[#00708c] px-2.5 py-0.5 text-[11px] font-semibold text-white">
+          <span className="rounded-full bg-[#2448c0] px-2.5 py-0.5 text-[11px] font-semibold text-white">
             Recommended
           </span>
         ) : null}
@@ -164,7 +164,7 @@ function BorderSweep() {
         className="absolute top-1/2 left-1/2 aspect-square w-[260%] -translate-x-1/2 -translate-y-1/2 motion-safe:animate-[spin_9s_linear_infinite]"
         style={{
           background:
-            "conic-gradient(from 0deg, transparent 0deg, rgba(0,161,198,0.95) 50deg, transparent 110deg, transparent 180deg, rgba(10,52,166,0.75) 230deg, transparent 290deg)",
+            "conic-gradient(from 0deg, transparent 0deg, rgba(47,86,216,0.95) 50deg, transparent 110deg, transparent 180deg, rgba(10,52,166,0.75) 230deg, transparent 290deg)",
         }}
       />
     </span>
@@ -180,7 +180,7 @@ function QuotedPlanStrip({ plan }: { plan: Plan }) {
   const features = copy.features ?? plan.features;
 
   return (
-    <article className="flex flex-col gap-4 rounded-[20px] border border-[rgba(0,161,198,0.15)] bg-[rgba(235,239,248,0.54)] px-6 py-6 text-black md:flex-row md:items-start md:justify-between md:gap-10 lg:rounded-[calc(var(--s)*20)] lg:px-[calc(var(--s)*40)] lg:py-[calc(var(--s)*26)] dark:bg-white/5 dark:text-white">
+    <article className="flex flex-col gap-4 rounded-[20px] border border-[rgba(47,86,216,0.15)] bg-[rgba(235,239,248,0.54)] px-6 py-6 text-black md:flex-row md:items-start md:justify-between md:gap-10 lg:rounded-[calc(var(--s)*20)] lg:px-[calc(var(--s)*40)] lg:py-[calc(var(--s)*26)] dark:bg-white/5 dark:text-white">
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <h3 className="text-[22px] font-extrabold leading-[normal] tracking-[-0.02em] lg:text-[calc(var(--s)*24)]">

@@ -29,7 +29,7 @@ export interface ServiceCardProps {
 /** Navy from the bottom (under the icon chip) plus a faint brand-cyan wash. */
 const MEDIA_OVERLAY = [
   "linear-gradient(to top, rgba(11,16,32,0.7) 0%, rgba(11,16,32,0.15) 55%, rgba(11,16,32,0.05) 100%)",
-  "linear-gradient(135deg, rgba(0,161,198,0.22) 0%, rgba(0,161,198,0) 60%)",
+  "linear-gradient(135deg, rgba(47,86,216,0.22) 0%, rgba(47,86,216,0) 60%)",
 ].join(", ");
 
 /**

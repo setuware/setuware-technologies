@@ -65,7 +65,7 @@ export default async function PostArticle({ params }: { params: Promise<{ slug: 
       <article>
         <header className="relative isolate overflow-hidden border-b border-border bg-[linear-gradient(180deg,#f6f9fc_0%,#ffffff_100%)] pb-12 pt-28 dark:bg-[linear-gradient(180deg,#0b0e18_0%,#070910_100%)] md:pt-36">
           <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-            <div className="absolute -left-[10%] -top-[20%] h-[60%] w-[55%] rounded-full bg-[#00a1c6]/[0.10] blur-3xl" />
+            <div className="absolute -left-[10%] -top-[20%] h-[60%] w-[55%] rounded-full bg-[#2f56d8]/[0.10] blur-3xl" />
             <div className="absolute -right-[10%] top-[10%] h-[50%] w-[45%] rounded-full bg-[#3b82f6]/[0.08] blur-3xl" />
           </div>
 
@@ -91,7 +91,7 @@ export default async function PostArticle({ params }: { params: Promise<{ slug: 
               <div className="mt-7 flex items-center gap-3 border-t border-border pt-6">
                 <span
                   aria-hidden
-                  className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#00a1c6,#3b82f6)] text-xs font-semibold text-white"
+                  className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#2f56d8,#3b82f6)] text-xs font-semibold text-white"
                 >
                   {post.author.initials}
                 </span>
@@ -131,7 +131,7 @@ export default async function PostArticle({ params }: { params: Promise<{ slug: 
                 <div className="flex items-center gap-3">
                   <span
                     aria-hidden
-                    className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#00a1c6,#3b82f6)] text-sm font-semibold text-white"
+                    className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#2f56d8,#3b82f6)] text-sm font-semibold text-white"
                   >
                     {post.author.initials}
                   </span>

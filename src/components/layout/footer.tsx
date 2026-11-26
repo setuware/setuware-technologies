@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/social-icons";
 import { NewsletterForm } from "@/components/interactive/newsletter-form";
 import { FadeUp, Magnetic } from "@/components/motion/primitives";
+import { HeroBackdrop } from "@/components/interactive/hero-backdrop";
+import { pageVideo } from "@/lib/media";
 
 /**
  * Site footer.
@@ -111,7 +113,7 @@ function FooterLink({ href, children, className }: { href: string; children: Rea
 
 function ContactList() {
   const row = "group/link inline-flex min-h-11 items-center gap-3 text-[0.9375rem] text-white/70 transition-colors hover:text-white lg:min-h-0 lg:text-sm";
-  const icon = "size-4 shrink-0 text-[#22b8db]";
+  const icon = "size-4 shrink-0 text-[#7b9bff]";
 
   return (
     <ul className="flex flex-col gap-1 lg:gap-3.5">
@@ -160,11 +162,11 @@ export async function Footer() {
   const year = await currentYear();
 
   return (
-    <footer className="dark relative isolate overflow-hidden bg-[#05070d] text-white [--primary:#22b8db] [--ring:#22b8db]">
+    <footer className="dark relative isolate overflow-hidden bg-[#05070d] text-white [--primary:#7b9bff] [--ring:#7b9bff]">
       {/* Ambient light behind the call to action. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[38rem] bg-[radial-gradient(55%_60%_at_50%_0%,rgba(0,161,198,0.16),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[38rem] bg-[radial-gradient(55%_60%_at_50%_0%,rgba(47,86,216,0.16),transparent_70%)]"
       />
 
       <div className="container-page pt-16 md:pt-24">
@@ -174,10 +176,15 @@ export async function Footer() {
             aria-labelledby="footer-cta-title"
             className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#0b1020] px-6 py-10 sm:px-10 md:py-14 lg:px-14"
           >
+            <HeroBackdrop sources={pageVideo("process").sources} poster={pageVideo("process").poster} tone="dark" />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(11,16,32,0.92)_0%,rgba(11,16,32,0.75)_50%,rgba(11,16,32,0.55)_100%)]"
+            />
             {/* Lit top edge, a faint grid and a corner glow. */}
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(34,184,219,0.7),transparent)]"
+              className="pointer-events-none absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(123,155,255,0.7),transparent)]"
             />
             <div
               aria-hidden
@@ -185,7 +192,7 @@ export async function Footer() {
             />
             <div
               aria-hidden
-              className="pointer-events-none absolute -right-24 -top-32 size-[28rem] rounded-full bg-[#00a1c6]/20 blur-[110px]"
+              className="pointer-events-none absolute -right-24 -top-32 size-[28rem] rounded-full bg-[#2f56d8]/20 blur-[110px]"
             />
 
             <div className="relative grid gap-8 lg:grid-cols-[1.5fr_1fr] lg:items-end lg:gap-12">
@@ -206,7 +213,7 @@ export async function Footer() {
                 <Magnetic strength={0.2} className="block sm:inline-block">
                   <Link
                     href="/contact"
-                    className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-white px-6 text-[0.95rem] font-semibold text-[#05070d] shadow-[0_8px_30px_-8px_rgba(34,184,219,0.55)] transition-[background-color,box-shadow] duration-300 hover:bg-[#e6f8fc] hover:shadow-[0_10px_40px_-6px_rgba(34,184,219,0.7)] sm:w-auto"
+                    className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-white px-6 text-[0.95rem] font-semibold text-[#05070d] shadow-[0_8px_30px_-8px_rgba(123,155,255,0.55)] transition-[background-color,box-shadow] duration-300 hover:bg-[#e6f8fc] hover:shadow-[0_10px_40px_-6px_rgba(123,155,255,0.7)] sm:w-auto"
                   >
                     Start a project
                     <ArrowRight
@@ -229,7 +236,7 @@ export async function Footer() {
             <ul className="relative mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 text-sm text-white/70 sm:flex-row sm:flex-wrap sm:gap-x-8">
               {PROMISES.map((promise) => (
                 <li key={promise} className="inline-flex items-center gap-2.5">
-                  <span className="inline-flex size-5 items-center justify-center rounded-full bg-[#00a1c6]/15 text-[#22b8db]">
+                  <span className="inline-flex size-5 items-center justify-center rounded-full bg-[#2f56d8]/15 text-[#7b9bff]">
                     <Check className="size-3" strokeWidth={3} aria-hidden />
                   </span>
                   {promise}
@@ -364,7 +371,7 @@ export async function Footer() {
       {/* 5 — Cropped watermark: present, never loud. */}
       <div aria-hidden className="pointer-events-none select-none overflow-hidden">
         <div className="container-page">
-          <p className="-mb-[0.36em] whitespace-nowrap text-center font-[family-name:var(--font-brand)] text-[clamp(4rem,19vw,16.5rem)] font-semibold leading-[0.9] tracking-[-0.07em] text-transparent [background-clip:text] [-webkit-background-clip:text] bg-[linear-gradient(180deg,rgba(255,255,255,0.10)_0%,rgba(34,184,219,0.06)_45%,rgba(255,255,255,0)_80%)]">
+          <p className="-mb-[0.36em] whitespace-nowrap text-center font-[family-name:var(--font-brand)] text-[clamp(4rem,19vw,16.5rem)] font-semibold leading-[0.9] tracking-[-0.07em] text-transparent [background-clip:text] [-webkit-background-clip:text] bg-[linear-gradient(180deg,rgba(255,255,255,0.10)_0%,rgba(123,155,255,0.06)_45%,rgba(255,255,255,0)_80%)]">
             Setuware
           </p>
         </div>

@@ -12,8 +12,8 @@
   --radius-card: 1rem;
 
   /* Figma palette */
-  --color-setu: #00a1c6;
-  --color-setu-dark: #0089a9;
+  --color-setu: #2f56d8;
+  --color-setu-dark: #2448c0;
   --color-ink: #0a0a0a;
 
   --color-brand-50: #eff6ff;
@@ -29,7 +29,7 @@
   --color-brand-950: #172554;
 
   --color-accent-400: #22d3ee;
-  --color-accent-500: #06b6d4;
+  --color-accent-500: #3b6cf6;
   --color-accent-600: #0891b2;
 
   --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
@@ -51,9 +51,9 @@
   --foreground: #0b1020;
   --muted-foreground: #5b6478;
   --border: #e4e8f0;
-  --primary: #00a1c6;
+  --primary: #2f56d8;
   --primary-foreground: #ffffff;
-  --ring: #00a1c6;
+  --ring: #2f56d8;
   --shadow-color: 15 23 42;
 }
 
@@ -65,10 +65,21 @@
   --foreground: #f3f5fb;
   --muted-foreground: #9aa3b8;
   --border: #212739;
-  --primary: #22c3e6;
+  --primary: #7b9bff;
   --primary-foreground: #06080f;
-  --ring: #22c3e6;
+  --ring: #7b9bff;
+  --color-setu: #7b9bff;
+  --color-setu-dark: #9db4ff;
   --shadow-color: 0 0 0;
+}
+
+/* Dark mode lifts --color-setu for readable text; solid fills keep the deeper
+   brand blue so white labels on them stay legible. */
+.dark :is(.bg-setu, .hover\:bg-setu:hover, .group:hover .group-hover\:bg-setu, .peer:checked ~ .peer-checked\:bg-setu) {
+  background-color: #2f56d8;
+}
+.dark :is(.hover\:bg-setu-dark:hover, .dark\:hover\:bg-setu-dark:hover) {
+  background-color: #2448c0;
 }
 
 @theme inline {

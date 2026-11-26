@@ -261,14 +261,14 @@ export default function AboutPage() {
       </Section>
 
       {/* Mission */}
-      <section className="relative overflow-hidden border-y border-setu/15 bg-[linear-gradient(120deg,#effafd,#f6fbfe_55%,#eef6fc)] py-16 md:py-24 dark:bg-[linear-gradient(120deg,#08202a,var(--background-subtle))]">
+      <section className="relative overflow-hidden border-y border-setu/15 bg-[linear-gradient(120deg,#effafd,#f6fbfe_55%,#eef6fc)] py-16 md:py-24 dark:bg-[linear-gradient(120deg,#0d1640,var(--background-subtle))]">
         <div
           aria-hidden
           className="pointer-events-none absolute -left-24 top-1/2 size-[26rem] -translate-y-1/2 rounded-full bg-setu/15 blur-[100px]"
         />
         <div className="container-page relative">
           <FadeUp y={24} className="mx-auto max-w-4xl text-center">
-            <span className="mx-auto inline-flex size-12 items-center justify-center rounded-full bg-setu text-white shadow-[0_10px_24px_-10px_rgba(0,161,198,0.8)]">
+            <span className="mx-auto inline-flex size-12 items-center justify-center rounded-full bg-setu text-white shadow-[0_10px_24px_-10px_rgba(47,86,216,0.8)]">
               <Quote className="size-5 fill-current" aria-hidden />
             </span>
             <p className={cn(EYEBROW, "mt-6")}>Our mission</p>
@@ -305,14 +305,14 @@ export default function AboutPage() {
                 <div className="h-full" data-cursor="hover">
                   <SpotlightCard
                     tilt={3}
-                    glow="rgba(0,161,198,0.12)"
+                    glow="rgba(47,86,216,0.12)"
                     className={cn(
                       "h-full rounded-[1.25rem] border border-border bg-surface p-6 md:p-7",
                       LIGHT_CARD_SHADOW,
                     )}
                   >
                     <div className="relative">
-                      <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(0,161,198,0.16),rgba(0,97,168,0.08))] text-setu ring-1 ring-inset ring-setu/20">
+                      <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(47,86,216,0.16),rgba(0,97,168,0.08))] text-setu ring-1 ring-inset ring-setu/20">
                         <Icon className="size-[22px]" strokeWidth={1.8} aria-hidden />
                       </span>
                       <h3 className="mt-6 font-display text-lg font-semibold text-foreground">
@@ -363,7 +363,7 @@ export default function AboutPage() {
                   y={24}
                   className="relative grid grid-cols-[40px_1fr] gap-5 lg:flex lg:flex-col lg:items-center lg:gap-6 lg:text-center"
                 >
-                  <span className="relative z-10 inline-flex size-10 items-center justify-center rounded-full border border-setu/40 bg-[#e8f7fb] font-mono text-xs font-semibold text-[#007a96] shadow-[0_0_0_6px_var(--background)] dark:bg-[#0b2a33] dark:text-setu">
+                  <span className="relative z-10 inline-flex size-10 items-center justify-center rounded-full border border-setu/40 bg-[#e8f7fb] font-mono text-xs font-semibold text-[#2448c0] shadow-[0_0_0_6px_var(--background)] dark:bg-[#0f1a4a] dark:text-setu">
                     {item.step}
                   </span>
                   <div
@@ -475,7 +475,7 @@ export default function AboutPage() {
               <StaggerItem key={industry.slug} as="li" y={16}>
                 <Link
                   href={`/industries/${industry.slug}`}
-                  className="group inline-flex items-center gap-2.5 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-4 text-sm font-medium text-foreground shadow-[0_1px_2px_rgb(var(--shadow-color)/0.06)] transition-[border-color,box-shadow,color] duration-300 hover:border-setu/50 hover:text-setu hover:shadow-[0_8px_20px_-10px_rgba(0,161,198,0.5)]"
+                  className="group inline-flex items-center gap-2.5 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-4 text-sm font-medium text-foreground shadow-[0_1px_2px_rgb(var(--shadow-color)/0.06)] transition-[border-color,box-shadow,color] duration-300 hover:border-setu/50 hover:text-setu hover:shadow-[0_8px_20px_-10px_rgba(47,86,216,0.5)]"
                 >
                   <IndustryIcon
                     name={industry.icon}
@@ -511,7 +511,7 @@ export default function AboutPage() {
           <FadeUp
             y={24}
             className={cn(
-              "relative overflow-hidden rounded-[1.75rem] border border-setu/20 bg-[linear-gradient(120deg,#effafd,#ffffff_55%,#eef6fc)] px-6 py-12 text-center sm:px-12 md:py-16 dark:bg-[linear-gradient(120deg,#08202a,var(--surface))]",
+              "relative overflow-hidden rounded-[1.75rem] border border-setu/20 bg-[linear-gradient(120deg,#effafd,#ffffff_55%,#eef6fc)] px-6 py-12 text-center sm:px-12 md:py-16 dark:bg-[linear-gradient(120deg,#0d1640,var(--surface))]",
               LIGHT_CARD_SHADOW,
             )}
           >
@@ -536,7 +536,7 @@ export default function AboutPage() {
                 <ButtonLink
                   href="/contact"
                   size="lg"
-                  className="w-full rounded-full bg-setu text-white shadow-[0_10px_24px_-10px_rgba(0,161,198,0.8)] hover:bg-setu-dark sm:w-auto"
+                  className="w-full rounded-full bg-setu text-white shadow-[0_10px_24px_-10px_rgba(47,86,216,0.8)] hover:bg-setu-dark sm:w-auto"
                 >
                   Book a consultation
                   <ArrowRight className="size-4" aria-hidden />
