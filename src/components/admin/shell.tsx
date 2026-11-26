@@ -307,6 +307,11 @@ export function AdminShell({
           <button type="button" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen(!open)} className="rounded-lg p-2 hover:bg-white/10">
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
+          <form action={logoutAction}>
+            <button type="submit" aria-label="Sign out" className="rounded-lg p-2 hover:bg-white/10">
+              <LogOut className="size-5" aria-hidden />
+            </button>
+          </form>
         </header>
         <div className="relative flex-1 bg-[radial-gradient(60rem_30rem_at_100%_-10%,rgba(47,86,216,0.07),transparent),radial-gradient(40rem_24rem_at_0%_0%,rgba(10,142,166,0.05),transparent)]">
           <div className="hidden items-center justify-between border-b border-border/70 bg-surface/70 px-10 py-3 backdrop-blur lg:flex">
@@ -326,6 +331,11 @@ export function AdminShell({
             <a href="/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground">
               <ExternalLink className="size-3.5" aria-hidden /> View website
             </a>
+            <form action={logoutAction} className="ml-2">
+              <button type="submit" className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-muted-foreground hover:border-red-500/40 hover:text-red-600">
+                <LogOut className="size-3.5" aria-hidden /> Sign out
+              </button>
+            </form>
           </div>
           <div data-admin-content className="mx-auto w-full max-w-6xl px-4 pb-28 pt-5 sm:px-6 sm:pt-6 lg:px-10 lg:py-9">{children}</div>
         </div>

@@ -14,6 +14,7 @@ import {
   completeTwoFactor,
   createPasswordToken,
   createUser,
+  deleteUser,
   disableTwoFactor,
   enableTwoFactor,
   getUser,
@@ -438,6 +439,17 @@ export async function updateUserAction(form: FormData): Promise<void> {
   updateUser(id, { role: getRole(role) ? role : target.role, active });
   audit(owner.name, "updated team member", "user", `${target.name} → ${role}${active ? "" : " (disabled)"}`);
   redirect("/admin/users");
+}
+
+export async function removeUserAction(form: FormData): Promise<void> {
+  const owner = await requireUser("users.manage");
+  const target = getUser(Number(form.get("id")));
+  if (!target) redirect("/admin/users");
+  if (target.id === owner.id) redirect("/admin/users?error=self");
+  if (target.role === "owner" && target.active && ownerCount() <= 1) redirect("/admin/users?error=last-owner");
+  deleteUser(target.id);
+  audit(owner.name, "removed team member", "user", `${target.name} (${target.email})`);
+  redirect(`/admin/users?removed=${encodeURIComponent(target.name)}`);
 }
 
 export async function resetUserPasswordAction(_previous: FormState, form: FormData): Promise<FormState> {

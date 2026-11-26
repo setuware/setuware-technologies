@@ -174,6 +174,25 @@ export function updateUser(userId: number, patch: { name?: string; role?: Role; 
   }
 }
 
+/**
+ * Removes an account for good. Sessions and password links go with it
+ * (cascade); work history such as tasks, time and leave stays and shows as
+ * "Former member".
+ */
+export function deleteUser(userId: number): void {
+  const db = getDb();
+  db.exec("BEGIN");
+  try {
+    db.prepare("UPDATE users SET manager_id = NULL WHERE manager_id = ?").run(userId);
+    db.prepare("DELETE FROM notifications WHERE user_id = ?").run(userId);
+    db.prepare("DELETE FROM users WHERE id = ?").run(userId);
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+}
+
 export interface Profile {
   designation: string;
   department: string;
