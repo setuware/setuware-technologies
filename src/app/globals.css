@@ -73,6 +73,15 @@
   --shadow-color: 0 0 0;
 }
 
+/* Dark mode lifts --color-setu for readable text; solid fills keep the deeper
+   brand blue so white labels on them stay legible. */
+.dark :is(.bg-setu, .hover\:bg-setu:hover, .group:hover .group-hover\:bg-setu, .peer:checked ~ .peer-checked\:bg-setu) {
+  background-color: #2f56d8;
+}
+.dark :is(.hover\:bg-setu-dark:hover, .dark\:hover\:bg-setu-dark:hover) {
+  background-color: #2448c0;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-background-subtle: var(--background-subtle);
