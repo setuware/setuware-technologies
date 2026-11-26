@@ -30,6 +30,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  MessageSquareText,
   UserCircle,
   Users,
   UsersRound,
@@ -68,9 +69,11 @@ const NAV = [
   { group: "Content", href: "/admin/jobs", label: "Jobs", Icon: Briefcase, area: "jobs" },
   { group: "Content", href: "/admin/media", label: "Media", Icon: ImageIcon, area: "media" },
   { group: "People", href: "/admin/people", label: "Team directory", Icon: Contact, area: null },
+  { group: "People", href: "/admin/updates", label: "Team updates", Icon: MessageSquareText, area: null },
   { group: "People", href: "/admin/applications", label: "Applications", Icon: UsersRound, area: "applications" },
   { group: "People", href: "/admin/users", label: "Team", Icon: Users, area: "users" },
   { group: "People", href: "/admin/roles", label: "Roles & access", Icon: ShieldCheck, area: "roles.manage" },
+  { group: "Settings", href: "/admin/account", label: "Password & security", Icon: UserCircle, area: null },
   { group: "Settings", href: "/admin/templates", label: "Email templates", Icon: MailPlus, area: "templates" },
   { group: "Settings", href: "/admin/settings", label: "Site settings", Icon: Settings, area: "settings.manage" },
 ] as const;
@@ -93,7 +96,7 @@ export function AdminShell({
 }: {
   unread: number;
   presence: ShellPresence;
-  user: { name: string; email: string; roleLabel: string };
+  user: { id: number; name: string; email: string; roleLabel: string };
   areas: readonly string[];
   badges: Record<string, number>;
   children: React.ReactNode;
@@ -191,7 +194,7 @@ export function AdminShell({
     .join("");
 
   const nav = (
-    <nav className="flex flex-1 flex-col gap-5 overflow-y-auto px-3">
+    <nav aria-label="Admin sections" className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain px-3 pb-2 [scrollbar-color:rgba(255,255,255,0.22)_transparent] [scrollbar-width:thin]">
       {groups.map((group) => (
         <div key={group}>
           <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">{group}</p>
@@ -245,7 +248,7 @@ export function AdminShell({
           </span>
         </span>
       </Link>
-      <div className="relative flex flex-1 flex-col">{nav}</div>
+      <div className="relative flex min-h-0 flex-1 flex-col">{nav}</div>
       {install ? (
         <button
           type="button"
@@ -259,7 +262,7 @@ export function AdminShell({
         </button>
       ) : null}
       <div className="relative mx-3 mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
-        <Link href="/admin/account" onClick={() => setOpen(false)} className="flex items-center gap-3 rounded-xl p-1 hover:bg-white/[0.04]">
+        <Link href={`/admin/people/${user.id}`} title="My profile" onClick={() => setOpen(false)} className="flex items-center gap-3 rounded-xl p-1 hover:bg-white/[0.04]">
           <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#2f56d8,#0a8ea6)] text-xs font-bold">
             {initials}
           </span>
@@ -298,15 +301,20 @@ export function AdminShell({
         <header className="dark sticky top-0 z-40 flex items-center justify-between bg-[#0b1020] px-4 py-3 text-white lg:hidden">
           <Link href="/admin" className="flex items-center gap-2">
             <LogoMark className="size-8" />
-            <span className="font-[family-name:var(--font-brand)] font-bold tracking-[0.06em]">ADMIN</span>
+            <span className="hidden font-[family-name:var(--font-brand)] font-bold tracking-[0.06em] min-[440px]:inline">ADMIN</span>
           </Link>
-          <div className="ml-auto mr-1">{presenceBar}</div>
+          <div className="ml-auto mr-1 min-w-0">{presenceBar}</div>
           <Link href="/admin/search" aria-label="Search the admin" className="rounded-lg p-2 hover:bg-white/10">
             <Search className="size-5" aria-hidden />
           </Link>
           <button type="button" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen(!open)} className="rounded-lg p-2 hover:bg-white/10">
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
+          <form action={logoutAction}>
+            <button type="submit" aria-label="Sign out" className="rounded-lg p-2 hover:bg-white/10">
+              <LogOut className="size-5" aria-hidden />
+            </button>
+          </form>
         </header>
         <div className="relative flex-1 bg-[radial-gradient(60rem_30rem_at_100%_-10%,rgba(47,86,216,0.07),transparent),radial-gradient(40rem_24rem_at_0%_0%,rgba(10,142,166,0.05),transparent)]">
           <div className="hidden items-center justify-between border-b border-border/70 bg-surface/70 px-10 py-3 backdrop-blur lg:flex">
@@ -326,6 +334,11 @@ export function AdminShell({
             <a href="/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground">
               <ExternalLink className="size-3.5" aria-hidden /> View website
             </a>
+            <form action={logoutAction} className="ml-2">
+              <button type="submit" className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-muted-foreground hover:border-red-500/40 hover:text-red-600">
+                <LogOut className="size-3.5" aria-hidden /> Sign out
+              </button>
+            </form>
           </div>
           <div data-admin-content className="mx-auto w-full max-w-6xl px-4 pb-28 pt-5 sm:px-6 sm:pt-6 lg:px-10 lg:py-9">{children}</div>
         </div>

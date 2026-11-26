@@ -183,7 +183,7 @@ export function PlanCard({
     <div className="relative h-full overflow-hidden rounded-2xl p-[1.5px] shadow-[0_1px_2px_rgb(15_23_42/0.05),0_20px_50px_-20px_rgb(0_161_198/0.45)]">
       <div
         aria-hidden
-        className="absolute left-1/2 top-1/2 aspect-square w-[250%] -translate-x-1/2 -translate-y-1/2 animate-spin bg-[conic-gradient(from_0deg,#00a1c6,#3b82f6_25%,rgba(0,161,198,0.15)_50%,#22d3ee_75%,#00a1c6)] [animation-duration:7s] motion-reduce:animate-none"
+        className="absolute left-1/2 top-1/2 aspect-square w-[250%] -translate-x-1/2 -translate-y-1/2 animate-spin bg-[conic-gradient(from_0deg,#2f56d8,#3b82f6_25%,rgba(47,86,216,0.15)_50%,#22d3ee_75%,#2f56d8)] [animation-duration:7s] motion-reduce:animate-none"
       />
       <div className="relative h-full">{body}</div>
     </div>

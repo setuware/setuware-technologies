@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { FadeUp } from "@/components/motion/primitives";
 import { cn } from "@/lib/utils";
 
 export type SectionSurface = "default" | "subtle" | "tint" | "dots" | "grid" | "ink";
@@ -54,7 +55,7 @@ function SectionDecor({ surface }: { surface: SectionSurface }) {
           <div
             className={cn(
               "absolute -left-[10%] -top-[20%] h-[60%] w-[55%] rounded-full blur-3xl",
-              surface === "ink" ? "bg-[#00a1c6]/20" : "bg-[#00a1c6]/[0.10]",
+              surface === "ink" ? "bg-[#2f56d8]/20" : "bg-[#2f56d8]/[0.10]",
             )}
           />
           <div
@@ -95,8 +96,10 @@ export function SectionHeading({
   as: Tag = "h2",
   className,
 }: SectionHeadingProps) {
+  // The page h1 is animated by PageHero; section headings fade up on scroll.
+  const Root = Tag === "h1" ? "div" : FadeUp;
   return (
-    <div
+    <Root
       className={cn(
         "flex flex-col gap-4",
         align === "center" ? "mx-auto max-w-2xl text-center" : "max-w-2xl",
@@ -123,6 +126,6 @@ export function SectionHeading({
           {description}
         </p>
       ) : null}
-    </div>
+    </Root>
   );
 }

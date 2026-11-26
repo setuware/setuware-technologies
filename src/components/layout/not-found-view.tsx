@@ -34,7 +34,7 @@ export function NotFoundView() {
   return (
     <div className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#f6f9fc_0%,#ffffff_100%)] dark:bg-[linear-gradient(180deg,#0b0e18_0%,#070910_100%)]">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -left-[10%] -top-[10%] h-[60%] w-[55%] rounded-full bg-[#00a1c6]/[0.10] blur-3xl" />
+        <div className="absolute -left-[10%] -top-[10%] h-[60%] w-[55%] rounded-full bg-[#2f56d8]/[0.10] blur-3xl" />
         <div className="absolute -bottom-[20%] -right-[10%] h-[60%] w-[50%] rounded-full bg-[#3b82f6]/[0.08] blur-3xl" />
         <div className="absolute inset-0 bg-[radial-gradient(rgba(15,23,42,0.08)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_35%,#000_30%,transparent_100%)] dark:bg-[radial-gradient(rgba(255,255,255,0.07)_1px,transparent_1px)]" />
       </div>

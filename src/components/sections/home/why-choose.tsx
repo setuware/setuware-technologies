@@ -1,19 +1,24 @@
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, FileText, KeyRound, LifeBuoy, Search, ShieldCheck, UserRound } from "lucide-react";
 
+import { HeroBackdrop } from "@/components/interactive/hero-backdrop";
 import { FadeUp, Stagger, StaggerItem } from "@/components/motion/primitives";
+import { pageVideo } from "@/lib/media";
 import { BENEFITS } from "./copy";
-import { CircuitLines, Eyebrow, SectionTitle } from "./shared";
+import { Eyebrow, SectionTitle } from "./shared";
 
 const ICONS = [FileText, UserRound, KeyRound, ShieldCheck, Search, LifeBuoy] as const;
 
-/** Dark navy band with blue line-art, listing why clients choose Setuware. */
+/** Dark band over muted team-discussion footage, listing why clients choose Setuware. */
 export function WhyChoose() {
+  const media = pageVideo("about");
   return (
     <section id="why-setuware" className="relative isolate overflow-hidden bg-[#0b0f2a] py-20 text-white lg:py-28">
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(60rem_30rem_at_85%_0%,rgba(47,86,216,0.35),transparent),radial-gradient(40rem_24rem_at_0%_100%,rgba(59,108,246,0.22),transparent)]" />
-      <CircuitLines className="absolute -left-10 top-8 -z-10 w-[30rem] text-[#3b6cf6]/30" />
-      <CircuitLines className="absolute -right-10 bottom-0 -z-10 w-[34rem] rotate-180 text-[#3b6cf6]/25" />
+      <div className="absolute inset-0 -z-10">
+        <HeroBackdrop sources={media.sources} poster={media.poster} tone="dark" />
+      </div>
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(11,15,42,0.9)_0%,rgba(11,15,42,0.68)_45%,rgba(11,15,42,0.42)_100%)]" />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(60rem_30rem_at_85%_0%,rgba(47,86,216,0.3),transparent)]" />
 
       <div className="container-figma grid gap-14 lg:grid-cols-[0.9fr_1.4fr] lg:gap-20">
         <FadeUp>
@@ -45,7 +50,7 @@ export function WhyChoose() {
             const Icon = ICONS[i];
             return (
               <StaggerItem key={benefit.title}>
-                <div className="group h-full rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm transition-colors duration-300 hover:border-[#3b6cf6]/60 hover:bg-[#2f56d8]/15">
+                <div className="group h-full rounded-2xl border border-white/12 bg-[#0b0f2a]/55 p-6 backdrop-blur-md transition-colors duration-300 hover:border-[#3b6cf6]/60 hover:bg-[#2f56d8]/15">
                   <span className="inline-flex size-12 items-center justify-center rounded-xl bg-[#2f56d8]/20 text-[#9db4ff] transition-colors group-hover:bg-[#2f56d8] group-hover:text-white">
                     <Icon className="size-6" aria-hidden />
                   </span>

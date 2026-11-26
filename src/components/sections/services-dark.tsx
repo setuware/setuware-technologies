@@ -34,7 +34,7 @@ export const LIGHT_CARD_SHADOW =
  */
 const MEDIA_OVERLAY = [
   "linear-gradient(to top, rgba(11,16,32,0.42) 0%, rgba(11,16,32,0.08) 45%, rgba(11,16,32,0) 70%)",
-  "linear-gradient(135deg, rgba(0,161,198,0.22) 0%, rgba(0,161,198,0) 50%)",
+  "linear-gradient(135deg, rgba(47,86,216,0.22) 0%, rgba(47,86,216,0) 50%)",
 ].join(", ");
 
 /**
@@ -277,7 +277,7 @@ export function ServicesDark() {
                 >
                   <SpotlightCard
                     tilt={5}
-                    glow="rgba(0,161,198,0.12)"
+                    glow="rgba(47,86,216,0.12)"
                     className={cn(
                       "h-full overflow-hidden rounded-[1.4rem] border border-border bg-surface text-foreground",
                       LIGHT_CARD_SHADOW,
@@ -356,7 +356,7 @@ export function ServicesDark() {
 
 /**
  * The light backdrop shared by "All services" and the process timeline: soft
- * brand-cyan (#00a1c6) and blue (#0061a8) glows at low opacity over a fine
+ * brand-cyan (#2f56d8) and blue (#0061a8) glows at low opacity over a fine
  * pattern (dots for services, a grid for the process) that fades out toward
  * the edges, so the surface has texture without any visible tiling.
  * Purely decorative.
@@ -369,8 +369,8 @@ export function LightSectionBackdrop({ variant }: { variant: "services" | "proce
         className="absolute inset-0 dark:opacity-60"
         style={{
           backgroundImage: services
-            ? "radial-gradient(42rem 30rem at 8% -4%, rgba(0,161,198,0.16), transparent 70%), radial-gradient(38rem 32rem at 96% 38%, rgba(0,97,168,0.11), transparent 70%)"
-            : "radial-gradient(46rem 26rem at 50% 0%, rgba(0,161,198,0.10), transparent 70%), radial-gradient(34rem 30rem at 0% 90%, rgba(0,97,168,0.07), transparent 70%)",
+            ? "radial-gradient(42rem 30rem at 8% -4%, rgba(47,86,216,0.16), transparent 70%), radial-gradient(38rem 32rem at 96% 38%, rgba(0,97,168,0.11), transparent 70%)"
+            : "radial-gradient(46rem 26rem at 50% 0%, rgba(47,86,216,0.10), transparent 70%), radial-gradient(34rem 30rem at 0% 90%, rgba(0,97,168,0.07), transparent 70%)",
         }}
       />
       <div

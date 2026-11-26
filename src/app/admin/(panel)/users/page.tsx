@@ -1,9 +1,11 @@
 import { updateUserAction, userSecurityAction } from "@/app/admin/actions";
 import { can, listUsers } from "@/lib/cms/auth";
 import { listRoles } from "@/lib/cms/rbac";
+import { emailConfigured } from "@/lib/lead-email";
 import { requireUser } from "@/lib/cms/session";
+import { ShieldAlert, UserPlus } from "lucide-react";
 import { SubmitButton } from "@/components/admin/form-bits";
-import { AddUserForm, UserAccess } from "@/components/admin/team-forms";
+import { AddUserForm, RemoveUser, UserAccess } from "@/components/admin/team-forms";
 import { Avatar, Card, inputClass, PageHeader, timeAgo } from "@/components/admin/ui";
 
 // Signed-in page: rendered per request (see the panel layout).
@@ -20,27 +22,72 @@ function Pill({ tone, children }: { tone: "green" | "amber" | "red" | "slate" | 
   return <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${tones[tone]}`}>{children}</span>;
 }
 
-export default async function UsersPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+export default async function UsersPage({ searchParams }: { searchParams: Promise<{ error?: string; removed?: string }> }) {
   const me = await requireUser("users");
-  const { error } = await searchParams;
+  const { error, removed } = await searchParams;
   const users = listUsers();
   const roles = Object.fromEntries(listRoles().map((role) => [role.key, role.name]));
   const manage = can(me, "users.manage");
   const now = new Date().toISOString();
+  const summary = [
+    { label: "Members", value: users.length },
+    { label: "Active", value: users.filter((user) => user.active && user.hasPassword).length },
+    { label: "Invited", value: users.filter((user) => user.active && !user.hasPassword).length },
+    { label: "Disabled", value: users.filter((user) => !user.active).length },
+  ];
 
   return (
     <>
-      <PageHeader title="Team" description="Who can sign in to the admin, what each person can open, and how their account is protected." />
+      <PageHeader
+        title="Team"
+        description="Who can sign in to the admin, what each person can open, and how their account is protected."
+        actions={
+          manage ? (
+            <a href="#add-member" className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#2f56d8] px-4 text-sm font-semibold text-white hover:bg-[#2647b8]">
+              <UserPlus className="size-4" aria-hidden /> Add member
+            </a>
+          ) : null
+        }
+      />
       {error === "last-owner" ? (
         <p className="mb-5 rounded-xl bg-amber-500/10 px-4 py-2.5 text-sm text-amber-700 dark:text-amber-300">There must always be at least one active owner.</p>
       ) : null}
+      {error === "self" ? (
+        <p className="mb-5 rounded-xl bg-amber-500/10 px-4 py-2.5 text-sm text-amber-700 dark:text-amber-300">You cannot remove your own account.</p>
+      ) : null}
+      {removed ? (
+        <p role="status" className="mb-5 rounded-xl bg-emerald-500/10 px-4 py-2.5 text-sm font-medium text-emerald-700 dark:text-emerald-400">{removed} was removed from the admin.</p>
+      ) : null}
+
+      <dl className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {summary.map((item) => (
+          <Card key={item.label} className="p-4">
+            <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{item.label}</dt>
+            <dd className="mt-1 text-2xl font-bold text-foreground">{item.value}</dd>
+          </Card>
+        ))}
+      </dl>
+
+      {!manage ? (
+        <p className="mb-6 flex items-start gap-2 rounded-xl bg-blue-500/8 px-4 py-3 text-sm text-blue-800 dark:text-blue-300">
+          <ShieldAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
+          Your role ({me.roleName}) can view the team but not add, change or remove members. Ask an owner to give your role the Team “Invite / manage” permission under Roles.
+        </p>
+      ) : null}
 
       {manage ? (
+      <div id="add-member" className="scroll-mt-24">
       <Card className="mb-6 p-6">
         <h2 className="mb-1 font-semibold text-foreground">Add a team member</h2>
-        <p className="mb-4 text-sm text-muted-foreground">Use their work email so emails they send from the admin come back to them.</p>
-        <AddUserForm roles={roles} />
+        <p className="mb-5 text-sm text-muted-foreground">Creates their account and emails their login details. Use their work email so replies to emails they send from the admin reach them.</p>
+        <AddUserForm
+          roles={roles}
+          members={users.filter((user) => user.active).map((user) => ({ id: user.id, name: user.name }))}
+          departments={[...new Set(users.map((user) => user.department).filter(Boolean))]}
+          emailReady={emailConfigured()}
+        />
       </Card>
+      </div>
       ) : null}
 
       <Card className="overflow-hidden">
@@ -91,6 +138,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
                   </div>
                 </div>
                 {manage ? (
+                <div className="flex flex-wrap items-center gap-2">
                 <form action={updateUserAction} className="flex flex-wrap items-center gap-2">
                   <input type="hidden" name="id" value={user.id} />
                   <select name="role" defaultValue={user.role} aria-label={`Role for ${user.name}`} className={`${inputClass} w-auto py-1.5`}>
@@ -101,12 +149,14 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
                     ))}
                   </select>
                   <label className="flex items-center gap-1.5 text-sm text-foreground">
-                    <input type="checkbox" name="active" defaultChecked={user.active} className="size-4 accent-[#2f56d8]" /> Active
+                    <input type="checkbox" name="active" defaultChecked={user.active} className="size-4 accent-[#2f56d8]" /> Can sign in
                   </label>
                   <SubmitButton variant="secondary" className="h-9 px-4">
-                    Update
+                    Save
                   </SubmitButton>
                 </form>
+                {user.id !== me.id ? <RemoveUser id={user.id} name={user.name} /> : null}
+                </div>
                 ) : (
                   <span className="text-sm text-muted-foreground">{user.roleName}</span>
                 )}

@@ -64,6 +64,12 @@ export interface AdminUser {
   joinedOn: string | null;
   birthday: string | null;
   managerId: number | null;
+  bio: string;
+  skills: string[];
+  location: string;
+  emergencyContact: string;
+  employeeCode: string;
+  employmentType: string;
 }
 
 export async function hashPassword(password: string): Promise<string> {
@@ -115,6 +121,15 @@ function rowToUser(row: Record<string, unknown>): AdminUser {
     joinedOn: (row.joined_on as string | null) ?? null,
     birthday: (row.birthday as string | null) ?? null,
     managerId: row.manager_id == null ? null : Number(row.manager_id),
+    bio: String(row.bio ?? ""),
+    skills: String(row.skills ?? "")
+      .split(",")
+      .map((skill) => skill.trim())
+      .filter(Boolean),
+    location: String(row.location ?? ""),
+    emergencyContact: String(row.emergency_contact ?? ""),
+    employeeCode: String(row.employee_code ?? ""),
+    employmentType: String(row.employment_type ?? ""),
   };
 }
 
@@ -162,6 +177,8 @@ export async function setPassword(userId: number, password: string, temporary = 
     .run(await hashPassword(password), temporary ? 1 : 0, userId);
   // A new password signs every existing session out.
   getDb().prepare("DELETE FROM sessions WHERE user_id = ?").run(userId);
+  // An admin-set password replaces any unused invite or reset link.
+  if (temporary) getDb().prepare("DELETE FROM password_tokens WHERE user_id = ? AND used_at IS NULL").run(userId);
 }
 
 export function updateUser(userId: number, patch: { name?: string; role?: Role; active?: boolean }): void {
@@ -171,6 +188,26 @@ export function updateUser(userId: number, patch: { name?: string; role?: Role; 
   if (patch.active !== undefined) {
     db.prepare("UPDATE users SET active = ? WHERE id = ?").run(patch.active ? 1 : 0, userId);
     if (!patch.active) db.prepare("DELETE FROM sessions WHERE user_id = ?").run(userId);
+  }
+}
+
+/**
+ * Removes an account for good. Sessions and password links go with it
+ * (cascade); work history such as tasks, time and leave stays and shows as
+ * "Former member".
+ */
+export function deleteUser(userId: number): void {
+  const db = getDb();
+  db.exec("BEGIN");
+  try {
+    db.prepare("UPDATE users SET manager_id = NULL WHERE manager_id = ?").run(userId);
+    db.prepare("DELETE FROM notifications WHERE user_id = ?").run(userId);
+    db.prepare("DELETE FROM work_updates WHERE user_id = ?").run(userId);
+    db.prepare("DELETE FROM users WHERE id = ?").run(userId);
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
   }
 }
 
@@ -197,6 +234,22 @@ export function updateProfile(userId: number, profile: Profile): void {
   getDb()
     .prepare("UPDATE users SET designation = ?, department = ?, phone = ?, joined_on = ?, birthday = ?, manager_id = ? WHERE id = ?")
     .run(profile.designation, profile.department, profile.phone, profile.joinedOn, profile.birthday, managerId, userId);
+}
+
+export const EMPLOYMENT_TYPES = ["Full-time", "Part-time", "Intern", "Contract", "Freelance"] as const;
+
+/** The parts of a profile people write about themselves. */
+export function updateAbout(userId: number, about: { bio: string; skills: string[]; location: string; emergencyContact: string }): void {
+  const skills = [...new Set(about.skills.map((skill) => skill.trim().slice(0, 30)).filter(Boolean))].slice(0, 20);
+  getDb()
+    .prepare("UPDATE users SET bio = ?, skills = ?, location = ?, emergency_contact = ? WHERE id = ?")
+    .run(about.bio, skills.join(", "), about.location, about.emergencyContact, userId);
+}
+
+/** HR details only someone who manages the team can set. */
+export function updateEmployment(userId: number, employment: { employeeCode: string; employmentType: string }): void {
+  const type = (EMPLOYMENT_TYPES as readonly string[]).includes(employment.employmentType) ? employment.employmentType : "";
+  getDb().prepare("UPDATE users SET employee_code = ?, employment_type = ? WHERE id = ?").run(employment.employeeCode, type, userId);
 }
 
 /** People who report to `managerId`, directly or through others. */

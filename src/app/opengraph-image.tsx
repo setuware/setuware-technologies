@@ -23,7 +23,7 @@ export default function OpengraphImage() {
           justifyContent: "space-between",
           padding: 72,
           background:
-            "linear-gradient(135deg, #1e1b4b 0%, #312e81 45%, #0e7490 100%)",
+            "linear-gradient(135deg, #1e1b4b 0%, #312e81 45%, #2448c0 100%)",
           color: "white",
           fontFamily: "sans-serif",
         }}

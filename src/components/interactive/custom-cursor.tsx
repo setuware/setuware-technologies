@@ -111,13 +111,13 @@ function Cursor() {
         style={{ x: ringX, y: ringY }}
       >
         <motion.div
-          className="relative size-full rounded-full border-[1.5px] border-[rgba(0,161,198,0.5)] shadow-[0_0_0_1px_rgba(255,255,255,0.35),inset_0_0_0_1px_rgba(255,255,255,0.2)]"
+          className="relative size-full rounded-full border-[1.5px] border-[rgba(47,86,216,0.5)] shadow-[0_0_0_1px_rgba(255,255,255,0.35),inset_0_0_0_1px_rgba(255,255,255,0.2)]"
           initial={false}
           animate={{ scale: ringScale, opacity: shown ? 1 : 0 }}
           transition={STATE_SPRING}
         >
           <motion.span
-            className="absolute inset-0 rounded-full bg-[rgba(0,161,198,0.1)]"
+            className="absolute inset-0 rounded-full bg-[rgba(47,86,216,0.1)]"
             initial={false}
             animate={{ opacity: hover ? 1 : 0 }}
             transition={{ duration: 0.2 }}
@@ -131,7 +131,7 @@ function Cursor() {
         style={{ x, y }}
       >
         <motion.div
-          className="size-full rounded-full bg-[#00a1c6] shadow-[0_0_0_1.5px_rgba(255,255,255,0.85),0_1px_4px_rgba(11,16,32,0.3)]"
+          className="size-full rounded-full bg-[#2f56d8] shadow-[0_0_0_1.5px_rgba(255,255,255,0.85),0_1px_4px_rgba(11,16,32,0.3)]"
           initial={false}
           animate={{ scale: dotScale, opacity: shown ? 1 : 0 }}
           transition={STATE_SPRING}

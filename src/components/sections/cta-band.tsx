@@ -19,7 +19,7 @@ export function CtaBand({
   return (
     <section className="relative bg-background-subtle py-14 md:py-20">
       <div className="container-page">
-        <div className="relative isolate overflow-hidden rounded-[1.75rem] bg-[linear-gradient(120deg,#055a70,#007891_45%,#1d4ed8)] shadow-[0_30px_60px_-30px_rgb(0_137_169/0.6)]">
+        <div className="relative isolate overflow-hidden rounded-[1.75rem] bg-[linear-gradient(120deg,#1d3a99,#007891_45%,#1d4ed8)] shadow-[0_30px_60px_-30px_rgb(0_137_169/0.6)]">
           <div
             className="pointer-events-none absolute -right-20 -top-24 -z-10 size-80 rounded-full bg-white/20 blur-3xl"
             aria-hidden
@@ -42,7 +42,7 @@ export function CtaBand({
                 <ButtonLink
                   href={primaryHref ?? (/consultation/i.test(primaryLabel) ? "/book" : "/contact")}
                   size="lg"
-                  className="rounded-full bg-white text-[#055a70] shadow-none hover:bg-white/92"
+                  className="rounded-full bg-white text-[#1d3a99] shadow-none hover:bg-white/92"
                 >
                   {primaryLabel}
                   <ArrowRight className="size-4" aria-hidden />

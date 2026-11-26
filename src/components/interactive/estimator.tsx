@@ -204,7 +204,7 @@ export function Estimator({ compact = false }: { compact?: boolean }) {
                 step={1}
                 value={input.scope}
                 onChange={(event) => update({ scope: Number(event.target.value) })}
-                className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-border accent-[var(--color-setu,#00a1c6)]"
+                className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-border accent-[var(--color-setu,#2f56d8)]"
                 aria-valuetext={`${input.scope} ${rate.scopeNoun}`}
               />
               <output

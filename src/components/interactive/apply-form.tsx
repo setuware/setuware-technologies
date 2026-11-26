@@ -157,7 +157,7 @@ export function ApplyForm({ jobSlug, jobTitle }: { jobSlug: string; jobTitle: st
       <button
         type="submit"
         disabled={status === "sending"}
-        className="mt-1 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(100deg,#2f56d8,#1477c0_55%,#0a8ea6)] text-[0.95rem] font-semibold text-white transition-[filter] hover:brightness-110 disabled:opacity-60"
+        className="mt-1 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(100deg,#2f56d8,#1477c0_55%,#3b6cf6)] text-[0.95rem] font-semibold text-white transition-[filter] hover:brightness-110 disabled:opacity-60"
       >
         {status === "sending" ? (
           <>

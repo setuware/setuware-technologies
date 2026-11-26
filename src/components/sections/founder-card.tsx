@@ -22,7 +22,7 @@ function Portrait({ person }: { person: TeamMember }) {
     <div className="relative mx-auto size-40 shrink-0 sm:size-48 lg:size-56">
       <div
         aria-hidden
-        className="absolute -inset-3 rounded-full bg-[conic-gradient(from_200deg,rgba(0,161,198,0.35),rgba(10,52,166,0.12),rgba(0,161,198,0.35))] opacity-70 blur-xl"
+        className="absolute -inset-3 rounded-full bg-[conic-gradient(from_200deg,rgba(47,86,216,0.35),rgba(10,52,166,0.12),rgba(47,86,216,0.35))] opacity-70 blur-xl"
       />
       <div className="relative size-full overflow-hidden rounded-full ring-[6px] ring-white shadow-[0_24px_48px_-20px_rgba(10,52,166,0.55)] dark:ring-surface">
         {person.photo ? (
@@ -37,7 +37,7 @@ function Portrait({ person }: { person: TeamMember }) {
           <span
             role="img"
             aria-label={`${person.name} (initials)`}
-            className="flex size-full items-center justify-center bg-[linear-gradient(135deg,#00a1c6_0%,#0a6fb8_55%,#0a34a6_100%)] font-display text-[3.25rem] font-semibold tracking-[-0.02em] text-white sm:text-[3.75rem] lg:text-[4.25rem]"
+            className="flex size-full items-center justify-center bg-[linear-gradient(135deg,#2f56d8_0%,#0a6fb8_55%,#0a34a6_100%)] font-display text-[3.25rem] font-semibold tracking-[-0.02em] text-white sm:text-[3.75rem] lg:text-[4.25rem]"
           >
             {person.initials}
           </span>
@@ -78,7 +78,7 @@ export function FounderCard({ person }: { person: TeamMember }) {
       />
       <div className="relative grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.4fr)]">
         {/* Portrait panel */}
-        <div className="flex flex-col items-center justify-center gap-5 border-b border-border bg-[linear-gradient(160deg,#effafd,#f6fbfe_60%,#eef6fc)] px-6 py-10 text-center sm:py-12 lg:border-r lg:border-b-0 lg:py-16 dark:bg-[linear-gradient(160deg,#08202a,var(--surface))]">
+        <div className="flex flex-col items-center justify-center gap-5 border-b border-border bg-[linear-gradient(160deg,#effafd,#f6fbfe_60%,#eef6fc)] px-6 py-10 text-center sm:py-12 lg:border-r lg:border-b-0 lg:py-16 dark:bg-[linear-gradient(160deg,#0d1640,var(--surface))]">
           <Portrait person={person} />
           <p className="inline-flex items-center gap-1.5 rounded-full border border-setu/20 bg-white/80 px-3 py-1 text-xs font-semibold text-foreground/80 dark:bg-surface/80">
             <MapPin className="size-3.5 text-setu" aria-hidden />
@@ -101,7 +101,7 @@ export function FounderCard({ person }: { person: TeamMember }) {
             {person.bio}
           </p>
 
-          <div className="mt-7 max-w-2xl rounded-2xl border border-setu/15 bg-[linear-gradient(120deg,rgba(0,161,198,0.07),rgba(10,52,166,0.03))] p-5 sm:p-6">
+          <div className="mt-7 max-w-2xl rounded-2xl border border-setu/15 bg-[linear-gradient(120deg,rgba(47,86,216,0.07),rgba(10,52,166,0.03))] p-5 sm:p-6">
             <Quote className="size-5 fill-setu/20 text-setu" aria-hidden />
             <blockquote className="mt-3">
               <p className="font-display text-[1.15rem] font-semibold leading-snug tracking-[-0.01em] text-foreground sm:text-[1.3rem]">
@@ -113,7 +113,7 @@ export function FounderCard({ person }: { person: TeamMember }) {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <ButtonLink
               href={`mailto:${person.email}`}
-              className="w-full rounded-full bg-setu text-white shadow-[0_10px_24px_-10px_rgba(0,161,198,0.8)] hover:bg-setu-dark sm:w-auto"
+              className="w-full rounded-full bg-setu text-white shadow-[0_10px_24px_-10px_rgba(47,86,216,0.8)] hover:bg-setu-dark sm:w-auto"
             >
               <Mail className="size-4" aria-hidden />
               <span className="sr-only">Email {person.name}: </span>

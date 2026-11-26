@@ -4,7 +4,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { refresh } from "next/cache";
 
-import { audit, can, getUser, seesAll, updateProfile, type AdminUser } from "@/lib/cms/auth";
+import { audit, can, getUser, seesAll, updateAbout, updateEmployment, updateProfile, type AdminUser } from "@/lib/cms/auth";
+import { deleteUpdate, postUpdate, UPDATE_MAX } from "@/lib/cms/people";
 import { markRead } from "@/lib/cms/notifications";
 import { PROJECT_STATUSES, saveProject, type ProjectStatus } from "@/lib/cms/projects";
 import {
@@ -681,9 +682,35 @@ export async function saveProfileAction(_previous: FormState, form: FormData): P
     phone,
     birthday: date("birthday"),
   });
+  updateAbout(member.id, {
+    bio: text(form, "bio", 600),
+    skills: text(form, "skills", 700).split(","),
+    location: text(form, "location", 80),
+    emergencyContact: text(form, "emergency_contact", 120),
+  });
+  if (manage) {
+    updateEmployment(member.id, { employeeCode: text(form, "employee_code", 30), employmentType: text(form, "employment_type", 20) });
+  }
   if (manage && member.id !== user.id) audit(user.name, "updated profile", "user", member.name);
   refresh();
   return { ok: "Profile saved." };
+}
+
+/** Posts a work update to the author's profile and the team feed. */
+export async function postUpdateAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser();
+  const body = text(form, "body", UPDATE_MAX);
+  if (body.length < 3) return { error: "Write a line about what you worked on." };
+  postUpdate(user.id, body);
+  refresh();
+  return { ok: "Update posted." };
+}
+
+/** Authors delete their own updates; team managers can delete anyone's. */
+export async function deleteUpdateAction(form: FormData): Promise<void> {
+  const user = await requireUser();
+  deleteUpdate(Number(form.get("id")), can(user, "users.manage") ? null : user.id);
+  refresh();
 }
 
 /* -------------------------------- projects --------------------------------- */
