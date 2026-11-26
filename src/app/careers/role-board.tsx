@@ -1,32 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Briefcase, Clock, MapPin } from "lucide-react";
 
 import type { JobTeam } from "@/lib/careers";
 import { cn } from "@/lib/utils";
 import { EASE_OUT } from "@/components/motion/ease";
+import { RoleRow, type RoleCard } from "./role-row";
 
-export interface RoleCard {
-  slug: string;
-  title: string;
-  team: JobTeam;
-  location: string;
-  type: string;
-  experience: string;
-  summary: string;
-  skills: readonly string[];
-}
+export type { RoleCard };
 
 type Filter = "All" | JobTeam;
 
 /**
  * Open roles with a team filter.
  *
- * Every card is in the server HTML; the filter only hides cards on the
- * client, so crawlers and no-JS visitors still see the full list.
+ * Every row is in the server HTML; the filter only hides rows on the client,
+ * so crawlers and no-JS visitors still see the full list.
  */
 export function RoleBoard({
   roles,
@@ -37,134 +27,71 @@ export function RoleBoard({
 }) {
   const [filter, setFilter] = useState<Filter>("All");
   const visible = filter === "All" ? roles : roles.filter((role) => role.team === filter);
-  const options: readonly Filter[] = ["All", ...teams];
+  const options = (["All", ...teams] as const).filter(
+    (option) => option === "All" || roles.some((role) => role.team === option),
+  );
 
   return (
     <div>
-      <div
-        role="group"
-        aria-label="Filter roles by team"
-        className="inline-flex max-w-full flex-wrap gap-1 rounded-[1.4rem] border border-border bg-background-subtle p-1"
-      >
-        {options.map((option) => {
-          const count =
-            option === "All" ? roles.length : roles.filter((role) => role.team === option).length;
-          const active = filter === option;
-          return (
-            <button
-              key={option}
-              type="button"
-              aria-pressed={active}
-              onClick={() => setFilter(option)}
-              className={cn(
-                "inline-flex items-center gap-2 rounded-full px-4 py-2 text-[0.86rem] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu",
-                active
-                  ? "bg-setu text-white shadow-sm"
-                  : "text-foreground/75 hover:bg-surface hover:text-foreground",
-              )}
-            >
-              {option}
-              <span
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div
+          role="group"
+          aria-label="Filter roles by team"
+          className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]"
+        >
+          {options.map((option) => {
+            const count =
+              option === "All" ? roles.length : roles.filter((role) => role.team === option).length;
+            const active = filter === option;
+            return (
+              <button
+                key={option}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setFilter(option)}
                 className={cn(
-                  "rounded-full px-1.5 text-[0.72rem] font-semibold tabular-nums",
-                  active ? "bg-white/20 text-white" : "bg-foreground/[0.06] text-muted-foreground",
+                  "inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-[0.86rem] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2f56d8]",
+                  active
+                    ? "border-transparent bg-[linear-gradient(110deg,#3b6cf6,#1d4ed8)] text-white shadow-[0_10px_24px_-12px_rgba(29,78,216,0.9)]"
+                    : "border-[#dfe5f5] bg-white text-[#3b4262] hover:border-[#2f56d8]/40 hover:text-[#2f56d8] dark:border-white/10 dark:bg-surface dark:text-white/75",
                 )}
               >
-                {count}
-              </span>
-            </button>
-          );
-        })}
+                {option}
+                <span
+                  className={cn(
+                    "rounded-full px-1.5 text-[0.72rem] font-semibold tabular-nums",
+                    active ? "bg-white/20 text-white" : "bg-[#2f56d8]/8 text-[#5a6180] dark:bg-white/10 dark:text-white/60",
+                  )}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="shrink-0 text-sm text-[#5a6180] dark:text-white/60" aria-live="polite">
+          {filter === "All"
+            ? `${roles.length} open ${roles.length === 1 ? "role" : "roles"}`
+            : `${visible.length} ${visible.length === 1 ? "role" : "roles"} in ${filter}`}
+        </p>
       </div>
 
-      <p className="mt-5 text-sm text-muted-foreground" aria-live="polite">
-        {filter === "All"
-          ? `${roles.length} open roles`
-          : `${visible.length} open ${visible.length === 1 ? "role" : "roles"} in ${filter}`}
-      </p>
-
-      <motion.ul layout className="mt-4 grid gap-4 md:grid-cols-2">
+      <motion.ul layout className="mt-6 flex flex-col gap-3">
         <AnimatePresence mode="popLayout" initial={false}>
           {visible.map((role) => (
             <motion.li
               key={role.slug}
               layout
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.97 }}
-              transition={{ duration: 0.35, ease: EASE_OUT }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.3, ease: EASE_OUT }}
             >
-              <RoleCardView role={role} />
+              <RoleRow role={role} />
             </motion.li>
           ))}
         </AnimatePresence>
       </motion.ul>
     </div>
-  );
-}
-
-function RoleCardView({ role }: { role: RoleCard }) {
-  return (
-    <Link
-      href={`/careers/${role.slug}`}
-      className="group relative flex h-full flex-col overflow-hidden rounded-card border border-border bg-surface p-6 shadow-ambient transition-[transform,border-color,box-shadow] duration-300 hover:border-setu/50 hover:shadow-glow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu motion-safe:hover:-translate-y-1 md:p-7"
-    >
-      <span
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-[linear-gradient(90deg,#00a1c6,#3b82f6)] transition-transform duration-500 group-hover:scale-x-100"
-      />
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-full border border-setu/25 bg-setu/8 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-setu">
-          {role.team}
-        </span>
-        {role.type === "Internship" ? (
-          <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-amber-700 dark:text-amber-400">
-            Internship
-          </span>
-        ) : null}
-      </div>
-
-      <h3 className="mt-4 text-xl font-semibold leading-snug text-foreground transition-colors group-hover:text-setu">
-        {role.title}
-      </h3>
-      <p className="mt-2 text-[0.93rem] leading-relaxed text-muted-foreground">{role.summary}</p>
-
-      <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="Key skills">
-        {role.skills.map((skill) => (
-          <li
-            key={skill}
-            className="rounded-md bg-foreground/[0.05] px-2 py-0.5 text-[0.75rem] font-medium text-foreground/75"
-          >
-            {skill}
-          </li>
-        ))}
-      </ul>
-
-      <dl className="mt-6 flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-5 text-[0.84rem] text-muted-foreground">
-        <div className="flex items-center gap-1.5">
-          <dt className="sr-only">Location</dt>
-          <MapPin className="size-3.5 shrink-0 text-setu" aria-hidden />
-          <dd>{role.location}</dd>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <dt className="sr-only">Type</dt>
-          <Briefcase className="size-3.5 shrink-0 text-setu" aria-hidden />
-          <dd>{role.type}</dd>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <dt className="sr-only">Experience</dt>
-          <Clock className="size-3.5 shrink-0 text-setu" aria-hidden />
-          <dd>{role.experience}</dd>
-        </div>
-      </dl>
-
-      <span className="mt-auto inline-flex items-center gap-1.5 pt-6 text-sm font-semibold text-setu">
-        View role
-        <ArrowRight
-          className="size-3.5 transition-transform group-hover:translate-x-0.5"
-          aria-hidden
-        />
-      </span>
-    </Link>
   );
 }

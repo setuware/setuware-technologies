@@ -1,27 +1,35 @@
+import Image from "next/image";
+import Link from "next/link";
 import {
   ArrowRight,
-  Eye,
+  BookOpen,
+  Check,
+  ClipboardCheck,
+  Code2,
   FileText,
   FolderGit2,
+  Handshake,
   Mail,
   MapPin,
   MessageSquare,
-  Rocket,
+  Phone,
+  Presentation,
+  Send,
   Timer,
-  Wrench,
+  UserCheck,
+  Users,
 } from "lucide-react";
 
-import { applyHref, jobTeams } from "@/lib/careers";
+import { applyHref, compensationNote, jobTeams, whatWeOffer } from "@/lib/careers";
 import { getOpenJobs } from "@/lib/cms/public";
 import { breadcrumbJsonLd, faqJsonLd, pageMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/button";
 import { Accordion } from "@/components/ui/accordion";
-import { Section, SectionHeading } from "@/components/ui/section";
 import { JsonLd } from "@/components/seo/json-ld";
 import { PageHero } from "@/components/layout/page-hero";
-import { TextReveal } from "@/components/motion/text-reveal";
-import { FadeUp, SpotlightCard, Stagger, StaggerItem } from "@/components/motion/primitives";
+import { FadeUp, Stagger, StaggerItem } from "@/components/motion/primitives";
+import { BLUE_GRADIENT, CircuitLines, Eyebrow, SectionTitle } from "@/components/sections/home/shared";
 import { RoleBoard, type RoleCard } from "./role-board";
 
 export const metadata = pageMetadata({
@@ -30,65 +38,28 @@ export const metadata = pageMetadata({
   path: "/careers",
 });
 
-const HOW_WE_WORK = [
-  {
-    Icon: Rocket,
-    title: "Meaningful client work",
-    body: "Every project is delivered for a client with a defined launch date, so your work reaches real users.",
-  },
-  {
-    Icon: MessageSquare,
-    title: "Direct client collaboration",
-    body: "Project team members join client discussions and understand requirements first-hand.",
-  },
-  {
-    Icon: Eye,
-    title: "Weekly demonstrations",
-    body: "Clients review progress on a live preview each week, which keeps feedback early and expectations aligned.",
-  },
-  {
-    Icon: Wrench,
-    title: "Quality and documentation",
-    body: "Every change is reviewed before release and documented for long-term maintainability.",
-  },
+const LIFE_POINTS = [
+  "Client projects with a defined launch date, used by real customers",
+  "A seat in client calls, so you hear requirements first-hand",
+  "Weekly demos on a live preview, with feedback early",
+  "Code review on every change, and documentation that lasts",
 ] as const;
 
+const OFFER_ICONS = [ClipboardCheck, Presentation, UserCheck, Code2, BookOpen, Handshake] as const;
+
 const APPLICATION_CHECKLIST = [
-  { Icon: FileText, label: "Your CV", detail: "PDF format preferred, up to two pages." },
-  {
-    Icon: FolderGit2,
-    label: "Links to your work",
-    detail: "A portfolio, GitHub profile, live sites or campaign results.",
-  },
-  { Icon: Timer, label: "Notice period", detail: "Including your earliest available start date." },
-  {
-    Icon: MapPin,
-    label: "Current location",
-    detail: "And whether you would relocate to Gurugram.",
-  },
+  { Icon: FileText, label: "Your CV", detail: "PDF preferred, up to two pages." },
+  { Icon: FolderGit2, label: "Links to your work", detail: "Portfolio, GitHub, live sites or campaign results." },
+  { Icon: Timer, label: "Notice period", detail: "And your earliest start date." },
+  { Icon: MapPin, label: "Current location", detail: "And whether you would relocate to Gurugram." },
 ] as const;
 
 const PROCESS = [
-  {
-    title: "Apply",
-    body: `Email ${site.hrEmail} with your CV, links to your work and your notice period.`,
-  },
-  {
-    title: "Introductory call",
-    body: "A 20-minute conversation about your experience, your goals and the role.",
-  },
-  {
-    title: "Practical task",
-    body: "A short task that reflects the work of the role. Longer assignments are paid.",
-  },
-  {
-    title: "Final conversation",
-    body: "A discussion with your future colleagues to review your task and answer your questions.",
-  },
-  {
-    title: "Offer",
-    body: "A written offer setting out the role, compensation and start date.",
-  },
+  { Icon: Send, title: "Apply", body: "Send your CV and links to your work from the role page or by email." },
+  { Icon: Phone, title: "Introductory call", body: "20 minutes on your experience, your goals and the role." },
+  { Icon: Code2, title: "Practical task", body: "A short task based on the role. Longer assignments are paid." },
+  { Icon: Users, title: "Team conversation", body: "Review your task with your future colleagues and ask questions." },
+  { Icon: MessageSquare, title: "Offer", body: "A written offer with the role, compensation and start date." },
 ] as const;
 
 const FAQS = [
@@ -135,222 +106,279 @@ export default async function CareersPage() {
     summary: job.summary,
     skills: job.skills,
   }));
+  const teamCount = new Set(roles.map((role) => role.team)).size;
 
   return (
     <>
       <PageHero
         video="careers"
         eyebrow="Careers"
-        title="Careers at Setuware Technologies"
-        description={`Join a team of designers, developers, marketers and project managers building websites, e-commerce platforms, apps and business software from our office in ${site.address.city}.`}
+        title="Build products that real businesses use"
+        description={`Join our designers, developers, marketers and project managers in ${site.address.city}, working on websites, e-commerce, apps and business software for clients across India.`}
       >
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <ButtonLink
             href="#open-roles"
             size="lg"
             variant="ghost"
-            className="rounded-full bg-setu font-semibold text-white hover:bg-setu-dark dark:hover:bg-setu-dark"
+            className="rounded-full bg-[linear-gradient(110deg,#3b6cf6,#1d4ed8)] font-semibold text-white hover:brightness-110"
           >
-            View {jobs.length} open roles
+            View {roles.length} open {roles.length === 1 ? "role" : "roles"}
             <ArrowRight className="size-4" aria-hidden />
           </ButtonLink>
           <ButtonLink href={applyHref()} size="lg" variant="secondary" className="rounded-full">
-            Email your CV
+            Send your CV
           </ButtonLink>
         </div>
-        <dl className="mx-auto mt-10 grid max-w-3xl grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border text-center sm:grid-cols-3">
+        <dl className="mx-auto mt-10 grid max-w-3xl grid-cols-3 divide-x divide-white/10 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] text-center backdrop-blur">
           {[
-            { label: "Open roles", value: String(jobs.length) },
-            { label: "Office", value: `${site.address.street}, ${site.address.city}` },
-            { label: "Office hours", value: site.hours },
+            { label: "Open roles", value: String(roles.length) },
+            { label: teamCount === 1 ? "Team hiring" : "Teams hiring", value: String(teamCount) },
+            { label: "Office", value: site.address.city },
           ].map((item) => (
-            <div
-              key={item.label}
-              className="flex items-center justify-between gap-4 bg-surface/85 px-5 py-3 backdrop-blur sm:flex-col-reverse sm:justify-start sm:gap-1 sm:py-4"
-            >
-              <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                {item.label}
-              </dt>
-              <dd className="text-right text-[0.95rem] font-semibold text-foreground sm:text-center sm:text-[0.98rem]">{item.value}</dd>
+            <div key={item.label} className="flex flex-col-reverse gap-1 px-3 py-4">
+              <dt className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/60">{item.label}</dt>
+              <dd className="text-lg font-bold text-white sm:text-xl">{item.value}</dd>
             </div>
           ))}
         </dl>
       </PageHero>
 
-      <Section surface="tint" aria-labelledby="why-heading">
-        <div className="container-page">
-          <div className="grid gap-6 lg:grid-cols-[1fr_1fr] lg:items-end">
-            <div>
-              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">
-                Why work with us
-              </span>
-              <TextReveal
-                as="h2"
-                id="why-heading"
-                className="mt-4 font-display text-3xl font-semibold leading-[1.15] text-foreground sm:text-4xl"
-              >
-                {"A collaborative, client-focused environment"}
-              </TextReveal>
+      {/* Life at Setuware */}
+      <section aria-labelledby="life-heading" className="relative overflow-hidden bg-white py-20 dark:bg-surface lg:py-28">
+        <div className="container-figma grid items-center gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-20">
+          <FadeUp className="relative mx-auto w-full max-w-[36rem] pb-16 pr-10 lg:mx-0">
+            <div aria-hidden className="absolute -left-6 -top-6 size-40 rounded-3xl bg-[radial-gradient(#2f56d8_1.5px,transparent_1.5px)] [background-size:14px_14px] opacity-30" />
+            <div className="relative aspect-[4/3.4] overflow-hidden rounded-3xl shadow-[0_30px_60px_-30px_rgba(15,19,48,0.5)]">
+              <Image src="/images/team/team-workshop.jpg" alt="Setuware team members reviewing a project together" fill sizes="(min-width: 1024px) 36rem, 92vw" className="object-cover" />
             </div>
-            <FadeUp delay={0.15} y={20}>
-              <p className="max-w-xl text-base leading-relaxed text-muted-foreground lg:justify-self-end">
-                Every team member works across the full project lifecycle, from scoping and
-                delivery to long-term support, alongside designers, developers and project
-                managers.
-              </p>
-            </FadeUp>
-          </div>
+            <div className="absolute bottom-0 right-0 w-[52%] overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_24px_50px_-20px_rgba(15,19,48,0.55)] dark:border-surface">
+              <div className="relative aspect-[4/3]">
+                <Image src="/images/team/team-laptop.jpg" alt="A developer working on a client build" fill sizes="(min-width: 1024px) 18rem, 46vw" className="object-cover" />
+              </div>
+            </div>
+            <div className="absolute bottom-6 left-6 rounded-2xl bg-[linear-gradient(135deg,#3b6cf6,#1d4ed8)] px-6 py-5 text-white shadow-[0_20px_40px_-18px_rgba(29,78,216,0.9)]">
+              <p className="text-3xl font-extrabold leading-none">{roles.length}</p>
+              <p className="mt-1.5 text-xs font-medium text-white/85">Open {roles.length === 1 ? "role" : "roles"} right now</p>
+            </div>
+          </FadeUp>
 
-          <Stagger className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {HOW_WE_WORK.map(({ Icon, title, body }) => (
-              <StaggerItem key={title} className="h-full">
-                <SpotlightCard
-                  tilt={4}
-                  className="h-full rounded-card border border-border bg-surface p-6 shadow-ambient md:p-7"
-                >
-                  <span className="relative inline-flex size-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(0,161,198,0.16),rgba(59,130,246,0.10))] text-setu ring-1 ring-inset ring-setu/20">
-                    <Icon className="size-5" aria-hidden />
+          <FadeUp delay={0.1}>
+            <Eyebrow>Life at Setuware</Eyebrow>
+            <SectionTitle>
+              <span id="life-heading">
+                Real client work, <span className="text-[#2f56d8] dark:text-[#7c9bff]">from brief to launch</span>
+              </span>
+            </SectionTitle>
+            <p className="mt-5 max-w-[34rem] text-[1.02rem] leading-relaxed text-[#5a6180] dark:text-white/70">
+              Everyone here works across the full project, from scoping and design to delivery and
+              support, in small teams with a project manager who keeps the plan clear.
+            </p>
+            <ul className="mt-8 grid gap-3.5">
+              {LIFE_POINTS.map((point) => (
+                <li key={point} className="flex gap-3 text-[0.98rem] font-medium text-[#0f1330] dark:text-white/90">
+                  <span className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[#2f56d8]/12 text-[#2f56d8] dark:text-[#9db4ff]">
+                    <Check className="size-3.5" aria-hidden />
                   </span>
-                  <h3 className="relative mt-6 text-[1.05rem] font-semibold text-foreground">{title}</h3>
-                  <p className="relative mt-2 text-[0.93rem] leading-relaxed text-muted-foreground">
-                    {body}
-                  </p>
-                </SpotlightCard>
-              </StaggerItem>
-            ))}
-          </Stagger>
+                  {point}
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="#open-roles"
+              className="group mt-9 inline-flex h-12 items-center gap-2 rounded-full bg-[linear-gradient(110deg,#3b6cf6,#1d4ed8)] px-7 text-sm font-semibold text-white transition-[filter] hover:brightness-110"
+            >
+              See current openings
+              <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden />
+            </Link>
+          </FadeUp>
         </div>
-      </Section>
+      </section>
 
-      <Section id="open-roles" className="scroll-mt-20">
-        <div className="container-page">
-          <SectionHeading
-            align="left"
-            eyebrow="Open roles"
-            title="Current openings"
-            description="All roles are based at our Gurugram office. Filter by team and select a role to read the full description."
-          />
+      {/* Open roles */}
+      <section id="open-roles" aria-labelledby="roles-heading" className="scroll-mt-20 bg-[#f5f7fd] py-20 dark:bg-background lg:py-28">
+        <div className="container-figma">
+          <FadeUp className="max-w-[44rem]">
+            <Eyebrow>Open roles</Eyebrow>
+            <SectionTitle>
+              <span id="roles-heading">Current openings</span>
+            </SectionTitle>
+            <p className="mt-4 text-[1.02rem] leading-relaxed text-[#5a6180] dark:text-white/70">
+              All roles are based at our {site.address.street} office in {site.address.city}. Pick a
+              role to read the full description and apply in about two minutes.
+            </p>
+          </FadeUp>
 
           <div className="mt-10">
-            <RoleBoard roles={roles} teams={jobTeams} />
+            {roles.length > 0 ? (
+              <RoleBoard roles={roles} teams={jobTeams} />
+            ) : (
+              <p className="rounded-2xl border border-dashed border-[#c9d4f5] bg-white p-8 text-center text-[#5a6180] dark:border-white/15 dark:bg-surface dark:text-white/70">
+                There are no open roles right now. Send an open application to{" "}
+                <a href={applyHref()} className="font-semibold text-[#2f56d8] underline-offset-4 hover:underline">
+                  {site.hrEmail}
+                </a>{" "}
+                and we will keep it on file.
+              </p>
+            )}
           </div>
         </div>
-      </Section>
+      </section>
 
-      <Section id="hiring-process" surface="dots" className="scroll-mt-20">
-        <div className="container-page">
-          <SectionHeading
-            eyebrow="Hiring process"
-            title="A clear, five-step process"
-            description="We confirm the next step at every stage, and any task that requires more than a few hours is paid."
-          />
-          <Stagger as="ol" className="relative mx-auto mt-14 grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            <span
-              aria-hidden
-              className="pointer-events-none absolute left-[6%] right-[6%] top-[2.6rem] hidden h-px bg-gradient-to-r from-setu/0 via-setu/45 to-setu/0 lg:block"
-            />
-            {PROCESS.map((step, index) => (
-              <StaggerItem
-                as="li"
-                key={step.title}
-                className="relative flex h-full flex-col rounded-card border border-border bg-surface p-5 shadow-ambient md:p-6"
-              >
-                <span className="relative z-10 inline-flex size-10 items-center justify-center rounded-full bg-setu font-mono text-sm font-semibold text-white shadow-[0_0_0_6px_var(--color-surface)]">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <h3 className="mt-5 font-semibold text-foreground">{step.title}</h3>
-                <p className="mt-1.5 break-words text-[0.9rem] leading-relaxed text-muted-foreground">
-                  {step.body}
-                </p>
+      {/* What we offer */}
+      <section aria-labelledby="offer-heading" className="relative isolate overflow-hidden bg-[#0b0f2a] py-20 text-white lg:py-28">
+        <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(60rem_30rem_at_85%_0%,rgba(47,86,216,0.35),transparent),radial-gradient(40rem_24rem_at_0%_100%,rgba(59,108,246,0.22),transparent)]" />
+        <CircuitLines className="absolute -left-10 top-8 -z-10 w-[30rem] text-[#3b6cf6]/30" />
+        <div className="container-figma grid gap-14 lg:grid-cols-[0.9fr_1.4fr] lg:gap-20">
+          <FadeUp>
+            <Eyebrow light>What we offer</Eyebrow>
+            <SectionTitle light>
+              <span id="offer-heading">
+                Room to grow, <span className="text-[#7c9bff]">with support around you</span>
+              </span>
+            </SectionTitle>
+            <p className="mt-5 max-w-[30rem] text-[1.02rem] leading-relaxed text-white/70">{compensationNote}</p>
+            <a
+              href={applyHref()}
+              className="group mt-9 inline-flex h-12 items-center gap-2 rounded-full bg-white px-7 text-sm font-semibold text-[#0f1330] transition-colors hover:bg-[#e8eeff]"
+            >
+              <Mail className="size-4" aria-hidden />
+              Send your CV
+            </a>
+          </FadeUp>
+
+          <Stagger className="grid gap-4 sm:grid-cols-2">
+            {whatWeOffer.map((item, i) => {
+              const Icon = OFFER_ICONS[i % OFFER_ICONS.length];
+              return (
+                <StaggerItem key={item}>
+                  <div className="group flex h-full gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm transition-colors duration-300 hover:border-[#3b6cf6]/60 hover:bg-[#2f56d8]/15">
+                    <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#2f56d8]/20 text-[#9db4ff] transition-colors group-hover:bg-[#2f56d8] group-hover:text-white">
+                      <Icon className="size-5" aria-hidden />
+                    </span>
+                    <p className="text-[0.95rem] leading-relaxed text-white/80">{item}</p>
+                  </div>
+                </StaggerItem>
+              );
+            })}
+          </Stagger>
+        </div>
+      </section>
+
+      {/* Hiring process */}
+      <section id="hiring-process" aria-labelledby="process-heading" className="scroll-mt-20 bg-white py-20 dark:bg-surface lg:py-28">
+        <div className="container-figma">
+          <FadeUp className="mx-auto max-w-[44rem] text-center">
+            <Eyebrow className="justify-center">Hiring process</Eyebrow>
+            <SectionTitle>
+              <span id="process-heading">
+                Five steps, <span className="text-[#2f56d8] dark:text-[#7c9bff]">no surprises</span>
+              </span>
+            </SectionTitle>
+            <p className="mt-4 text-[1.02rem] leading-relaxed text-[#5a6180] dark:text-white/70">
+              We confirm the next step at every stage and reply to every application within five
+              working days.
+            </p>
+          </FadeUp>
+
+          <Stagger as="ol" className="relative mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-6">
+            <div aria-hidden className="absolute left-[10%] right-[10%] top-8 hidden border-t-2 border-dashed border-[#c9d4f5] dark:border-white/15 lg:block" />
+            {PROCESS.map(({ Icon, title, body }, i) => (
+              <StaggerItem as="li" key={title} className="relative text-center">
+                <div className="relative mx-auto inline-flex size-16 items-center justify-center rounded-full border-[5px] border-white bg-[linear-gradient(135deg,#3b6cf6,#1d4ed8)] text-white shadow-[0_14px_30px_-12px_rgba(29,78,216,0.8)] dark:border-surface">
+                  <Icon className="size-6" aria-hidden />
+                  <span className="absolute -right-2 -top-1 inline-flex size-7 items-center justify-center rounded-full bg-white text-xs font-bold text-[#2f56d8] shadow ring-1 ring-[#2f56d8]/20 dark:bg-surface dark:text-[#9db4ff]">
+                    {i + 1}
+                  </span>
+                </div>
+                <h3 className="mt-5 text-[1.08rem] font-bold text-[#0f1330] dark:text-white">{title}</h3>
+                <p className="mx-auto mt-2 max-w-[15rem] text-sm leading-relaxed text-[#5a6180] dark:text-white/65">{body}</p>
               </StaggerItem>
             ))}
           </Stagger>
         </div>
-      </Section>
+      </section>
 
-      <Section surface="ink" aria-labelledby="apply-heading">
-        <div className="container-page grid gap-12 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-16">
-          <FadeUp y={20}>
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">Apply</span>
-            <h2
-              id="apply-heading"
-              className="mt-4 font-display text-3xl font-semibold leading-[1.15] text-foreground sm:text-4xl"
-            >
-              Apply to join our team
-            </h2>
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
-              Email your application to{" "}
-              <a
-                href={applyHref()}
-                className="font-semibold text-foreground underline decoration-setu/60 underline-offset-4 hover:text-setu"
-              >
-                {site.hrEmail}
-              </a>{" "}
-              with the role in the subject line. If no current opening matches your experience,
-              send an open application and we will keep it on file for future roles.
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink
-                href={applyHref()}
-                size="lg"
-                variant="ghost"
-                className="rounded-full bg-setu font-semibold text-white hover:bg-setu-dark dark:hover:bg-setu-dark"
-              >
-                <Mail className="size-4" aria-hidden />
-                Email your CV
-              </ButtonLink>
-              <ButtonLink href="#open-roles" size="lg" variant="secondary" className="rounded-full">
-                View open roles
-              </ButtonLink>
-            </div>
-          </FadeUp>
+      {/* Open application */}
+      <section aria-labelledby="apply-heading" className="bg-white pb-20 dark:bg-surface lg:pb-28">
+        <div className="container-figma">
+          <FadeUp>
+            <div className={`relative isolate overflow-hidden rounded-[2rem] ${BLUE_GRADIENT} p-8 text-white sm:p-12 lg:p-14`}>
+              <CircuitLines className="absolute -right-10 -top-6 -z-10 w-[30rem] text-white/15" />
+              <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-14">
+                <div>
+                  <Eyebrow light>Open application</Eyebrow>
+                  <h2 id="apply-heading" className="mt-3 text-[1.9rem] font-bold leading-[1.15] tracking-[-0.02em] sm:text-[2.4rem]">
+                    Don&apos;t see the right role?
+                  </h2>
+                  <p className="mt-4 max-w-xl text-[1.02rem] leading-relaxed text-white/80">
+                    Email{" "}
+                    <a href={applyHref()} className="font-semibold text-white underline decoration-white/50 underline-offset-4 hover:decoration-white">
+                      {site.hrEmail}
+                    </a>{" "}
+                    with the kind of work you want to do. We keep every application on file and
+                    contact you when a matching role opens.
+                  </p>
+                  <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                    <a
+                      href={applyHref()}
+                      className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 text-sm font-semibold text-[#1d4ed8] transition-colors hover:bg-[#e8eeff]"
+                    >
+                      <Mail className="size-4" aria-hidden />
+                      Send an open application
+                    </a>
+                    <Link
+                      href="#open-roles"
+                      className="inline-flex h-12 items-center justify-center rounded-full border border-white/40 px-7 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+                    >
+                      View open roles
+                    </Link>
+                  </div>
+                </div>
 
-          <FadeUp y={20} delay={0.1}>
-            <div className="rounded-card border border-white/10 bg-white/[0.04] p-6 backdrop-blur md:p-8">
-              <h3 className="text-lg font-semibold text-foreground">What to include</h3>
-              <ul className="mt-5 flex flex-col gap-4">
-                {APPLICATION_CHECKLIST.map(({ Icon, label, detail }) => (
-                  <li key={label} className="flex gap-4">
-                    <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-setu/15 text-setu ring-1 ring-inset ring-setu/25">
-                      <Icon className="size-4" aria-hidden />
-                    </span>
-                    <span className="text-[0.93rem] leading-snug">
-                      <span className="block font-medium text-foreground">{label}</span>
-                      <span className="mt-0.5 block text-muted-foreground">{detail}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
+                <div className="rounded-2xl bg-white p-6 text-[#0f1330] shadow-[0_30px_60px_-30px_rgba(15,19,48,0.6)] sm:p-7">
+                  <h3 className="text-lg font-bold">What to include</h3>
+                  <ul className="mt-5 grid gap-4">
+                    {APPLICATION_CHECKLIST.map(({ Icon, label, detail }) => (
+                      <li key={label} className="flex gap-4">
+                        <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#2f56d8]/10 text-[#2f56d8]">
+                          <Icon className="size-4" aria-hidden />
+                        </span>
+                        <span className="text-[0.93rem] leading-snug">
+                          <span className="block font-semibold">{label}</span>
+                          <span className="mt-0.5 block text-[#5a6180]">{detail}</span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
           </FadeUp>
         </div>
-      </Section>
+      </section>
 
-      <Section surface="subtle">
-        <div className="container-page grid gap-10 lg:grid-cols-[0.8fr_1.4fr] lg:gap-16">
-          <div className="lg:sticky lg:top-24 lg:self-start">
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-setu">FAQs</span>
-            <TextReveal className="mt-4 font-display text-3xl font-semibold leading-[1.15] text-foreground sm:text-4xl">
-              {"Questions candidates ask"}
-            </TextReveal>
-            <FadeUp delay={0.2} y={20}>
-              <p className="mt-4 max-w-sm text-[0.95rem] leading-relaxed text-muted-foreground">
-                For any other questions, email{" "}
-                <a
-                  href={`mailto:${site.hrEmail}`}
-                  className="font-medium text-setu underline-offset-4 hover:underline"
-                >
-                  {site.hrEmail}
-                </a>
-                .
-              </p>
-            </FadeUp>
-          </div>
+      {/* FAQ */}
+      <section aria-labelledby="faq-heading" className="bg-[#f5f7fd] py-20 dark:bg-background lg:py-28">
+        <div className="container-figma grid gap-10 lg:grid-cols-[0.8fr_1.4fr] lg:gap-16">
+          <FadeUp className="lg:sticky lg:top-24 lg:self-start">
+            <Eyebrow>FAQs</Eyebrow>
+            <SectionTitle>
+              <span id="faq-heading">Questions candidates ask</span>
+            </SectionTitle>
+            <p className="mt-4 max-w-sm text-[0.98rem] leading-relaxed text-[#5a6180] dark:text-white/70">
+              Anything else? Email{" "}
+              <a href={`mailto:${site.hrEmail}`} className="font-semibold text-[#2f56d8] underline-offset-4 hover:underline dark:text-[#9db4ff]">
+                {site.hrEmail}
+              </a>
+              .
+            </p>
+          </FadeUp>
           <FadeUp y={24}>
             <Accordion items={FAQS} />
           </FadeUp>
         </div>
-      </Section>
+      </section>
 
       <JsonLd
         data={breadcrumbJsonLd([
