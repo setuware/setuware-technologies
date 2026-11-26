@@ -433,6 +433,7 @@ export async function emailLoginDetailsAction(_previous: FormState, form: FormDa
   const owner = await requireUser("users.manage");
   const user = getUser(Number(form.get("id")));
   if (!user) return { error: "User not found." };
+  if (!user.active) return { error: `${user.name} cannot sign in right now. Tick "Can sign in" and save first.` };
   const password = generatePassword();
   await setPassword(user.id, password, true);
   audit(owner.name, "emailed login details", "user", user.email);
