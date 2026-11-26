@@ -13,6 +13,7 @@ import {
   completeTwoFactor,
   createPasswordToken,
   createUser,
+  setPassword,
   deleteUser,
   enableTwoFactor,
   getUserByEmail,
@@ -268,5 +269,15 @@ describe("uploads", () => {
     await expect(saveUpload("resumes", new File(["<html>"], "cv.pdf"))).rejects.toBeInstanceOf(UploadError);
     await expect(saveUpload("media", new File(["%PDF"], "a.jpg"))).rejects.toBeInstanceOf(UploadError);
     expect(await readUpload("resumes", "../../etc/passwd")).toBeNull();
+  });
+});
+
+describe("admin-set temporary password", () => {
+  it("cancels an unused invite link", async () => {
+    const { createPasswordToken, redeemPasswordToken } = await import("@/lib/cms/auth");
+    const invited = await createUser({ email: "inv@example.com", name: "Inv", role: "editor" });
+    const token = createPasswordToken(invited.id, "invite");
+    await setPassword(invited.id, "TempPass1234", true);
+    expect(await redeemPasswordToken(token, "Another12345")).toBeNull();
   });
 });

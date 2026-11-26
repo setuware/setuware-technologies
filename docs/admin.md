@@ -79,10 +79,20 @@ last 14. To run it daily at 2 am, add this with `crontab -e`:
 
 ## Staff accounts
 
-- **Invite** (Team → Add a team member → Email an invite): they get an email
-  with a link to choose their password (valid 3 days, works once). If SMTP is
-  not set up, copy the link shown and send it on WhatsApp.
-- **Temporary password**: they must choose their own at first sign-in.
+- **Add a team member** (Team → Add member): enter name, work email, role
+  and optional job details (designation, department, manager, joining date).
+  - **Email login details** (default): a temporary password is generated (or
+    type your own) and emailed with the sign-in page; they must choose their
+    own password at first sign-in.
+  - **Email an invite link**: a link to choose their password (valid 3 days,
+    works once).
+  - **Welcome email** (on by default): their role, manager, joining date and a
+    first-day checklist.
+  If SMTP is not set up, the account is still created and the password or link
+  is shown to copy and send yourself.
+- Each member on the Team page also has **Email login details** (new temporary
+  password, emailed), **Send welcome email**, **Resend invite** / **Send reset
+  link** and **Set temporary password**.
 - **Forgot password?** on the sign-in page emails a reset link (1 hour).
   Owners can also send a reset link from the Team page.
 - **2-step verification** (My account): scan the QR code with Google

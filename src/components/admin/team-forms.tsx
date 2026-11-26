@@ -1,17 +1,19 @@
 "use client";
 
-import { useActionState, useState } from "react";
-import { KeyRound, Link2, MailPlus, Trash2 } from "lucide-react";
+import { useActionState, useRef, useState } from "react";
+import { KeyRound, Link2, MailPlus, PartyPopper, RefreshCw, Trash2, UserPlus } from "lucide-react";
 
 import {
   changeOwnPasswordAction,
   confirmTwoFactorAction,
   createUserAction,
   disableTwoFactorAction,
+  emailLoginDetailsAction,
   removeUserAction,
   resendInviteAction,
   resetUserPasswordAction,
   sendResetLinkAction,
+  sendWelcomeAction,
   type FormState,
 } from "@/app/admin/actions";
 import { cn } from "@/lib/utils";
@@ -24,6 +26,13 @@ function LinkResult({ state }: { state: FormState }) {
   return (
     <div className="flex flex-col gap-2">
       <FormMessage state={state} />
+      {state.password ? (
+        <div className="flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/8 p-2">
+          <span className="px-2 text-xs text-muted-foreground">Temporary password</span>
+          <code className="min-w-0 flex-1 truncate font-mono text-sm font-semibold tracking-wide text-foreground">{state.password}</code>
+          <CopyButton value={state.password} label="Copy password" />
+        </div>
+      ) : null}
       {state.link ? (
         <div className="flex items-center gap-2 rounded-xl border border-border bg-background/60 p-2">
           <code className="min-w-0 flex-1 truncate px-2 text-xs text-muted-foreground">{state.link}</code>
@@ -34,86 +43,231 @@ function LinkResult({ state }: { state: FormState }) {
   );
 }
 
-export function AddUserForm({ roles }: { roles: Record<string, string> }) {
-  const [state, action] = useActionState<FormState, FormData>(createUserAction, {});
-  const [method, setMethod] = useState<"invite" | "password">("invite");
-  const f = state.fields ?? {};
+const PASSWORD_LETTERS = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz";
+const PASSWORD_DIGITS = "23456789";
+
+/** Same shape as the server's generator (`Kq7m-xT3p-Rw9a`), from the browser's secure random source. */
+function randomPassword(): string {
+  const bytes = crypto.getRandomValues(new Uint32Array(12));
+  const pick = (set: string, index: number) => set[bytes[index] % set.length];
+  return [0, 1, 2]
+    .map((group) => [0, 1, 2, 3].map((slot) => pick(slot === 2 ? PASSWORD_DIGITS : PASSWORD_LETTERS + PASSWORD_DIGITS, group * 4 + slot)).join(""))
+    .join("-");
+}
+
+function Field({ id, label, hint, error, children }: { id: string; label: string; hint?: string; error?: string; children: React.ReactNode }) {
   return (
-    <form action={action} className="flex flex-col gap-4">
+    <div>
+      <label htmlFor={id} className="mb-1 flex items-baseline justify-between gap-2 text-sm font-medium text-foreground">
+        {label}
+        {hint ? <span className="text-xs font-normal text-muted-foreground">{hint}</span> : null}
+      </label>
+      {children}
+      <FieldError message={error} />
+    </div>
+  );
+}
+
+function SectionTitle({ step, children }: { step: number; children: React.ReactNode }) {
+  return (
+    <h3 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
+      <span className="grid size-5 place-items-center rounded-full bg-[#2f56d8] text-[10px] text-white">{step}</span>
+      {children}
+    </h3>
+  );
+}
+
+export function AddUserForm({
+  roles,
+  members,
+  departments,
+  emailReady,
+}: {
+  roles: Record<string, string>;
+  members: { id: number; name: string }[];
+  departments: string[];
+  emailReady: boolean;
+}) {
+  const [state, action] = useActionState<FormState, FormData>(createUserAction, {});
+  const [method, setMethod] = useState<"credentials" | "invite">("credentials");
+  const [welcome, setWelcome] = useState(true);
+  const password = useRef<HTMLInputElement>(null);
+  const f = state.fields ?? {};
+  const emails = [
+    method === "credentials"
+      ? { icon: KeyRound, title: "Login details", note: "Sign-in page, their email and a temporary password. They choose their own at first sign-in." }
+      : { icon: Link2, title: "Invite link", note: "A one-time link to choose their password, valid for 3 days." },
+    ...(welcome ? [{ icon: PartyPopper, title: "Welcome email", note: "Their role, manager, joining date and first-day checklist." }] : []),
+  ];
+  return (
+    <form action={action} className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
       <input type="hidden" name="method" value={method} />
-      <div className="grid grid-cols-2 gap-1 rounded-full border border-border bg-background-subtle p-1 sm:w-96">
-        {(
-          [
-            ["invite", "Email an invite", MailPlus],
-            ["password", "Set a temporary password", KeyRound],
-          ] as const
-        ).map(([value, label, Icon]) => (
-          <button
-            key={value}
-            type="button"
-            onClick={() => setMethod(value)}
-            className={cn(
-              "flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold",
-              method === value ? "bg-surface text-foreground shadow-sm" : "text-muted-foreground",
-            )}
-          >
-            <Icon className="size-3.5" aria-hidden /> {label}
-          </button>
-        ))}
-      </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div>
-          <label htmlFor="new-name" className="mb-1 block text-sm font-medium text-foreground">Name</label>
-          <input id="new-name" name="name" className={inputClass} />
-          <FieldError message={f.name} />
-        </div>
-        <div>
-          <label htmlFor="new-email" className="mb-1 block text-sm font-medium text-foreground">Work email</label>
-          <input id="new-email" name="email" type="email" placeholder="name@setuware.in" className={inputClass} />
-          <FieldError message={f.email} />
-        </div>
-        <div>
-          <label htmlFor="new-role" className="mb-1 block text-sm font-medium text-foreground">Role</label>
-          <select id="new-role" name="role" defaultValue="editor" className={inputClass}>
-            {Object.entries(roles).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-          <FieldError message={f.role} />
-        </div>
-        {method === "password" ? (
-          <div>
-            <label htmlFor="new-password" className="mb-1 block text-sm font-medium text-foreground">Temporary password</label>
-            <input id="new-password" name="password" type="text" autoComplete="off" className={inputClass} />
-            <FieldError message={f.password} />
+      <div className="flex flex-col gap-6">
+        <section>
+          <SectionTitle step={1}>Account</SectionTitle>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field id="new-name" label="Full name" error={f.name}>
+              <input id="new-name" name="name" autoComplete="off" className={inputClass} />
+            </Field>
+            <Field id="new-email" label="Work email" error={f.email}>
+              <input id="new-email" name="email" type="email" autoComplete="off" placeholder="name@setuware.in" className={inputClass} />
+            </Field>
+            <Field id="new-role" label="Admin role" hint="What they can open" error={f.role}>
+              <select id="new-role" name="role" defaultValue="editor" className={inputClass}>
+                {Object.entries(roles).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </Field>
           </div>
-        ) : null}
+        </section>
+
+        <section>
+          <SectionTitle step={2}>Job details</SectionTitle>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field id="new-designation" label="Designation" hint="Optional">
+              <input id="new-designation" name="designation" placeholder="e.g. Frontend Developer" className={inputClass} />
+            </Field>
+            <Field id="new-department" label="Department" hint="Optional">
+              <input id="new-department" name="department" list="new-departments" placeholder="e.g. Engineering" className={inputClass} />
+              <datalist id="new-departments">
+                {departments.map((department) => (
+                  <option key={department} value={department} />
+                ))}
+              </datalist>
+            </Field>
+            <Field id="new-manager" label="Reports to" hint="Optional" error={f.manager_id}>
+              <select id="new-manager" name="manager_id" defaultValue="" className={inputClass}>
+                <option value="">No manager</option>
+                {members.map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.name}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field id="new-joined" label="Joining date" hint="Optional" error={f.joined_on}>
+              <input id="new-joined" name="joined_on" type="date" className={inputClass} />
+            </Field>
+          </div>
+        </section>
+
+        <section>
+          <SectionTitle step={3}>Sign-in</SectionTitle>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {(
+              [
+                ["credentials", "Email login details", "We create a temporary password and email it", KeyRound],
+                ["invite", "Email an invite link", "They set their password from a link", MailPlus],
+              ] as const
+            ).map(([value, label, note, Icon]) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={method === value}
+                onClick={() => setMethod(value)}
+                className={cn(
+                  "flex items-start gap-3 rounded-xl border p-3 text-left transition-colors",
+                  method === value ? "border-[#2f56d8] bg-[#2f56d8]/6 ring-1 ring-[#2f56d8]/30" : "border-border hover:border-foreground/25",
+                )}
+              >
+                <Icon className={cn("mt-0.5 size-4 shrink-0", method === value ? "text-[#2f56d8]" : "text-muted-foreground")} aria-hidden />
+                <span>
+                  <span className="block text-sm font-semibold text-foreground">{label}</span>
+                  <span className="block text-xs text-muted-foreground">{note}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+          {method === "credentials" ? (
+            <div className="mt-3 sm:max-w-md">
+              <Field id="new-password" label="Temporary password" hint="Leave blank to generate one" error={f.password}>
+                <div className="flex gap-2">
+                  <input ref={password} id="new-password" name="password" type="text" autoComplete="off" spellCheck={false} placeholder="Generated automatically" className={`${inputClass} font-mono`} />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (password.current) password.current.value = randomPassword();
+                    }}
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-border bg-surface px-3 text-xs font-semibold text-foreground hover:border-foreground/30"
+                  >
+                    <RefreshCw className="size-3.5" aria-hidden /> Generate
+                  </button>
+                </div>
+              </Field>
+            </div>
+          ) : null}
+          <label className="mt-4 flex items-center gap-2 text-sm text-foreground">
+            <input type="checkbox" name="welcome" checked={welcome} onChange={(event) => setWelcome(event.target.checked)} className="size-4 accent-[#2f56d8]" />
+            Also send a welcome email
+          </label>
+        </section>
+
+        <LinkResult state={state} />
+        <SubmitButton className="self-start" pendingLabel="Adding…">
+          <UserPlus className="size-4" aria-hidden /> Add and send email{emails.length > 1 ? "s" : ""}
+        </SubmitButton>
       </div>
-      <p className="text-xs text-muted-foreground">
-        {method === "invite"
-          ? "They get an email with a link to choose their own password (valid 3 days). If email isn't set up, copy the link below and send it."
-          : "Share the password privately; they must choose their own the first time they sign in."}
-      </p>
-      <LinkResult state={state} />
-      <SubmitButton className="self-start">{method === "invite" ? "Send invite" : "Add team member"}</SubmitButton>
+
+      <aside className="h-fit rounded-2xl border border-border bg-background-subtle p-4">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">They will receive</p>
+        <ul className="mt-3 flex flex-col gap-3">
+          {emails.map(({ icon: Icon, title, note }) => (
+            <li key={title} className="flex gap-3">
+              <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[#2f56d8]/10 text-[#2f56d8]">
+                <Icon className="size-4" aria-hidden />
+              </span>
+              <span>
+                <span className="block text-sm font-semibold text-foreground">{title}</span>
+                <span className="block text-xs leading-relaxed text-muted-foreground">{note}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+        {!emailReady ? (
+          <p className="mt-4 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-800 dark:text-amber-300">
+            Email (SMTP) is not set up on this server. The account is still created and you get the password or link to share yourself.
+          </p>
+        ) : null}
+      </aside>
     </form>
   );
 }
 
-/** Per-person account help for the owner: invite, reset link, temporary password. */
+/** Per-person account help for the owner: invite, login details, reset link, welcome email, temporary password. */
 export function UserAccess({ id, invited }: { id: number; invited: boolean }) {
   const [open, setOpen] = useState<"" | "temp">("");
   const [linkState, linkAction] = useActionState<FormState, FormData>(invited ? resendInviteAction : sendResetLinkAction, {});
+  const [loginState, loginAction] = useActionState<FormState, FormData>(emailLoginDetailsAction, {});
+  const [welcomeState, welcomeAction] = useActionState<FormState, FormData>(sendWelcomeAction, {});
   const [tempState, tempAction] = useActionState<FormState, FormData>(resetUserPasswordAction, {});
+  const linkClass = "inline-flex items-center gap-1 font-medium text-setu-dark hover:underline dark:text-[#5fd0ec]";
   return (
     <div className="mt-2 flex flex-col gap-2">
       <div className="flex flex-wrap items-center gap-3 text-xs">
+        <form
+          action={loginAction}
+          onSubmit={(event) => {
+            if (!window.confirm("Email new login details? Their current password stops working and they are signed out.")) event.preventDefault();
+          }}
+        >
+          <input type="hidden" name="id" value={id} />
+          <button className={linkClass}>
+            <KeyRound className="size-3.5" aria-hidden /> Email login details
+          </button>
+        </form>
         <form action={linkAction}>
           <input type="hidden" name="id" value={id} />
-          <button className="inline-flex items-center gap-1 font-medium text-setu-dark hover:underline dark:text-[#5fd0ec]">
+          <button className={linkClass}>
             <Link2 className="size-3.5" aria-hidden /> {invited ? "Resend invite" : "Send reset link"}
+          </button>
+        </form>
+        <form action={welcomeAction}>
+          <input type="hidden" name="id" value={id} />
+          <button className={linkClass}>
+            <PartyPopper className="size-3.5" aria-hidden /> Send welcome email
           </button>
         </form>
         {!invited ? (
@@ -132,7 +286,9 @@ export function UserAccess({ id, invited }: { id: number; invited: boolean }) {
           </div>
         </form>
       ) : null}
+      {loginState.ok || loginState.error ? <LinkResult state={loginState} /> : null}
       {linkState.ok || linkState.error ? <LinkResult state={linkState} /> : null}
+      {welcomeState.ok || welcomeState.error ? <FormMessage state={welcomeState} /> : null}
     </div>
   );
 }

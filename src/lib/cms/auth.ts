@@ -177,6 +177,8 @@ export async function setPassword(userId: number, password: string, temporary = 
     .run(await hashPassword(password), temporary ? 1 : 0, userId);
   // A new password signs every existing session out.
   getDb().prepare("DELETE FROM sessions WHERE user_id = ?").run(userId);
+  // An admin-set password replaces any unused invite or reset link.
+  if (temporary) getDb().prepare("DELETE FROM password_tokens WHERE user_id = ? AND used_at IS NULL").run(userId);
 }
 
 export function updateUser(userId: number, patch: { name?: string; role?: Role; active?: boolean }): void {

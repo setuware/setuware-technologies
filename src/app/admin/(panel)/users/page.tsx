@@ -1,6 +1,7 @@
 import { updateUserAction, userSecurityAction } from "@/app/admin/actions";
 import { can, listUsers } from "@/lib/cms/auth";
 import { listRoles } from "@/lib/cms/rbac";
+import { emailConfigured } from "@/lib/lead-email";
 import { requireUser } from "@/lib/cms/session";
 import { ShieldAlert, UserPlus } from "lucide-react";
 import { SubmitButton } from "@/components/admin/form-bits";
@@ -78,8 +79,13 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
       <div id="add-member" className="scroll-mt-24">
       <Card className="mb-6 p-6">
         <h2 className="mb-1 font-semibold text-foreground">Add a team member</h2>
-        <p className="mb-4 text-sm text-muted-foreground">Use their work email so emails they send from the admin come back to them.</p>
-        <AddUserForm roles={roles} />
+        <p className="mb-5 text-sm text-muted-foreground">Creates their account and emails their login details. Use their work email so replies to emails they send from the admin reach them.</p>
+        <AddUserForm
+          roles={roles}
+          members={users.filter((user) => user.active).map((user) => ({ id: user.id, name: user.name }))}
+          departments={[...new Set(users.map((user) => user.department).filter(Boolean))]}
+          emailReady={emailConfigured()}
+        />
       </Card>
       </div>
       ) : null}
