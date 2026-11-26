@@ -374,19 +374,24 @@ export function LetterRise({ text, className }: { text: string; className?: stri
 /* -------------------------------------------------------------------------- */
 
 export function MaskRise({ children, delay = 0, className }: { children: React.ReactNode; delay?: number; className?: string }) {
+  // The unclipped wrapper is observed: the moving text sits outside the clip
+  // before it animates, so observing it directly would never fire.
   return (
-    <span className={cn("block overflow-hidden pb-[0.14em] -mb-[0.14em]", className)}>
+    <motion.span
+      className={cn("block overflow-hidden pb-[0.14em] -mb-[0.14em]", className)}
+      initial="hidden"
+      whileInView="shown"
+      viewport={VIEWPORT}
+    >
       <motion.span
         data-reveal=""
         className="block"
-        initial={{ y: "105%", opacity: 0 }}
-        whileInView={{ y: "0%", opacity: 1 }}
-        viewport={VIEWPORT}
+        variants={{ hidden: { y: "105%", opacity: 0 }, shown: { y: "0%", opacity: 1 } }}
         transition={{ duration: DURATION.slow, ease: EASE_OUT, delay }}
       >
         {children}
       </motion.span>
-    </span>
+    </motion.span>
   );
 }
 
