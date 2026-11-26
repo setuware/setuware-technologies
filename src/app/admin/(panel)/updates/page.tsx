@@ -20,7 +20,7 @@ export default async function UpdatesPage({ searchParams }: { searchParams: Prom
   const updates = listUpdates({ userId: personId, limit: 60 });
   const today = localDay();
   const moments = upcomingMoments(everyone, today);
-  const posted = new Set(listUpdates({ limit: 200 }).filter((update) => update.created_at.slice(0, 10) >= today).map((update) => update.user_id));
+  const posted = new Set(listUpdates({ limit: 200 }).filter((update) => localDay(new Date(update.created_at)) === today).map((update) => update.user_id));
 
   return (
     <>

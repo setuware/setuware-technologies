@@ -684,7 +684,7 @@ export async function saveProfileAction(_previous: FormState, form: FormData): P
   });
   updateAbout(member.id, {
     bio: text(form, "bio", 600),
-    skills: text(form, "skills", 400).split(","),
+    skills: text(form, "skills", 700).split(","),
     location: text(form, "location", 80),
     emergencyContact: text(form, "emergency_contact", 120),
   });

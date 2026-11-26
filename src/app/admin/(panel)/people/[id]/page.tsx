@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { Briefcase, CalendarDays, CheckCircle2, Clock3, IdCard, Mail, MapPin, MessageSquareText, Phone, Plane, ShieldCheck, Timer, Trash2 } from "lucide-react";
 
 import { deleteUpdateAction } from "@/app/admin/work-actions";
-import { can, getUser, listUsers } from "@/lib/cms/auth";
+import { can, getUser, listUsers, seesAll } from "@/lib/cms/auth";
+import { mayApproveFor } from "@/lib/cms/notify";
 import { daysInMonth, formatMinutes, leaveBalance, listRequests, localDay, localTime, register, todayBoard } from "@/lib/cms/attendance";
 import { activityFor, listUpdates, monthSummary, type ActivityKind } from "@/lib/cms/people";
 import { listProjects } from "@/lib/cms/projects";
@@ -82,6 +83,9 @@ export default async function PersonPage({ params, searchParams }: { params: Pro
   const managerOfThem = person.managerId === user.id;
   const showWork = self || manage || managerOfThem || can(user, "attendance");
   const canEdit = manage || self;
+  // Task titles and notes follow the task page: your own, or everyone's with all-task access.
+  const viewerId = self || seesAll(user, "tasks") ? null : user.id;
+  const seeReasons = self || mayApproveFor(user, person.id, "attendance.manage");
 
   const tabs = [
     { id: "overview", label: "Overview", show: true },
@@ -306,14 +310,14 @@ export default async function PersonPage({ params, searchParams }: { params: Pro
                 )}
               </Card>
 
-              {showWork ? <ProjectsCard personId={person.id} name={person.name} today={today} /> : null}
+              {showWork ? <ProjectsCard personId={person.id} name={person.name} today={today} viewerId={viewerId} /> : null}
             </div>
           </div>
         ) : null}
 
-        {tab === "activity" ? <ActivityCard personId={person.id} /> : null}
-        {tab === "tasks" ? <TasksCard personId={person.id} today={today} /> : null}
-        {tab === "attendance" ? <AttendanceCard person={person} today={today} balance={balance} /> : null}
+        {tab === "activity" ? <ActivityCard personId={person.id} tasks={viewerId === null} /> : null}
+        {tab === "tasks" ? <TasksCard personId={person.id} today={today} viewerId={viewerId} /> : null}
+        {tab === "attendance" ? <AttendanceCard person={person} today={today} balance={balance} reasons={seeReasons} /> : null}
 
         {tab === "edit" ? (
           <Card className="p-6">
@@ -334,10 +338,12 @@ export default async function PersonPage({ params, searchParams }: { params: Pro
   );
 }
 
-function ProjectsCard({ personId, name, today }: { personId: number; name: string; today: string }) {
-  const open = listTasks({ assigneeId: personId }).filter((task) => task.status !== "done" && task.project);
+const visibleTo = (viewerId: number | null) => (task: { created_by: number; reviewer_id: number | null }) => viewerId === null || task.created_by === viewerId || task.reviewer_id === viewerId;
+
+function ProjectsCard({ personId, name, today, viewerId }: { personId: number; name: string; today: string; viewerId: number | null }) {
+  const open = listTasks({ assigneeId: personId }).filter((task) => task.status !== "done" && task.project && visibleTo(viewerId)(task));
   const names = new Set(open.map((task) => task.project));
-  const projects = listProjects(today).filter((project) => names.has(project.name) || project.owner_id === personId || project.people.includes(name));
+  const projects = listProjects(today).filter((project) => names.has(project.name) || project.owner_id === personId || (viewerId === null && project.people.includes(name)));
   return (
     <Card className="p-6">
       <h3 className="mb-4 text-sm font-semibold text-foreground">Projects</h3>
@@ -370,8 +376,8 @@ function ProjectsCard({ personId, name, today }: { personId: number; name: strin
   );
 }
 
-function ActivityCard({ personId }: { personId: number }) {
-  const items = activityFor(personId, 40);
+function ActivityCard({ personId, tasks }: { personId: number; tasks: boolean }) {
+  const items = activityFor(personId, 40, { tasks });
   return (
     <Card className="p-6">
       <h3 className="mb-5 text-sm font-semibold text-foreground">Recent activity</h3>
@@ -402,10 +408,13 @@ function ActivityCard({ personId }: { personId: number }) {
   );
 }
 
-function TasksCard({ personId, today }: { personId: number; today: string }) {
-  const tasks = listTasks({ assigneeId: personId });
+function TasksCard({ personId, today, viewerId }: { personId: number; today: string; viewerId: number | null }) {
+  const tasks = listTasks({ assigneeId: personId }).filter(visibleTo(viewerId));
   const open = tasks.filter((task) => task.status !== "done");
-  const done = tasks.filter((task) => task.status === "done").slice(0, 10);
+  const done = tasks
+    .filter((task) => task.status === "done")
+    .sort((a, b) => (b.completed_at ?? "").localeCompare(a.completed_at ?? ""))
+    .slice(0, 10);
   const row = (task: (typeof tasks)[number]) => (
     <li key={task.id}>
       <Link href={`/admin/tasks/${task.id}`} className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl px-3 py-2.5 hover:bg-muted">
@@ -442,7 +451,9 @@ function AttendanceCard({
   person,
   today,
   balance,
+  reasons,
 }: {
+  reasons: boolean;
   person: { id: number; name: string; created_at: string };
   today: string;
   balance: { type: string; quota: number; used: number; left: number }[];
@@ -493,7 +504,7 @@ function AttendanceCard({
                       {request.kind === "leave" ? request.leave_type || "Leave" : "Attendance correction"} · {formatDay(request.from_day)}
                       {request.to_day !== request.from_day ? ` – ${formatDay(request.to_day)}` : ""}
                     </span>
-                    {request.reason ? <span className="block truncate text-xs text-muted-foreground">{request.reason}</span> : null}
+                    {reasons && request.reason ? <span className="block truncate text-xs text-muted-foreground">{request.reason}</span> : null}
                   </span>
                   <StatusBadge status={request.status} />
                 </li>

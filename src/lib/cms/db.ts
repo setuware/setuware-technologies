@@ -320,7 +320,7 @@ CREATE TABLE IF NOT EXISTS notifications (
 );
 CREATE INDEX IF NOT EXISTS notifications_user ON notifications(user_id, read_at, created_at);
 CREATE TABLE IF NOT EXISTS work_updates (
-  id INTEGER PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
   body TEXT NOT NULL,
   created_at TEXT NOT NULL
