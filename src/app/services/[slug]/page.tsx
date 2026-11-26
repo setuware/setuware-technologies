@@ -9,7 +9,6 @@ import {
   Clock,
   IndianRupee,
   KeyRound,
-  X,
 } from "lucide-react";
 
 import {
@@ -124,37 +123,39 @@ export default async function ServiceLanding({ params }: { params: Promise<{ slu
               eyebrow="Challenges we solve"
               title="Common challenges and our approach"
             />
-            <div className="mt-10 hidden grid-cols-[1fr_2.5rem_1.3fr] gap-4 px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground md:grid">
-              <span>The challenge</span>
-              <span aria-hidden />
-              <span>Our approach</span>
-            </div>
-            <Stagger className="mt-4 flex flex-col gap-4">
-              {service.problems.map((item) => (
-                <StaggerItem key={item.problem} y={24}>
-                  <div className="grid gap-3 md:grid-cols-[1fr_2.5rem_1.3fr] md:items-stretch md:gap-4">
-                    <div className={cn("flex items-start gap-3 rounded-2xl border border-border bg-surface p-5", CARD_SHADOW)}>
-                      <span className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-red-500/10 text-red-500">
-                        <X className="size-3.5" aria-hidden />
+            <Stagger className="mt-10 grid gap-5 md:grid-cols-2">
+              {service.problems.map((item, index) => (
+                <StaggerItem key={item.problem} y={24} className="h-full">
+                  <article
+                    className={cn(
+                      "group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface transition-colors duration-300 hover:border-setu/40",
+                      CARD_SHADOW,
+                    )}
+                  >
+                    <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-[linear-gradient(180deg,#2f56d8,#3b6cf6)] opacity-70" />
+                    <div className="flex items-start gap-4 p-6 pb-5 md:p-7 md:pb-5">
+                      <span className="font-mono text-sm font-semibold text-setu">
+                        {String(index + 1).padStart(2, "0")}
                       </span>
-                      <p className="font-medium text-foreground">
-                        <span className="sr-only">Challenge: </span>
-                        {item.problem}
-                      </p>
+                      <div className="min-w-0">
+                        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                          The challenge
+                        </p>
+                        <h3 className="mt-1.5 text-[1.08rem] font-semibold leading-snug text-foreground">
+                          {item.problem}
+                        </h3>
+                      </div>
                     </div>
-                    <span className="hidden items-center justify-center text-setu md:flex" aria-hidden>
-                      <ArrowRight className="size-5" />
-                    </span>
-                    <div className={cn("flex items-start gap-3 rounded-2xl border border-setu/30 bg-surface p-5 [background-image:linear-gradient(135deg,rgba(47,86,216,0.09),rgba(47,86,216,0.02))]", CARD_SHADOW)}>
+                    <div className="mt-auto flex items-start gap-3 border-t border-border bg-setu/[0.04] px-6 py-5 md:px-7">
                       <span className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-setu text-white">
                         <Check className="size-3.5" aria-hidden />
                       </span>
-                      <p className="text-[0.97rem] leading-relaxed text-foreground/85">
-                        <span className="sr-only">Our approach: </span>
+                      <p className="text-[0.95rem] leading-relaxed text-foreground/80">
+                        <span className="font-semibold text-foreground">Our approach: </span>
                         {item.solution}
                       </p>
                     </div>
-                  </div>
+                  </article>
                 </StaggerItem>
               ))}
             </Stagger>
