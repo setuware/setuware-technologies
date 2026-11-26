@@ -57,7 +57,7 @@ export function PageHero({
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_80%_20%,rgba(0,161,198,0.18),transparent_70%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_80%_20%,rgba(47,86,216,0.18),transparent_70%)]"
         />
 
         <div className="container-page relative">

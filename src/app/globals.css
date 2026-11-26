@@ -51,9 +51,9 @@
   --foreground: #0b1020;
   --muted-foreground: #5b6478;
   --border: #e4e8f0;
-  --primary: #00a1c6;
+  --primary: #2f56d8;
   --primary-foreground: #ffffff;
-  --ring: #00a1c6;
+  --ring: #2f56d8;
   --shadow-color: 15 23 42;
 }
 
@@ -65,9 +65,9 @@
   --foreground: #f3f5fb;
   --muted-foreground: #9aa3b8;
   --border: #212739;
-  --primary: #22c3e6;
+  --primary: #7b9bff;
   --primary-foreground: #06080f;
-  --ring: #22c3e6;
+  --ring: #7b9bff;
   --shadow-color: 0 0 0;
 }
 

@@ -333,7 +333,7 @@ export function ExitIntentOffer() {
                 <div className="relative isolate hidden overflow-hidden bg-[#05070d] p-8 text-white md:flex md:flex-col">
                   <div
                     aria-hidden
-                    className="pointer-events-none absolute -right-20 -top-24 -z-10 size-72 rounded-full bg-[#00a1c6]/30 blur-3xl"
+                    className="pointer-events-none absolute -right-20 -top-24 -z-10 size-72 rounded-full bg-[#2f56d8]/30 blur-3xl"
                   />
                   <div
                     aria-hidden

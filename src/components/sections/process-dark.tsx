@@ -70,7 +70,7 @@ export function ProcessDark() {
             aria-hidden
           >
             <motion.div
-              className="absolute inset-0 origin-top rounded-full bg-[linear-gradient(to_bottom,var(--color-setu),#0061a8)] shadow-[0_0_12px_rgba(0,161,198,0.45)]"
+              className="absolute inset-0 origin-top rounded-full bg-[linear-gradient(to_bottom,var(--color-setu),#0061a8)] shadow-[0_0_12px_rgba(47,86,216,0.45)]"
               style={{ scaleY: progress }}
             />
           </div>
@@ -132,7 +132,7 @@ function ProcessRow({
         />
         <motion.span
           aria-hidden
-          className="pointer-events-none absolute -left-12 top-1/2 -mt-[6px] -ml-[5px] hidden size-3 rounded-full bg-setu shadow-[0_0_0_4px_var(--background),0_0_14px_rgba(0,161,198,0.7)] xl:block"
+          className="pointer-events-none absolute -left-12 top-1/2 -mt-[6px] -ml-[5px] hidden size-3 rounded-full bg-setu shadow-[0_0_0_4px_var(--background),0_0_14px_rgba(47,86,216,0.7)] xl:block"
           style={{ scale: nodeScale, opacity: lit }}
         />
         {/* The lit copy is drawn with CSS generated content so the number

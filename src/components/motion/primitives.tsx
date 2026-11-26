@@ -256,7 +256,7 @@ export function Magnetic({
 export function SpotlightCard({
   className,
   children,
-  glow = "rgba(0,161,198,0.18)",
+  glow = "rgba(47,86,216,0.18)",
   tilt = 6,
   as = "div",
 }: {

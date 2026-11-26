@@ -174,7 +174,7 @@ function Author({ post }: { post: Post }) {
     <span className="flex items-center gap-2.5">
       <span
         aria-hidden
-        className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#00a1c6,#3b82f6)] text-[11px] font-semibold text-white"
+        className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#2f56d8,#3b82f6)] text-[11px] font-semibold text-white"
       >
         {post.author.initials}
       </span>

@@ -116,7 +116,7 @@ export function SkillsGap() {
           />
           <div
             aria-hidden
-            className="absolute inset-0 -z-10 bg-[radial-gradient(80%_70%_at_85%_30%,rgba(0,161,198,0.22),transparent_70%)] mix-blend-screen"
+            className="absolute inset-0 -z-10 bg-[radial-gradient(80%_70%_at_85%_30%,rgba(47,86,216,0.22),transparent_70%)] mix-blend-screen"
           />
           <div
             aria-hidden
@@ -164,7 +164,7 @@ export function SkillsGap() {
                   <Magnetic strength={0.3}>
                     <Link
                       href="/contact"
-                      className="group inline-flex h-12 items-center gap-2 rounded-full bg-setu px-7 text-[15px] font-semibold text-white shadow-[0_12px_40px_-12px_rgba(0,161,198,0.8)] transition-colors hover:bg-[#0089a9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:h-[calc(var(--s)*56)] lg:px-[calc(var(--s)*32)] lg:text-[calc(var(--s)*16)]"
+                      className="group inline-flex h-12 items-center gap-2 rounded-full bg-setu px-7 text-[15px] font-semibold text-white shadow-[0_12px_40px_-12px_rgba(47,86,216,0.8)] transition-colors hover:bg-[#0089a9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:h-[calc(var(--s)*56)] lg:px-[calc(var(--s)*32)] lg:text-[calc(var(--s)*16)]"
                     >
                       Work with us
                       <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />

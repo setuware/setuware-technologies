@@ -23,7 +23,7 @@ export function LegalPage({
     <>
       <section className="relative isolate overflow-hidden border-b border-border bg-[linear-gradient(180deg,#f6f9fc_0%,#ffffff_100%)] pb-12 pt-28 dark:bg-[linear-gradient(180deg,#0b0e18_0%,#070910_100%)] md:pb-16 md:pt-36">
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -left-[10%] -top-[30%] h-[80%] w-[55%] rounded-full bg-[#00a1c6]/[0.10] blur-3xl" />
+          <div className="absolute -left-[10%] -top-[30%] h-[80%] w-[55%] rounded-full bg-[#2f56d8]/[0.10] blur-3xl" />
           <div className="absolute -right-[10%] top-0 h-[70%] w-[45%] rounded-full bg-[#3b82f6]/[0.08] blur-3xl" />
         </div>
         <div className="container-page">

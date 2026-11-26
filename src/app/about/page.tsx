@@ -268,7 +268,7 @@ export default function AboutPage() {
         />
         <div className="container-page relative">
           <FadeUp y={24} className="mx-auto max-w-4xl text-center">
-            <span className="mx-auto inline-flex size-12 items-center justify-center rounded-full bg-setu text-white shadow-[0_10px_24px_-10px_rgba(0,161,198,0.8)]">
+            <span className="mx-auto inline-flex size-12 items-center justify-center rounded-full bg-setu text-white shadow-[0_10px_24px_-10px_rgba(47,86,216,0.8)]">
               <Quote className="size-5 fill-current" aria-hidden />
             </span>
             <p className={cn(EYEBROW, "mt-6")}>Our mission</p>
@@ -305,14 +305,14 @@ export default function AboutPage() {
                 <div className="h-full" data-cursor="hover">
                   <SpotlightCard
                     tilt={3}
-                    glow="rgba(0,161,198,0.12)"
+                    glow="rgba(47,86,216,0.12)"
                     className={cn(
                       "h-full rounded-[1.25rem] border border-border bg-surface p-6 md:p-7",
                       LIGHT_CARD_SHADOW,
                     )}
                   >
                     <div className="relative">
-                      <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(0,161,198,0.16),rgba(0,97,168,0.08))] text-setu ring-1 ring-inset ring-setu/20">
+                      <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(47,86,216,0.16),rgba(0,97,168,0.08))] text-setu ring-1 ring-inset ring-setu/20">
                         <Icon className="size-[22px]" strokeWidth={1.8} aria-hidden />
                       </span>
                       <h3 className="mt-6 font-display text-lg font-semibold text-foreground">
@@ -475,7 +475,7 @@ export default function AboutPage() {
               <StaggerItem key={industry.slug} as="li" y={16}>
                 <Link
                   href={`/industries/${industry.slug}`}
-                  className="group inline-flex items-center gap-2.5 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-4 text-sm font-medium text-foreground shadow-[0_1px_2px_rgb(var(--shadow-color)/0.06)] transition-[border-color,box-shadow,color] duration-300 hover:border-setu/50 hover:text-setu hover:shadow-[0_8px_20px_-10px_rgba(0,161,198,0.5)]"
+                  className="group inline-flex items-center gap-2.5 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-4 text-sm font-medium text-foreground shadow-[0_1px_2px_rgb(var(--shadow-color)/0.06)] transition-[border-color,box-shadow,color] duration-300 hover:border-setu/50 hover:text-setu hover:shadow-[0_8px_20px_-10px_rgba(47,86,216,0.5)]"
                 >
                   <IndustryIcon
                     name={industry.icon}
@@ -536,7 +536,7 @@ export default function AboutPage() {
                 <ButtonLink
                   href="/contact"
                   size="lg"
-                  className="w-full rounded-full bg-setu text-white shadow-[0_10px_24px_-10px_rgba(0,161,198,0.8)] hover:bg-setu-dark sm:w-auto"
+                  className="w-full rounded-full bg-setu text-white shadow-[0_10px_24px_-10px_rgba(47,86,216,0.8)] hover:bg-setu-dark sm:w-auto"
                 >
                   Book a consultation
                   <ArrowRight className="size-4" aria-hidden />

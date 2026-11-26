@@ -137,7 +137,7 @@ export default async function IndustryContent({ params }: { params: Promise<{ sl
           <Reveal className="relative min-w-0">
             <div
               aria-hidden
-              className="absolute -inset-3 -z-10 rounded-[2rem] bg-[linear-gradient(135deg,rgba(0,161,198,0.18),rgba(59,130,246,0.08)_60%,transparent)] blur-xl"
+              className="absolute -inset-3 -z-10 rounded-[2rem] bg-[linear-gradient(135deg,rgba(47,86,216,0.18),rgba(59,130,246,0.08)_60%,transparent)] blur-xl"
             />
             <figure className="relative aspect-[3/2] overflow-hidden rounded-[1.6rem] bg-[#0b1020] shadow-2xl ring-1 ring-black/5">
               <Image

@@ -55,7 +55,7 @@ function SectionDecor({ surface }: { surface: SectionSurface }) {
           <div
             className={cn(
               "absolute -left-[10%] -top-[20%] h-[60%] w-[55%] rounded-full blur-3xl",
-              surface === "ink" ? "bg-[#00a1c6]/20" : "bg-[#00a1c6]/[0.10]",
+              surface === "ink" ? "bg-[#2f56d8]/20" : "bg-[#2f56d8]/[0.10]",
             )}
           />
           <div

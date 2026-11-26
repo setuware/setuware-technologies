@@ -145,7 +145,7 @@ export default async function ServiceLanding({ params }: { params: Promise<{ slu
                     <span className="hidden items-center justify-center text-setu md:flex" aria-hidden>
                       <ArrowRight className="size-5" />
                     </span>
-                    <div className={cn("flex items-start gap-3 rounded-2xl border border-setu/30 bg-surface p-5 [background-image:linear-gradient(135deg,rgba(0,161,198,0.09),rgba(0,161,198,0.02))]", CARD_SHADOW)}>
+                    <div className={cn("flex items-start gap-3 rounded-2xl border border-setu/30 bg-surface p-5 [background-image:linear-gradient(135deg,rgba(47,86,216,0.09),rgba(47,86,216,0.02))]", CARD_SHADOW)}>
                       <span className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-setu text-white">
                         <Check className="size-3.5" aria-hidden />
                       </span>
@@ -200,7 +200,7 @@ export default async function ServiceLanding({ params }: { params: Promise<{ slu
             </Stagger>
           ) : null}
 
-          <FadeUp className="mt-8 rounded-2xl border border-setu/20 bg-[linear-gradient(135deg,rgba(0,161,198,0.07),rgba(59,130,246,0.03))] p-6 md:p-8">
+          <FadeUp className="mt-8 rounded-2xl border border-setu/20 bg-[linear-gradient(135deg,rgba(47,86,216,0.07),rgba(59,130,246,0.03))] p-6 md:p-8">
             <div className="flex flex-col gap-6 lg:flex-row lg:gap-12">
               <div className="lg:w-64 lg:shrink-0">
                 <h3 className="font-display text-[1.15rem] font-semibold text-foreground">
@@ -552,7 +552,7 @@ function SectionIntro({
 /** Bottom-weighted navy so the inset card sits on a calm edge, plus a cyan wash. */
 const HERO_PHOTO_OVERLAY = [
   "linear-gradient(to top, rgba(11,16,32,0.55) 0%, rgba(11,16,32,0.1) 45%, rgba(11,16,32,0) 100%)",
-  "linear-gradient(135deg, rgba(0,161,198,0.2) 0%, rgba(0,161,198,0) 55%)",
+  "linear-gradient(135deg, rgba(47,86,216,0.2) 0%, rgba(47,86,216,0) 55%)",
 ].join(", ");
 
 function Hero({

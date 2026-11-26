@@ -432,7 +432,7 @@ export default function PricingPage() {
                 y={22}
                 className="relative flex items-start gap-3.5 rounded-2xl border border-white/10 bg-white/[0.04] p-4 lg:flex-col lg:items-center lg:text-center"
               >
-                <span className="relative inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-setu text-white shadow-[0_0_0_5px_rgba(0,161,198,0.15)]">
+                <span className="relative inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-setu text-white shadow-[0_0_0_5px_rgba(47,86,216,0.15)]">
                   <Icon className="size-4" aria-hidden />
                 </span>
                 <span>

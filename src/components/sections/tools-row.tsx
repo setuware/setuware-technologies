@@ -170,7 +170,7 @@ export function ToolsRow() {
           className="absolute inset-0 dark:opacity-60"
           style={{
             backgroundImage:
-              "radial-gradient(40rem 22rem at 50% 0%, rgba(0,161,198,0.12), transparent 70%), radial-gradient(30rem 24rem at 100% 100%, rgba(0,97,168,0.08), transparent 70%), radial-gradient(28rem 22rem at 0% 90%, rgba(0,161,198,0.07), transparent 70%)",
+              "radial-gradient(40rem 22rem at 50% 0%, rgba(47,86,216,0.12), transparent 70%), radial-gradient(30rem 24rem at 100% 100%, rgba(0,97,168,0.08), transparent 70%), radial-gradient(28rem 22rem at 0% 90%, rgba(47,86,216,0.07), transparent 70%)",
           }}
         />
         <div
