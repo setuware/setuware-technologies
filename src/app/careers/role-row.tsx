@@ -64,10 +64,10 @@ export function RoleRow({ role, compact = false }: { role: RoleCard; compact?: b
 
 function Fact({ Icon, label, value }: { Icon: typeof MapPin; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex min-w-0 items-center gap-1.5">
       <dt className="sr-only">{label}</dt>
       <Icon className="size-3.5 shrink-0 text-[#2f56d8] dark:text-[#9db4ff]" aria-hidden />
-      <dd className="whitespace-nowrap">{value}</dd>
+      <dd className="min-w-0 break-words lg:whitespace-nowrap">{value}</dd>
     </div>
   );
 }
