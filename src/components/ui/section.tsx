@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { FadeUp } from "@/components/motion/primitives";
 import { cn } from "@/lib/utils";
 
 export type SectionSurface = "default" | "subtle" | "tint" | "dots" | "grid" | "ink";
@@ -95,8 +96,10 @@ export function SectionHeading({
   as: Tag = "h2",
   className,
 }: SectionHeadingProps) {
+  // The page h1 is animated by PageHero; section headings fade up on scroll.
+  const Root = Tag === "h1" ? "div" : FadeUp;
   return (
-    <div
+    <Root
       className={cn(
         "flex flex-col gap-4",
         align === "center" ? "mx-auto max-w-2xl text-center" : "max-w-2xl",
@@ -123,6 +126,6 @@ export function SectionHeading({
           {description}
         </p>
       ) : null}
-    </div>
+    </Root>
   );
 }

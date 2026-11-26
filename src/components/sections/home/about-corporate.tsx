@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, Phone } from "lucide-react";
 
-import { FadeUp } from "@/components/motion/primitives";
+import { FadeUp, ImageReveal, PopIn, Stagger, StaggerItem } from "@/components/motion/primitives";
+import { Counter } from "@/components/ui/counter";
 import { stats } from "@/lib/content";
 import { site } from "@/lib/site";
 import { Eyebrow, SectionTitle } from "./shared";
@@ -21,18 +22,22 @@ export function AboutCorporate() {
       <div className="container-figma grid items-center gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-20">
         <FadeUp className="relative mx-auto w-full max-w-[36rem] pb-16 pr-10 lg:mx-0">
           <div aria-hidden className="absolute -left-6 -top-6 size-40 rounded-3xl bg-[radial-gradient(#2f56d8_1.5px,transparent_1.5px)] [background-size:14px_14px] opacity-30" />
-          <div className="relative aspect-[4/3.4] overflow-hidden rounded-3xl shadow-[0_30px_60px_-30px_rgba(15,19,48,0.5)]">
+          <ImageReveal className="relative aspect-[4/3.4] rounded-3xl shadow-[0_30px_60px_-30px_rgba(15,19,48,0.5)]">
             <Image src="/images/team/team-group.jpg" alt="The Setuware team in a planning session" fill sizes="(min-width: 1024px) 36rem, 92vw" className="object-cover" />
-          </div>
-          <div className="absolute bottom-0 right-0 w-[52%] overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_24px_50px_-20px_rgba(15,19,48,0.55)] dark:border-surface">
+          </ImageReveal>
+          <PopIn delay={0.35} className="absolute bottom-0 right-0 w-[52%]">
+          <div className="overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_24px_50px_-20px_rgba(15,19,48,0.55)] dark:border-surface">
             <div className="relative aspect-[4/3]">
               <Image src="/images/photos/about-office.jpg" alt="Setuware office workspace" fill sizes="(min-width: 1024px) 18rem, 46vw" className="object-cover" />
             </div>
           </div>
-          <div className="absolute bottom-6 left-6 rounded-2xl bg-[linear-gradient(135deg,#3b6cf6,#1d4ed8)] px-6 py-5 text-white shadow-[0_20px_40px_-18px_rgba(29,78,216,0.9)]">
+          </PopIn>
+          <PopIn delay={0.55} className="absolute bottom-6 left-6">
+          <div className="rounded-2xl bg-[linear-gradient(135deg,#3b6cf6,#1d4ed8)] px-6 py-5 text-white shadow-[0_20px_40px_-18px_rgba(29,78,216,0.9)]">
             <p className="text-3xl font-extrabold leading-none">100%</p>
             <p className="mt-1.5 text-xs font-medium text-white/85">Code &amp; account ownership</p>
           </div>
+          </PopIn>
         </FadeUp>
 
         <FadeUp delay={0.1}>
@@ -74,18 +79,18 @@ export function AboutCorporate() {
       </div>
 
       <div className="container-figma mt-20">
-        <dl className="grid gap-px overflow-hidden rounded-3xl border border-[#e3e8f5] bg-[#e3e8f5] sm:grid-cols-2 lg:grid-cols-4 dark:border-white/10 dark:bg-white/10">
+        <Stagger as="div" className="grid gap-px overflow-hidden rounded-3xl border border-[#e3e8f5] bg-[#e3e8f5] sm:grid-cols-2 lg:grid-cols-4 dark:border-white/10 dark:bg-white/10">
           {stats.map((stat) => (
-            <div key={stat.label} className="bg-[#f8f9fe] p-8 text-center dark:bg-surface-2">
-              <dd className="text-[2.4rem] font-extrabold leading-none tracking-[-0.02em] text-[#2f56d8] dark:text-[#7c9bff]">
-                {stat.value}
+            <StaggerItem key={stat.label} className="bg-[#f8f9fe] p-8 text-center dark:bg-surface-2">
+              <p className="text-[2.4rem] font-extrabold leading-none tracking-[-0.02em] text-[#2f56d8] dark:text-[#7c9bff]">
+                <Counter to={stat.value} />
                 <span className="text-[1.4rem]">{stat.suffix}</span>
-              </dd>
-              <dt className="mt-3 text-[1rem] font-semibold text-[#0f1330] dark:text-white">{stat.label}</dt>
+              </p>
+              <p className="mt-3 text-[1rem] font-semibold text-[#0f1330] dark:text-white">{stat.label}</p>
               <p className="mt-1 text-sm text-[#5a6180] dark:text-white/60">{stat.hint}</p>
-            </div>
+            </StaggerItem>
           ))}
-        </dl>
+        </Stagger>
       </div>
     </section>
   );

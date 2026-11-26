@@ -368,3 +368,61 @@ export function LetterRise({ text, className }: { text: string; className?: stri
     </div>
   );
 }
+
+/* -------------------------------------------------------------------------- */
+/* MaskRise — heading text slides up from behind a clipping edge.             */
+/* -------------------------------------------------------------------------- */
+
+export function MaskRise({ children, delay = 0, className }: { children: React.ReactNode; delay?: number; className?: string }) {
+  return (
+    <span className={cn("block overflow-hidden pb-[0.14em] -mb-[0.14em]", className)}>
+      <motion.span
+        data-reveal=""
+        className="block"
+        initial={{ y: "105%", opacity: 0 }}
+        whileInView={{ y: "0%", opacity: 1 }}
+        viewport={VIEWPORT}
+        transition={{ duration: DURATION.slow, ease: EASE_OUT, delay }}
+      >
+        {children}
+      </motion.span>
+    </span>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* LineGrow — rules and connectors draw in from one side.                     */
+/* -------------------------------------------------------------------------- */
+
+export function LineGrow({ className, delay = 0.15, origin = "left" }: { className?: string; delay?: number; origin?: "left" | "center" }) {
+  return (
+    <motion.span
+      aria-hidden
+      data-reveal=""
+      className={cn(origin === "left" ? "origin-left" : "origin-center", className)}
+      initial={{ scaleX: 0 }}
+      whileInView={{ scaleX: 1 }}
+      viewport={VIEWPORT}
+      transition={{ duration: DURATION.slow, ease: EASE_OUT, delay }}
+    />
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* PopIn — badges, icons and round photos scale up with a soft spring.        */
+/* -------------------------------------------------------------------------- */
+
+export function PopIn({ children, delay = 0, className }: { children: React.ReactNode; delay?: number; className?: string }) {
+  return (
+    <motion.div
+      data-reveal=""
+      className={className}
+      initial={{ opacity: 0, scale: 0.6 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={VIEWPORT}
+      transition={{ type: "spring", stiffness: 260, damping: 20, delay }}
+    >
+      {children}
+    </motion.div>
+  );
+}

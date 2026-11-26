@@ -1,3 +1,4 @@
+import { LineGrow, MaskRise } from "@/components/motion/primitives";
 import { cn } from "@/lib/utils";
 
 /** Brand blue used across the corporate homepage. */
@@ -21,8 +22,7 @@ export function Eyebrow({
         className,
       )}
     >
-      <span
-        aria-hidden
+      <LineGrow
         className={cn(
           "inline-block h-[2px] w-7 rounded-full",
           light ? "bg-[linear-gradient(90deg,#7dd3fc,#ffffff)]" : "bg-[linear-gradient(90deg,#38bdf8,#2f56d8)]",
@@ -50,7 +50,7 @@ export function SectionTitle({
         className,
       )}
     >
-      {children}
+      <MaskRise>{children}</MaskRise>
     </h2>
   );
 }
