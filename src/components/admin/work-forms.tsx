@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 
-import { saveProfileAction, saveProjectAction } from "@/app/admin/work-actions";
+import { postUpdateAction, saveProfileAction, saveProjectAction } from "@/app/admin/work-actions";
 import type { FormState } from "@/app/admin/actions";
 
 import { FormMessage, SubmitButton } from "./form-bits";
@@ -16,7 +16,21 @@ export function ProfileForm({
   departments,
   manage,
 }: {
-  person: { id: number; designation: string; department: string; phone: string; joinedOn: string | null; birthday: string | null; managerId: number | null };
+  person: {
+    id: number;
+    designation: string;
+    department: string;
+    phone: string;
+    joinedOn: string | null;
+    birthday: string | null;
+    managerId: number | null;
+    bio: string;
+    skills: string[];
+    location: string;
+    emergencyContact: string;
+    employeeCode: string;
+    employmentType: string;
+  };
   managers: { id: number; name: string }[];
   departments: string[];
   manage: boolean;
@@ -77,6 +91,48 @@ export function ProfileForm({
         </label>
         <input id="birthday" name="birthday" type="date" defaultValue={person.birthday ?? ""} className={inputClass} />
         <p className="mt-1 text-[11px] text-muted-foreground">Only the day and month are shown to the team.</p>
+      </div>
+      <div>
+        <label htmlFor="employee_code" className={LABEL}>
+          Employee ID
+        </label>
+        <input id="employee_code" name="employee_code" defaultValue={person.employeeCode} disabled={locked} placeholder="e.g. SW-014" className={`${inputClass} disabled:opacity-60`} />
+      </div>
+      <div>
+        <label htmlFor="employment_type" className={LABEL}>
+          Employment type
+        </label>
+        <select id="employment_type" name="employment_type" defaultValue={person.employmentType} disabled={locked} className={`${inputClass} disabled:opacity-60`}>
+          <option value="">Not set</option>
+          {["Full-time", "Part-time", "Intern", "Contract", "Freelance"].map((type) => (
+            <option key={type}>{type}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label htmlFor="location" className={LABEL}>
+          Works from
+        </label>
+        <input id="location" name="location" defaultValue={person.location} placeholder="e.g. Gurugram office, or Remote (Patna)" className={inputClass} />
+      </div>
+      <div>
+        <label htmlFor="emergency_contact" className={LABEL}>
+          Emergency contact
+        </label>
+        <input id="emergency_contact" name="emergency_contact" defaultValue={person.emergencyContact} placeholder="Name and phone number" className={inputClass} />
+        <p className="mt-1 text-[11px] text-muted-foreground">Only you and team admins can see this.</p>
+      </div>
+      <div className="sm:col-span-2">
+        <label htmlFor="skills" className={LABEL}>
+          Skills
+        </label>
+        <input id="skills" name="skills" defaultValue={person.skills.join(", ")} placeholder="React, Next.js, Figma — separate with commas" className={inputClass} />
+      </div>
+      <div className="sm:col-span-2">
+        <label htmlFor="bio" className={LABEL}>
+          About
+        </label>
+        <textarea id="bio" name="bio" rows={3} maxLength={600} defaultValue={person.bio} placeholder="A few lines on what you do and what you like working on." className={`${inputClass} h-auto py-2.5`} />
       </div>
       <div className="flex items-center gap-3 sm:col-span-2">
         <SubmitButton>Save profile</SubmitButton>
@@ -167,6 +223,23 @@ export function ProjectForm({
       </div>
       <div className="flex items-center gap-3 sm:col-span-2">
         <SubmitButton>{project ? "Save project" : "Create project"}</SubmitButton>
+        <FormMessage state={state} />
+      </div>
+    </form>
+  );
+}
+
+/** Composer for a short work update. */
+export function UpdateComposer({ placeholder = "What did you work on today?" }: { placeholder?: string }) {
+  const [state, action] = useActionState<FormState, FormData>(postUpdateAction, {});
+  return (
+    <form action={action} className="flex flex-col gap-3">
+      <label htmlFor="update-body" className="sr-only">
+        Work update
+      </label>
+      <textarea id="update-body" name="body" rows={3} maxLength={1000} required placeholder={placeholder} className={`${inputClass} h-auto py-2.5`} />
+      <div className="flex items-center gap-3">
+        <SubmitButton pendingLabel="Posting…">Post update</SubmitButton>
         <FormMessage state={state} />
       </div>
     </form>
