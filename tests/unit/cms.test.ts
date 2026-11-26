@@ -13,6 +13,7 @@ import {
   completeTwoFactor,
   createPasswordToken,
   createUser,
+  deleteUser,
   enableTwoFactor,
   getUserByEmail,
   hashPassword,
@@ -223,6 +224,18 @@ describe("admin auth", () => {
     expect(seesAll(owner, "leads")).toBe(true);
   });
 
+
+  it("removes a member, their sessions and their reports' manager link", async () => {
+    const lead = await createUser({ email: "lead@example.com", name: "Lead", role: "sales", password: "SalesPass123", temporary: false });
+    const report = await createUser({ email: "rep@example.com", name: "Rep", role: "sales", password: "SalesPass123", temporary: false });
+    getDb().prepare("UPDATE users SET manager_id = ? WHERE id = ?").run(lead.id, report.id);
+    const session = await signIn("lead@example.com", "SalesPass123");
+    if (!session.ok) throw new Error("sign-in failed");
+    deleteUser(lead.id);
+    expect(getUserByEmail("lead@example.com")).toBeNull();
+    expect(userForToken(session.token)).toBeNull();
+    expect(getUserByEmail("rep@example.com")!.managerId).toBeNull();
+  });
 });
 
 describe("enquiries", () => {

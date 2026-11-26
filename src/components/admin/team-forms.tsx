@@ -1,13 +1,14 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { KeyRound, Link2, MailPlus } from "lucide-react";
+import { KeyRound, Link2, MailPlus, Trash2 } from "lucide-react";
 
 import {
   changeOwnPasswordAction,
   confirmTwoFactorAction,
   createUserAction,
   disableTwoFactorAction,
+  removeUserAction,
   resendInviteAction,
   resetUserPasswordAction,
   sendResetLinkAction,
@@ -207,6 +208,25 @@ export function TwoFactorDisable() {
       <div className="w-full">
         <FormMessage state={state} />
       </div>
+    </form>
+  );
+}
+
+/** Permanent removal, behind a confirmation so a stray click cannot delete an account. */
+export function RemoveUser({ id, name }: { id: number; name: string }) {
+  return (
+    <form
+      action={removeUserAction}
+      onSubmit={(event) => {
+        if (!window.confirm(`Remove ${name} from the admin? They lose access immediately. Their past tasks and time entries stay on record.`)) {
+          event.preventDefault();
+        }
+      }}
+    >
+      <input type="hidden" name="id" value={id} />
+      <button type="submit" className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-red-500/30 px-3 text-sm font-medium text-red-600 hover:bg-red-500/10 dark:text-red-400">
+        <Trash2 className="size-4" aria-hidden /> Remove
+      </button>
     </form>
   );
 }
