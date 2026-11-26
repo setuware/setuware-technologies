@@ -56,7 +56,7 @@ const DESIGN_COPY: Record<
   },
   "full-application-build": {
     name: "Full Application",
-    tagline: "Web and mobile apps with logins and payments, from ₹19,999.",
+    tagline: "Web apps from ₹19,999 and mobile apps from ₹29,999, with logins and payments.",
     features: [
       "User accounts and admin dashboard",
       "Secure payment integration",
