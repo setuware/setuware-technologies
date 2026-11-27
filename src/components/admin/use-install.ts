@@ -1,35 +1,53 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 import { pwaScope } from "@/lib/portal";
 
 type InstallPrompt = { prompt: () => Promise<void> };
 
+// The browser offers the prompt once per page load, so it is kept here and
+// survives the move from the sign-in page to the dashboard.
+let offered: InstallPrompt | null = null;
+let listening = false;
+const subscribers = new Set<() => void>();
+
+function setOffered(next: InstallPrompt | null) {
+  offered = next;
+  subscribers.forEach((notify) => notify());
+}
+
+function subscribe(notify: () => void) {
+  subscribers.add(notify);
+  return () => {
+    subscribers.delete(notify);
+  };
+}
+
 /** Registers the offline worker and returns the browser's "Install app" prompt, when it offers one. */
 export function useInstall(): [InstallPrompt | null, () => void] {
-  const [install, setInstall] = useState<InstallPrompt | null>(null);
+  const install = useSyncExternalStore(
+    subscribe,
+    () => offered,
+    () => null,
+  );
 
   useEffect(() => {
+    if (listening) return;
+    listening = true;
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("/admin-sw.js", { scope: pwaScope(window.location.host) }).catch(() => undefined);
-    const onPrompt = (event: Event) => {
+    window.addEventListener("beforeinstallprompt", (event) => {
       event.preventDefault();
-      setInstall(event as unknown as InstallPrompt);
-    };
-    const onInstalled = () => setInstall(null);
-    window.addEventListener("beforeinstallprompt", onPrompt);
-    window.addEventListener("appinstalled", onInstalled);
-    return () => {
-      window.removeEventListener("beforeinstallprompt", onPrompt);
-      window.removeEventListener("appinstalled", onInstalled);
-    };
+      setOffered(event as unknown as InstallPrompt);
+    });
+    window.addEventListener("appinstalled", () => setOffered(null));
   }, []);
 
   return [
     install,
     () => {
       void install?.prompt();
-      setInstall(null);
+      setOffered(null);
     },
   ];
 }
