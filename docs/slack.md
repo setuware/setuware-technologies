@@ -12,6 +12,8 @@ or an admin action.
 | `#site-alerts` | `SLACK_CHANNEL_ALERTS` | Server errors, failed enquiry email / CRM delivery, failed HR email, Zoho CRM sync errors, deploy succeeded or failed |
 | `#security` | `SLACK_CHANNEL_SECURITY` | Sign-in from a new device, account locked, password resets and changes, temporary passwords, 2-step verification turned off or reset, role changes, access disabled, accounts created or removed |
 | `#marketing` | `SLACK_CHANNEL_MARKETING` | Newsletter sign-ups, blog post published |
+| `#wins` | `SLACK_CHANNEL_WINS` | An enquiry or CRM lead marked as won |
+| `#announcements` | `SLACK_CHANNEL_ANNOUNCEMENTS` | "Please welcome …" for every team member added in the admin |
 | same as `#team-ops` | `SLACK_CHANNEL_DIGEST` | Daily summary at 9:00 IST: yesterday's enquiries, bookings, applications, sign-ups, page views, attendance, and what is waiting (uncontacted enquiries, applications to review, pending approvals, overdue tasks, who is on leave) |
 
 Each setting takes a channel ID (`C0123ABCD`) or name (`#leads`). Set it to
@@ -38,6 +40,16 @@ Each setting takes a channel ID (`C0123ABCD`) or name (`#leads`). Set it to
        bot:
          - chat:write
          - chat:write.public
+         - channels:read
+         - groups:read
+         - channels:join
+         - channels:manage
+         - groups:write
+         - pins:read
+         - pins:write
+         - users:read
+         - users:read.email
+         - im:write
    settings:
      org_deploy_enabled: false
      socket_mode_enabled: false
@@ -59,7 +71,11 @@ Each setting takes a channel ID (`C0123ABCD`) or name (`#leads`). Set it to
    pm2 restart setuware --update-env
    ```
 
-5. **Daily summary:** it rides on the existing reminders cron
+5. **Channel setup is automatic.** Every deploy runs `npm run slack:setup`
+   (also safe to run by hand): the bot joins each public channel, sets its
+   topic and description, and pins a "How we use #channel" guide with the
+   house rules. Edit the wording in `scripts/slack.mjs` (`GUIDES`).
+6. **Daily summary:** it rides on the existing reminders cron
    (`/api/cron/daily`, every 15 minutes, see [admin.md](./admin.md)); nothing
    else to schedule.
 
@@ -71,3 +87,25 @@ which reads the same `.env.production.local`.
 - `src/lib/slack.ts`: channel settings, `chat.postMessage`, and the Block Kit card builder.
 - `src/lib/slack-events.ts`: one function per event, and the daily summary.
 - `src/instrumentation.ts`: server errors to `#site-alerts`.
+- `src/lib/slack-onboarding.ts`: adds new Slack members to their channels.
+- `scripts/slack.mjs`: `setup` (topics, pinned guides), `test`, `post`.
+
+## New team members
+
+1. In Slack, open **Invite people → Copy invite link** (set it to never
+   expire) and add it on the server as `SLACK_INVITE_URL=…`.
+2. Add the person in **Admin → People** as usual. The welcome email now
+   includes the Slack link, and `#announcements` gets a "Please welcome …"
+   post.
+3. Once they join Slack with the same email, the cron (every 15 minutes)
+   adds them to their channels and sends them a welcome DM:
+
+   | Permission | Channels |
+   |---|---|
+   | everyone | team-ops, announcements |
+   | enquiries, CRM leads or bookings | leads, wins |
+   | applications or jobs | hiring |
+   | posts or subscribers | marketing |
+   | settings, users or roles | site-alerts, security |
+
+   Change the mapping in `src/lib/slack-onboarding.ts` (`channelsFor`).

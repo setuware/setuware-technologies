@@ -84,7 +84,7 @@ import {
 import { emailConfigured, getTransporter, senderAddress } from "@/lib/lead-email";
 import { site } from "@/lib/site";
 import { esc } from "@/lib/slack";
-import { slackJobChange, slackPostPublished, slackSecurity, slackSignIn, slackTeam } from "@/lib/slack-events";
+import { slackJobChange, slackPostPublished, slackSecurity, slackSignIn, slackTeam, slackWelcome, slackWin } from "@/lib/slack-events";
 
 export interface FormState {
   error?: string;
@@ -413,6 +413,7 @@ export async function createUserAction(_previous: FormState, form: FormData): Pr
     `${esc(owner.name)} added *${esc(name)}*${joining ? ` (${esc(joining)})` : ""} as *${esc(roleName(role))}*.${profile.joinedOn ? ` Joining on ${esc(profile.joinedOn)}.` : ""}`,
     { text: "View profile", path: `/admin/people/${user.id}` },
   );
+  slackWelcome({ name, designation: profile.designation, department: profile.department, joinedOn: profile.joinedOn, managerName: managerId ? getUser(managerId)?.name : undefined });
   slackSecurity("New admin account", `${esc(owner.name)} created an admin account for *${esc(name)}* (${esc(email)}) with the *${esc(roleName(role))}* role.`);
   refresh();
 
@@ -678,6 +679,7 @@ export async function updateRecordAction(_previous: FormState, form: FormData): 
   if (status && allowed.includes(status) && status !== record.status) {
     setStatus(entity, id, status);
     addNote(entity, id, "status", user.name, `Status changed from ${record.status || "none"} to ${status}`);
+    if (status === "won" && entity !== "application") slackWin(record, entity, user.name);
     const warning = await toZoho(entity, record, (zohoId) => updateZohoLead(zohoId, { Lead_Status: status }));
     if (warning) warnings.push(warning);
   }
@@ -767,7 +769,9 @@ export async function bulkStatusAction(form: FormData): Promise<void> {
     .slice(0, 500)
     .filter((id) => inScope(user, entity, getRecord(entity, id)));
   if (ids.length && allowed.includes(status)) {
+    const won = status === "won" && entity !== "application" ? ids.map((id) => getRecord(entity, id)).filter((record) => record && record.status !== "won") : [];
     bulkStatus(entity, ids, status, user.name);
+    if (entity !== "application") for (const record of won.slice(0, 10)) if (record) slackWin(record, entity, user.name);
     if (entity === "lead") {
       for (const id of ids.slice(0, 100)) {
         const lead = getLead(id);

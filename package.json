@@ -22,6 +22,7 @@
     "media:render": "node scripts/render-backdrops.mjs",
     "mail:test": "node scripts/mail-test.mjs",
     "slack:test": "node scripts/slack.mjs test",
+    "slack:setup": "node scripts/slack.mjs setup",
     "crm:token": "node scripts/zoho-crm.mjs token",
     "crm:test": "node scripts/zoho-crm.mjs test",
     "cms:backup": "node --no-warnings scripts/cms-backup.mjs"

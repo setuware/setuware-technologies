@@ -5,8 +5,7 @@ import { site } from "./site";
 /**
  * Slack notifications.
  *
- * One Slack app (bot token `SLACK_BOT_TOKEN`, scopes `chat:write` and
- * `chat:write.public`) posts each kind of event to its own channel. Channels
+ * One Slack app (bot token `SLACK_BOT_TOKEN`, scopes in docs/slack.md) posts each kind of event to its own channel. Channels
  * default to the names below; set `SLACK_CHANNEL_<NAME>` to a channel ID or
  * name to change one, or to `off` to silence it. Without a token nothing is
  * sent. A slow or failing Slack never fails the request that triggered it.
@@ -20,6 +19,8 @@ export const SLACK_CHANNELS = {
   alerts: { env: "SLACK_CHANNEL_ALERTS", fallback: "#site-alerts" },
   security: { env: "SLACK_CHANNEL_SECURITY", fallback: "#security" },
   marketing: { env: "SLACK_CHANNEL_MARKETING", fallback: "#marketing" },
+  wins: { env: "SLACK_CHANNEL_WINS", fallback: "#wins" },
+  announcements: { env: "SLACK_CHANNEL_ANNOUNCEMENTS", fallback: "#announcements" },
   digest: { env: "SLACK_CHANNEL_DIGEST", fallback: "" },
 } as const;
 
@@ -46,6 +47,27 @@ export function slackChannelTarget(channel: SlackChannel): string | null {
   const value = process.env[env]?.trim() || fallback;
   if (!value) return channel === "digest" ? slackChannelTarget("team") : null;
   return value.toLowerCase() === "off" ? null : value;
+}
+
+/** Calls any Slack Web API method (form-encoded). Resolves to Slack's reply, or null without a token or on network failure. */
+export async function slackApi<T extends object = Record<string, unknown>>(method: string, params: Record<string, unknown>): Promise<(T & { ok: boolean; error?: string }) | null> {
+  const token = process.env.SLACK_BOT_TOKEN?.trim();
+  if (!token) return null;
+  const body = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null) body.set(key, typeof value === "string" ? value : JSON.stringify(value));
+  }
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  try {
+    const response = await fetch(`https://slack.com/api/${method}`, { method: "POST", headers: { authorization: `Bearer ${token}` }, body, signal: controller.signal });
+    return (await response.json()) as T & { ok: boolean; error?: string };
+  } catch (error) {
+    console.error("[slack]", method, error instanceof Error ? error.message : error);
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 /** Posts a message. Resolves to whether Slack accepted it; never throws. */
@@ -127,6 +149,8 @@ export interface CardButton {
 }
 
 export interface Card {
+  /** Emoji shortcode shown before the title, such as ":trophy:". */
+  icon?: string;
   /** Header line, plain text. */
   title: string;
   /** Short intro under the header (mrkdwn, caller escapes). */
@@ -142,7 +166,7 @@ export interface Card {
 
 /** Builds a consistent Block Kit card: header, summary, fields, quote, buttons, footer. */
 export function card(text: string, input: Card): SlackMessage {
-  const blocks: SlackBlock[] = [{ type: "header", text: { type: "plain_text", text: clip(input.title, 150), emoji: true } }];
+  const blocks: SlackBlock[] = [{ type: "header", text: { type: "plain_text", text: clip(input.icon ? `${input.icon}  ${input.title}` : input.title, 150), emoji: true } }];
   if (input.summary) blocks.push({ type: "section", text: { type: "mrkdwn", text: clip(input.summary, 2900) } });
   const fields = (input.fields ?? []).filter((field): field is [string, string] => Boolean(field[1]));
   for (let i = 0; i < fields.length; i += 10) {

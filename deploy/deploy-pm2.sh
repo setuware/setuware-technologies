@@ -52,6 +52,7 @@ pm2 save >/dev/null
 for _ in $(seq 1 20); do
   if curl -fsS "http://127.0.0.1:${PORT}/api/health" >/dev/null 2>&1; then
     step "Healthy"
+    node scripts/slack.mjs setup >/dev/null 2>&1 || true
     slack ":rocket: *Deployed* to https://setuware.in in $(( $(date +%s) - started ))s: \`${commit}\`"
     echo "=================================="
     echo "Setuware deployment successful!"

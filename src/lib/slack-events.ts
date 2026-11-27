@@ -19,6 +19,13 @@ const LEAD_TITLES: Record<Lead["kind"], string> = {
   newsletter: "New newsletter subscriber",
 };
 
+const LEAD_ICONS: Record<Lead["kind"], string> = {
+  contact: ":incoming_envelope:",
+  estimate: ":bar_chart:",
+  booking: ":calendar:",
+  newsletter: ":email:",
+};
+
 /* Leads ------------------------------------------------------------------- */
 
 /** Posts an enquiry to #leads, or a newsletter sign-up to #marketing. */
@@ -29,6 +36,7 @@ export async function slackLead(lead: Lead): Promise<boolean> {
     return sendSlack(
       "marketing",
       card(`New newsletter subscriber: ${v.email}`, {
+        icon: LEAD_ICONS.newsletter,
         title: "New newsletter subscriber",
         summary: `${mailto(v.email)} joined the newsletter.`,
         buttons: [{ text: "Open subscribers", url: adminUrl("/admin/subscribers"), primary: true }],
@@ -43,6 +51,7 @@ export async function slackLead(lead: Lead): Promise<boolean> {
   return sendSlack(
     "leads",
     card(`${LEAD_TITLES[lead.kind]} from ${who}`, {
+      icon: LEAD_ICONS[lead.kind],
       title: `${LEAD_TITLES[lead.kind]}${v.name ? ` · ${v.name}` : ""}`,
       summary: v.slot ? `*${esc(v.slot)}*${v.mode ? ` · ${esc(v.mode)}, 30 minutes` : ""}` : undefined,
       fields: [
@@ -71,6 +80,7 @@ export function slackApplication(input: { id: number; jobTitle: string; name: st
   queueSlack(
     "hiring",
     card(`New application for ${input.jobTitle} from ${input.name}`, {
+      icon: ":briefcase:",
       title: `New application · ${input.jobTitle}`,
       fields: [
         ["Name", esc(input.name)],
@@ -94,6 +104,7 @@ export function slackJobChange(job: { id: number; title: string; slug: string; l
   queueSlack(
     "hiring",
     card(`${job.title} is ${opened ? "now live on the careers page" : "closed"}`, {
+      icon: opened ? ":mega:" : ":no_entry_sign:",
       title: opened ? `Now hiring · ${job.title}` : `Role closed · ${job.title}`,
       summary: `${esc(actor)} ${opened ? "opened" : "closed"} *${esc(job.title)}* (${esc(job.type)}, ${esc(job.location)}).`,
       buttons: [
@@ -113,6 +124,7 @@ export function slackPostPublished(post: { id: number; title: string; slug: stri
   queueSlack(
     "marketing",
     card(`New blog post published: ${post.title}`, {
+      icon: ":newspaper:",
       title: "New blog post published",
       summary: `*${esc(post.title)}*\nby ${esc(post.author)}`,
       quote: post.excerpt,
@@ -137,12 +149,49 @@ export function slackScheduledPosts(now: Date = new Date()): number {
   return posts.length;
 }
 
+/* Wins and announcements ------------------------------------------------- */
+
+/** Celebrates an enquiry or CRM lead marked as won, in #wins. */
+export function slackWin(record: { id: number; name: string; email: string; service?: string; company?: string }, entity: "enquiry" | "lead", actor: string): void {
+  const who = record.name || record.company || record.email || "A client";
+  queueSlack(
+    "wins",
+    card(`Deal won: ${who}`, {
+      icon: ":trophy:",
+      title: `Deal won · ${who}`,
+      summary: `*${esc(actor)}* closed *${esc(who)}*. Nice work! :tada:`,
+      fields: [
+        ["Service", esc(record.service)],
+        ["Company", esc(record.company)],
+      ],
+      buttons: [{ text: "Open in admin", url: adminUrl(entity === "lead" ? `/admin/leads/${record.id}` : `/admin/enquiries/${record.id}`), primary: true }],
+      context: ["Share what worked in the thread", istTime()],
+    }),
+  );
+}
+
+/** Introduces a new team member in #announcements. */
+export function slackWelcome(member: { name: string; designation?: string; department?: string; joinedOn?: string | null; managerName?: string }): void {
+  const role = [member.designation, member.department].filter(Boolean).join(", ");
+  queueSlack(
+    "announcements",
+    card(`Please welcome ${member.name} to the team`, {
+      icon: ":wave:",
+      title: `Please welcome ${member.name}`,
+      summary: `*${esc(member.name)}* is joining Setuware${role ? ` as *${esc(role)}*` : ""}${member.joinedOn ? ` on *${esc(member.joinedOn)}*` : ""}. Say hello in the thread! :raised_hands:`,
+      fields: [["Reports to", esc(member.managerName)]],
+      context: ["They are added to their Slack channels automatically once they join"],
+    }),
+  );
+}
+
 /* Team operations --------------------------------------------------------- */
 
 export function slackTeam(title: string, summary: string, button?: { text: string; path: string }, details?: string): void {
   queueSlack(
     "team",
     card(title, {
+      icon: ":busts_in_silhouette:",
       title,
       summary,
       quote: details,
@@ -158,6 +207,7 @@ export function slackSecurity(title: string, summary: string, details: [string, 
   queueSlack(
     "security",
     card(title, {
+      icon: ":closed_lock_with_key:",
       title,
       summary,
       fields: details.map(([label, value]) => [label, value ? esc(value) : ""]),
@@ -201,7 +251,7 @@ export function slackAlert(key: string, title: string, summary: string, details?
   if (last && now - last < ALERT_QUIET_MS) return false;
   recentAlerts.set(key, now);
   if (recentAlerts.size > 200) recentAlerts.delete(recentAlerts.keys().next().value as string);
-  queueSlack("alerts", card(`${title}: ${summary}`, { title: `⚠️ ${title}`, summary, quote: details, context: [`<${adminUrl("/")}|${esc(new URL(adminUrl("/")).host)}>`, istTime()] }));
+  queueSlack("alerts", card(`${title}: ${summary}`, { icon: ":rotating_light:", title, summary, quote: details, context: [`<${adminUrl("/")}|${esc(new URL(adminUrl("/")).host)}>`, istTime()] }));
   return true;
 }
 
@@ -241,6 +291,7 @@ export async function slackDigest(now: Date = new Date()): Promise<boolean> {
 
   const label = new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${yesterday}T12:00:00Z`));
   const message = card(`Daily summary for ${label}`, {
+    icon: ":sunrise:",
     title: `Daily summary · ${label}`,
     fields: [
       ["New enquiries", String(enquiries)],

@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { esc, sendSlack, slackChannelTarget } from "@/lib/slack";
-import { slackAlert, slackApplication, slackDigest, slackLead } from "@/lib/slack-events";
+import { slackAlert, slackApplication, slackDigest, slackLead, slackWelcome, slackWin } from "@/lib/slack-events";
+import { channelsFor, syncSlackMembers } from "@/lib/slack-onboarding";
+import { createUser } from "@/lib/cms/auth";
 import type { Lead } from "@/lib/leads";
 
 const fetchMock = vi.fn();
@@ -112,5 +114,45 @@ describe("slack events", () => {
     expect(await slackDigest(new Date("2026-11-03T05:00:00.000Z"))).toBe(false);
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(posted()[0].channel).toBe("#team-ops");
+  });
+});
+
+describe("wins and announcements", () => {
+  it("celebrates won deals in #wins and new joiners in #announcements", async () => {
+    slackWin({ id: 3, name: "Acme", email: "a@acme.test", service: "Website" }, "enquiry", "Satyam");
+    slackWelcome({ name: "Neha", designation: "Designer" });
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    expect(posted().map((body) => body.channel).sort()).toEqual(["#announcements", "#wins"]);
+  });
+});
+
+describe("slack onboarding", () => {
+  it("maps permissions to channels", () => {
+    expect(channelsFor({ permissions: [] })).toEqual(["team", "announcements"]);
+    expect(channelsFor({ permissions: ["enquiries.view", "applications.view"] })).toEqual(["team", "announcements", "leads", "wins", "hiring"]);
+  });
+
+  it("adds a member who joined Slack to their channels once, then welcomes them", async () => {
+    const user = await createUser({ email: "joiner@setuware.test", name: "New Joiner", role: "intern" });
+    const calls: string[] = [];
+    fetchMock.mockImplementation(async (url: string, init: RequestInit) => {
+      const method = url.split("/").pop() ?? "";
+      calls.push(method);
+      const params = new URLSearchParams(init.body as URLSearchParams);
+      const reply: Record<string, unknown> = { ok: true };
+      if (method === "users.lookupByEmail") {
+        if (params.get("email") !== user.email) return new Response(JSON.stringify({ ok: false, error: "users_not_found" }));
+        reply.user = { id: "U1" };
+      }
+      if (method === "conversations.list") reply.channels = [{ id: "C1", name: "team-ops" }, { id: "C2", name: "announcements" }];
+      if (method === "conversations.open") reply.channel = { id: "D1" };
+      return new Response(JSON.stringify(reply));
+    });
+    expect(await syncSlackMembers()).toBe(1);
+    expect(calls.filter((method) => method === "conversations.invite")).toHaveLength(2);
+    expect(calls).toContain("chat.postMessage");
+    calls.length = 0;
+    expect(await syncSlackMembers()).toBe(0);
+    expect(calls).not.toContain("conversations.invite");
   });
 });
