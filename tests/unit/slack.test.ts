@@ -165,6 +165,13 @@ describe("slack onboarding", () => {
     expect(await syncSlackMembers()).toBe(0);
     expect(count("conversations.invite")).toBe(0);
 
+    process.env.SLACK_CHANNEL_LEADS = "#hiring";
+    expect(await syncSlackMembers()).toBe(1);
+    expect(calls.filter((call) => call.method === "conversations.kick").map((call) => call.channel)).toEqual(["C4"]);
+    delete process.env.SLACK_CHANNEL_LEADS;
+    expect(await syncSlackMembers()).toBe(1);
+    calls.length = 0;
+
     process.env.SLACK_CHANNEL_WINS = "off";
     process.env.SLACK_CHANNEL_HIRING = "off";
     expect(await syncSlackMembers()).toBe(0);

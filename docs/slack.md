@@ -113,4 +113,5 @@ which reads the same `.env.production.local`.
    removed, the next run takes them out of the website channels they no
    longer qualify for (a disabled or removed account leaves all of them).
    Setting a channel to `off` stops posts but doesn't remove anyone who
-   still has the permission.
+   still has the permission. Pointing a setting at an existing channel
+   removes members who can't see what it will now carry.
