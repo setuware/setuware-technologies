@@ -151,20 +151,23 @@ export function slackScheduledPosts(now: Date = new Date()): number {
 
 /* Wins and announcements ------------------------------------------------- */
 
-/** Celebrates an enquiry or CRM lead marked as won, in #wins. */
-export function slackWin(record: { id: number; name: string; email: string; service?: string; company?: string }, entity: "enquiry" | "lead", actor: string): void {
-  const who = record.name || record.company || record.email || "A client";
+/**
+ * Celebrates enquiries or CRM leads marked as won, in #wins. Only the service
+ * and who closed it are posted (no customer details), since #wins is for
+ * the whole team. A bulk update posts one message.
+ */
+export function slackWin(records: { id: number; service?: string }[], entity: "enquiry" | "lead", actor: string): void {
+  if (!records.length) return;
+  const one = records.length === 1 ? records[0] : null;
+  const what = one ? (one.service ? `a new ${one.service} project` : "a new deal") : `${records.length} deals`;
+  const list = entity === "lead" ? "/admin/leads" : "/admin/enquiries";
   queueSlack(
     "wins",
-    card(`Deal won: ${who}`, {
+    card(`${actor} closed ${what}`, {
       icon: ":trophy:",
-      title: `Deal won · ${who}`,
-      summary: `*${esc(actor)}* closed *${esc(who)}*. Nice work! :tada:`,
-      fields: [
-        ["Service", esc(record.service)],
-        ["Company", esc(record.company)],
-      ],
-      buttons: [{ text: "Open in admin", url: adminUrl(entity === "lead" ? `/admin/leads/${record.id}` : `/admin/enquiries/${record.id}`), primary: true }],
+      title: one ? "Deal won!" : `${records.length} deals won!`,
+      summary: `*${esc(actor)}* closed ${esc(what)}. Nice work! :tada:`,
+      buttons: [{ text: "Open in admin", url: adminUrl(one ? `${list}/${one.id}` : `${list}?status=won`), primary: true }],
       context: ["Share what worked in the thread", istTime()],
     }),
   );

@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { esc, sendSlack, slackChannelTarget } from "@/lib/slack";
 import { slackAlert, slackApplication, slackDigest, slackLead, slackWelcome, slackWin } from "@/lib/slack-events";
 import { channelsFor, syncSlackMembers } from "@/lib/slack-onboarding";
-import { createUser } from "@/lib/cms/auth";
+import { createUser, updateUser } from "@/lib/cms/auth";
 import type { Lead } from "@/lib/leads";
 
 const fetchMock = vi.fn();
@@ -119,7 +119,7 @@ describe("slack events", () => {
 
 describe("wins and announcements", () => {
   it("celebrates won deals in #wins and new joiners in #announcements", async () => {
-    slackWin({ id: 3, name: "Acme", email: "a@acme.test", service: "Website" }, "enquiry", "Satyam");
+    slackWin([{ id: 3, service: "Website" }], "enquiry", "Satyam");
     slackWelcome({ name: "Neha", designation: "Designer" });
     await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
     expect(posted().map((body) => body.channel).sort()).toEqual(["#announcements", "#wins"]);
@@ -128,8 +128,9 @@ describe("wins and announcements", () => {
 
 describe("slack onboarding", () => {
   it("maps permissions to channels", () => {
-    expect(channelsFor({ permissions: [] })).toEqual(["team", "announcements"]);
-    expect(channelsFor({ permissions: ["enquiries.view", "applications.view"] })).toEqual(["team", "announcements", "leads", "wins", "hiring"]);
+    expect(channelsFor({ permissions: [] })).toEqual(["team", "announcements", "wins"]);
+    expect(channelsFor({ permissions: ["enquiries.view", "applications.view"] })).toEqual(["team", "announcements", "wins"]);
+    expect(channelsFor({ permissions: ["enquiries.view", "enquiries.all", "applications.all"] })).toEqual(["team", "announcements", "wins", "leads", "hiring"]);
   });
 
   it("adds a member who joined Slack to their channels once, then welcomes them", async () => {
@@ -144,15 +145,20 @@ describe("slack onboarding", () => {
         if (params.get("email") !== user.email) return new Response(JSON.stringify({ ok: false, error: "users_not_found" }));
         reply.user = { id: "U1" };
       }
-      if (method === "conversations.list") reply.channels = [{ id: "C1", name: "team-ops" }, { id: "C2", name: "announcements" }];
+      if (method === "conversations.list") reply.channels = [{ id: "C1", name: "team-ops" }, { id: "C2", name: "announcements" }, { id: "C3", name: "wins" }];
       if (method === "conversations.open") reply.channel = { id: "D1" };
       return new Response(JSON.stringify(reply));
     });
     expect(await syncSlackMembers()).toBe(1);
-    expect(calls.filter((method) => method === "conversations.invite")).toHaveLength(2);
+    expect(calls.filter((method) => method === "conversations.invite")).toHaveLength(3);
     expect(calls).toContain("chat.postMessage");
     calls.length = 0;
     expect(await syncSlackMembers()).toBe(0);
     expect(calls).not.toContain("conversations.invite");
+
+    updateUser(user.id, { active: false });
+    calls.length = 0;
+    expect(await syncSlackMembers()).toBe(1);
+    expect(calls.filter((method) => method === "conversations.kick")).toHaveLength(3);
   });
 });

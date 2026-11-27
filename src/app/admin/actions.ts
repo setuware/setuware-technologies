@@ -679,7 +679,7 @@ export async function updateRecordAction(_previous: FormState, form: FormData): 
   if (status && allowed.includes(status) && status !== record.status) {
     setStatus(entity, id, status);
     addNote(entity, id, "status", user.name, `Status changed from ${record.status || "none"} to ${status}`);
-    if (status === "won" && entity !== "application") slackWin(record, entity, user.name);
+    if (status === "won" && entity !== "application") slackWin([record], entity, user.name);
     const warning = await toZoho(entity, record, (zohoId) => updateZohoLead(zohoId, { Lead_Status: status }));
     if (warning) warnings.push(warning);
   }
@@ -771,7 +771,7 @@ export async function bulkStatusAction(form: FormData): Promise<void> {
   if (ids.length && allowed.includes(status)) {
     const won = status === "won" && entity !== "application" ? ids.map((id) => getRecord(entity, id)).filter((record) => record && record.status !== "won") : [];
     bulkStatus(entity, ids, status, user.name);
-    if (entity !== "application") for (const record of won.slice(0, 10)) if (record) slackWin(record, entity, user.name);
+    if (entity !== "application") slackWin(won.filter((record) => record !== null), entity, user.name);
     if (entity === "lead") {
       for (const id of ids.slice(0, 100)) {
         const lead = getLead(id);
