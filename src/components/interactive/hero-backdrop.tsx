@@ -277,12 +277,12 @@ export function HeroVideoReel({ clips }: { clips: readonly HeroClip[] }) {
   const playing = onScreen && !reduceMotion;
   const count = clips.length;
   // The next clip is fetched a few seconds before its turn, not on page load.
-  const [warm, setWarm] = useState(false);
+  const [warmFor, setWarmFor] = useState(-1);
+  const warm = warmFor === active;
 
   useEffect(() => {
-    setWarm(false);
     if (!playing || count < 2 || reducedMotionNow()) return;
-    const timer = window.setTimeout(() => setWarm(true), REEL_MS - 3500);
+    const timer = window.setTimeout(() => setWarmFor(active), REEL_MS - 3500);
     return () => window.clearTimeout(timer);
   }, [active, playing, count]);
 
