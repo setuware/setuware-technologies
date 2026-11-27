@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 import { inputClass } from "./ui";
 
@@ -54,22 +54,25 @@ export function ChoiceField({
   const known = [...new Set([...options, ...(defaultValue ? [defaultValue] : [])].map((option) => option.trim()).filter(Boolean))];
   const [choice, setChoice] = useState(defaultValue.trim());
   const [custom, setCustom] = useState("");
+  // A save that changes the stored value arrives as a new default: show it.
+  const saved = defaultValue.trim();
+  const [seen, setSeen] = useState(saved);
+  if (saved !== seen) {
+    setSeen(saved);
+    setChoice(saved);
+    setCustom("");
+  }
   const other = choice === OTHER;
-  // React resets a form's DOM fields after its action runs, which leaves this
-  // controlled select showing its old default. Redraw it from state instead.
-  const wrapper = useRef<HTMLDivElement>(null);
-  const [drawn, setDrawn] = useState(0);
-  useEffect(() => {
-    const form = wrapper.current?.closest("form");
-    if (!form) return;
-    const redraw = () => setDrawn((count) => count + 1);
-    form.addEventListener("reset", redraw);
-    return () => form.removeEventListener("reset", redraw);
-  }, []);
+  // React resets a form's DOM fields after its action runs. Keep the native
+  // default on the chosen option so that reset lands on what is selected.
+  const select = useRef<HTMLSelectElement>(null);
+  useLayoutEffect(() => {
+    for (const option of select.current?.options ?? []) option.defaultSelected = option.value === choice;
+  });
   return (
-    <div ref={wrapper} className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
       <select
-        key={`select-${drawn}`}
+        ref={select}
         id={id}
         name={other ? undefined : name}
         value={choice}
@@ -87,12 +90,11 @@ export function ChoiceField({
       </select>
       {other ? (
         <input
-          key={`custom-${drawn}`}
           name={name}
           value={custom}
           onChange={(event) => setCustom(event.target.value)}
           maxLength={maxLength}
-          autoFocus={drawn === 0}
+          autoFocus
           aria-label={otherPlaceholder}
           placeholder={otherPlaceholder}
           className={inputClass}
