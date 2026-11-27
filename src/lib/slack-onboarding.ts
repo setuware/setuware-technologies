@@ -168,14 +168,21 @@ export async function syncSlackMembers(now: Date = new Date()): Promise<number> 
   const digest = slackChannelTarget("digest");
   const digestId = digest ? channelId(digest) : null;
   const sweep = [...new Set([...uses.keys(), ...(digestId ? [digestId] : [])])];
-  const activeSlack = new Set([...links].filter(([id]) => byId.get(id)?.active).map(([, link]) => link.slack));
+  const activeSlack = new Map([...links].filter(([id]) => byId.get(id)?.active).map(([id, link]) => [link.slack, id]));
   let changed = 0;
 
   for (const [id, link] of links) {
     const user = byId.get(id);
     if (!user?.active) {
-      // The same Slack person came back under a new admin account: that link owns them now.
-      if (activeSlack.has(link.slack)) {
+      // The same Slack person came back under a new admin account: hand the old
+      // account's channels to that link, so the next run checks them against
+      // the new account's permissions.
+      const owner = activeSlack.get(link.slack);
+      const current = owner === undefined ? undefined : links.get(owner);
+      if (owner !== undefined && current) {
+        const merged = [...current.channels, ...link.channels.filter((held) => !current.channels.some((other) => other.id === held.id))];
+        save.run(`${MARK}${owner}`, JSON.stringify({ ...current, channels: merged }));
+        current.channels = merged;
         db.prepare("DELETE FROM settings WHERE key = ?").run(`${MARK}${id}`);
         continue;
       }
