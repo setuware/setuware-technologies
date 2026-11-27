@@ -62,17 +62,24 @@ export function SkillsGap() {
       setOnScreen(true);
       return;
     }
-    const observer = new IntersectionObserver(
+    const nearObserver = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) {
-          setOnScreen(entry.isIntersecting);
-          if (entry.isIntersecting) setNear(true);
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setNear(true);
+          nearObserver.disconnect();
         }
       },
       { rootMargin: "400px 0px" },
     );
-    observer.observe(band);
-    return () => observer.disconnect();
+    const viewObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) setOnScreen(entry.isIntersecting);
+    });
+    nearObserver.observe(band);
+    viewObserver.observe(band);
+    return () => {
+      nearObserver.disconnect();
+      viewObserver.disconnect();
+    };
   }, []);
   const hasVideo = videoSources.length > 0 && !failed;
 
