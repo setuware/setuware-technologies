@@ -27,7 +27,7 @@ const CHANNELS = {
 /** Topic, purpose and the pinned guide for each channel. */
 const GUIDES = {
   leads: {
-    topic: ":dart: Every enquiry, estimate and booking from setuware.in · first reply within 2 working hours",
+    topic: ":dart: Every website enquiry, estimate and booking · first reply within 2 working hours",
     purpose: "Private sales inbox. Each website enquiry, project estimate and consultation booking lands here with the visitor's details, budget and a link to it in the admin.",
     posts: ["Contact form messages", "Project estimates with budget and timeline", "Consultation bookings with slot and mode", "Email or CRM delivery problems for a lead"],
     rules: [
@@ -39,7 +39,7 @@ const GUIDES = {
     ],
   },
   hiring: {
-    topic: ":briefcase: Job applications and openings from setuware.in/careers · decision within 3 working days",
+    topic: ":briefcase: Job applications and openings from the careers page · decision within 3 working days",
     purpose: "Private hiring channel. New applications arrive with role, contact and portfolio links (CVs stay in the admin), plus every role opened or closed.",
     posts: ["New job applications", "Roles opened or closed on the careers page"],
     rules: [
