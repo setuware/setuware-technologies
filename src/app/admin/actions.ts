@@ -440,7 +440,7 @@ async function emailWelcome(userId: number, sender: AdminUser, access?: WelcomeA
   const user = getUser(userId);
   if (!user) return false;
   const manager = user.managerId ? getUser(user.managerId) : null;
-  const how = access ?? (!user.hasPassword ? "invite" : user.mustChangePassword ? "credentials" : "active");
+  const how = access ?? (!user.hasPassword ? "invited" : user.mustChangePassword ? "temporary" : "active");
   return sendEmail(user.email, welcomeEmail({ ...user, managerName: manager?.name }, sender.name, how), sender.email);
 }
 

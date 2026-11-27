@@ -143,8 +143,11 @@ export interface WelcomeDetails extends NewMember {
   joinedOn?: string | null;
 }
 
-/** How they get in: a temporary password email, an invite link, or an account they already use. */
-export type WelcomeAccess = "credentials" | "invite" | "active";
+/**
+ * How they get in. `credentials` and `invite` mean that email went out alongside this one;
+ * `temporary` and `invited` are for a later resend, when that email may be gone or expired.
+ */
+export type WelcomeAccess = "credentials" | "invite" | "temporary" | "invited" | "active";
 
 function day(iso: string): string {
   return new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" }).format(new Date(`${iso}T00:00:00+05:30`));
@@ -153,12 +156,16 @@ function day(iso: string): string {
 const ACCESS_LINE: Record<WelcomeAccess, string> = {
   credentials: "Your admin account is ready. Your login details, with a temporary password, are in a separate email.",
   invite: "Your admin account is ready. We have sent you an invite link in a separate email so you can choose your password.",
+  temporary: "Your admin account is ready. Sign in with the temporary password your admin gave you, then choose your own.",
+  invited: "Your admin account is ready. Use the invite link from your admin to choose your password.",
   active: "Your admin account is ready. Sign in with your work email and the password you chose.",
 };
 
 const FIRST_STEP: Record<WelcomeAccess, string> = {
   credentials: "Sign in with the temporary password from the login email, then choose your own password.",
   invite: "Open the invite link and choose your password. The link works once and expires in 3 days.",
+  temporary: "Sign in with your temporary password, then choose your own password.",
+  invited: "Open your invite link and choose your password. If it has expired, ask your admin to send a new one.",
   active: "Sign in to the admin with your work email.",
 };
 
