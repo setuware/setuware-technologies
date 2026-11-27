@@ -63,7 +63,7 @@ import {
   type PostInput,
 } from "@/lib/cms/store";
 import { saveUpload, UploadError } from "@/lib/cms/uploads";
-import { credentialsEmail, generatePassword, inviteEmail, welcomeEmail } from "@/lib/cms/account-emails";
+import { credentialsEmail, generatePassword, inviteEmail, welcomeEmail, type WelcomeAccess } from "@/lib/cms/account-emails";
 import { sendAccountEmail, sendEmail } from "@/lib/cms/mailer";
 import { notify } from "@/lib/cms/notify";
 import { deleteRole, getRole, roleInUse, roleName, saveRole } from "@/lib/cms/rbac";
@@ -422,7 +422,7 @@ export async function createUserAction(_previous: FormState, form: FormData): Pr
 
   const access = password ? await emailCredentials(user.id, password, owner) : await sendInvite(user.id, owner);
   if (form.get("welcome") !== "on") return access;
-  const welcomed = await emailWelcome(user.id, owner);
+  const welcomed = await emailWelcome(user.id, owner, method);
   if (!welcomed || !access.ok) return access;
   return access.password ? access : { ...access, ok: `${access.ok} A welcome email was sent too.` };
 }
@@ -436,11 +436,12 @@ async function emailCredentials(userId: number, password: string, sender: AdminU
     : { ok: "Email is not set up, so share these login details privately (they must change the password at first sign-in).", password, link: authUrl("login") };
 }
 
-async function emailWelcome(userId: number, sender: AdminUser): Promise<boolean> {
+async function emailWelcome(userId: number, sender: AdminUser, access?: WelcomeAccess): Promise<boolean> {
   const user = getUser(userId);
   if (!user) return false;
   const manager = user.managerId ? getUser(user.managerId) : null;
-  return sendEmail(user.email, welcomeEmail({ ...user, managerName: manager?.name }, sender.name), sender.email);
+  const how = access ?? (!user.hasPassword ? "invite" : user.mustChangePassword ? "credentials" : "active");
+  return sendEmail(user.email, welcomeEmail({ ...user, managerName: manager?.name }, sender.name, how), sender.email);
 }
 
 async function sendInvite(userId: number, sender: AdminUser): Promise<FormState> {

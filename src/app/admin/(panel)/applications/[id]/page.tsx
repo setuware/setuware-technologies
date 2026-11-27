@@ -19,7 +19,7 @@ export default async function ApplicationPage({ params }: { params: Promise<{ id
   const item = getApplication(Number(id));
   if (!item || (!seesAll(user, "applications") && item.assignee !== user.name)) notFound();
   const links = item.links.split(/[\s,]+/).filter((link) => /^https?:\/\//i.test(link));
-  const team = listUsers().filter((member) => member.active).map((member) => member.name);
+  const team = [...new Set(listUsers().filter((member) => member.active).map((member) => member.name))];
   const templates = listTemplates("application").map(({ id: templateId, name, subject, body }) => ({ id: templateId, name, subject, body }));
   const digits = item.phone.replace(/\D/g, "").replace(/^(\d{10})$/, "91$1");
 
