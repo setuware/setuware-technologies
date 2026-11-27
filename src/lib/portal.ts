@@ -12,6 +12,9 @@ const PORTAL_PATH = /^\/(?:admin(?:\/|$)|api\/|_next\/|media\/|images\/|admin-sw
 const AUTH_PAGE = /^\/(login|forgot|set-password)$/;
 const ADMIN_AUTH_PAGE = /^\/admin\/(login|forgot|set-password)$/;
 
+/** Admin paths the browser fetches without the session cookie (install prompt). */
+const PUBLIC_ADMIN_ASSET = /^\/admin\/(?:manifest\.webmanifest$|app-icon\/)/;
+
 const portalEnabled = () => hostOf(site.portalUrl) !== hostOf(site.url);
 
 /** Full link to a sign-in page (`login`, `forgot`, `set-password`) for emails. */
@@ -42,7 +45,7 @@ export function portalRedirect(host: string | null, pathname: string, search = "
     if (authPage) return `${site.portalUrl}/${authPage[1]}${search}`;
     if (AUTH_PAGE.test(pathname)) return null;
     if (pathname === "/") return signedIn ? `${site.portalUrl}/admin${search}` : `${site.portalUrl}/login`;
-    if (!signedIn && /^\/admin(?:\/|$)/.test(pathname)) return `${site.portalUrl}/login`;
+    if (!signedIn && /^\/admin(?:\/|$)/.test(pathname) && !PUBLIC_ADMIN_ASSET.test(pathname)) return `${site.portalUrl}/login`;
     if (PORTAL_PATH.test(pathname)) return null;
     return `${site.url}${pathname}${search}`;
   }

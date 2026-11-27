@@ -7,6 +7,8 @@ describe("portalRedirect", () => {
     expect(portalRedirect("core.setuware.in", "/")).toBe("https://core.setuware.in/admin");
     expect(portalRedirect("core.setuware.in", "/", "", false)).toBe("https://core.setuware.in/login");
     expect(portalRedirect("core.setuware.in", "/admin/tasks", "", false)).toBe("https://core.setuware.in/login");
+    expect(portalRedirect("core.setuware.in", "/admin/manifest.webmanifest", "", false)).toBeNull();
+    expect(portalRedirect("core.setuware.in", "/admin/app-icon/192", "", false)).toBeNull();
   });
 
   it("keeps sign-in pages at /login, /forgot and /set-password on the portal", () => {
