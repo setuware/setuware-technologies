@@ -74,7 +74,7 @@ function personalSender() {
 }
 
 /** Calendar invite for a consultation booking, attached to both e-mails. */
-function bookingInvite(lead: Lead): { method: string; content: string } | undefined {
+export function bookingInvite(lead: Lead, meetingUrl?: string): { method: string; content: string } | undefined {
   if (lead.kind !== "booking") return undefined;
   const p = lead.payload;
   const slot = typeof p.slot === "string" ? p.slot : "";
@@ -97,12 +97,14 @@ function bookingInvite(lead: Lead): { method: string; content: string } | undefi
         phone ? `Phone: ${phone}` : "",
         topic ? `Topic: ${topic}` : "",
         notes ? `Notes: ${notes}` : "",
+        meetingUrl ? `Join the call: ${meetingUrl}` : "",
       ]
         .filter(Boolean)
         .join("\n"),
-      location: mode.startsWith("Video") ? "Google Meet (link to follow)" : `Phone call${phone ? ` to ${phone}` : ""}`,
+      location: meetingUrl ? meetingUrl : mode.startsWith("Video") ? "Google Meet (link to follow)" : `Phone call${phone ? ` to ${phone}` : ""}`,
       organizer: { name: site.name, email: senderAddress() },
       attendee: { name, email },
+      ...(meetingUrl ? { url: meetingUrl, sequence: 1 } : {}),
     }),
   };
 }

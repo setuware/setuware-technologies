@@ -8,6 +8,7 @@ import { markdownToBlocks, readingMinutes, slugify } from "@/lib/cms/markdown";
 import { cn } from "@/lib/utils";
 import { PostBody } from "@/components/blog/blocks";
 
+import { ChoiceField } from "./choice-field";
 import { FieldError, FormMessage, Label, SubmitButton } from "./form-bits";
 import { buttonClass, Card, inputClass } from "./ui";
 
@@ -293,12 +294,7 @@ export function PostEditor({ initial, categories }: { initial: PostDraft; catego
         <Card className="p-5">
           <h3 className="mb-3 text-sm font-semibold text-foreground">Details</h3>
           <Label htmlFor="category">Category</Label>
-          <input id="category" name="category" list="categories" defaultValue={initial.category} className={inputClass} />
-          <datalist id="categories">
-            {categories.map((category) => (
-              <option key={category} value={category} />
-            ))}
-          </datalist>
+          <ChoiceField id="category" name="category" options={categories} defaultValue={initial.category} emptyLabel="Choose a category" />
           <div className="mt-3">
             <Label htmlFor="author_name">Author</Label>
             <input id="author_name" name="author_name" defaultValue={initial.author_name} className={inputClass} />

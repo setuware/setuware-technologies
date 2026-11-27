@@ -18,6 +18,7 @@ import {
 } from "@/app/admin/actions";
 import { cn } from "@/lib/utils";
 
+import { ChoiceField, DEPARTMENTS, DESIGNATIONS } from "./choice-field";
 import { CopyButton } from "./copy-button";
 import { FieldError, FormMessage, SubmitButton } from "./form-bits";
 import { inputClass } from "./ui";
@@ -92,6 +93,14 @@ export function AddUserForm({
   const [method, setMethod] = useState<"credentials" | "invite">("credentials");
   const [welcome, setWelcome] = useState(true);
   const password = useRef<HTMLInputElement>(null);
+  // React clears the plain inputs after a successful create; remount the
+  // dropdowns then too, so one member's job details never carry to the next.
+  const [seen, setSeen] = useState(state);
+  const [created, setCreated] = useState(0);
+  if (state !== seen) {
+    setSeen(state);
+    if (!state.error) setCreated((count) => count + 1);
+  }
   const f = state.fields ?? {};
   const emails = [
     method === "credentials"
@@ -128,15 +137,10 @@ export function AddUserForm({
           <SectionTitle step={2}>Job details</SectionTitle>
           <div className="grid gap-3 sm:grid-cols-2">
             <Field id="new-designation" label="Designation" hint="Optional">
-              <input id="new-designation" name="designation" placeholder="e.g. Frontend Developer" className={inputClass} />
+              <ChoiceField key={created} id="new-designation" name="designation" options={DESIGNATIONS} />
             </Field>
             <Field id="new-department" label="Department" hint="Optional">
-              <input id="new-department" name="department" list="new-departments" placeholder="e.g. Engineering" className={inputClass} />
-              <datalist id="new-departments">
-                {departments.map((department) => (
-                  <option key={department} value={department} />
-                ))}
-              </datalist>
+              <ChoiceField key={created} id="new-department" name="department" options={[...DEPARTMENTS, ...departments]} emptyLabel="Not set" />
             </Field>
             <Field id="new-manager" label="Reports to" hint="Optional" error={f.manager_id}>
               <select id="new-manager" name="manager_id" defaultValue="" className={inputClass}>

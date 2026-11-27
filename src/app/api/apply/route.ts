@@ -1,3 +1,4 @@
+import { applicantConfirmationEmail, hrApplicationEmail } from "@/lib/application-emails";
 import { clientKey, fail, looksLikeSpam, ok, rateLimitHeaders } from "@/lib/api";
 import { emailConfigured, getTransporter } from "@/lib/lead-email";
 import { contactLimiter } from "@/lib/rate-limit";
@@ -65,31 +66,24 @@ export async function POST(request: Request) {
 
   if (emailConfigured()) {
     const bytes = Buffer.from(await resume.arrayBuffer());
-    const body = [
-      `${name} applied for ${job.title}.`,
-      "",
-      `Email: ${email}`,
-      `Phone: ${phone}`,
-      links ? `Links: ${links}` : "",
-      note ? `\n${note}` : "",
-      "",
-      `Review it in the admin: ${site.portalUrl}/admin/applications`,
-    ]
-      .filter((line) => line !== "")
-      .join("\n");
+    const details = { name, email, phone, links, note, jobTitle: job.title, jobSlug: job.slug };
+    const from = process.env.LEAD_EMAIL_FROM ?? `${site.name} <${process.env.SMTP_USER}>`;
+    const hr = process.env.HR_EMAIL_TO ?? site.hrEmail;
     getTransporter()
       .sendMail({
-        from: process.env.LEAD_EMAIL_FROM ?? `${site.name} <${process.env.SMTP_USER}>`,
-        to: process.env.HR_EMAIL_TO ?? site.hrEmail,
+        from,
+        to: hr,
         replyTo: email,
-        subject: `Application: ${job.title} · ${name}`,
-        text: body,
+        ...hrApplicationEmail(details),
         attachments: [{ filename: stored.original, content: bytes, contentType: stored.mime }],
       })
       .catch((error: unknown) => {
         console.error("[apply] hr email failed", error instanceof Error ? error.message : error);
         slackAlert("apply:email", "HR email failed", `The application from *${esc(name)}* for *${esc(job.title)}* was saved, but the email to HR could not be sent.`);
       });
+    getTransporter()
+      .sendMail({ from, to: email, replyTo: hr, ...applicantConfirmationEmail(details) })
+      .catch((error: unknown) => console.error("[apply] applicant email failed", error instanceof Error ? error.message : error));
   }
 
   return ok(

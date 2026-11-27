@@ -4,6 +4,8 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { refresh, updateTag } from "next/cache";
 
+import { renderEmail, textToBlocks } from "@/lib/email-kit";
+import { meetingLinkEmail } from "@/lib/email-templates";
 import { RateLimiter } from "@/lib/rate-limit";
 import {
   audit,
@@ -81,7 +83,7 @@ import {
   setSetting,
   setStatus,
 } from "@/lib/cms/crm";
-import { emailConfigured, getTransporter, senderAddress } from "@/lib/lead-email";
+import { bookingInvite, emailConfigured, getTransporter, senderAddress } from "@/lib/lead-email";
 import { authUrl } from "@/lib/portal";
 import { site } from "@/lib/site";
 import { esc } from "@/lib/slack";
@@ -743,6 +745,14 @@ export async function sendEmailAction(_previous: FormState, form: FormData): Pro
       replyTo: user.email,
       subject,
       text: body,
+      html: renderEmail({
+        subject,
+        preheader: body.slice(0, 120),
+        heading: subject,
+        blocks: textToBlocks(body),
+        contactLine: true,
+        reason: `You are receiving this email because you contacted or applied to ${site.name}.`,
+      }),
     });
   } catch (error) {
     return { error: `Email could not be sent: ${error instanceof Error ? error.message : "unknown error"}` };
@@ -756,6 +766,51 @@ export async function sendEmailAction(_previous: FormState, form: FormData): Pro
   audit(user.name, "sent email", entity, `${record.email}: ${subject}`);
   refresh();
   return { ok: `Sent to ${record.email}.` };
+}
+
+/** E-mails the join link for a booked video consultation, with an updated calendar invite. */
+export async function sendMeetingLinkAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser("enquiries.edit");
+  const id = Number(form.get("id"));
+  const record = getRecord("enquiry", id);
+  if (!record || !inScope(user, "enquiry", record)) return { error: "Record not found." };
+  const meetingUrl = String(form.get("meeting_url") ?? "").trim();
+  if (meetingUrl.length > 2000) return { error: "That link is too long. Paste the meeting's short join link." };
+  let parsed: URL | null = null;
+  try {
+    parsed = new URL(meetingUrl);
+  } catch {}
+  if (!parsed || parsed.protocol !== "https:") return { error: "Paste the full meeting link, starting with https://." };
+  const enquiry = getEnquiry(id);
+  let payload: Record<string, unknown> = {};
+  try {
+    payload = JSON.parse(enquiry?.payload || "{}") as Record<string, unknown>;
+  } catch {}
+  if (!enquiry || enquiry.kind !== "booking") return { error: "This enquiry is not a consultation booking." };
+  const lead = { kind: "booking" as const, reference: enquiry.reference, receivedAt: enquiry.created_at, payload };
+  const email = meetingLinkEmail(lead, parsed.href, user.name);
+  if (!email) return { error: "This booking has no time slot or email address." };
+  if (!emailConfigured()) return { error: "Email is not set up on the server (SMTP settings)." };
+  try {
+    const invite = bookingInvite(lead, parsed.href);
+    await getTransporter().sendMail({
+      from: { name: `${user.name} | ${site.name}`, address: senderAddress() },
+      to: enquiry.email,
+      replyTo: user.email,
+      ...email,
+      ...(invite ? { icalEvent: invite } : {}),
+    });
+  } catch (error) {
+    return { error: `Email could not be sent: ${error instanceof Error ? error.message : "unknown error"}` };
+  }
+  addNote("enquiry", id, "email", user.name, `Sent the meeting link: ${parsed.href}`);
+  if (enquiry.status === "new") {
+    setStatus("enquiry", id, "contacted");
+    addNote("enquiry", id, "status", user.name, "Status changed from new to contacted");
+  }
+  audit(user.name, "sent meeting link", "enquiry", `${enquiry.email}: ${parsed.href}`);
+  refresh();
+  return { ok: `Meeting link sent to ${enquiry.email}.` };
 }
 
 export async function bulkStatusAction(form: FormData): Promise<void> {
