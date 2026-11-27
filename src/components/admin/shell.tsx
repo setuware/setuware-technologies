@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -43,6 +43,7 @@ import { LogoMark } from "@/components/layout/logo";
 import { logoutAction } from "@/app/admin/actions";
 
 import { Elapsed } from "./live-clock";
+import { useInstall } from "./use-install";
 
 export interface ShellPresence {
   state: "out" | "in" | "break" | "done";
@@ -106,19 +107,7 @@ export function AdminShell({
   const [open, setOpen] = useState(false);
   // Only people who manage accounts or the site see "Admin"; everyone else is in the team portal.
   const portalLabel = areas.some((area) => area === "users" || area === "roles.manage" || area === "settings.manage") ? "ADMIN" : "TEAM PORTAL";
-  const [install, setInstall] = useState<{ prompt: () => Promise<void> } | null>(null);
-
-  // Installable app: register the offline worker and offer "Install app".
-  useEffect(() => {
-    if ("serviceWorker" in navigator) navigator.serviceWorker.register("/admin-sw.js", { scope: "/admin" }).catch(() => undefined);
-    const onPrompt = (event: Event) => {
-      event.preventDefault();
-      setInstall(event as unknown as { prompt: () => Promise<void> });
-    };
-    window.addEventListener("beforeinstallprompt", onPrompt);
-    window.addEventListener("appinstalled", () => setInstall(null));
-    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
-  }, []);
+  const [install, promptInstall] = useInstall();
   const items = NAV.filter((item) => item.area === null || areas.includes(item.area));
 
   const groups = [...new Set(items.map((item) => item.group))];
@@ -255,10 +244,7 @@ export function AdminShell({
       {install ? (
         <button
           type="button"
-          onClick={() => {
-            void install.prompt();
-            setInstall(null);
-          }}
+          onClick={promptInstall}
           className="relative mx-3 mt-4 flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(100deg,#2f56d8,#0a8ea6)] py-2 text-xs font-semibold text-white hover:brightness-110"
         >
           <Download className="size-3.5" aria-hidden /> Install app

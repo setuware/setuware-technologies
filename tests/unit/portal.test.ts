@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { authUrl, portalRedirect, portalRewrite } from "@/lib/portal";
+import { authUrl, portalRedirect, portalRewrite, pwaScope } from "@/lib/portal";
 
 describe("portalRedirect", () => {
   it("opens the dashboard from the portal root when signed in, the sign-in page otherwise", () => {
@@ -47,5 +47,13 @@ describe("portalRedirect", () => {
     expect(portalRedirect("setuware.in", "/administrator")).toBeNull();
     expect(portalRedirect("localhost:3000", "/admin")).toBeNull();
     expect(portalRedirect(null, "/admin")).toBeNull();
+  });
+});
+
+describe("pwaScope", () => {
+  it("covers the whole portal host so /login is inside the installable app", () => {
+    expect(pwaScope("core.setuware.in")).toBe("/");
+    expect(pwaScope("setuware.in")).toBe("/admin");
+    expect(pwaScope(null)).toBe("/admin");
   });
 });

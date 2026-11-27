@@ -1,5 +1,7 @@
 import { LogoMark } from "@/components/layout/logo";
 
+import { InstallButton } from "./install-button";
+
 /** Dark branded frame for sign-in, forgot-password and set-password pages. */
 export function AuthCard({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
   return (
@@ -13,6 +15,7 @@ export function AuthCard({ title, subtitle, children }: { title: string; subtitl
           <p className="mt-1.5 text-sm text-white/60">{subtitle}</p>
         </div>
         <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.8)] backdrop-blur">{children}</div>
+        <InstallButton />
         <p className="mt-6 text-center text-xs text-white/40">Authorised staff only. Sign-ins are logged.</p>
       </div>
     </div>
