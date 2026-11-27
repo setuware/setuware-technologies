@@ -1,4 +1,4 @@
-import { BOOKING, formatSlot, googleCalendarUrl, MEETING_MODES, type MeetingMode } from "./booking";
+import { BOOKING, formatSlot, MEETING_MODES, type MeetingMode } from "./booking";
 import { BRAND, buttons, detailCard, esc, link, meetingCard, note, paragraph, quote, renderEmail, siteHost, steps, type DetailRow, type EmailContent } from "./email-kit";
 import { getService } from "./content";
 import type { Lead } from "./leads";
@@ -283,10 +283,6 @@ export function acknowledgementEmail(lead: Lead): EmailContent | null {
     const times = meetingTimes(slot);
     const video = isVideo(lead);
     const topic = str(lead.payload.topic);
-    const how = video
-      ? "We will email the Google Meet link at least an hour before the call."
-      : `We will call you${v.phone ? ` on ${v.phone}` : ""} at the booked time.`;
-    const calendar = googleCalendarUrl(slot, `Consultation with ${site.name}`, `Free ${BOOKING.durationMin}-minute consultation with ${founder.name}, ${site.name}. ${how}`);
     subject = `Consultation confirmed: ${v.slot}`;
     tag = "Consultation confirmed";
     heading = "Your consultation is confirmed";
@@ -306,10 +302,6 @@ export function acknowledgementEmail(lead: Lead): EmailContent | null {
       html: meetingCard("Your consultation", { ...times, rows }),
       text: ["Your consultation", `${times.date}, ${times.time}`, ...rows.map((row) => `${row.label}: ${row.html.replace(/&amp;/g, "&")}`)].join("\n"),
     });
-    pieces.push({
-      html: buttons([{ url: calendar, label: "Add to Google Calendar" }, { url: bookUrl, label: "Pick another time", tone: "outline" }]),
-      text: `Add to Google Calendar: ${calendar}\nPick another time: ${bookUrl}`,
-    });
     pieces.push(
       stepsPiece("What we will cover", [
         "Your business, your customers and what you want the project to achieve.",
@@ -325,8 +317,8 @@ export function acknowledgementEmail(lead: Lead): EmailContent | null {
       ]),
     );
     pieces.push({
-      html: note(`<strong>Need to change the time?</strong> Reply to this email or pick another slot at ${link(bookUrl, `${siteHost()}/book`)}. Please tell us at least two hours before the call.`),
-      text: `Need to change the time? Reply to this email or pick another slot at ${bookUrl}. Please tell us at least two hours before the call.`,
+      html: note(`<strong>Need to change the time?</strong> Reply to this email or call ${esc(site.phone)} and we will move this booking. Please tell us at least two hours before the call.`),
+      text: `Need to change the time? Reply to this email or call ${site.phone} and we will move this booking. Please tell us at least two hours before the call.`,
     });
   } else if (lead.kind === "estimate" && v.quote) {
     subject = `Your project estimate from ${site.name}`;
@@ -416,7 +408,6 @@ export function meetingLinkEmail(lead: Lead, meetingUrl: string, host: string = 
   if (!slot || !v.slot || !v.email) return null;
   const times = meetingTimes(slot);
   const name = firstName(v.name);
-  const bookUrl = `${site.url}/book`;
   const subject = `Join link for your consultation: ${v.slot}`;
   const rows: DetailRow[] = [
     { label: "Join link", html: link(meetingUrl, meetingUrl.replace(/^https?:\/\//, "")) },
@@ -438,7 +429,7 @@ export function meetingLinkEmail(lead: Lead, meetingUrl: string, host: string = 
       paragraph(`Hi${name ? ` ${esc(name)}` : ""},`),
       paragraph(`Here is the link for your video consultation with ${esc(site.name)}. The attached invite updates the event in your calendar with the same link.`),
       meetingCard("Your consultation", { ...times, rows }),
-      buttons([{ url: meetingUrl, label: "Join the video call" }, { url: bookUrl, label: "Pick another time", tone: "outline" }]),
+      buttons([{ url: meetingUrl, label: "Join the video call" }]),
       steps("Before you join", tips.map(esc)),
       note(`<strong>Cannot make it?</strong> Reply to this email or call ${esc(site.phone)} and we will move the call to a time that suits you.`),
     ],
