@@ -12,7 +12,7 @@ or an admin action.
 | `#site-alerts` | `SLACK_CHANNEL_ALERTS` | Server errors, failed enquiry email / CRM delivery, failed HR email, Zoho CRM sync errors, deploy succeeded or failed |
 | `#security` | `SLACK_CHANNEL_SECURITY` | Sign-in from a new device, account locked, password resets and changes, temporary passwords, 2-step verification turned off or reset, role changes, access disabled, accounts created or removed |
 | `#marketing` | `SLACK_CHANNEL_MARKETING` | Newsletter sign-ups, blog post published |
-| `#wins` | `SLACK_CHANNEL_WINS` | An enquiry or CRM lead marked as won |
+| `#wins` | `SLACK_CHANNEL_WINS` | An enquiry or CRM lead marked as won (service and who closed it, no customer details) |
 | `#announcements` | `SLACK_CHANNEL_ANNOUNCEMENTS` | "Please welcome …" for every team member added in the admin |
 | same as `#team-ops` | `SLACK_CHANNEL_DIGEST` | Daily summary at 9:00 IST: yesterday's enquiries, bookings, applications, sign-ups, page views, attendance, and what is waiting (uncontacted enquiries, applications to review, pending approvals, overdue tasks, who is on leave) |
 
@@ -102,10 +102,13 @@ which reads the same `.env.production.local`.
 
    | Permission | Channels |
    |---|---|
-   | everyone | team-ops, announcements |
-   | enquiries, CRM leads or bookings | leads, wins |
-   | applications or jobs | hiring |
+   | everyone | team-ops, announcements, wins |
+   | sees all enquiries or all CRM leads | leads |
+   | sees all applications | hiring |
    | posts or subscribers | marketing |
    | settings, users or roles | site-alerts, security |
 
    Change the mapping in `src/lib/slack-onboarding.ts` (`channelsFor`).
+   When someone's role changes, their access is disabled or the account is
+   removed, the next run takes them out of the channels they no longer
+   qualify for (only channels the bot added them to).
