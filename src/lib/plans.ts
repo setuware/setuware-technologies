@@ -20,6 +20,8 @@ export interface Plan {
 export const LANDING_PAGE_FROM = 4_999;
 /** The full business website package. The estimator's business-websites base matches it. */
 export const WEBSITE_FROM = 9_999;
+/** Full-stack application builds (front end, back end and database). */
+export const APP_BUILD_FROM = 19_999;
 
 export const projectPackages: readonly Plan[] = [
   {
@@ -61,7 +63,7 @@ export const projectPackages: readonly Plan[] = [
     name: "Full Application Build",
     tagline: "Web apps, portals and mobile apps.",
     monthly: null,
-    setupFrom: 9_999,
+    setupFrom: APP_BUILD_FROM,
     highlight: true,
     bestFor: "Portals, SaaS products and mobile apps with accounts and payments",
     features: [

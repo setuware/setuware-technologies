@@ -1,10 +1,11 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useSelectedLayoutSegment } from "next/navigation";
 
 /**
  * The public site's header, footer and floating widgets. The admin portal has
- * its own shell, so on /admin only the page itself renders.
+ * its own shell, so admin routes render only the page itself. This goes by the
+ * matched route, not the URL: the portal serves /admin/login at /login.
  */
 export function SiteChrome({
   navbar,
@@ -17,7 +18,7 @@ export function SiteChrome({
   widgets: React.ReactNode;
   children: React.ReactNode;
 }) {
-  const admin = usePathname()?.startsWith("/admin") ?? false;
+  const admin = useSelectedLayoutSegment() === "admin";
   if (admin) return <main id="main" className="flex-1">{children}</main>;
   return (
     <>

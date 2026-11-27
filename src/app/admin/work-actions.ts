@@ -35,6 +35,8 @@ import { decideSheet, hasLockedTime, isLocked, reopenSheet, setCell, submitSheet
 import { addNote } from "@/lib/cms/crm";
 import { approversFor, mayApproveFor, notify } from "@/lib/cms/notify";
 import { requireUser } from "@/lib/cms/session";
+import { esc } from "@/lib/slack";
+import { slackTeam } from "@/lib/slack-events";
 import {
   addTaskItem,
   createTask,
@@ -448,6 +450,7 @@ export async function leaveRequestAction(_previous: FormState, form: FormData): 
     return { error: error instanceof Error ? error.message : "Could not send the request." };
   }
   const when = from === to || halfDay ? `${from}${halfDay ? " (half day)" : ""}` : `${from} to ${to}`;
+  slackTeam(`Leave request · ${user.name}`, `*${esc(user.name)}* asked for *${esc(type)}* leave on *${esc(when)}*.`, { text: "Review the request", path: "/admin/attendance/team" });
   for (const manager of approversFor(user.id, "attendance.manage")) {
     notify(manager.id, `Leave request: ${user.name}`, [`${user.name} asked for ${type} leave on ${when}.`, reason].filter(Boolean), "/admin/attendance/team", "Review the request");
   }
@@ -463,6 +466,11 @@ export async function correctionRequestAction(_previous: FormState, form: FormDa
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Could not send the request." };
   }
+  slackTeam(
+    `Attendance correction · ${user.name}`,
+    `*${esc(user.name)}* asked to correct *${esc(input.day)}* to ${esc(input.checkIn)}–${esc(input.checkOut)}.`,
+    { text: "Review the request", path: "/admin/attendance/team" },
+  );
   for (const manager of approversFor(user.id, "attendance.manage")) {
     notify(manager.id, `Attendance correction: ${user.name}`, [`${user.name} asked to correct ${input.day} to ${input.checkIn}–${input.checkOut}.`, input.reason], "/admin/attendance/team", "Review the request");
   }
@@ -485,6 +493,10 @@ export async function decideRequestAction(form: FormData): Promise<void> {
     const request = decideRequest(Number(form.get("id")), approve, user.name, text(form, "note", 500));
     audit(user.name, approve ? "approved request" : "rejected request", "attendance", `${request.user_name}: ${request.kind} ${request.from_day}`);
     const what = request.kind === "leave" ? `${request.leave_type} leave (${request.from_day}${request.to_day !== request.from_day ? ` to ${request.to_day}` : ""})` : `attendance correction for ${request.from_day}`;
+    slackTeam(
+      `${approve ? "Approved" : "Not approved"} · ${request.user_name}`,
+      `${esc(user.name)} ${approve ? "approved" : "did not approve"} *${esc(request.user_name)}*'s ${esc(what)}.`,
+    );
     notify(request.user_id, `${approve ? "Approved" : "Not approved"}: ${what}`, [`${user.name} ${approve ? "approved" : "did not approve"} your ${what}.`, request.decision_note].filter(Boolean), "/admin/attendance", "Open attendance");
   } catch {
     // Already handled by someone else.

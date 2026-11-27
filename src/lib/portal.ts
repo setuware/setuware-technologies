@@ -8,12 +8,32 @@ const hostOf = (url: string) => new URL(url).host.toLowerCase();
  */
 const PORTAL_PATH = /^\/(?:admin(?:\/|$)|api\/|_next\/|media\/|images\/|admin-sw\.js$|admin-offline\.html$|apple-icon|icon|favicon\.ico$)/;
 
+/** Sign-in pages, served on the portal without the `/admin` prefix. */
+const AUTH_PAGE = /^\/(login|forgot|set-password)$/;
+const ADMIN_AUTH_PAGE = /^\/admin\/(login|forgot|set-password)$/;
+
+/** Admin paths the browser fetches without the session cookie (install prompt). */
+const PUBLIC_ADMIN_ASSET = /^\/admin\/(?:manifest\.webmanifest$|app-icon\/)/;
+
+const portalEnabled = () => hostOf(site.portalUrl) !== hostOf(site.url);
+
+/** Full link to a sign-in page (`login`, `forgot`, `set-password`) for emails. */
+export function authUrl(page: "login" | "forgot" | "set-password", query = ""): string {
+  return portalEnabled() ? `${site.portalUrl}/${page}${query}` : `${site.url}/admin/${page}${query}`;
+}
+
+/** The page that answers a portal sign-in URL: `/login` is served by `/admin/login`. */
+export function portalRewrite(host: string | null, pathname: string): string | null {
+  if (!host || !portalEnabled() || host.toLowerCase() !== hostOf(site.portalUrl)) return null;
+  return AUTH_PAGE.test(pathname) ? `/admin${pathname}` : null;
+}
+
 /**
  * Where a request should go so the portal host only shows sign-in and
  * dashboards, and the website host sends admin traffic to the portal.
  * Returns `null` when the request should be served as is.
  */
-export function portalRedirect(host: string | null, pathname: string, search = ""): string | null {
+export function portalRedirect(host: string | null, pathname: string, search = "", signedIn = true): string | null {
   if (!host) return null;
   const requestHost = host.toLowerCase();
   const portalHost = hostOf(site.portalUrl);
@@ -21,13 +41,20 @@ export function portalRedirect(host: string | null, pathname: string, search = "
   if (portalHost === siteHost) return null;
 
   if (requestHost === portalHost) {
-    if (pathname === "/") return `${site.portalUrl}/admin${search}`;
+    const authPage = ADMIN_AUTH_PAGE.exec(pathname);
+    if (authPage) return `${site.portalUrl}/${authPage[1]}${search}`;
+    if (AUTH_PAGE.test(pathname)) return null;
+    if (pathname === "/") return signedIn ? `${site.portalUrl}/admin${search}` : `${site.portalUrl}/login`;
+    if (!signedIn && /^\/admin(?:\/|$)/.test(pathname) && !PUBLIC_ADMIN_ASSET.test(pathname)) return `${site.portalUrl}/login`;
     if (PORTAL_PATH.test(pathname)) return null;
     return `${site.url}${pathname}${search}`;
   }
 
   const isSiteHost = requestHost === siteHost || requestHost === `www.${siteHost}`;
-  if (isSiteHost && /^\/admin(?:\/|$)/.test(pathname)) return `${site.portalUrl}${pathname}${search}`;
+  if (isSiteHost && /^\/admin(?:\/|$)/.test(pathname)) {
+    const authPage = ADMIN_AUTH_PAGE.exec(pathname);
+    return `${site.portalUrl}${authPage ? `/${authPage[1]}` : pathname}${search}`;
+  }
 
   return null;
 }

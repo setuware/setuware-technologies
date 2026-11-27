@@ -5,14 +5,16 @@ import { leadView } from "./email-templates";
 import { referenceId } from "./utils";
 import { sendToZoho, zohoConfigured, zohoIdsByReference } from "./zoho-crm";
 import { getDb } from "./cms/db";
+import { slackConfigured } from "./slack";
+import { slackAlert, slackLead } from "./slack-events";
 
 /**
  * Lead delivery.
  *
  * Enquiries are e-mailed when SMTP is configured (see ./lead-email.ts),
  * created as Leads in Zoho CRM when ZOHO_* is set (see ./zoho-crm.ts), and/or
- * forwarded to `LEAD_WEBHOOK_URL` (Slack, a CRM, Google Sheets via Apps
- * Script). A redacted trace is always written to the server log, and the
+ * forwarded to `LEAD_WEBHOOK_URL` (a CRM, Google Sheets via Apps Script),
+ * and posted to Slack when SLACK_BOT_TOKEN is set (see ./slack-events.ts). A redacted trace is always written to the server log, and the
  * enquiry is saved to the admin's Enquiries inbox (sign-in required; no
  * public endpoint reads leads back out).
  */
@@ -73,20 +75,31 @@ export async function deliverLead(
   console.info("[lead]", kind, lead.reference, redact(payload));
   storeEnquiry(lead);
 
-  if (!webhook && !viaEmailEnabled && !viaZohoEnabled) {
+  const viaSlackEnabled = slackConfigured();
+  if (!webhook && !viaEmailEnabled && !viaZohoEnabled && !viaSlackEnabled) {
     console.warn(
-      "[lead] no delivery channel configured (set SMTP_*, ZOHO_* or LEAD_WEBHOOK_URL)",
+      "[lead] no delivery channel configured (set SMTP_*, ZOHO_*, SLACK_BOT_TOKEN or LEAD_WEBHOOK_URL)",
       lead.reference,
     );
     return { reference: lead.reference, delivered: false };
   }
 
   // A slow or broken channel must never fail the visitor's submission.
-  const [byEmail, byWebhook, byZoho] = await Promise.all([
+  const [byEmail, byWebhook, byZoho, bySlack] = await Promise.all([
     viaEmailEnabled ? emailLead(lead) : Promise.resolve(false),
     webhook ? postWebhook(webhook, lead) : Promise.resolve(false),
     viaZohoEnabled ? sendToZoho(lead) : Promise.resolve(false),
+    viaSlackEnabled ? slackLead(lead) : Promise.resolve(false),
   ]);
+
+  const failed = [
+    viaEmailEnabled && !byEmail ? "email" : "",
+    webhook && !byWebhook ? "webhook" : "",
+    viaZohoEnabled && !byZoho ? "Zoho CRM" : "",
+  ].filter(Boolean);
+  if (failed.length) {
+    slackAlert(`lead:${failed.join(",")}`, "Enquiry delivery failed", `A ${lead.kind} enquiry (\`${lead.reference}\`) could not be sent by ${failed.join(", ")}. It is saved in the admin inbox.`);
+  }
 
   const zohoId = zohoIdsByReference.get(lead.reference);
   if (zohoId) {
@@ -98,7 +111,7 @@ export async function deliverLead(
     }
   }
 
-  return { reference: lead.reference, delivered: byEmail || byWebhook || byZoho };
+  return { reference: lead.reference, delivered: byEmail || byWebhook || byZoho || bySlack };
 }
 
 /** Saves the enquiry for the admin inbox. Never throws. */

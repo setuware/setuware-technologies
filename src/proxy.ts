@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { portalRedirect } from "@/lib/portal";
+import { SESSION_COOKIE } from "@/lib/cms/auth";
+import { portalRedirect, portalRewrite } from "@/lib/portal";
 import { KNOWN_SLUGS } from "@/lib/routes";
 import { openJobBySlug, publishedPostBySlug } from "@/lib/cms/store";
 
@@ -47,8 +48,12 @@ const SLUG_SECTIONS = /^\/(?:services|work|blog|industries|careers)\/[^/]+$/;
 
 export async function proxy(request: NextRequest) {
   const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
-  const target = portalRedirect(host, request.nextUrl.pathname, request.nextUrl.search);
+  const { pathname, search } = request.nextUrl;
+  const target = portalRedirect(host, pathname, search, request.cookies.has(SESSION_COOKIE));
   if (target) return NextResponse.redirect(target, 307);
+
+  const page = portalRewrite(host, pathname);
+  if (page) return NextResponse.rewrite(new URL(`${page}${search}`, request.url));
 
   if (!SLUG_SECTIONS.test(request.nextUrl.pathname)) return NextResponse.next();
   return notFoundForUnknownSlug(request);

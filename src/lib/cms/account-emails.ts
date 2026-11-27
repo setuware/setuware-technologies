@@ -1,6 +1,7 @@
 import { randomInt } from "node:crypto";
 
 import { buttons, detailCard, esc, paragraph, renderEmail, steps, type EmailContent } from "@/lib/email-kit";
+import { authUrl } from "@/lib/portal";
 import { site } from "@/lib/site";
 
 /**
@@ -11,7 +12,7 @@ import { site } from "@/lib/site";
 
 const first = (name: string) => name.trim().split(/\s+/)[0] ?? name;
 const host = () => site.url.replace(/^https?:\/\//, "");
-export const loginUrl = () => `${site.portalUrl}/admin/login`;
+export const loginUrl = () => authUrl("login");
 
 /** Letters without look-alikes (no I, l, O, 0, 1). */
 const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz";
@@ -172,6 +173,9 @@ export function welcomeEmail(member: WelcomeDetails, from: string): EmailContent
         "Turn on 2-step verification under My account.",
         "Complete your profile: phone, skills, location and emergency contact.",
         "Check in from the dashboard when you start work, and review the tasks assigned to you.",
+        ...(process.env.SLACK_INVITE_URL?.trim()
+          ? [`Join the team on Slack with this link: ${process.env.SLACK_INVITE_URL.trim()} (use this email address). You are added to your channels automatically.`]
+          : []),
       ],
     },
     button: { url: loginUrl(), label: "Open the admin" },

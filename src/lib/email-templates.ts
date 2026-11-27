@@ -125,7 +125,7 @@ export function leadView(lead: Lead): LeadView {
 /* Shared pieces                                                               */
 /* -------------------------------------------------------------------------- */
 
-function quoteText(value: NonNullable<LeadView["quote"]>): string {
+export function quoteText(value: NonNullable<LeadView["quote"]>): string {
   const range = value.low === value.high ? formatINR(value.low) : `${formatINR(value.low)} – ${formatINR(value.high)}`;
   return value.weeks ? `${range} · about ${value.weeks} weeks` : range;
 }

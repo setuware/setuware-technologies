@@ -1,4 +1,4 @@
-import { LANDING_PAGE_FROM, WEBSITE_FROM } from "./plans";
+import { APP_BUILD_FROM, LANDING_PAGE_FROM, WEBSITE_FROM } from "./plans";
 import type { ServiceKey } from "./pricing";
 import { site } from "./site";
 
@@ -26,7 +26,7 @@ export const serviceGroups: readonly ServiceGroupInfo[] = [
     id: "build",
     label: "Build",
     title: "Websites, stores and apps",
-    description: "Websites from ₹9,999, stores on Shopify or WooCommerce, portals and apps on Next.js — every one reviewed on a staging link first.",
+    description: "Websites from ₹9,999, stores on Shopify or WooCommerce from ₹29,999, portals and apps on Next.js from ₹19,999 — every one reviewed on a staging link first.",
   },
   {
     id: "grow",
@@ -326,7 +326,7 @@ export const services: readonly Service[] = [
       "A store that takes real orders on day one: UPI, cards and cash on delivery at checkout, GST invoices with HSN codes, and shipping labels through Shiprocket. Built on Shopify, WooCommerce or Next.js, with one stock record across your shop, website and marketplaces — so a product that sells out in store stops selling online.",
     icon: "cart",
     accent: ["#f97316", "#ec4899"],
-    priceFrom: 24_999,
+    priceFrom: 29_999,
     typicalTimeline: "4–10 weeks",
     outcomes: [
       "Secure UPI, card and wallet payments",
@@ -479,7 +479,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does an e-commerce store cost?",
         answer:
-          "E-commerce stores start at ₹24,999. The final price depends on the platform, catalogue size and integrations required.",
+          "E-commerce stores start at ₹29,999. The final price depends on the platform, catalogue size and integrations required.",
       },
       {
         question: "Do you offer marketing after launch?",
@@ -493,12 +493,12 @@ export const services: readonly Service[] = [
     slug: "web-development",
     name: "Web application development",
     shortName: "Web app",
-    summary: "Portals, dashboards and SaaS on Next.js and PostgreSQL, from ₹9,999.",
+    summary: "Portals, dashboards and SaaS on Next.js and PostgreSQL, from ₹19,999.",
     description:
       "Customer portals, booking systems and SaaS products on Next.js, TypeScript and PostgreSQL. We build in weekly sprints, demo working software every week, and keep a staging copy separate from production — so you see progress, not slide decks.",
     icon: "code",
     accent: ["#8b5cf6", "#6366f1"],
-    priceFrom: 9_999,
+    priceFrom: APP_BUILD_FROM,
     typicalTimeline: "8–12 weeks",
     outcomes: [
       "Working software from the first sprint",
@@ -636,7 +636,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does a web application cost?",
         answer:
-          "Web applications start at ₹9,999 for a focused MVP. A fixed quote is provided after a scoping call.",
+          "Web applications start at ₹19,999 for a focused MVP. A fixed quote is provided after a scoping call.",
       },
       {
         question: "Do you work on a fixed-price or hourly basis?",
@@ -675,7 +675,7 @@ export const services: readonly Service[] = [
       "One codebase, two stores: React Native or Flutter, with offline support for dead zones, push notifications and crash monitoring. We handle the App Store and Play Store submissions, the screenshots and the review replies — you get the app in your own developer accounts.",
     icon: "smartphone",
     accent: ["#8b5cf6", "#ec4899"],
-    priceFrom: 9_999,
+    priceFrom: 29_999,
     typicalTimeline: "8–16 weeks",
     outcomes: [
       "One codebase for iOS and Android",
@@ -812,7 +812,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does a mobile app cost?",
         answer:
-          "Mobile apps start at ₹9,999. The final price depends on the number of screens, integrations, offline requirements and the admin backend.",
+          "Mobile apps start at ₹29,999. The final price depends on the number of screens, integrations, offline requirements and the admin backend.",
       },
       {
         question: "Does the app need a backend?",
@@ -846,7 +846,7 @@ export const services: readonly Service[] = [
       "Logos, brand guidelines and product interfaces, designed in Figma by the same people who sit next to the engineers building them. You get the files, the fonts and the colour codes — and a design your developers can actually build without redrawing it.",
     icon: "palette",
     accent: ["#ec4899", "#6366f1"],
-    priceFrom: 9_999,
+    priceFrom: 12_999,
     typicalTimeline: "2–6 weeks",
     outcomes: [
       "A consistent brand across every channel",
@@ -984,7 +984,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does UI/UX design cost?",
         answer:
-          "Design projects start at ₹9,999. The price depends on the number of screens, the research required and whether branding is included.",
+          "Design projects start at ₹12,999. The price depends on the number of screens, the research required and whether branding is included.",
       },
       {
         question: "Do you test designs with users?",
@@ -1003,8 +1003,8 @@ export const services: readonly Service[] = [
       "SEO, Google Ads and Meta campaigns run from our MG Road office, by people you can call on the phone. We set up conversion tracking before spending a rupee, then report enquiries per channel — not clicks, not impressions.",
     icon: "megaphone",
     accent: ["#f59e0b", "#10b981"],
-    priceFrom: 7_999,
-    priceLabel: "From ₹7,999 per month",
+    priceFrom: 9_999,
+    priceLabel: "From ₹9,999 per month",
     typicalTimeline: "Ongoing, with monthly reporting",
     outcomes: [
       "Higher rankings for priority keywords",
@@ -1163,7 +1163,7 @@ export const services: readonly Service[] = [
       {
         question: "How much do SEO and marketing services cost?",
         answer:
-          "Monthly retainers start at ₹7,999, excluding advertising spend. The fee depends on the channels and the scope of work.",
+          "Monthly retainers start at ₹9,999, excluding advertising spend. The fee depends on the channels and the scope of work.",
       },
     ],
     related: ["business-websites", "ecommerce-stores", "product-design"],
@@ -1177,7 +1177,7 @@ export const services: readonly Service[] = [
       "One system for orders, inventory, customers, staff and billing — built around how your business actually runs, not how a packaged ERP wants it to run. It plugs into Tally, Zoho, Razorpay and WhatsApp, and your team gets a walkthrough before handover.",
     icon: "boxes",
     accent: ["#0ea5e9", "#6366f1"],
-    priceFrom: 59_999,
+    priceFrom: 79_999,
     typicalTimeline: "10–20 weeks",
     outcomes: [
       "A single source of truth for operations",
@@ -1323,7 +1323,7 @@ export const services: readonly Service[] = [
       {
         question: "How much does custom software cost?",
         answer:
-          "Projects start at ₹59,999 for one or two modules. Larger ERP and CRM systems are delivered in phases and billed by milestone.",
+          "Projects start at ₹79,999 for one or two modules. Larger ERP and CRM systems are delivered in phases and billed by milestone.",
       },
       {
         question: "What happens to our existing data?",
@@ -1352,7 +1352,7 @@ export const services: readonly Service[] = [
       "An assistant that answers customers from your own documents, files your data entry and routes leads to the right person — and stops to ask a human instead of guessing. We test every one for accuracy and cost before it goes live, and we won't sell you one for a job a form could do.",
     icon: "sparkles",
     accent: ["#f59e0b", "#ef4444"],
-    priceFrom: 29_999,
+    priceFrom: 39_999,
     typicalTimeline: "3–8 weeks",
     outcomes: [
       "Accurate answers from your own documents",
@@ -1491,7 +1491,7 @@ export const services: readonly Service[] = [
       {
         question: "What does it cost to build and run?",
         answer:
-          "Builds start at ₹29,999. Running costs depend on usage and are estimated and capped before launch.",
+          "Builds start at ₹39,999. Running costs depend on usage and are estimated and capped before launch.",
       },
       {
         question: "Is our data secure?",
