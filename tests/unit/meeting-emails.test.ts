@@ -85,6 +85,12 @@ describe("email kit", () => {
     expect(block).not.toContain('2&quot;"');
   });
 
+  it("keeps an apostrophe inside a URL and drops a closing one", () => {
+    const [block] = textToBlocks("Chat: https://wa.me/917091298828?text=I'd like a quote or 'https://setuware.in/work'.");
+    expect(block).toContain("href=\"https://wa.me/917091298828?text=I&#39;d\"");
+    expect(block).toContain('href="https://setuware.in/work"');
+  });
+
   it("renders a full document with the preheader and heading", () => {
     const html = renderEmail({ subject: "Subject", preheader: "Preview line", heading: "Hello", blocks: ["<p>Body</p>"] });
     expect(html.startsWith("<!doctype html>")).toBe(true);
