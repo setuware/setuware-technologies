@@ -83,8 +83,8 @@ interface Link {
   slack: string;
   at: string;
   channels: Held[];
-  /** Set once a disabled or removed account has been taken out of every website channel. */
-  off?: boolean;
+  /** Channels a disabled or removed account has been confirmed out of. */
+  swept?: string[];
 }
 
 /** A channel the member is in, and the website channel it was granted for. */
@@ -156,7 +156,7 @@ export async function syncSlackMembers(now: Date = new Date()): Promise<number> 
   for (const row of db.prepare("SELECT key, value FROM settings WHERE key LIKE ?").all(`${MARK}%`) as { key: string; value: string }[]) {
     try {
       const link = JSON.parse(row.value) as Partial<Link>;
-      if (link.slack) links.set(Number(row.key.slice(MARK.length)), { slack: link.slack, at: link.at ?? "", channels: link.channels ?? [], off: link.off });
+      if (link.slack) links.set(Number(row.key.slice(MARK.length)), { slack: link.slack, at: link.at ?? "", channels: link.channels ?? [], swept: link.swept ?? [] });
     } catch {
       /* ignore a damaged marker */
     }
@@ -165,20 +165,31 @@ export async function syncSlackMembers(now: Date = new Date()): Promise<number> 
   const byId = new Map(users.map((user) => [user.id, user]));
   if (!(await loadChannels())) return 0;
   const uses = channelUses();
+  const digest = slackChannelTarget("digest");
+  const digestId = digest ? channelId(digest) : null;
+  const sweep = [...new Set([...uses.keys(), ...(digestId ? [digestId] : [])])];
+  const activeSlack = new Set([...links].filter(([id]) => byId.get(id)?.active).map(([, link]) => link.slack));
   let changed = 0;
 
   for (const [id, link] of links) {
     const user = byId.get(id);
     if (!user?.active) {
-      if (link.off) continue;
-      // Offboarding sweeps every website channel, including memberships the bot didn't grant.
-      const failed = new Set<string>();
-      for (const channel of new Set([...uses.keys(), ...link.channels.map((held) => held.id)])) {
-        const removed = await slackApi("conversations.kick", { channel, user: link.slack });
-        if (!(removed?.ok || removed?.error === "not_in_channel")) failed.add(channel);
+      // The same Slack person came back under a new admin account: that link owns them now.
+      if (activeSlack.has(link.slack)) {
+        db.prepare("DELETE FROM settings WHERE key = ?").run(`${MARK}${id}`);
+        continue;
       }
-      const channels = link.channels.filter((held) => failed.has(held.id));
-      save.run(`${MARK}${id}`, JSON.stringify({ ...link, channels, off: failed.size === 0 }));
+      // Offboarding sweeps every website channel (and the digest), including
+      // memberships the bot didn't grant and channels a setting moved to later.
+      const swept = new Set(link.swept);
+      const pending = [...new Set([...sweep, ...link.channels.map((held) => held.id)])].filter((channel) => !swept.has(channel));
+      if (!pending.length) continue;
+      for (const channel of pending) {
+        const removed = await slackApi("conversations.kick", { channel, user: link.slack });
+        if (removed?.ok || removed?.error === "not_in_channel") swept.add(channel);
+      }
+      const channels = link.channels.filter((held) => !swept.has(held.id));
+      save.run(`${MARK}${id}`, JSON.stringify({ ...link, channels, swept: [...swept] }));
       changed += 1;
       continue;
     }
@@ -186,10 +197,10 @@ export async function syncSlackMembers(now: Date = new Date()): Promise<number> 
     const allowed = allowedFor(user);
     const missing = wanted.some((item) => !link.channels.some((held) => held.id === item.id));
     const revoked = link.channels.some((held) => revokedFrom(held, allowed, uses));
-    if (!missing && !revoked) continue;
+    if (!missing && !revoked && !link.swept?.length) continue;
     const channels = await reconcile(link.slack, link.channels, wanted, allowed, uses);
-    if (channels.length === link.channels.length && channels.every((item, index) => item === link.channels[index])) continue;
-    save.run(`${MARK}${id}`, JSON.stringify({ ...link, channels, off: false }));
+    if (!link.swept?.length && channels.length === link.channels.length && channels.every((item, index) => item === link.channels[index])) continue;
+    save.run(`${MARK}${id}`, JSON.stringify({ ...link, channels, swept: [] }));
     changed += 1;
   }
 

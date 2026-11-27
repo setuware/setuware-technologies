@@ -112,7 +112,7 @@ which reads the same `.env.production.local`.
    When someone's role changes, their access is disabled or the account is
    removed, the next run takes them out of the website channels they no
    longer qualify for (a disabled or removed account is taken out of every
-   website channel, however it got in).
+   website channel and the digest channel, however it got in).
    Setting a channel to `off` stops posts but doesn't remove anyone who
    still has the permission. Pointing a setting at an existing channel
    removes members who can't see what it will now carry.

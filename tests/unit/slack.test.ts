@@ -152,6 +152,7 @@ describe("slack onboarding", () => {
           { id: "C2", name: "announcements" },
           { id: "C3", name: "wins" },
           { id: "C4", name: "hiring" },
+          { id: "C5", name: "daily" },
         ];
       }
       if (method === "conversations.open") reply.channel = { id: "D1" };
@@ -190,5 +191,10 @@ describe("slack onboarding", () => {
     calls.length = 0;
     expect(await syncSlackMembers()).toBe(0);
     expect(count("conversations.kick")).toBe(0);
+
+    process.env.SLACK_CHANNEL_DIGEST = "#daily";
+    expect(await syncSlackMembers()).toBe(1);
+    expect(calls.filter((call) => call.method === "conversations.kick").map((call) => call.channel)).toEqual(["C5"]);
+    delete process.env.SLACK_CHANNEL_DIGEST;
   });
 });
