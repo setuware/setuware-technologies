@@ -28,12 +28,12 @@ Each setting takes a channel ID (`C0123ABCD`) or name (`#leads`). Set it to
 
    ```yaml
    display_information:
-     name: Setuware Website
+     name: Setuware Technologies
      description: Leads, applications, team and site alerts from setuware.in
      background_color: "#0b2a4a"
    features:
      bot_user:
-       display_name: Setuware Website
+       display_name: Setuware Technologies
        always_online: true
    oauth_config:
      scopes:
@@ -62,7 +62,7 @@ Each setting takes a channel ID (`C0123ABCD`) or name (`#leads`). Set it to
    `#security` **private**: their messages carry visitors' and applicants'
    contact details, so only people who would see them in the admin should be
    in them. A private channel needs the app invited: type
-   `/invite @Setuware Website` in it. Public channels need no invite.
+   `/invite @Setuware Technologies` in it. Public channels need no invite.
 4. **Add the token on the server** (`/home/ubuntu/setuware-technologies`):
 
    ```bash

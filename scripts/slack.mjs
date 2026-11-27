@@ -162,7 +162,7 @@ async function setup() {
     }
     if (!channel.is_member) {
       if (channel.is_private) {
-        console.log(`✗ ${key}: #${channel.name} is private. Type /invite @Setuware Website in it, then rerun.`);
+        console.log(`✗ ${key}: #${channel.name} is private. Type /invite @Setuware Technologies in it, then rerun.`);
         problems += 1;
         continue;
       }
@@ -234,7 +234,7 @@ if (command === "setup") {
     results.push(await post(key, `:white_check_mark: Setuware website is connected to this channel (*${key}* notifications).`));
   }
   if (results.some((ok) => ok === false)) {
-    console.error("\nSome channels failed. not_in_channel / channel_not_found: create the channel, or invite the app to a private channel (/invite @Setuware Website).");
+    console.error("\nSome channels failed. not_in_channel / channel_not_found: create the channel, or invite the app to a private channel (/invite @Setuware Technologies).");
     process.exit(1);
   }
 }
