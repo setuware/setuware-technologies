@@ -24,7 +24,7 @@ export function hrApplicationEmail(application: ApplicationDetails): EmailConten
     { label: "Phone", html: esc(application.phone) },
     ...(application.links ? [{ label: "Links", html: esc(application.links) }] : []),
   ];
-  const admin = `${site.url}/admin/applications`;
+  const admin = `${site.portalUrl}/admin/applications`;
   return {
     subject,
     html: renderEmail({

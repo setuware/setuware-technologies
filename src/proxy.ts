@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { portalRedirect } from "@/lib/portal";
 import { KNOWN_SLUGS } from "@/lib/routes";
 import { openJobBySlug, publishedPostBySlug } from "@/lib/cms/store";
 
@@ -42,7 +43,18 @@ async function notFoundPage(origin: string): Promise<string> {
   return cachedNotFoundHtml;
 }
 
+const SLUG_SECTIONS = /^\/(?:services|work|blog|industries|careers)\/[^/]+$/;
+
 export async function proxy(request: NextRequest) {
+  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  const target = portalRedirect(host, request.nextUrl.pathname, request.nextUrl.search);
+  if (target) return NextResponse.redirect(target, 307);
+
+  if (!SLUG_SECTIONS.test(request.nextUrl.pathname)) return NextResponse.next();
+  return notFoundForUnknownSlug(request);
+}
+
+async function notFoundForUnknownSlug(request: NextRequest) {
   const segments = request.nextUrl.pathname.split("/").filter(Boolean);
   if (segments.length !== 2) return NextResponse.next();
 
@@ -85,5 +97,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/services/:slug", "/work/:slug", "/blog/:slug", "/industries/:slug", "/careers/:slug"],
+  // Every page and API route: the portal host check needs to see them all.
+  matcher: ["/((?!_next/static|_next/image).*)"],
 };

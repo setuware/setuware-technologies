@@ -37,6 +37,7 @@ import {
   X,
 } from "lucide-react";
 
+import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { LogoMark } from "@/components/layout/logo";
 import { logoutAction } from "@/app/admin/actions";
@@ -275,7 +276,7 @@ export function AdminShell({
           <UserCircle className="size-4 text-white/40" aria-hidden />
         </Link>
         <div className="mt-2 grid grid-cols-2 gap-1.5">
-          <a href="/" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1.5 rounded-lg bg-white/[0.06] py-1.5 text-xs font-medium text-white/70 hover:bg-white/[0.1] hover:text-white">
+          <a href={site.url} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1.5 rounded-lg bg-white/[0.06] py-1.5 text-xs font-medium text-white/70 hover:bg-white/[0.1] hover:text-white">
             <ExternalLink className="size-3.5" aria-hidden /> Website
           </a>
           <form action={logoutAction}>
@@ -333,7 +334,7 @@ export function AdminShell({
             <p className="mr-4 text-xs text-muted-foreground">
               {new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "long", timeZone: "Asia/Kolkata" }).format(new Date())}
             </p>
-            <a href="/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground">
+            <a href={site.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground">
               <ExternalLink className="size-3.5" aria-hidden /> View website
             </a>
             <form action={logoutAction} className="ml-2">

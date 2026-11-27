@@ -190,7 +190,7 @@ export async function forgotPasswordAction(_previous: FormState, form: FormData)
       user.email,
       "Reset your Setuware Admin password",
       [`Hi ${user.name.split(" ")[0]},`, "Someone asked to reset the password for your Setuware Admin account. This link works once and expires in one hour."],
-      { url: `${site.url}/admin/set-password?token=${token}`, label: "Choose a new password" },
+      { url: `${site.portalUrl}/admin/set-password?token=${token}`, label: "Choose a new password" },
     );
     audit(user.name, "requested password reset", "account", user.email);
   }
@@ -409,7 +409,7 @@ async function emailCredentials(userId: number, password: string, sender: AdminU
   const sent = await sendEmail(user.email, credentialsEmail(user, password, sender.name), sender.email);
   return sent
     ? { ok: `Login details emailed to ${user.email}. They will choose their own password at first sign-in.` }
-    : { ok: "Email is not set up, so share these login details privately (they must change the password at first sign-in).", password, link: `${site.url}/admin/login` };
+    : { ok: "Email is not set up, so share these login details privately (they must change the password at first sign-in).", password, link: `${site.portalUrl}/admin/login` };
 }
 
 async function emailWelcome(userId: number, sender: AdminUser): Promise<boolean> {
@@ -423,7 +423,7 @@ async function sendInvite(userId: number, sender: AdminUser): Promise<FormState>
   const user = getUser(userId);
   if (!user) return { error: "User not found." };
   const token = createPasswordToken(user.id, "invite");
-  const url = `${site.url}/admin/set-password?token=${token}`;
+  const url = `${site.portalUrl}/admin/set-password?token=${token}`;
   const sent = await sendEmail(user.email, inviteEmail(user, url, sender.name), sender.email);
   return sent
     ? { ok: `Invite emailed to ${user.email}.`, link: url }
@@ -464,7 +464,7 @@ export async function sendResetLinkAction(_previous: FormState, form: FormData):
   const user = getUser(Number(form.get("id")));
   if (!user) return { error: "User not found." };
   const token = createPasswordToken(user.id, "reset");
-  const url = `${site.url}/admin/set-password?token=${token}`;
+  const url = `${site.portalUrl}/admin/set-password?token=${token}`;
   const sent = await sendAccountEmail(
     user.email,
     "Reset your Setuware Admin password",

@@ -16,7 +16,7 @@ export function notify(userId: number | null | undefined, subject: string, lines
   if (!person?.active) return;
   addNotification(userId, subject, lines.filter(Boolean).join(" "), path, kind);
   after(async () => {
-    await sendAccountEmail(person.email, subject, lines.filter(Boolean), { url: `${site.url}${path}`, label });
+    await sendAccountEmail(person.email, subject, lines.filter(Boolean), { url: `${site.portalUrl}${path}`, label });
   });
 }
 
