@@ -14,7 +14,7 @@ const esc = (value: string) =>
 
 const first = (name: string) => name.trim().split(/\s+/)[0] ?? name;
 const host = () => site.url.replace(/^https?:\/\//, "");
-export const loginUrl = () => `${site.url}/admin/login`;
+export const loginUrl = () => `${site.portalUrl}/admin/login`;
 
 /** Letters without look-alikes (no I, l, O, 0, 1). */
 const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz";
