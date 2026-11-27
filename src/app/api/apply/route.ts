@@ -5,6 +5,7 @@ import { site } from "@/lib/site";
 import { applicationSchema, fieldErrors } from "@/lib/validation";
 import { createApplication, openJobBySlug } from "@/lib/cms/store";
 import { saveUpload, UploadError } from "@/lib/cms/uploads";
+import { esc } from "@/lib/slack";
 import { slackAlert, slackApplication } from "@/lib/slack-events";
 
 /**
@@ -87,7 +88,7 @@ export async function POST(request: Request) {
       })
       .catch((error: unknown) => {
         console.error("[apply] hr email failed", error instanceof Error ? error.message : error);
-        slackAlert("apply:email", "HR email failed", `The application from ${name} for ${job.title} was saved, but the email to HR could not be sent.`);
+        slackAlert("apply:email", "HR email failed", `The application from *${esc(name)}* for *${esc(job.title)}* was saved, but the email to HR could not be sent.`);
       });
   }
 
