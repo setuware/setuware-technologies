@@ -192,8 +192,8 @@ async function setup() {
       // No guide yet, or the old one can no longer be edited: pin a fresh one in its place.
       const posted = await api("chat.postMessage", message);
       if (posted.ok) {
-        await api("pins.add", { channel: channel.id, timestamp: posted.ts });
-        if (guidePin) await api("pins.remove", { channel: channel.id, timestamp: guidePin.message.ts });
+        const pinnedNew = await api("pins.add", { channel: channel.id, timestamp: posted.ts });
+        if (guidePin && pinnedNew.ok) await api("pins.remove", { channel: channel.id, timestamp: guidePin.message.ts });
       }
     }
     console.log(`✓ ${key}: #${channel.name} ready`);
