@@ -450,7 +450,7 @@ export async function leaveRequestAction(_previous: FormState, form: FormData): 
     return { error: error instanceof Error ? error.message : "Could not send the request." };
   }
   const when = from === to || halfDay ? `${from}${halfDay ? " (half day)" : ""}` : `${from} to ${to}`;
-  slackTeam(`Leave request · ${user.name}`, `*${esc(user.name)}* asked for *${esc(type)}* leave on *${esc(when)}*.`, { text: "Review the request", path: "/admin/attendance/team" }, reason);
+  slackTeam(`Leave request · ${user.name}`, `*${esc(user.name)}* asked for *${esc(type)}* leave on *${esc(when)}*.`, { text: "Review the request", path: "/admin/attendance/team" });
   for (const manager of approversFor(user.id, "attendance.manage")) {
     notify(manager.id, `Leave request: ${user.name}`, [`${user.name} asked for ${type} leave on ${when}.`, reason].filter(Boolean), "/admin/attendance/team", "Review the request");
   }
@@ -470,7 +470,6 @@ export async function correctionRequestAction(_previous: FormState, form: FormDa
     `Attendance correction · ${user.name}`,
     `*${esc(user.name)}* asked to correct *${esc(input.day)}* to ${esc(input.checkIn)}–${esc(input.checkOut)}.`,
     { text: "Review the request", path: "/admin/attendance/team" },
-    input.reason,
   );
   for (const manager of approversFor(user.id, "attendance.manage")) {
     notify(manager.id, `Attendance correction: ${user.name}`, [`${user.name} asked to correct ${input.day} to ${input.checkIn}–${input.checkOut}.`, input.reason], "/admin/attendance/team", "Review the request");
@@ -497,8 +496,6 @@ export async function decideRequestAction(form: FormData): Promise<void> {
     slackTeam(
       `${approve ? "Approved" : "Not approved"} · ${request.user_name}`,
       `${esc(user.name)} ${approve ? "approved" : "did not approve"} *${esc(request.user_name)}*'s ${esc(what)}.`,
-      undefined,
-      request.decision_note,
     );
     notify(request.user_id, `${approve ? "Approved" : "Not approved"}: ${what}`, [`${user.name} ${approve ? "approved" : "did not approve"} your ${what}.`, request.decision_note].filter(Boolean), "/admin/attendance", "Open attendance");
   } catch {
