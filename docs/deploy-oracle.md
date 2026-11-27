@@ -95,6 +95,8 @@ channel is configured in `/etc/setuware.env`:
 - **Zoho CRM:** set `ZOHO_CLIENT_ID`, `ZOHO_CLIENT_SECRET` and `ZOHO_REFRESH_TOKEN`
   and every enquiry becomes a Lead. Step-by-step: [`docs/zoho-crm.md`](./zoho-crm.md).
 - **Webhook (optional):** `LEAD_WEBHOOK_URL` receives each enquiry as JSON.
+- **Slack (optional):** `SLACK_BOT_TOKEN` posts leads, applications, team,
+  security and site alerts to their own channels. See [slack.md](./slack.md).
 
 Without either, enquiries are only written (redacted) to the server log.
 

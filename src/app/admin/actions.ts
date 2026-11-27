@@ -64,7 +64,7 @@ import { saveUpload, UploadError } from "@/lib/cms/uploads";
 import { credentialsEmail, generatePassword, inviteEmail, welcomeEmail } from "@/lib/cms/account-emails";
 import { sendAccountEmail, sendEmail } from "@/lib/cms/mailer";
 import { notify } from "@/lib/cms/notify";
-import { deleteRole, getRole, roleInUse, saveRole } from "@/lib/cms/rbac";
+import { deleteRole, getRole, roleInUse, roleName, saveRole } from "@/lib/cms/rbac";
 import { getLead, leadStatuses, syncLeads, type CrmLead } from "@/lib/cms/crm-leads";
 import { addZohoLeadNote, updateZohoLead, zohoUsers } from "@/lib/zoho-crm";
 import {
@@ -83,6 +83,8 @@ import {
 } from "@/lib/cms/crm";
 import { emailConfigured, getTransporter, senderAddress } from "@/lib/lead-email";
 import { site } from "@/lib/site";
+import { esc } from "@/lib/slack";
+import { slackJobChange, slackPostPublished, slackSecurity, slackSignIn, slackTeam } from "@/lib/slack-events";
 
 export interface FormState {
   error?: string;
@@ -143,6 +145,7 @@ export async function loginAction(_previous: FormState, form: FormData): Promise
   if (!result.ok) {
     if (result.reason === "locked") {
       audit(email, "account locked", "account", "too many wrong passwords");
+      slackSecurity("Admin account locked", `*${esc(email)}* was locked after too many wrong passwords.`, [["IP address", info.ip]]);
       return { error: `This account is locked after too many wrong passwords. Try again in ${minutesUntil(result.lockedUntil)} minutes, or ask the owner to unlock it.` };
     }
     return { error: "That email and password do not match an active account." };
@@ -153,6 +156,7 @@ export async function loginAction(_previous: FormState, form: FormData): Promise
   }
   await setSessionCookie(result.token);
   audit(result.user.name, "signed in", "account", result.user.email);
+  slackSignIn(result.user, info);
   redirect("/admin");
 }
 
@@ -166,6 +170,7 @@ export async function verifyCodeAction(_previous: FormState, form: FormData): Pr
   if (!user) return { step: "code", error: "That code is not correct. Use the current 6-digit code or a recovery code." };
   await setSessionCookie(token as string);
   audit(user.name, "signed in", "account", `${user.email} (2-step)`);
+  slackSignIn(user, info);
   redirect("/admin");
 }
 
@@ -191,6 +196,7 @@ export async function forgotPasswordAction(_previous: FormState, form: FormData)
       { url: `${site.url}/admin/set-password?token=${token}`, label: "Choose a new password" },
     );
     audit(user.name, "requested password reset", "account", user.email);
+    slackSecurity("Password reset requested", `A reset link was emailed to *${esc(user.name)}* (${esc(user.email)}) from the sign-in page.`, [["IP address", info.ip]]);
   }
   return { ok: "If that email has an account, a reset link is on its way. Check your inbox (and spam)." };
 }
@@ -204,6 +210,7 @@ export async function setPasswordFromLinkAction(_previous: FormState, form: Form
   const user = await redeemPasswordToken(token, password);
   if (!user) return { error: "This link has expired or was already used. Ask for a new one." };
   audit(user.name, "set password from link", "account", user.email);
+  slackSecurity("Password changed", `*${esc(user.name)}* (${esc(user.email)}) set a new password from an emailed link.`);
   const session = sessionAfterPasswordSet(user, await device());
   await setSessionCookie(session.token, session.needsCode ? 1 : SESSION_DAYS);
   if (session.needsCode) redirect("/admin/login?step=code");
@@ -259,7 +266,11 @@ export async function savePostAction(_previous: FormState, form: FormData): Prom
     status,
     published_at: publishedAt,
   };
+  const wasPublished = id ? getPostRecord(id)?.status === "published" : false;
   const savedId = savePost(input, user.name, id);
+  if (status === "published" && !wasPublished) {
+    slackPostPublished({ id: savedId, title, slug, excerpt: input.excerpt, author: input.author_name });
+  }
   audit(user.name, id ? "updated post" : "created post", "post", `${title} (${status})`);
   updateTag(CMS_TAGS.posts);
   if (!id) redirect(`/admin/posts/${savedId}?saved=1`);
@@ -330,7 +341,11 @@ export async function saveJobAction(_previous: FormState, form: FormData): Promi
     status,
     posted_at: text(form, "posted_at", 30) || new Date().toISOString().slice(0, 10),
   };
+  const previousStatus = id ? getJobRecord(id)?.status : undefined;
   const savedId = saveJob(input, user.name, id);
+  if (status !== previousStatus && (status === "open" || previousStatus === "open")) {
+    slackJobChange({ id: savedId, title, slug, location: input.location, type: input.type }, status === "open" ? "opened" : "closed", user.name);
+  }
   audit(user.name, id ? "updated job" : "created job", "job", `${title} (${status})`);
   updateTag(CMS_TAGS.jobs);
   if (!id) redirect(`/admin/jobs/${savedId}?saved=1`);
@@ -392,6 +407,13 @@ export async function createUserAction(_previous: FormState, form: FormData): Pr
     updateProfile(user.id, { ...profile, phone: "", birthday: null });
   }
   audit(owner.name, "added team member", "user", `${name} (${role}, ${method})`);
+  const joining = [profile.designation, profile.department].filter(Boolean).join(", ");
+  slackTeam(
+    `New team member · ${name}`,
+    `${esc(owner.name)} added *${esc(name)}*${joining ? ` (${esc(joining)})` : ""} as *${esc(roleName(role))}*.${profile.joinedOn ? ` Joining on ${esc(profile.joinedOn)}.` : ""}`,
+    { text: "View profile", path: `/admin/people/${user.id}` },
+  );
+  slackSecurity("New admin account", `${esc(owner.name)} created an admin account for *${esc(name)}* (${esc(email)}) with the *${esc(roleName(role))}* role.`);
   refresh();
 
   const access = password ? await emailCredentials(user.id, password, owner) : await sendInvite(user.id, owner);
@@ -437,6 +459,7 @@ export async function emailLoginDetailsAction(_previous: FormState, form: FormDa
   const password = generatePassword();
   await setPassword(user.id, password, true);
   audit(owner.name, "emailed login details", "user", user.email);
+  slackSecurity("Temporary password issued", `${esc(owner.name)} reset *${esc(user.name)}*'s password and emailed new login details.`);
   refresh();
   return emailCredentials(user.id, password, owner);
 }
@@ -470,6 +493,7 @@ export async function sendResetLinkAction(_previous: FormState, form: FormData):
     { url, label: "Choose a new password" },
   );
   audit(owner.name, "sent reset link", "user", user.email);
+  slackSecurity("Password reset link sent", `${esc(owner.name)} sent *${esc(user.name)}* (${esc(user.email)}) a password reset link.`);
   return sent ? { ok: `Reset link emailed to ${user.email}.`, link: url } : { ok: "Email is not set up; copy this link and send it to them.", link: url };
 }
 
@@ -485,6 +509,12 @@ export async function updateUserAction(form: FormData): Promise<void> {
   if (removingOwner && ownerCount() <= 1) redirect("/admin/users?error=last-owner");
   updateUser(id, { role: getRole(role) ? role : target.role, active });
   audit(owner.name, "updated team member", "user", `${target.name} → ${role}${active ? "" : " (disabled)"}`);
+  const changes = [
+    getRole(role) && role !== target.role ? `role changed from *${esc(roleName(target.role))}* to *${esc(roleName(role))}*` : "",
+    target.active && !active ? "sign-in *disabled*" : "",
+    !target.active && active ? "sign-in *re-enabled*" : "",
+  ].filter(Boolean);
+  if (changes.length) slackSecurity(`Access changed · ${target.name}`, `${esc(owner.name)} updated *${esc(target.name)}*: ${changes.join(", ")}.`);
   redirect("/admin/users");
 }
 
@@ -496,6 +526,8 @@ export async function removeUserAction(form: FormData): Promise<void> {
   if (target.role === "owner" && target.active && ownerCount() <= 1) redirect("/admin/users?error=last-owner");
   deleteUser(target.id);
   audit(owner.name, "removed team member", "user", `${target.name} (${target.email})`);
+  slackSecurity(`Team member removed · ${target.name}`, `${esc(owner.name)} removed *${esc(target.name)}* (${esc(target.email)}) and their admin access.`);
+  slackTeam(`Team member removed · ${target.name}`, `${esc(owner.name)} removed *${esc(target.name)}* from the team.`);
   redirect(`/admin/users?removed=${encodeURIComponent(target.name)}`);
 }
 
@@ -507,6 +539,8 @@ export async function resetUserPasswordAction(_previous: FormState, form: FormDa
   if (problem) return { error: problem };
   await setPassword(id, password, true);
   audit(owner.name, "set temporary password", "user", `#${id}`);
+  const member = getUser(id);
+  slackSecurity("Temporary password set", `${esc(owner.name)} set a temporary password for *${esc(member?.name ?? `#${id}`)}*. They are signed out everywhere.`);
   return { ok: "Temporary password set. They are signed out and must choose a new password at next sign-in." };
 }
 
@@ -519,7 +553,12 @@ export async function userSecurityAction(form: FormData): Promise<void> {
   if (op === "unlock") unlockUser(id);
   if (op === "signout") revokeOtherSessions(id);
   if (op === "reset-2fa") disableTwoFactor(id);
-  audit(owner.name, op === "unlock" ? "unlocked account" : op === "signout" ? "signed out everywhere" : "reset 2-step verification", "user", user.email);
+  const done = op === "unlock" ? "unlocked account" : op === "signout" ? "signed out everywhere" : "reset 2-step verification";
+  audit(owner.name, done, "user", user.email);
+  slackSecurity(
+    `${op === "unlock" ? "Account unlocked" : op === "signout" ? "Signed out everywhere" : "2-step verification reset"} · ${user.name}`,
+    `${esc(owner.name)} ${op === "unlock" ? "unlocked" : op === "signout" ? "signed out all sessions of" : "turned off 2-step verification for"} *${esc(user.name)}* (${esc(user.email)}).`,
+  );
   refresh();
 }
 
@@ -564,6 +603,7 @@ export async function disableTwoFactorAction(_previous: FormState, form: FormDat
   if (!(await verifyPassword(String(form.get("password") ?? ""), row.password_hash))) return { error: "Enter your current password to turn this off." };
   disableTwoFactor(user.id);
   audit(user.name, "turned off 2-step verification", "account", user.email);
+  slackSecurity(`2-step verification turned off · ${user.name}`, `*${esc(user.name)}* (${esc(user.email)}) turned off 2-step verification on their account.`);
   refresh();
   return { ok: "2-step verification is off." };
 }

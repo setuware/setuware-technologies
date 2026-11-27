@@ -17,6 +17,10 @@ export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
 started=$(date +%s)
+commit="$(git log -1 --format='%h %s' | cut -c1-120)"
+# Deploy result to the Slack #site-alerts channel (silent when Slack is not set up).
+slack() { node scripts/slack.mjs post alerts "$1" >/dev/null 2>&1 || true; }
+trap 'status=$?; [ "$status" -ne 0 ] && slack ":x: *Deploy failed* on setuware.in at \`${commit}\` (exit ${status}). Check: pm2 logs ${PM2_NAME}"' EXIT
 step() { echo "[$(( $(date +%s) - started ))s] $*"; }
 
 echo "=================================="
@@ -48,6 +52,7 @@ pm2 save >/dev/null
 for _ in $(seq 1 20); do
   if curl -fsS "http://127.0.0.1:${PORT}/api/health" >/dev/null 2>&1; then
     step "Healthy"
+    slack ":rocket: *Deployed* to https://setuware.in in $(( $(date +%s) - started ))s: \`${commit}\`"
     echo "=================================="
     echo "Setuware deployment successful!"
     echo "=================================="
