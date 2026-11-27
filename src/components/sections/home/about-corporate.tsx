@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, Phone } from "lucide-react";
 
-import { FadeUp, ImageReveal, PopIn, Stagger, StaggerItem } from "@/components/motion/primitives";
+import { FadeUp, ImageReveal, Stagger, StaggerItem } from "@/components/motion/primitives";
 import { Counter } from "@/components/ui/counter";
 import { stats } from "@/lib/content";
 import { site } from "@/lib/site";
@@ -20,24 +20,20 @@ export function AboutCorporate() {
   return (
     <section id="about" className="relative overflow-hidden bg-white py-20 dark:bg-surface lg:py-28">
       <div className="container-figma grid items-center gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-20">
-        <FadeUp className="relative mx-auto w-full max-w-[36rem] pb-16 pr-10 lg:mx-0">
-          <div aria-hidden className="absolute -left-6 -top-6 size-40 rounded-3xl bg-[radial-gradient(#2f56d8_1.5px,transparent_1.5px)] [background-size:14px_14px] opacity-30" />
-          <ImageReveal className="relative aspect-[4/3.4] rounded-3xl shadow-[0_30px_60px_-30px_rgba(15,19,48,0.5)]">
+        <FadeUp className="relative mx-auto w-full max-w-[36rem] lg:mx-0">
+          <ImageReveal className="relative aspect-[4/3.6] rounded-[2rem] shadow-[0_30px_60px_-30px_rgba(15,19,48,0.5)]">
             <Image src="/images/team/team-group.jpg" alt="The Setuware team in a planning session" fill sizes="(min-width: 1024px) 36rem, 92vw" className="object-cover" />
-          </ImageReveal>
-          <PopIn delay={0.35} className="absolute bottom-0 right-0 w-[52%]">
-          <div className="overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_24px_50px_-20px_rgba(15,19,48,0.55)] dark:border-surface">
-            <div className="relative aspect-[4/3]">
-              <Image src="/images/photos/about-office.jpg" alt="Setuware office workspace" fill sizes="(min-width: 1024px) 18rem, 46vw" className="object-cover" />
+            <div aria-hidden className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(to_top,rgba(11,22,56,0.9),transparent)]" />
+            <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 p-6 text-white sm:p-8">
+              <p className="max-w-[14rem] text-sm font-medium leading-snug text-white/85">
+                One team in Gurugram, from the first call to launch and support.
+              </p>
+              <p className="shrink-0 text-right">
+                <span className="block text-[2.6rem] font-extrabold leading-none tracking-[-0.03em]">100%</span>
+                <span className="mt-1 block text-xs font-medium text-white/80">Code &amp; account ownership</span>
+              </p>
             </div>
-          </div>
-          </PopIn>
-          <PopIn delay={0.55} className="absolute bottom-6 left-6">
-          <div className="rounded-2xl bg-[linear-gradient(135deg,#3b6cf6,#1d4ed8)] px-6 py-5 text-white shadow-[0_20px_40px_-18px_rgba(29,78,216,0.9)]">
-            <p className="text-3xl font-extrabold leading-none">100%</p>
-            <p className="mt-1.5 text-xs font-medium text-white/85">Code &amp; account ownership</p>
-          </div>
-          </PopIn>
+          </ImageReveal>
         </FadeUp>
 
         <FadeUp delay={0.1}>

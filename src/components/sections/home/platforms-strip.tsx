@@ -28,14 +28,13 @@ const PLATFORMS: readonly { name: string; icon: SimpleIcon }[] = [
 /** "Platforms we build on" strip under the hero, in place of a client-logo row. */
 export function PlatformsStrip() {
   return (
-    <section aria-label="Platforms we build on" className="relative bg-white dark:bg-surface">
-      <div className="flex flex-col md:flex-row md:items-stretch">
-        <div className="relative z-10 flex shrink-0 items-center bg-[linear-gradient(110deg,#1e3a8a,#2f56d8_60%,#3b6cf6)] px-8 py-6 text-white md:w-[22rem] md:py-9 md:pl-[max(1.25rem,calc((100vw-var(--figma-col))/2))] md:[clip-path:polygon(0_0,100%_0,90%_100%,0_100%)] lg:w-[calc((100vw-var(--figma-col))/2+23rem)]">
-          <p className="whitespace-nowrap pr-12 text-[1.3rem] font-semibold leading-tight tracking-[-0.01em] lg:text-[1.5rem]">
-            Platforms we build on
-          </p>
-        </div>
-        <div className="min-w-0 flex-1 py-6 md:py-9">
+    <section aria-label="Platforms we build on" className="relative border-b border-[#e3e8f5] bg-white dark:border-white/10 dark:bg-surface">
+      <div className="container-figma flex flex-col gap-3 py-6 md:flex-row md:items-center md:gap-10 md:py-0">
+        <p className="flex shrink-0 items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#5a6180] dark:text-white/60">
+          <span aria-hidden className="size-1.5 rounded-full bg-[#22d3ee]" />
+          Platforms we build on
+        </p>
+        <div className="min-w-0 flex-1 md:border-l md:border-[#e3e8f5] md:py-8 md:dark:border-white/10">
           <Marquee durationSeconds={35} className="motion-reduce:overflow-x-auto">
             {PLATFORMS.map(({ name, icon }) => (
               <span
