@@ -152,11 +152,12 @@ export function card(text: string, input: Card): SlackMessage {
     });
   }
   if (input.quote?.trim()) {
-    const quoted = clip(input.quote.trim(), 2800)
+    const quoted = input.quote
+      .trim()
       .split("\n")
       .map((line) => `>${esc(line)}`)
       .join("\n");
-    blocks.push({ type: "section", text: { type: "mrkdwn", text: quoted } });
+    blocks.push({ type: "section", text: { type: "mrkdwn", text: clip(quoted, 2900) } });
   }
   const buttons = (input.buttons ?? []).filter((button) => /^https?:\/\//.test(button.url)).slice(0, 5);
   if (buttons.length) {
@@ -180,9 +181,10 @@ export function mailto(email: string): string {
   return email ? `<mailto:${encodeURI(email)}|${esc(email)}>` : "";
 }
 
+/** Digits with country code; a bare 10-digit number is taken as Indian. */
 const phoneDigits = (phone: string) => {
   const digits = phone.replace(/\D/g, "");
-  return digits.length === 10 ? `91${digits}` : digits;
+  return digits.length === 10 && !phone.trim().startsWith("+") ? `91${digits}` : digits;
 };
 
 export function tel(phone: string): string {
