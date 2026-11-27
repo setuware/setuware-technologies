@@ -27,68 +27,92 @@ const CHANNELS = {
 /** Topic, purpose and the pinned guide for each channel. */
 const GUIDES = {
   leads: {
-    topic: "New enquiries, estimates and bookings from setuware.in",
-    purpose: "Every website enquiry, estimate request and consultation booking, with a link to it in the admin.",
+    topic: ":dart: Every enquiry, estimate and booking from setuware.in · first reply within 2 working hours",
+    purpose: "Private sales inbox. Each website enquiry, project estimate and consultation booking lands here with the visitor's details, budget and a link to it in the admin.",
+    posts: ["Contact form messages", "Project estimates with budget and timeline", "Consultation bookings with slot and mode", "Email or CRM delivery problems for a lead"],
     rules: [
-      "React with :eyes: and reply in the thread when you pick an enquiry up.",
-      "Contact every new enquiry within 2 working hours.",
-      "Move the status along in the admin: contacted → qualified → proposal → won or lost.",
-      "Customer details stay in this channel and the admin. Do not forward them.",
+      "React with :eyes: as soon as you pick an enquiry up, so nobody doubles up.",
+      "First reply within 2 working hours, by phone or WhatsApp, then email.",
+      "Log every call and next step in the thread under the enquiry.",
+      "Move the status in the admin: new → contacted → qualified → proposal → won or lost.",
+      "Customer details stay in this channel and the admin. Never forward or screenshot them.",
     ],
   },
   hiring: {
-    topic: "Job applications and openings from setuware.in/careers",
-    purpose: "New applications (CVs are in the admin) and roles being opened or closed.",
+    topic: ":briefcase: Job applications and openings from setuware.in/careers · decision within 3 working days",
+    purpose: "Private hiring channel. New applications arrive with role, contact and portfolio links (CVs stay in the admin), plus every role opened or closed.",
+    posts: ["New job applications", "Roles opened or closed on the careers page"],
     rules: [
       "React with :eyes: when you start reviewing an application.",
-      "Shortlist or reject in the admin within 3 working days.",
-      "Keep interview feedback in the thread. CVs stay in the admin.",
+      "Shortlist or reject in the admin within 3 working days. Every applicant hears back.",
+      "Interview notes and feedback go in the thread under the application.",
+      "CVs and personal details stay in the admin. Do not download or forward them.",
+      "Keep feedback factual and respectful. Candidates can ask what we wrote.",
     ],
   },
   team: {
-    topic: "Leave, attendance, team changes and the 9:00 daily summary",
-    purpose: "Leave and attendance requests and decisions, people joining or leaving, and the morning summary.",
+    topic: ":calendar: Leave, attendance, team changes and the 9:00 IST daily summary",
+    purpose: "Day-to-day team operations: leave and attendance requests and decisions, people joining or leaving, and the morning summary of what is waiting on the team.",
+    posts: ["Leave requests and decisions", "Attendance corrections", "People added to or removed from the admin", "The 9:00 IST daily summary"],
     rules: [
-      "Approve or decline requests in the admin; the decision is posted here.",
-      "The 9:00 IST summary lists everything that is waiting on the team.",
-      "Personal reasons for leave are never posted here, only in the admin.",
+      "Approve or decline requests in the admin. The decision is posted here automatically.",
+      "Managers act on pending requests the same working day.",
+      "Personal reasons for leave are never posted here, only kept in the admin.",
+      "Start your day with the 9:00 summary and clear anything assigned to you.",
     ],
   },
   alerts: {
-    topic: "Automatic alerts: errors, failed emails, CRM sync, deploys",
-    purpose: "Problems the website reports by itself, plus every deploy.",
+    topic: ":rotating_light: Automatic website alerts: errors, failed emails, CRM sync and deploys",
+    purpose: "Problems the website reports by itself (server errors, failed emails, Zoho or CRM sync failures) plus every deploy, successful or failed.",
+    posts: ["Server errors", "Failed customer or HR emails", "Zoho and CRM sync failures", "Deploy succeeded or failed"],
     rules: [
-      "React with :eyes: when you look into an alert and :white_check_mark: when it is fixed.",
-      "Write the cause and the fix in the thread.",
-      "The same alert is sent at most once every 15 minutes.",
+      "React with :eyes: when you look into an alert, and :white_check_mark: once it is fixed.",
+      "Write the cause and the fix in the thread, so the next person knows.",
+      "A failed lead email means a customer may not have heard from us. Check #leads first.",
+      "The same alert repeats at most once every 15 minutes, so a quiet channel means things are fine.",
     ],
   },
   security: {
-    topic: "Admin sign-ins, password, 2-step and access changes",
-    purpose: "Security events from the admin. Keep this channel private to admins.",
+    topic: ":lock: Admin sign-ins, password, 2-step and access changes · admins only",
+    purpose: "Private, admins only. Security events from the admin panel: new-device sign-ins, lockouts, password and 2-step changes, and role or access changes.",
+    posts: ["Sign-ins and new-device sign-ins", "Lockouts after failed attempts", "Password resets and changes", "2-step verification changes", "Role, access and account changes"],
     rules: [
-      "If you do not recognise an event, open the person in Admin → People, sign them out everywhere and reset their password.",
-      "New-device sign-ins are normal after someone changes laptop or browser.",
-      "Keep this channel private and admins-only.",
+      "Don't recognise an event? Open the person in Admin → People, sign them out everywhere and reset their password.",
+      "New-device sign-ins are normal after someone changes laptop or browser. Confirm with them if unsure.",
+      "Every admin keeps 2-step verification on.",
+      "Keep this channel private and admins only. Never invite guests.",
     ],
   },
   marketing: {
-    topic: "Newsletter sign-ups and new blog posts",
-    purpose: "Newsletter subscribers and blog posts as they go live.",
+    topic: ":mega: Newsletter sign-ups and blog posts as they go live",
+    purpose: "Growth and content: new newsletter subscribers and every blog post the moment it is published.",
+    posts: ["New newsletter subscribers", "Blog posts going live"],
     rules: [
-      "Share every new post on LinkedIn and in the next newsletter.",
-      "Reach subscribers through campaigns, not personal email.",
+      "Share every new post on LinkedIn within a day of it going live.",
+      "Add new posts to the next newsletter.",
+      "Contact subscribers through campaigns only, never personal email.",
+      "Ideas for posts and campaigns are welcome in threads.",
     ],
   },
   wins: {
-    topic: "Deals won :trophy:",
-    purpose: "Every enquiry or CRM lead marked as won.",
-    rules: ["Celebrate! :tada:", "Add what worked in the thread so the team can repeat it."],
+    topic: ":trophy: Deals won · celebrate the team",
+    purpose: "Every enquiry or CRM lead marked as won, with the service and who closed it. No customer details are posted here.",
+    posts: ["Enquiries and CRM leads marked won"],
+    rules: [
+      "Celebrate every win :tada:",
+      "The closer adds what worked in the thread, so the team can repeat it.",
+      "Customer names and details stay in the admin and #leads.",
+    ],
   },
   announcements: {
-    topic: "Company-wide news and new team members",
-    purpose: "Company updates. New team members are introduced here automatically.",
-    rules: ["Company-wide updates only. Reply in threads to keep the channel easy to read.", "Welcome new joiners in their introduction thread :wave:"],
+    topic: ":loudspeaker: Company news and new team members",
+    purpose: "Company-wide updates. New team members are introduced here automatically when they are added in the admin.",
+    posts: ["New team member introductions", "Company-wide news"],
+    rules: [
+      "Company-wide updates only. Reply in threads to keep the channel easy to read.",
+      "Welcome every new joiner in their introduction thread :wave:",
+      "Use @channel only for news that truly concerns everyone.",
+    ],
   },
 };
 
@@ -146,20 +170,27 @@ async function setup() {
     }
     if (channel.topic?.value !== guide.topic) await api("conversations.setTopic", { channel: channel.id, topic: guide.topic });
     if (channel.purpose?.value !== guide.purpose) await api("conversations.setPurpose", { channel: channel.id, purpose: guide.purpose });
+    const message = {
+      channel: channel.id,
+      text: `Channel guide: #${channel.name}`,
+      unfurl_links: "false",
+      blocks: [
+        { type: "header", text: { type: "plain_text", text: `:pushpin:  How we use #${channel.name}`, emoji: true } },
+        { type: "section", text: { type: "mrkdwn", text: guide.purpose } },
+        { type: "divider" },
+        { type: "section", text: { type: "mrkdwn", text: `*What lands here*\n${guide.posts.map((item) => `• ${item}`).join("\n")}` } },
+        { type: "section", text: { type: "mrkdwn", text: `*House rules*\n${guide.rules.map((rule, i) => `${i + 1}. ${rule}`).join("\n")}` } },
+        { type: "divider" },
+        { type: "context", elements: [{ type: "mrkdwn", text: "Posted by the Setuware website · <https://setuware.in/admin|Open the admin> · Questions? Ask in #announcements" }] },
+      ],
+    };
     const pins = await api("pins.list", { channel: channel.id });
-    const pinned = (pins.items ?? []).some((item) => item.message?.user === me.user_id && item.message?.text?.startsWith("Channel guide"));
-    if (!pinned) {
-      const posted = await api("chat.postMessage", {
-        channel: channel.id,
-        text: `Channel guide: #${channel.name}`,
-        unfurl_links: "false",
-        blocks: [
-          { type: "header", text: { type: "plain_text", text: `:pushpin:  How we use #${channel.name}`, emoji: true } },
-          { type: "section", text: { type: "mrkdwn", text: guide.purpose } },
-          { type: "section", text: { type: "mrkdwn", text: `*House rules*\n${guide.rules.map((rule) => `• ${rule}`).join("\n")}` } },
-          { type: "context", elements: [{ type: "mrkdwn", text: "Posted by the Setuware website · <https://setuware.in/admin|Open the admin>" }] },
-        ],
-      });
+    const guidePin = (pins.items ?? []).find((item) => item.message?.user === me.user_id && item.message?.text?.startsWith("Channel guide"));
+    if (guidePin) {
+      if (JSON.stringify(guidePin.message.blocks?.map((b) => b.text?.text ?? "")) !== JSON.stringify(message.blocks.map((b) => b.text?.text ?? "")))
+        await api("chat.update", { ...message, ts: guidePin.message.ts });
+    } else {
+      const posted = await api("chat.postMessage", message);
       if (posted.ok) await api("pins.add", { channel: channel.id, timestamp: posted.ts });
     }
     console.log(`✓ ${key}: #${channel.name} ready`);
