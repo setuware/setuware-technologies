@@ -39,7 +39,10 @@ export function ProcessSteps() {
                   {step.duration}
                 </span>
               </div>
-              <h3 className="mt-5 text-[1.2rem] font-bold tracking-[-0.01em] text-[#0f1330] dark:text-white">{step.title}</h3>
+              <h3 className="mt-5 text-[1.2rem] font-bold tracking-[-0.01em] text-[#0f1330] dark:text-white">
+                <span className="sr-only">Step {i + 1}: </span>
+                {step.title}
+              </h3>
               <p className="mt-2 max-w-[24rem] text-[0.95rem] leading-relaxed text-[#5a6180] dark:text-white/65">{step.description}</p>
             </StaggerItem>
           ))}
