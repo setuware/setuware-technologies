@@ -86,6 +86,19 @@ describe("slack events", () => {
     expect(JSON.stringify(posted()[0].blocks)).toContain("Frontend Developer");
   });
 
+  it("links international numbers without adding India's code", async () => {
+    const { tel, whatsappUrl } = await import("@/lib/slack");
+    expect(whatsappUrl("+1 415 555 0100")).toBe("https://wa.me/14155550100");
+    expect(whatsappUrl("98765 43210")).toBe("https://wa.me/919876543210");
+    expect(tel("+1 415 555 0100")).toContain("tel:+14155550100");
+  });
+
+  it("keeps long escaped quotes within Slack's section limit", async () => {
+    await slackLead(lead("contact", { name: "A", email: "a@example.com", message: "<>".repeat(1400) }));
+    const quote = posted()[0].blocks.find((block: { text?: { text: string } }) => block.text?.text.startsWith(">"));
+    expect(quote.text.text.length).toBeLessThanOrEqual(3000);
+  });
+
   it("throttles repeated alerts", async () => {
     expect(slackAlert("test:throttle", "Email failed", "Could not send")).toBe(true);
     expect(slackAlert("test:throttle", "Email failed", "Could not send")).toBe(false);

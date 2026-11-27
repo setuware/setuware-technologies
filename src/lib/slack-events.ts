@@ -107,7 +107,9 @@ export function slackJobChange(job: { id: number; title: string; slug: string; l
 
 /* Marketing --------------------------------------------------------------- */
 
+/** Announces a post in #marketing once it is live (once per post). */
 export function slackPostPublished(post: { id: number; title: string; slug: string; excerpt: string; author: string }): void {
+  if (!slackConfigured() || !slackChannelTarget("marketing") || !once(`slack-post:${post.id}`)) return;
   queueSlack(
     "marketing",
     card(`New blog post published: ${post.title}`, {
@@ -121,6 +123,18 @@ export function slackPostPublished(post: { id: number; title: string; slug: stri
       context: ["Share it on LinkedIn and in the newsletter", istTime()],
     }),
   );
+}
+
+/** Announces scheduled posts that have gone live since the last run (called by the daily cron). */
+export function slackScheduledPosts(now: Date = new Date()): number {
+  if (!slackConfigured() || !slackChannelTarget("marketing")) return 0;
+  const posts = getDb()
+    .prepare(
+      "SELECT id, title, slug, excerpt, author_name FROM posts WHERE status = 'published' AND published_at <= ? AND published_at >= ? AND substr(updated_at, 1, 10) < substr(published_at, 1, 10)",
+    )
+    .all(now.toISOString(), new Date(now.getTime() - 2 * 86_400_000).toISOString().slice(0, 10)) as { id: number; title: string; slug: string; excerpt: string; author_name: string }[];
+  for (const post of posts) slackPostPublished({ ...post, author: post.author_name });
+  return posts.length;
 }
 
 /* Team operations --------------------------------------------------------- */

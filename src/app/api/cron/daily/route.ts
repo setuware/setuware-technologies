@@ -1,7 +1,7 @@
 import { notify } from "@/lib/cms/notify";
 import { runReminders } from "@/lib/cms/reminders";
 import { cronAuthorized } from "@/lib/cron-auth";
-import { slackDigest } from "@/lib/slack-events";
+import { slackDigest, slackScheduledPosts } from "@/lib/slack-events";
 
 /**
  * Reminders and clean-up (stale timers, check-in / check-out nudges, overdue
@@ -15,6 +15,7 @@ import { slackDigest } from "@/lib/slack-events";
 export async function GET(request: Request) {
   if (!cronAuthorized(request)) return new Response("Not found", { status: 404 });
   const sent = runReminders(notify);
+  slackScheduledPosts();
   const digest = await slackDigest();
   return Response.json({ ok: true, sent, digest });
 }

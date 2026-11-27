@@ -268,7 +268,7 @@ export async function savePostAction(_previous: FormState, form: FormData): Prom
   };
   const wasPublished = id ? getPostRecord(id)?.status === "published" : false;
   const savedId = savePost(input, user.name, id);
-  if (status === "published" && !wasPublished) {
+  if (status === "published" && !wasPublished && publishedAt <= new Date().toISOString()) {
     slackPostPublished({ id: savedId, title, slug, excerpt: input.excerpt, author: input.author_name });
   }
   audit(user.name, id ? "updated post" : "created post", "post", `${title} (${status})`);
