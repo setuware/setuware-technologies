@@ -182,7 +182,7 @@ function row(name: string, valueHtml: string, last: boolean): string {
   return `<tr><td style="padding:12px 16px;width:34%;background:#f6f9fc;font:600 13px Arial,sans-serif;color:#374151;${border}">${esc(name)}</td><td style="padding:12px 16px;font:400 14px Arial,sans-serif;${border}">${valueHtml}</td></tr>`;
 }
 
-function quoteText(quote: NonNullable<LeadView["quote"]>): string {
+export function quoteText(quote: NonNullable<LeadView["quote"]>): string {
   const range = quote.low === quote.high ? formatINR(quote.low) : `${formatINR(quote.low)} – ${formatINR(quote.high)}`;
   return quote.weeks ? `${range} · about ${quote.weeks} weeks` : range;
 }

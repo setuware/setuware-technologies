@@ -197,6 +197,9 @@ export function welcomeEmail(member: WelcomeDetails, from: string): EmailContent
         "Turn on 2-step verification under My account.",
         "Complete your profile: phone, skills, location and emergency contact.",
         "Check in from the dashboard when you start work, and review the tasks assigned to you.",
+        ...(process.env.SLACK_INVITE_URL?.trim()
+          ? [`Join the team on Slack with this link: ${process.env.SLACK_INVITE_URL.trim()} (use this email address). You are added to your channels automatically.`]
+          : []),
       ],
     },
     button: { url: loginUrl(), label: "Open the admin" },

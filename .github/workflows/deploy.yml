@@ -50,6 +50,27 @@ jobs:
 
           ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts
 
+      # Optional: SLACK_BOT_TOKEN / SLACK_INVITE_URL repository secrets are
+      # written to the server's .env.production.local (sent over stdin, never
+      # on a command line). Unset secrets leave the server file untouched.
+      - name: Sync Slack settings
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_INVITE_URL: ${{ secrets.SLACK_INVITE_URL }}
+        run: |
+          [ -z "$SLACK_BOT_TOKEN$SLACK_INVITE_URL" ] && { echo "No Slack secrets set, skipping"; exit 0; }
+          {
+            [ -n "$SLACK_BOT_TOKEN" ] && printf 'SLACK_BOT_TOKEN=%s\n' "$SLACK_BOT_TOKEN"
+            [ -n "$SLACK_INVITE_URL" ] && printf 'SLACK_INVITE_URL=%s\n' "$SLACK_INVITE_URL"
+            true
+          } | ssh -i ~/.ssh/id_ed25519 \
+            -o IdentitiesOnly=yes \
+            -o BatchMode=yes \
+            "$SERVER_USER@$SERVER_HOST" \
+            'set -e; f=/home/ubuntu/setuware-technologies/.env.production.local; touch "$f"; chmod 600 "$f"; while IFS= read -r line; do key="${line%%=*}"; grep -v "^${key}=" "$f" > "$f.tmp" || true; printf "%s\n" "$line" >> "$f.tmp"; mv "$f.tmp" "$f"; chmod 600 "$f"; done'
+
       - name: Deploy latest code
         env:
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
