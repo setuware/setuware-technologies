@@ -1,6 +1,7 @@
 import { deleteMediaAction } from "@/app/admin/actions";
 import { listMedia, mediaUsage } from "@/lib/cms/crm";
 import { requireUser } from "@/lib/cms/session";
+import { site } from "@/lib/site";
 import { CopyButton } from "@/components/admin/copy-button";
 import { SubmitButton } from "@/components/admin/form-bits";
 import { Card, Empty, PageHeader, timeAgo } from "@/components/admin/ui";
@@ -33,7 +34,7 @@ export default async function MediaPage() {
                   </p>
                   <p className="line-clamp-1 text-xs text-foreground/80">{usedIn.length ? `Used in: ${usedIn.join(", ")}` : "Not used in any post"}</p>
                   <div className="flex gap-2">
-                    <CopyButton value={file.url} />
+                    <CopyButton value={`${site.url}${file.url}`} />
                     {usedIn.length === 0 ? (
                       <form action={deleteMediaAction}>
                         <input type="hidden" name="name" value={file.name} />
