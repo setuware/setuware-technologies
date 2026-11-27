@@ -46,9 +46,11 @@ Each setting takes a channel ID (`C0123ABCD`) or name (`#leads`). Set it to
 
 2. **Install it.** In the app, open **Install App → Install to Workspace →
    Allow**, then copy the **Bot User OAuth Token** (`xoxb-…`).
-3. **Create the channels** listed above (public channels need no invite).
-   A private channel (recommended for `#security`) needs the app invited:
-   type `/invite @Setuware Website` in it.
+3. **Create the channels** listed above. Make `#leads`, `#hiring` and
+   `#security` **private**: their messages carry visitors' and applicants'
+   contact details, so only people who would see them in the admin should be
+   in them. A private channel needs the app invited: type
+   `/invite @Setuware Website` in it. Public channels need no invite.
 4. **Add the token on the server** (`/home/ubuntu/setuware-technologies`):
 
    ```bash
