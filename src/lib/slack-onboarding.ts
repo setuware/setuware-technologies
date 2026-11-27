@@ -1,6 +1,6 @@
 import { can, listUsers, type AdminUser } from "./cms/auth";
 import { getDb } from "./cms/db";
-import { adminUrl, card, slackApi, slackChannelTarget, slackConfigured, type SlackChannel } from "./slack";
+import { adminUrl, card, SLACK_CHANNELS, slackApi, slackChannelTarget, slackConfigured, type SlackChannel } from "./slack";
 
 /**
  * Slack onboarding and offboarding. Every cron run looks up team members not
@@ -85,10 +85,9 @@ interface Link {
   channels: string[];
 }
 
-function wantedChannels(user: AdminUser | undefined): Set<string> {
+function resolve(channels: readonly SlackChannel[]): Set<string> {
   const ids = new Set<string>();
-  if (!user?.active) return ids;
-  for (const channel of channelsFor(user)) {
+  for (const channel of channels) {
     const target = slackChannelTarget(channel);
     const id = target ? channelId(target) : null;
     if (id) ids.add(id);
@@ -96,8 +95,17 @@ function wantedChannels(user: AdminUser | undefined): Set<string> {
   return ids;
 }
 
-/** Brings one member's channels in line with what they should see; returns the channels they are in now. */
-async function reconcile(slackUser: string, current: string[], wanted: Set<string>): Promise<string[]> {
+function wantedChannels(user: AdminUser | undefined): Set<string> {
+  return user?.active ? resolve(channelsFor(user)) : new Set();
+}
+
+/**
+ * Brings one member's channels in line with what they should see; returns the
+ * channels they are in now. While the account is active, only channels the
+ * site still manages are removed, so muting a channel (`off`) or renaming a
+ * setting doesn't take people out of it.
+ */
+async function reconcile(slackUser: string, current: string[], wanted: Set<string>, managed: Set<string> | null): Promise<string[]> {
   const now = new Set(current);
   for (const id of wanted) {
     if (now.has(id)) continue;
@@ -105,9 +113,9 @@ async function reconcile(slackUser: string, current: string[], wanted: Set<strin
     if (invited?.ok || invited?.error === "already_in_channel") now.add(id);
   }
   for (const id of current) {
-    if (wanted.has(id)) continue;
+    if (wanted.has(id) || (managed && !managed.has(id))) continue;
     const removed = await slackApi("conversations.kick", { channel: id, user: slackUser });
-    if (removed?.ok || removed?.error === "not_in_channel" || removed?.error === "channel_not_found") now.delete(id);
+    if (removed?.ok || removed?.error === "not_in_channel") now.delete(id);
   }
   return [...now];
 }
@@ -131,12 +139,16 @@ export async function syncSlackMembers(now: Date = new Date()): Promise<number> 
   const users = listUsers();
   const byId = new Map(users.map((user) => [user.id, user]));
   if (!(await loadChannels())) return 0;
+  const managed = resolve(Object.keys(SLACK_CHANNELS) as SlackChannel[]);
   let changed = 0;
 
   for (const [id, link] of links) {
-    const wanted = wantedChannels(byId.get(id));
-    if (wanted.size === link.channels.length && link.channels.every((channel) => wanted.has(channel))) continue;
-    const channels = await reconcile(link.slack, link.channels, wanted);
+    const user = byId.get(id);
+    const wanted = wantedChannels(user);
+    const scope = user?.active ? managed : null;
+    if ([...wanted].every((channel) => link.channels.includes(channel)) && link.channels.every((channel) => wanted.has(channel) || (scope && !scope.has(channel)))) continue;
+    const channels = await reconcile(link.slack, link.channels, wanted, scope);
+    if (channels.length === link.channels.length && channels.every((channel) => link.channels.includes(channel))) continue;
     save.run(`${MARK}${id}`, JSON.stringify({ ...link, channels }));
     changed += 1;
   }
@@ -148,7 +160,7 @@ export async function syncSlackMembers(now: Date = new Date()): Promise<number> 
   for (const user of batch) {
     const found = await slackApi<{ user?: { id: string } }>("users.lookupByEmail", { email: user.email });
     if (!found?.ok || !found.user) continue;
-    const channels = await reconcile(found.user.id, [], wantedChannels(user));
+    const channels = await reconcile(found.user.id, [], wantedChannels(user), managed);
     save.run(`${MARK}${user.id}`, JSON.stringify({ slack: found.user.id, at: now.toISOString(), channels }));
     changed += 1;
     if (now.getTime() - Date.parse(user.created_at) < WELCOME_WITHIN_MS) {

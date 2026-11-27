@@ -110,5 +110,6 @@ which reads the same `.env.production.local`.
 
    Change the mapping in `src/lib/slack-onboarding.ts` (`channelsFor`).
    When someone's role changes, their access is disabled or the account is
-   removed, the next run takes them out of the channels they no longer
-   qualify for (only channels the bot added them to).
+   removed, the next run takes them out of the website channels they no
+   longer qualify for (a disabled or removed account leaves all of them).
+   Setting a channel to `off` stops posts but doesn't remove anyone.
