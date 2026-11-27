@@ -18,6 +18,7 @@ import {
 } from "@/app/admin/actions";
 import { cn } from "@/lib/utils";
 
+import { ChoiceField, DEPARTMENTS, DESIGNATIONS } from "./choice-field";
 import { CopyButton } from "./copy-button";
 import { FieldError, FormMessage, SubmitButton } from "./form-bits";
 import { inputClass } from "./ui";
@@ -128,15 +129,10 @@ export function AddUserForm({
           <SectionTitle step={2}>Job details</SectionTitle>
           <div className="grid gap-3 sm:grid-cols-2">
             <Field id="new-designation" label="Designation" hint="Optional">
-              <input id="new-designation" name="designation" placeholder="e.g. Frontend Developer" className={inputClass} />
+              <ChoiceField id="new-designation" name="designation" options={DESIGNATIONS} />
             </Field>
             <Field id="new-department" label="Department" hint="Optional">
-              <input id="new-department" name="department" list="new-departments" placeholder="e.g. Engineering" className={inputClass} />
-              <datalist id="new-departments">
-                {departments.map((department) => (
-                  <option key={department} value={department} />
-                ))}
-              </datalist>
+              <ChoiceField id="new-department" name="department" options={[...DEPARTMENTS, ...departments]} emptyLabel="Not set" />
             </Field>
             <Field id="new-manager" label="Reports to" hint="Optional" error={f.manager_id}>
               <select id="new-manager" name="manager_id" defaultValue="" className={inputClass}>

@@ -103,6 +103,8 @@ export function AdminShell({
 }) {
   const pathname = usePathname() ?? "/admin";
   const [open, setOpen] = useState(false);
+  // Only people who manage accounts or the site see "Admin"; everyone else is in the team portal.
+  const portalLabel = areas.some((area) => area === "users" || area === "roles.manage" || area === "settings.manage") ? "ADMIN" : "TEAM PORTAL";
   const [install, setInstall] = useState<{ prompt: () => Promise<void> } | null>(null);
 
   // Installable app: register the offline worker and offer "Install app".
@@ -244,7 +246,7 @@ export function AdminShell({
         <span className="leading-none">
           <span className="block font-[family-name:var(--font-brand)] text-[1.08rem] font-bold tracking-[0.06em]">SETUWARE</span>
           <span className="mt-1.5 inline-block rounded-full bg-white/[0.08] px-2 py-0.5 text-[0.58rem] font-semibold tracking-[0.24em] text-[#5fd0ec]">
-            ADMIN
+            {portalLabel}
           </span>
         </span>
       </Link>
@@ -301,7 +303,7 @@ export function AdminShell({
         <header className="dark sticky top-0 z-40 flex items-center justify-between bg-[#0b1020] px-4 py-3 text-white lg:hidden">
           <Link href="/admin" className="flex items-center gap-2">
             <LogoMark className="size-8" />
-            <span className="hidden font-[family-name:var(--font-brand)] font-bold tracking-[0.06em] min-[440px]:inline">ADMIN</span>
+            <span className="hidden font-[family-name:var(--font-brand)] font-bold tracking-[0.06em] min-[440px]:inline">{portalLabel}</span>
           </Link>
           <div className="ml-auto mr-1 min-w-0">{presenceBar}</div>
           <Link href="/admin/search" aria-label="Search the admin" className="rounded-lg p-2 hover:bg-white/10">

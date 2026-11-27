@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import { postUpdateAction, saveProfileAction, saveProjectAction } from "@/app/admin/work-actions";
 import type { FormState } from "@/app/admin/actions";
 
+import { ChoiceField, DEPARTMENTS, DESIGNATIONS } from "./choice-field";
 import { FormMessage, SubmitButton } from "./form-bits";
 import { inputClass } from "./ui";
 
@@ -44,18 +45,13 @@ export function ProfileForm({
         <label htmlFor="designation" className={LABEL}>
           Designation
         </label>
-        <input id="designation" name="designation" defaultValue={person.designation} disabled={locked} placeholder="e.g. Frontend Developer" className={`${inputClass} disabled:opacity-60`} />
+        <ChoiceField id="designation" name="designation" options={DESIGNATIONS} defaultValue={person.designation} disabled={locked} />
       </div>
       <div>
         <label htmlFor="department" className={LABEL}>
           Department
         </label>
-        <input id="department" name="department" list="departments" defaultValue={person.department} disabled={locked} placeholder="e.g. Engineering" className={`${inputClass} disabled:opacity-60`} />
-        <datalist id="departments">
-          {departments.map((department) => (
-            <option key={department} value={department} />
-          ))}
-        </datalist>
+        <ChoiceField id="department" name="department" options={[...DEPARTMENTS, ...departments]} defaultValue={person.department} disabled={locked} emptyLabel="Not set" />
       </div>
       <div>
         <label htmlFor="manager_id" className={LABEL}>

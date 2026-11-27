@@ -6,6 +6,7 @@ import { Pencil } from "lucide-react";
 import { createTaskAction, logTimeAction, reviewTaskAction, taskCommentAction, updateTaskAction } from "@/app/admin/work-actions";
 import type { FormState } from "@/app/admin/actions";
 
+import { ChoiceField } from "./choice-field";
 import { FormMessage, SubmitButton } from "./form-bits";
 import { buttonClass, inputClass } from "./ui";
 
@@ -133,12 +134,7 @@ export function NewTaskForm({
           <label htmlFor="project" className={LABEL}>
             Project / client
           </label>
-          <input id="project" name="project" list="projects" maxLength={80} placeholder="Optional" className={inputClass} />
-          <datalist id="projects">
-            {projects.map((project) => (
-              <option key={project} value={project} />
-            ))}
-          </datalist>
+          <ChoiceField id="project" name="project" options={projects} emptyLabel="No project" />
         </div>
         <div>
           <label htmlFor="estimate_hours" className={LABEL}>
@@ -251,12 +247,7 @@ export function TaskPanel({
           <label htmlFor="project" className={LABEL}>
             Project
           </label>
-          <input id="project" name="project" list="task-projects" defaultValue={task.project} className={inputClass} />
-          <datalist id="task-projects">
-            {projects.map((project) => (
-              <option key={project} value={project} />
-            ))}
-          </datalist>
+          <ChoiceField id="project" name="project" options={projects} defaultValue={task.project} emptyLabel="No project" />
         </div>
         <div>
           <label htmlFor="estimate_hours" className={LABEL}>
@@ -272,7 +263,7 @@ export function TaskPanel({
             className={inputClass}
           />
         </div>
-        <div>
+        <div className="col-span-full">
           <label htmlFor="repeat" className={LABEL}>
             Repeat
           </label>

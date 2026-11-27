@@ -6,6 +6,7 @@ import { saveJobAction, type FormState } from "@/app/admin/actions";
 import { slugify } from "@/lib/cms/markdown";
 import { cn } from "@/lib/utils";
 
+import { ChoiceField } from "./choice-field";
 import { FieldError, FormMessage, Label, SubmitButton } from "./form-bits";
 import { Card, inputClass } from "./ui";
 
@@ -146,12 +147,7 @@ export function JobEditor({
           <h3 className="text-sm font-semibold text-foreground">Details</h3>
           <div>
             <Label htmlFor="team">Team</Label>
-            <input id="team" name="team" list="teams" defaultValue={initial.team} className={inputClass} />
-            <datalist id="teams">
-              {teams.map((team) => (
-                <option key={team} value={team} />
-              ))}
-            </datalist>
+            <ChoiceField id="team" name="team" options={teams} defaultValue={initial.team} emptyLabel="Choose a team" />
           </div>
           <div>
             <Label htmlFor="type">Type</Label>
@@ -163,12 +159,7 @@ export function JobEditor({
           </div>
           <div>
             <Label htmlFor="location">Location</Label>
-            <input id="location" name="location" list="locations" defaultValue={initial.location} className={inputClass} />
-            <datalist id="locations">
-              {locations.map((location) => (
-                <option key={location} value={location} />
-              ))}
-            </datalist>
+            <ChoiceField id="location" name="location" options={locations} defaultValue={initial.location} emptyLabel="Choose a location" />
           </div>
           <div>
             <Label htmlFor="experience">Experience</Label>
