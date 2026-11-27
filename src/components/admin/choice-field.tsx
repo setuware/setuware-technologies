@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { inputClass } from "./ui";
 
@@ -55,9 +55,21 @@ export function ChoiceField({
   const [choice, setChoice] = useState(defaultValue.trim());
   const [custom, setCustom] = useState("");
   const other = choice === OTHER;
+  // React resets a form's DOM fields after its action runs, which leaves this
+  // controlled select showing its old default. Redraw it from state instead.
+  const wrapper = useRef<HTMLDivElement>(null);
+  const [drawn, setDrawn] = useState(0);
+  useEffect(() => {
+    const form = wrapper.current?.closest("form");
+    if (!form) return;
+    const redraw = () => setDrawn((count) => count + 1);
+    form.addEventListener("reset", redraw);
+    return () => form.removeEventListener("reset", redraw);
+  }, []);
   return (
-    <div className="flex flex-col gap-2">
+    <div ref={wrapper} className="flex flex-col gap-2">
       <select
+        key={`select-${drawn}`}
         id={id}
         name={other ? undefined : name}
         value={choice}
@@ -75,11 +87,12 @@ export function ChoiceField({
       </select>
       {other ? (
         <input
+          key={`custom-${drawn}`}
           name={name}
           value={custom}
           onChange={(event) => setCustom(event.target.value)}
           maxLength={maxLength}
-          autoFocus
+          autoFocus={drawn === 0}
           aria-label={otherPlaceholder}
           placeholder={otherPlaceholder}
           className={inputClass}
