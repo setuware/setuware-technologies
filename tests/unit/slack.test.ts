@@ -186,6 +186,9 @@ describe("slack onboarding", () => {
     calls.length = 0;
     updateUser(user.id, { active: false });
     expect(await syncSlackMembers()).toBe(1);
-    expect(count("conversations.kick")).toBe(3);
+    expect(count("conversations.kick")).toBe(4);
+    calls.length = 0;
+    expect(await syncSlackMembers()).toBe(0);
+    expect(count("conversations.kick")).toBe(0);
   });
 });

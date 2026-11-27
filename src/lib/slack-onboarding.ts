@@ -83,6 +83,8 @@ interface Link {
   slack: string;
   at: string;
   channels: Held[];
+  /** Set once a disabled or removed account has been taken out of every website channel. */
+  off?: boolean;
 }
 
 /** A channel the member is in, and the website channel it was granted for. */
@@ -154,7 +156,7 @@ export async function syncSlackMembers(now: Date = new Date()): Promise<number> 
   for (const row of db.prepare("SELECT key, value FROM settings WHERE key LIKE ?").all(`${MARK}%`) as { key: string; value: string }[]) {
     try {
       const link = JSON.parse(row.value) as Partial<Link>;
-      if (link.slack) links.set(Number(row.key.slice(MARK.length)), { slack: link.slack, at: link.at ?? "", channels: link.channels ?? [] });
+      if (link.slack) links.set(Number(row.key.slice(MARK.length)), { slack: link.slack, at: link.at ?? "", channels: link.channels ?? [], off: link.off });
     } catch {
       /* ignore a damaged marker */
     }
@@ -167,6 +169,19 @@ export async function syncSlackMembers(now: Date = new Date()): Promise<number> 
 
   for (const [id, link] of links) {
     const user = byId.get(id);
+    if (!user?.active) {
+      if (link.off) continue;
+      // Offboarding sweeps every website channel, including memberships the bot didn't grant.
+      const failed = new Set<string>();
+      for (const channel of new Set([...uses.keys(), ...link.channels.map((held) => held.id)])) {
+        const removed = await slackApi("conversations.kick", { channel, user: link.slack });
+        if (!(removed?.ok || removed?.error === "not_in_channel")) failed.add(channel);
+      }
+      const channels = link.channels.filter((held) => failed.has(held.id));
+      save.run(`${MARK}${id}`, JSON.stringify({ ...link, channels, off: failed.size === 0 }));
+      changed += 1;
+      continue;
+    }
     const wanted = wantedChannels(user, uses);
     const allowed = allowedFor(user);
     const missing = wanted.some((item) => !link.channels.some((held) => held.id === item.id));
@@ -174,7 +189,7 @@ export async function syncSlackMembers(now: Date = new Date()): Promise<number> 
     if (!missing && !revoked) continue;
     const channels = await reconcile(link.slack, link.channels, wanted, allowed, uses);
     if (channels.length === link.channels.length && channels.every((item, index) => item === link.channels[index])) continue;
-    save.run(`${MARK}${id}`, JSON.stringify({ ...link, channels }));
+    save.run(`${MARK}${id}`, JSON.stringify({ ...link, channels, off: false }));
     changed += 1;
   }
 
