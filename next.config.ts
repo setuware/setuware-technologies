@@ -41,6 +41,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["core.setuware.in", "setuware.in", "www.setuware.in"],
   // The deploy workflow type-checks in GitHub Actions before the server
   // builds, so the server skips the (slow, memory-hungry) second check.
   typescript: { ignoreBuildErrors: process.env.SKIP_BUILD_TYPECHECK === "1" },

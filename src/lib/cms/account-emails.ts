@@ -1,6 +1,7 @@
 import { randomInt } from "node:crypto";
 
 import type { EmailContent } from "@/lib/email-templates";
+import { authUrl } from "@/lib/portal";
 import { site } from "@/lib/site";
 
 /**
@@ -14,7 +15,7 @@ const esc = (value: string) =>
 
 const first = (name: string) => name.trim().split(/\s+/)[0] ?? name;
 const host = () => site.url.replace(/^https?:\/\//, "");
-export const loginUrl = () => `${site.portalUrl}/admin/login`;
+export const loginUrl = () => authUrl("login");
 
 /** Letters without look-alikes (no I, l, O, 0, 1). */
 const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz";
