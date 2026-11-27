@@ -6,7 +6,7 @@ import { LoginForm } from "./login-form";
 
 export default function LoginPage({ searchParams }: { searchParams: Promise<{ changed?: string; step?: string }> }) {
   return (
-    <AuthCard title="Sign in to Setuware Admin" subtitle="Blog, jobs, applications and enquiries.">
+    <AuthCard title="Sign in to Setuware" subtitle="Admin and employee portal.">
       <Suspense fallback={<div className="h-56" />}>
         <LoginBody searchParams={searchParams} />
       </Suspense>

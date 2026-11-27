@@ -70,7 +70,7 @@ export async function POST(request: Request) {
       links ? `Links: ${links}` : "",
       note ? `\n${note}` : "",
       "",
-      `Review it in the admin: ${site.url}/admin/applications`,
+      `Review it in the admin: ${site.portalUrl}/admin/applications`,
     ]
       .filter((line) => line !== "")
       .join("\n");
