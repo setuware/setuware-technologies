@@ -22,7 +22,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
   const lead = getLead(Number(id));
   if (!lead || (!seesAll(user, "leads") && lead.assignee !== user.name)) notFound();
   const digits = lead.phone.replace(/\D/g, "").replace(/^(\d{10})$/, "91$1");
-  const team = listUsers().filter((member) => member.active).map((member) => member.name);
+  const team = [...new Set(listUsers().filter((member) => member.active).map((member) => member.name))];
   const templates = listTemplates("enquiry").map(({ id: templateId, name, subject, body }) => ({ id: templateId, name, subject, body }));
   const enquiryId = enquiryForLead(lead.zoho_id);
   const editable = can(user, "leads.edit");

@@ -45,4 +45,13 @@ describe("account emails", () => {
     expect(bare.text).not.toContain("Reports to");
     expect(bare.text).toContain("Admin access: Editor");
   });
+
+  it("welcome says how they sign in", () => {
+    expect(welcomeEmail(member, "Satyam Raj", "invite").text).toContain("invite link");
+    expect(welcomeEmail(member, "Satyam Raj", "invite").text).not.toContain("sign-in details");
+    expect(welcomeEmail(member, "Satyam Raj", "credentials").text).toContain("temporary password");
+    expect(welcomeEmail(member, "Satyam Raj").text).not.toContain("separate email");
+    expect(welcomeEmail(member, "Satyam Raj", "invited").text).not.toContain("separate email");
+    expect(welcomeEmail(member, "Satyam Raj", "temporary").text).not.toContain("separate email");
+  });
 });
