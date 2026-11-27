@@ -22,6 +22,14 @@ export function authUrl(page: "login" | "forgot" | "set-password", query = ""): 
   return portalEnabled() ? `${site.portalUrl}/${page}${query}` : `${site.url}/admin/${page}${query}`;
 }
 
+/**
+ * How far the installable app reaches on this host. The portal host is all
+ * portal, and its sign-in page sits at `/login`, outside `/admin`.
+ */
+export function pwaScope(host: string | null): "/" | "/admin" {
+  return host && portalEnabled() && host.toLowerCase() === hostOf(site.portalUrl) ? "/" : "/admin";
+}
+
 /** The page that answers a portal sign-in URL: `/login` is served by `/admin/login`. */
 export function portalRewrite(host: string | null, pathname: string): string | null {
   if (!host || !portalEnabled() || host.toLowerCase() !== hostOf(site.portalUrl)) return null;
