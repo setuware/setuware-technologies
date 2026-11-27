@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { inputClass } from "./ui";
 
@@ -55,9 +55,24 @@ export function ChoiceField({
   const [choice, setChoice] = useState(defaultValue.trim());
   const [custom, setCustom] = useState("");
   const other = choice === OTHER;
+  const select = useRef<HTMLSelectElement>(null);
+  const initial = defaultValue.trim();
+
+  // React clears a form's uncontrolled fields after its action runs; follow it.
+  useEffect(() => {
+    const form = select.current?.form;
+    if (!form) return;
+    const onReset = () => {
+      setChoice(initial);
+      setCustom("");
+    };
+    form.addEventListener("reset", onReset);
+    return () => form.removeEventListener("reset", onReset);
+  }, [initial]);
   return (
     <div className="flex flex-col gap-2">
       <select
+        ref={select}
         id={id}
         name={other ? undefined : name}
         value={choice}
