@@ -23,6 +23,11 @@ export interface HeroBackdropProps {
    * the scrim only needs to guarantee text contrast over it.
    */
   tone?: "page" | "dark";
+  /**
+   * For backdrops below the fold (footer, lower sections): the poster and the
+   * video are requested only once the section is close to the viewport.
+   */
+  lazy?: boolean;
 }
 
 /**
@@ -38,16 +43,34 @@ export interface HeroBackdropProps {
  * hidden, a failure falls back to the generated animation, and a visitor who
  * prefers reduced motion gets the poster frame instead of movement.
  */
-export function HeroBackdrop({ sources, poster, tone = "page" }: HeroBackdropProps) {
+export function HeroBackdrop({ sources, poster, tone = "page", lazy = false }: HeroBackdropProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const reduceMotion = usePrefersReducedMotion();
   const [failed, setFailed] = useState(false);
+  const [near, setNear] = useState(!lazy);
 
   const hasVideo = sources.length > 0 && !failed;
 
   useEffect(() => {
-    if (!hasVideo || reduceMotion) return;
+    const wrapper = wrapperRef.current;
+    if (near || !wrapper) return;
+    if (typeof IntersectionObserver !== "function") {
+      setNear(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) setNear(true);
+      },
+      { rootMargin: "600px 0px" },
+    );
+    observer.observe(wrapper);
+    return () => observer.disconnect();
+  }, [near]);
+
+  useEffect(() => {
+    if (!hasVideo || reduceMotion || !near) return;
     const video = videoRef.current;
     const wrapper = wrapperRef.current;
     if (!video || !wrapper) return;
@@ -93,7 +116,7 @@ export function HeroBackdrop({ sources, poster, tone = "page" }: HeroBackdropPro
       document.removeEventListener("visibilitychange", onVisibilityChange);
       video.pause();
     };
-  }, [hasVideo, reduceMotion]);
+  }, [hasVideo, reduceMotion, near]);
 
   return (
     <div
@@ -108,8 +131,8 @@ export function HeroBackdrop({ sources, poster, tone = "page" }: HeroBackdropPro
             "size-full object-cover",
             tone === "dark" ? "opacity-100" : "opacity-[0.28] dark:opacity-40",
           )}
-          poster={poster}
-          preload="metadata"
+          poster={near ? poster : undefined}
+          preload="none"
           muted
           loop
           playsInline
@@ -117,9 +140,7 @@ export function HeroBackdrop({ sources, poster, tone = "page" }: HeroBackdropPro
           tabIndex={-1}
           onError={() => setFailed(true)}
         >
-          {sources.map((source) => (
-            <source key={source.src} src={source.src} type={source.type} />
-          ))}
+          {near ? sources.map((source) => <source key={source.src} src={source.src} type={source.type} />) : null}
         </video>
       ) : (
         <TechBackdrop
@@ -255,6 +276,15 @@ export function HeroVideoReel({ clips }: { clips: readonly HeroClip[] }) {
   const [onScreen, setOnScreen] = useState(true);
   const playing = onScreen && !reduceMotion;
   const count = clips.length;
+  // The next clip is fetched a few seconds before its turn, not on page load.
+  const [warmFor, setWarmFor] = useState(-1);
+  const warm = warmFor === active;
+
+  useEffect(() => {
+    if (!playing || count < 2 || reducedMotionNow()) return;
+    const timer = window.setTimeout(() => setWarmFor(active), REEL_MS - 3500);
+    return () => window.clearTimeout(timer);
+  }, [active, playing, count]);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -305,7 +335,7 @@ export function HeroVideoReel({ clips }: { clips: readonly HeroClip[] }) {
     <div ref={wrapperRef} className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
       {clips.map((clip, index) => {
         const isActive = index === active;
-        const isNext = index === (active + 1) % count;
+        const isNext = warm && index === (active + 1) % count;
         return (
           <video
             key={clip.poster ?? index}
@@ -316,7 +346,7 @@ export function HeroVideoReel({ clips }: { clips: readonly HeroClip[] }) {
               "absolute inset-0 size-full object-cover transition-opacity duration-[1600ms] ease-in-out",
               isActive ? "opacity-100" : "opacity-0",
             )}
-            poster={clip.poster}
+            poster={isActive || isNext ? clip.poster : undefined}
             preload={isActive || isNext ? "auto" : "none"}
             muted
             loop
