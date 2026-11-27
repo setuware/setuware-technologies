@@ -19,7 +19,9 @@ describe("consultation emails", () => {
     expect(email?.html).toContain("Tuesday, 1 December 2026");
     expect(email?.html).toContain("11:30 am – 12:00 pm IST");
     expect(email?.html).toContain("Video call (Google Meet)");
-    expect(email?.html).toContain("calendar.google.com");
+    // One event only: the attached invite, which the join-link email later updates.
+    expect(email?.html).not.toContain("calendar.google.com");
+    expect(email?.html).not.toContain("/book");
     expect(email?.text).toContain("Need to change the time?");
   });
 
@@ -73,6 +75,14 @@ describe("email kit", () => {
     expect(blocks[0]).toContain("Hi &lt;Asha&gt;,");
     expect(blocks[1]).toContain('href="https://setuware.in/book"');
     expect(blocks[1]).toContain("<br>");
+  });
+
+  it("keeps quotes and angle brackets around a URL out of the link", () => {
+    const [block] = textToBlocks('Join <https://meet.google.com/abc-defg-hij> or "https://setuware.in/a?b=1&c=2".');
+    expect(block).toContain('href="https://meet.google.com/abc-defg-hij"');
+    expect(block).toContain('href="https://setuware.in/a?b=1&amp;c=2"');
+    expect(block).not.toContain("hij&gt;");
+    expect(block).not.toContain('2&quot;"');
   });
 
   it("renders a full document with the preheader and heading", () => {

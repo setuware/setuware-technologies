@@ -231,8 +231,13 @@ export function textToBlocks(text: string): string[] {
     .filter(Boolean)
     .map((part) =>
       paragraph(
-        esc(part)
-          .replace(/(https?:\/\/[^\s<]+[^\s<.,;:!?)])/g, `<a href="$1" style="color:${BRAND.blue};text-decoration:none;font-weight:700;">$1</a>`)
+        part
+          // Linked before escaping, so quotes and angle brackets around a URL stay outside the link.
+          .split(/(https?:\/\/[^\s<>"'`]*[^\s<>"'`.,;:!?)\]])/g)
+          .map((piece, index) =>
+            index % 2 ? `<a href="${esc(piece)}" style="color:${BRAND.blue};text-decoration:none;font-weight:700;">${esc(piece)}</a>` : esc(piece),
+          )
+          .join("")
           .replaceAll("\n", "<br>"),
       ),
     );
