@@ -731,7 +731,8 @@ export async function sendMeetingLinkAction(_previous: FormState, form: FormData
   const id = Number(form.get("id"));
   const record = getRecord("enquiry", id);
   if (!record || !inScope(user, "enquiry", record)) return { error: "Record not found." };
-  const meetingUrl = text(form, "meeting_url", 300);
+  const meetingUrl = String(form.get("meeting_url") ?? "").trim();
+  if (meetingUrl.length > 2000) return { error: "That link is too long. Paste the meeting's short join link." };
   let parsed: URL | null = null;
   try {
     parsed = new URL(meetingUrl);
