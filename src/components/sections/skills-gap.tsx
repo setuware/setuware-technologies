@@ -49,6 +49,31 @@ export function SkillsGap() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [failed, setFailed] = useState(false);
   const [paused, setPaused] = useState(false);
+  // The clip is requested only once the band is close to the viewport, and
+  // plays only while it is on screen.
+  const [near, setNear] = useState(false);
+  const [onScreen, setOnScreen] = useState(false);
+
+  useEffect(() => {
+    const band = bandRef.current;
+    if (!band) return;
+    if (typeof IntersectionObserver !== "function") {
+      setNear(true);
+      setOnScreen(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          setOnScreen(entry.isIntersecting);
+          if (entry.isIntersecting) setNear(true);
+        }
+      },
+      { rootMargin: "400px 0px" },
+    );
+    observer.observe(band);
+    return () => observer.disconnect();
+  }, []);
   const hasVideo = videoSources.length > 0 && !failed;
 
   const { scrollYProgress } = useScroll({ target: bandRef, offset: ["start end", "end start"] });
@@ -63,12 +88,12 @@ export function SkillsGap() {
     video.muted = true;
     video.defaultMuted = true;
     video.setAttribute("muted", "");
-    if (reduce || paused) {
+    if (reduce || paused || !onScreen) {
       video.pause();
     } else {
       video.play().catch(() => setPaused(true));
     }
-  }, [reduce, paused]);
+  }, [reduce, paused, onScreen]);
 
   return (
     <section aria-labelledby="skills-gap-title" className="bg-background py-16 lg:py-[calc(var(--s)*96)]">
@@ -84,19 +109,16 @@ export function SkillsGap() {
               <video
                 ref={videoRef}
                 className="size-full object-cover"
-                poster={videoPoster}
-                autoPlay
+                poster={near ? videoPoster : undefined}
                 muted
                 loop
                 playsInline
-                preload="metadata"
+                preload="none"
                 disablePictureInPicture
                 tabIndex={-1}
                 onError={() => setFailed(true)}
               >
-                {videoSources.map((source) => (
-                  <source key={source.src} src={source.src} type={source.type} />
-                ))}
+                {near ? videoSources.map((source) => <source key={source.src} src={source.src} type={source.type} />) : null}
               </video>
             ) : (
               <Image

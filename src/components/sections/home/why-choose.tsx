@@ -15,7 +15,7 @@ export function WhyChoose() {
   return (
     <section id="why-setuware" className="relative isolate overflow-hidden bg-[#0b0f2a] py-20 text-white lg:py-28">
       <div className="absolute inset-0 -z-10">
-        <HeroBackdrop sources={media.sources} poster={media.poster} tone="dark" />
+        <HeroBackdrop sources={media.sources} poster={media.poster} tone="dark" lazy />
       </div>
       <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(11,15,42,0.9)_0%,rgba(11,15,42,0.68)_45%,rgba(11,15,42,0.42)_100%)]" />
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(60rem_30rem_at_85%_0%,rgba(47,86,216,0.3),transparent)]" />

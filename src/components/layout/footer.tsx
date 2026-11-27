@@ -176,7 +176,7 @@ export async function Footer() {
             aria-labelledby="footer-cta-title"
             className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#0b1020] px-6 py-10 sm:px-10 md:py-14 lg:px-14"
           >
-            <HeroBackdrop sources={pageVideo("process").sources} poster={pageVideo("process").poster} tone="dark" />
+            <HeroBackdrop sources={pageVideo("process").sources} poster={pageVideo("process").poster} tone="dark" lazy />
             <div
               aria-hidden
               className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(11,16,32,0.92)_0%,rgba(11,16,32,0.75)_50%,rgba(11,16,32,0.55)_100%)]"
