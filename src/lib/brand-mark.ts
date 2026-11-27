@@ -2,7 +2,7 @@
  * The SW brand mark — the V3 ribbon (Nov 2026), drawn on a 100 x 100 grid.
  * The flat vector form of the mark, for contexts that need an SVG. The
  * favicon and app icons use the glossy ribbon raster instead
- * (`public/images/favicon-v3-glossy-512.png`): the flat SW read as a cheap
+ * (`public/images/favicon-v4-512.png`, src/app/icon.png, src/app/favicon.ico): the flat SW read as a cheap
  * redraw at icon sizes.
  *
  * The old ringed monogram (ring + circuit nodes around the SW) is gone: it

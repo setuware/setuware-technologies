@@ -14,10 +14,12 @@ export const contentType = "image/png";
  * The glossy ribbon art itself, not the flat vector mark: the flat SW read
  * as a cheap redraw at this size, and the ribbon is the picked brand art.
  * The file lives in public/ so the manifest can point at it too; this
- * route just serves it at 180 px.
+ * route just serves it at 180 px. favicon-v4 is the same ribbon on a
+ * full-bleed navy square with a brand-blue glow, sized to survive Google's
+ * circular search-result crop.
  */
 export default function AppleIcon() {
-  const png = readFileSync(join(process.cwd(), "public/images/favicon-v3-glossy-512.png"));
+  const png = readFileSync(join(process.cwd(), "public/images/favicon-v4-512.png"));
   return new ImageResponse(
     (
       <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#0b1020" }}>
