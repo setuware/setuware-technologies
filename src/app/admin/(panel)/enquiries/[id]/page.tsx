@@ -1,11 +1,13 @@
 import { notFound } from "next/navigation";
-import { CalendarClock, Phone } from "lucide-react";
+import { CalendarClock, Phone, Video } from "lucide-react";
+
+import { BOOKING, formatSlot, MEETING_MODES, type MeetingMode } from "@/lib/booking";
 
 import { listUsers, seesAll } from "@/lib/cms/auth";
 import { listTemplates, timeline } from "@/lib/cms/crm";
 import { requireUser } from "@/lib/cms/session";
 import { ENQUIRY_STATUSES, getEnquiry } from "@/lib/cms/store";
-import { AddNoteForm, EmailComposer, RecordPanel } from "@/components/admin/record-tools";
+import { AddNoteForm, EmailComposer, MeetingLinkForm, RecordPanel } from "@/components/admin/record-tools";
 import { LinkedTasks } from "@/components/admin/linked-tasks";
 import { Timeline } from "@/components/admin/timeline";
 import { Avatar, buttonClass, Card, formatWhen, PageHeader, StatusBadge } from "@/components/admin/ui";
@@ -23,6 +25,15 @@ export default async function EnquiryPage({ params }: { params: Promise<{ id: st
   const team = listUsers().filter((member) => member.active).map((member) => member.name);
   const templates = listTemplates("enquiry").map(({ id: templateId, name: templateName, subject, body }) => ({ id: templateId, name: templateName, subject, body }));
   const today = new Date().toISOString().slice(0, 10);
+  let booking: { slot: string; mode: string } | null = null;
+  if (item.kind === "booking") {
+    try {
+      const payload = JSON.parse(item.payload || "{}") as { slot?: unknown; mode?: unknown };
+      if (typeof payload.slot === "string" && !Number.isNaN(Date.parse(payload.slot))) {
+        booking = { slot: payload.slot, mode: typeof payload.mode === "string" && payload.mode in MEETING_MODES ? payload.mode : "video" };
+      }
+    } catch {}
+  }
   const overdue = item.follow_up_at && item.follow_up_at <= today && !["won", "lost", "spam"].includes(item.status);
 
   return (
@@ -82,6 +93,19 @@ export default async function EnquiryPage({ params }: { params: Promise<{ id: st
               ) : null}
             </div>
           </Card>
+
+          {booking ? (
+            <Card className="p-6">
+              <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                {booking.mode === "phone" ? <Phone className="size-4 text-primary" aria-hidden /> : <Video className="size-4 text-primary" aria-hidden />} Consultation
+              </h2>
+              <p className="mt-2 font-display text-lg font-semibold text-foreground">{formatSlot(booking.slot)}</p>
+              <p className="text-sm text-muted-foreground">
+                {MEETING_MODES[booking.mode as MeetingMode]} · {BOOKING.durationMin} minutes
+              </p>
+              {booking.mode !== "phone" && item.email ? <MeetingLinkForm id={item.id} to={item.email} /> : null}
+            </Card>
+          ) : null}
 
           <Card className="p-6">
             <h2 className="text-sm font-semibold text-foreground">Their message</h2>

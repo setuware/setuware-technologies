@@ -540,37 +540,97 @@ function migrate(db: Database): void {
     db.prepare("INSERT OR REPLACE INTO settings (key,value) VALUES ('roles_engineering_v1','true')").run();
   }
   const templates = (db.prepare("SELECT COUNT(*) AS n FROM email_templates").get() as { n: number }).n;
+  const insert = db.prepare("INSERT INTO email_templates (name,audience,subject,body,updated_at) VALUES (?,?,?,?,?)");
+  const now = new Date().toISOString();
   if (templates === 0) {
-    const insert = db.prepare("INSERT INTO email_templates (name,audience,subject,body,updated_at) VALUES (?,?,?,?,?)");
-    const now = new Date().toISOString();
     for (const [name, audience, subject, body] of DEFAULT_TEMPLATES) insert.run(name, audience, subject, body, now);
+    db.prepare("INSERT OR REPLACE INTO settings (key,value) VALUES ('email_templates_v2','true')").run();
+  }
+  // Rewritten templates (Nov 2026): replaces the first set where it was never edited, and adds the new ones once.
+  if (!db.prepare("SELECT 1 FROM settings WHERE key = 'email_templates_v2'").get()) {
+    for (const [name, body] of LEGACY_TEMPLATE_BODIES) db.prepare("DELETE FROM email_templates WHERE name = ? AND body = ?").run(name, body);
+    const has = db.prepare("SELECT 1 FROM email_templates WHERE name = ?");
+    for (const [name, audience, subject, body] of DEFAULT_TEMPLATES) if (!has.get(name)) insert.run(name, audience, subject, body, now);
+    db.prepare("INSERT OR REPLACE INTO settings (key,value) VALUES ('email_templates_v2','true')").run();
   }
 }
 
-const DEFAULT_TEMPLATES: [string, "enquiry" | "application", string, string][] = [
+/** The first set of templates, kept so an unedited copy can be replaced. */
+const LEGACY_TEMPLATE_BODIES: [string, string][] = [
   [
     "Thanks, let's schedule a call",
-    "enquiry",
-    "Your enquiry with Setuware Technologies",
     "Hi {{first_name}},\n\nThank you for getting in touch about {{service}}. I'd love to understand what you have in mind.\n\nCould you pick a 30-minute slot that suits you here: https://setuware.in/book\n\nIf you prefer, reply with two or three times and I'll send an invite.\n\nRegards,\n{{sender}}\nSetuware Technologies",
   ],
   [
     "Proposal follow-up",
-    "enquiry",
-    "Following up on your proposal",
     "Hi {{first_name}},\n\nI wanted to check whether you had a chance to review our proposal. Happy to walk through it on a quick call or adjust the scope.\n\nRegards,\n{{sender}}\nSetuware Technologies",
   ],
   [
     "Interview invitation",
-    "application",
-    "Interview: {{job}} at Setuware Technologies",
     "Hi {{first_name}},\n\nThank you for applying for the {{job}} role. We enjoyed reading your application and would like to invite you to a 45-minute interview.\n\nPlease reply with two or three times that work for you this week.\n\nRegards,\n{{sender}}\nSetuware Technologies",
+  ],
+  [
+    "Application update (not progressing)",
+    "Hi {{first_name}},\n\nThank you for your interest in the {{job}} role and for the time you put into your application. After careful review we will not be moving forward this time.\n\nWe will keep your details and get in touch if a suitable role opens up.\n\nRegards,\n{{sender}}\nSetuware Technologies",
+  ],
+];
+
+const SIGN_OFF = "Regards,\n{{sender}}\nSetuware Technologies\n+91 70912 98828 · setuware.in";
+
+const DEFAULT_TEMPLATES: [string, "enquiry" | "application", string, string][] = [
+  [
+    "First reply: book a consultation",
+    "enquiry",
+    "Your {{service}} enquiry: next steps",
+    `Hi {{first_name}},\n\nThank you for writing to us about {{service}}. I have read your message, and the quickest way to give you a clear scope and a fixed price is a 30-minute call.\n\nOn the call we will cover:\n- What you want the project to do for your business\n- The features you need at launch and the ones that can wait\n- Your timeline and budget range\n\nPick a time that suits you here: https://setuware.in/book\n\nIf none of the slots work, reply with two or three times and I will send you an invite.\n\n${SIGN_OFF}`,
+  ],
+  [
+    "Requirements: questions before the proposal",
+    "enquiry",
+    "A few questions about your {{service}} project",
+    `Hi {{first_name}},\n\nThank you for the details so far. To prepare an accurate proposal for {{service}}, I need a few more answers:\n\n- Who will use it, and roughly how many people?\n- Which features must be ready on day one?\n- Do you have a logo, brand colours and content, or should we prepare them?\n- Are there websites or apps you like that we should look at?\n- Is there a launch date we must meet?\n\nShort answers are enough. If it is easier to talk it through, pick a time here: https://setuware.in/book\n\n${SIGN_OFF}`,
+  ],
+  [
+    "Proposal sent",
+    "enquiry",
+    "Your proposal from Setuware Technologies",
+    `Hi {{first_name}},\n\nThank you for your time on the call. I have sent the proposal for {{service}} as a PDF in a separate email. It covers:\n\n- The scope: what is included and what is not\n- A fixed price with the payment milestones\n- The delivery timeline, week by week\n- Support after launch\n\nPlease read it and tell me if anything should change. Once you approve it, we can start as soon as the first milestone is paid.\n\n${SIGN_OFF}`,
+  ],
+  [
+    "Proposal follow-up",
+    "enquiry",
+    "Following up on your {{service}} proposal",
+    `Hi {{first_name}},\n\nI am following up on the proposal I sent for {{service}}. Have you had a chance to read it?\n\nIf the scope, the price or the timeline needs to change, tell me which part and I will send a revised version. I can also walk you through it on a short call: https://setuware.in/book\n\nIf the timing is not right at the moment, a one-line reply is enough and I will check back later.\n\n${SIGN_OFF}`,
+  ],
+  [
+    "Project kickoff",
+    "enquiry",
+    "Welcome aboard: starting your {{service}} project",
+    `Hi {{first_name}},\n\nThank you for choosing Setuware Technologies. Here is how the project will run:\n\n- Kickoff call: we confirm the scope, the milestones and who to contact on each side\n- Weekly updates: every week you receive a progress note and a staging link to review\n- Feedback: send your comments on each review, and we include them in the next week's work\n- Launch: we go live after your final approval and stay available for support\n\nTo begin, please send your logo, brand colours, any content you already have, and access to your domain or hosting if you own them.\n\n${SIGN_OFF}`,
+  ],
+  [
+    "Interview invitation",
+    "application",
+    "Interview for {{job}} at Setuware Technologies",
+    `Hi {{first_name}},\n\nThank you for applying for the {{job}} role. We have reviewed your application and would like to invite you to an interview.\n\nFormat: video call on Google Meet\nDuration: about 45 minutes\nWith: {{sender}}\n\nWe will talk about your recent work, how you approach a problem, and what the role involves day to day. Please keep one or two projects ready to show.\n\nReply with two or three times that suit you this week, and I will send a calendar invite with the link.\n\n${SIGN_OFF}`,
+  ],
+  [
+    "Practical exercise",
+    "application",
+    "Next step for {{job}}: a short practical exercise",
+    `Hi {{first_name}},\n\nThank you for speaking with us about the {{job}} role. The next step is a short practical exercise, so we can see how you work.\n\nI have sent the brief in a separate email. It should take two to three hours, and you have five days to send it back. Use the tools you normally work with, and add a short note on the decisions you made.\n\nIf anything in the brief is unclear, reply to this email and ask.\n\n${SIGN_OFF}`,
+  ],
+  [
+    "Offer",
+    "application",
+    "Offer: {{job}} at Setuware Technologies",
+    `Hi {{first_name}},\n\nWe are pleased to offer you the {{job}} role at Setuware Technologies.\n\nThe offer letter with your compensation, start date and terms follows in a separate email. Please read it carefully and reply with your acceptance, or with any questions.\n\nWe are looking forward to working with you.\n\n${SIGN_OFF}`,
   ],
   [
     "Application update (not progressing)",
     "application",
     "Your application for {{job}}",
-    "Hi {{first_name}},\n\nThank you for your interest in the {{job}} role and for the time you put into your application. After careful review we will not be moving forward this time.\n\nWe will keep your details and get in touch if a suitable role opens up.\n\nRegards,\n{{sender}}\nSetuware Technologies",
+    `Hi {{first_name}},\n\nThank you for applying for the {{job}} role and for the time you gave to your application. After reviewing it against what the role needs at present, we are not taking it forward.\n\nThis is a decision about this opening only. We will keep your details, and you are welcome to apply again when a role closer to your experience opens: https://setuware.in/careers\n\nWe wish you the best with your search.\n\n${SIGN_OFF}`,
   ],
 ];
 

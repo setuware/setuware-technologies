@@ -14,6 +14,9 @@ import Lenis from "lenis";
  */
 export function SmoothScroll() {
   const pathname = usePathname();
+  // The admin portal scrolls natively: Lenis takes over the wheel for the
+  // whole window, which stops the sidebar and other inner panels scrolling.
+  const admin = pathname?.startsWith("/admin") ?? false;
   const lenisRef = React.useRef<Lenis | null>(null);
   const historyNav = React.useRef(false);
   const firstRender = React.useRef(true);
@@ -50,7 +53,7 @@ export function SmoothScroll() {
   React.useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const coarse = window.matchMedia("(pointer: coarse)").matches;
-    if (reduce || coarse) return;
+    if (reduce || coarse || admin) return;
 
     // `scroll-behavior: smooth` on <html> fights Lenis; hand control to it.
     const html = document.documentElement;
@@ -78,7 +81,7 @@ export function SmoothScroll() {
       lenisRef.current = null;
       html.style.scrollBehavior = previous;
     };
-  }, []);
+  }, [admin]);
 
   return null;
 }

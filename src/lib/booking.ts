@@ -163,6 +163,10 @@ export interface InviteOptions {
   location: string;
   organizer: { name: string; email: string };
   attendee: { name: string; email: string };
+  /** Join link for a video call. */
+  url?: string;
+  /** Raise it when the same invite is sent again with changes, so calendars update the event. */
+  sequence?: number;
 }
 
 /** A calendar invitation (METHOD:REQUEST) that mail apps show with Add / Accept. */
@@ -183,10 +187,11 @@ export function buildInvite(options: InviteOptions): string {
     `SUMMARY:${icsText(options.summary)}`,
     `DESCRIPTION:${icsText(options.description)}`,
     `LOCATION:${icsText(options.location)}`,
+    ...(options.url ? [`URL:${options.url}`] : []),
     `ORGANIZER;CN=${icsText(options.organizer.name)}:mailto:${options.organizer.email}`,
     `ATTENDEE;CN=${icsText(options.attendee.name)};ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:${options.attendee.email}`,
     "STATUS:CONFIRMED",
-    "SEQUENCE:0",
+    `SEQUENCE:${options.sequence ?? 0}`,
     "BEGIN:VALARM",
     "TRIGGER:-PT15M",
     "ACTION:DISPLAY",

@@ -194,7 +194,7 @@ export function AdminShell({
     .join("");
 
   const nav = (
-    <nav aria-label="Admin sections" className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain px-3 pb-2 [scrollbar-color:rgba(255,255,255,0.22)_transparent] [scrollbar-width:thin]">
+    <nav aria-label="Admin sections" className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain px-3 pb-2 [scrollbar-color:rgba(255,255,255,0.38)_transparent] [scrollbar-gutter:stable] [scrollbar-width:thin]">
       {groups.map((group) => (
         <div key={group}>
           <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">{group}</p>

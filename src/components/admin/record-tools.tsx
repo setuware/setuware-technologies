@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { Mail, Send, Star } from "lucide-react";
 
-import { addNoteAction, sendEmailAction, updateRecordAction, type FormState } from "@/app/admin/actions";
+import { addNoteAction, sendEmailAction, sendMeetingLinkAction, updateRecordAction, type FormState } from "@/app/admin/actions";
 import { cn } from "@/lib/utils";
 
 import { FormMessage, SubmitButton } from "./form-bits";
@@ -203,6 +203,27 @@ export function EmailComposer({
         </button>
         <span className="ml-auto text-xs text-muted-foreground">Sent from your name; replies come to you.</span>
       </div>
+    </form>
+  );
+}
+
+/** Sends the join link for a booked video consultation. */
+export function MeetingLinkForm({ id, to }: { id: number; to: string }) {
+  const [state, action] = useActionState<FormState, FormData>(sendMeetingLinkAction, {});
+  return (
+    <form action={action} className="mt-4 flex flex-col gap-2">
+      <input type="hidden" name="id" value={id} />
+      <label htmlFor="meeting_url" className="text-xs font-medium text-muted-foreground">
+        Meeting link (Google Meet, Zoom or Teams)
+      </label>
+      <div className="flex flex-wrap gap-2">
+        <input id="meeting_url" name="meeting_url" type="url" required placeholder="https://meet.google.com/abc-defg-hij" className={`${inputClass} min-w-0 flex-1`} />
+        <SubmitButton pendingLabel="Sending…">
+          <Send className="size-4" aria-hidden /> Send link
+        </SubmitButton>
+      </div>
+      <FormMessage state={state} />
+      <p className="text-xs text-muted-foreground">Emails {to} the join link with an updated calendar invite.</p>
     </form>
   );
 }

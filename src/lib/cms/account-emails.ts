@@ -1,6 +1,6 @@
 import { randomInt } from "node:crypto";
 
-import type { EmailContent } from "@/lib/email-templates";
+import { buttons, detailCard, esc, paragraph, renderEmail, steps, type EmailContent } from "@/lib/email-kit";
 import { site } from "@/lib/site";
 
 /**
@@ -8,9 +8,6 @@ import { site } from "@/lib/site";
  * Table layout with inline styles so they render the same in Gmail, Outlook
  * and Apple Mail. Every value goes through `esc`.
  */
-
-const esc = (value: string) =>
-  value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
 
 const first = (name: string) => name.trim().split(/\s+/)[0] ?? name;
 const host = () => site.url.replace(/^https?:\/\//, "");
@@ -38,6 +35,7 @@ interface Row {
 interface Letter {
   subject: string;
   preheader: string;
+  tag?: string;
   heading: string;
   intro: string[];
   panel?: { title: string; rows: Row[] };
@@ -48,55 +46,29 @@ interface Letter {
 }
 
 function render(letter: Letter): EmailContent {
-  const P = "margin:0 0 14px;font:400 15px/1.65 Arial,sans-serif;color:#1f2937;";
-  const panel = letter.panel
-    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:6px 0 22px;background:#f4f7ff;border:1px solid #d6e0fb;border-radius:12px;">
-<tr><td style="padding:16px 20px 6px;font:700 11px/1 Arial,sans-serif;letter-spacing:.14em;color:#2f56d8;">${esc(letter.panel.title.toUpperCase())}</td></tr>
-${letter.panel.rows
-  .map(
-    (row) => `<tr><td style="padding:8px 20px;"><div style="font:400 12px/1.4 Arial,sans-serif;color:#64748b;">${esc(row.label)}</div><div style="margin-top:2px;font:${row.mono ? "700 17px/1.4 'Courier New',Courier,monospace;letter-spacing:.04em" : "700 15px/1.45 Arial,sans-serif"};color:#0b1020;word-break:break-all;">${esc(row.value)}</div></td></tr>`,
-  )
-  .join("\n")}
-<tr><td style="padding:0 0 10px;"></td></tr></table>`
-    : "";
-  const button = letter.button
-    ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:4px 0 22px;"><tr><td bgcolor="#2f56d8" style="border-radius:999px;"><a href="${esc(letter.button.url)}" style="display:inline-block;padding:13px 26px;font:700 14px/1 Arial,sans-serif;color:#ffffff;text-decoration:none;border-radius:999px;">${esc(letter.button.label)} &rarr;</a></td></tr></table>`
-    : "";
-  const steps = letter.steps
-    ? `<div style="margin:0 0 10px;font:700 14px/1.4 Arial,sans-serif;color:#0b1020;">${esc(letter.steps.title)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 18px;">
-${letter.steps.items
-  .map(
-    (item, index) => `<tr><td valign="top" style="width:30px;padding:0 0 10px;"><div style="width:22px;height:22px;border-radius:999px;background:#2f56d8;color:#ffffff;font:700 12px/22px Arial,sans-serif;text-align:center;">${index + 1}</div></td><td style="padding:1px 0 10px;font:400 14px/1.6 Arial,sans-serif;color:#1f2937;">${esc(item)}</td></tr>`,
-  )
-  .join("\n")}
-</table>`
-    : "";
-
-  const html = `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"><title>${esc(letter.subject)}</title></head>
-<body bgcolor="#eef2f8" style="margin:0;padding:0;background:#eef2f8;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(letter.preheader)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#eef2f8" style="background:#eef2f8;"><tr><td align="center" style="padding:28px 12px;">
-<table role="presentation" width="580" cellpadding="0" cellspacing="0" style="width:580px;max-width:100%;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e3e8f0;">
-<tr><td bgcolor="#0b1a3a" style="padding:26px 30px;background:#0b1a3a;background-image:linear-gradient(135deg,#0b1a3a 0%,#1d3a8f 60%,#2f56d8 100%);">
-<table role="presentation" cellpadding="0" cellspacing="0"><tr>
-<td style="width:42px;height:42px;background:#ffffff;border-radius:11px;text-align:center;"><img src="${esc(site.url)}/apple-icon" width="42" height="42" alt="SW" style="display:block;border:0;border-radius:11px;"></td>
-<td style="padding-left:12px;"><div style="font:800 18px/1 Arial,sans-serif;letter-spacing:.06em;color:#ffffff;">SETUWARE</div><div style="margin-top:6px;font:700 10px/1 Arial,sans-serif;letter-spacing:.28em;color:#c7d4f5;">TECHNOLOGIES</div></td>
-</tr></table>
-<div style="margin-top:22px;font:700 23px/1.3 Arial,sans-serif;color:#ffffff;">${esc(letter.heading)}</div>
-</td></tr>
-<tr><td style="padding:28px 30px 8px;">
-${letter.intro.map((line) => `<p style="${P}">${esc(line)}</p>`).join("\n")}
-${panel}
-${button}
-${steps}
-${(letter.outro ?? []).map((line) => `<p style="${P}">${esc(line)}</p>`).join("\n")}
-</td></tr>
-<tr><td style="padding:0 30px 26px;"><p style="margin:0;padding-top:16px;border-top:1px solid #eef1f5;font:400 14px/1.6 Arial,sans-serif;color:#111827;">Regards,<br>${esc(letter.from)}<br><span style="color:#64748b;">${esc(site.name)}</span></p></td></tr>
-</table>
-<p style="margin:14px 0 0;font:400 12px/1.6 Arial,sans-serif;color:#64748b;">${esc(site.name)} · <a href="${esc(site.url)}" style="color:#64748b;">${esc(host())}</a><br>This email was sent to you because an account was created for you in the ${esc(site.name)} admin.</p>
-</td></tr></table></body></html>`;
+  const html = renderEmail({
+    subject: letter.subject,
+    preheader: letter.preheader,
+    tag: letter.tag,
+    heading: letter.heading,
+    blocks: [
+      ...letter.intro.map((line) => paragraph(esc(line))),
+      letter.panel
+        ? detailCard(
+            letter.panel.title,
+            letter.panel.rows.map((row) => ({
+              label: row.label,
+              html: row.mono ? `<span style="font:700 17px/1.4 'Courier New',Courier,monospace;letter-spacing:.04em;">${esc(row.value)}</span>` : esc(row.value),
+            })),
+          )
+        : "",
+      letter.button ? buttons([{ url: letter.button.url, label: letter.button.label }]) : "",
+      letter.steps ? steps(letter.steps.title, letter.steps.items.map(esc)) : "",
+      ...(letter.outro ?? []).map((line) => paragraph(esc(line))),
+    ],
+    signature: { name: letter.from, role: site.name },
+    reason: `This email was sent to you because an account was created for you in the ${site.name} admin.`,
+  });
 
   const text = [
     letter.heading,
@@ -122,6 +94,7 @@ export function credentialsEmail(member: NewMember, password: string, from: stri
   return render({
     subject: `Your ${site.name} admin login details`,
     preheader: `Sign in at ${host()}/admin with the temporary password inside.`,
+    tag: "Team account",
     heading: "Your login details",
     intro: [
       `Hi ${first(member.name)},`,
@@ -149,6 +122,7 @@ export function inviteEmail(member: NewMember, url: string, from: string): Email
   return render({
     subject: `${from} invited you to the ${site.name} admin`,
     preheader: "Choose your password to activate your account. The link expires in 3 days.",
+    tag: "Invitation",
     heading: "Set up your account",
     intro: [
       `Hi ${first(member.name)},`,
@@ -184,6 +158,7 @@ export function welcomeEmail(member: WelcomeDetails, from: string): EmailContent
   return render({
     subject: `Welcome to ${site.name}, ${first(member.name)}`,
     preheader: "Your role, your team and what to do on your first day.",
+    tag: "Welcome",
     heading: `Welcome to the team, ${first(member.name)}`,
     intro: [
       `Hi ${first(member.name)},`,
