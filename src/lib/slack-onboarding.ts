@@ -1,6 +1,6 @@
 import { can, listUsers, type AdminUser } from "./cms/auth";
 import { getDb } from "./cms/db";
-import { adminUrl, card, SLACK_CHANNELS, slackApi, slackChannelTarget, slackConfigured, type SlackChannel } from "./slack";
+import { adminUrl, card, slackApi, slackChannelTarget, slackConfigured, type SlackChannel } from "./slack";
 
 /**
  * Slack onboarding and offboarding. Every cron run looks up team members not
@@ -82,43 +82,49 @@ async function welcome(slackUser: string, user: AdminUser, channels: string[]): 
 interface Link {
   slack: string;
   at: string;
-  channels: string[];
+  channels: Held[];
 }
 
-function resolve(channels: readonly SlackChannel[]): Set<string> {
-  const ids = new Set<string>();
-  for (const channel of channels) {
-    const target = slackChannelTarget(channel);
+/** A channel the member is in, and the website channel it was granted for. */
+interface Held {
+  id: string;
+  key: SlackChannel;
+}
+
+function wantedChannels(user: AdminUser | undefined): Held[] {
+  if (!user?.active) return [];
+  const held: Held[] = [];
+  for (const key of channelsFor(user)) {
+    const target = slackChannelTarget(key);
     const id = target ? channelId(target) : null;
-    if (id) ids.add(id);
+    if (id && !held.some((item) => item.id === id)) held.push({ id, key });
   }
-  return ids;
-}
-
-function wantedChannels(user: AdminUser | undefined): Set<string> {
-  return user?.active ? resolve(channelsFor(user)) : new Set();
+  return held;
 }
 
 /**
- * Brings one member's channels in line with what they should see; returns the
- * channels they are in now. While the account is active, only channels the
- * site still manages are removed, so muting a channel (`off`) or renaming a
- * setting doesn't take people out of it.
+ * Brings one member's channels in line with their permissions; returns the
+ * channels they are in now. Removal goes by the permission each channel was
+ * granted for, so a muted (`off`) or re-pointed channel setting still takes
+ * away access from someone who lost the permission, and never from someone
+ * who kept it.
  */
-async function reconcile(slackUser: string, current: string[], wanted: Set<string>, managed: Set<string> | null): Promise<string[]> {
-  const now = new Set(current);
-  for (const id of wanted) {
-    if (now.has(id)) continue;
-    const invited = await slackApi("conversations.invite", { channel: id, users: slackUser });
-    if (invited?.ok || invited?.error === "already_in_channel") now.add(id);
+async function reconcile(slackUser: string, current: Held[], wanted: Held[], allowed: ReadonlySet<SlackChannel>): Promise<Held[]> {
+  const held = [...current];
+  for (const item of wanted) {
+    if (held.some((existing) => existing.id === item.id)) continue;
+    const invited = await slackApi("conversations.invite", { channel: item.id, users: slackUser });
+    if (invited?.ok || invited?.error === "already_in_channel") held.push(item);
   }
-  for (const id of current) {
-    if (wanted.has(id) || (managed && !managed.has(id))) continue;
-    const removed = await slackApi("conversations.kick", { channel: id, user: slackUser });
-    if (removed?.ok || removed?.error === "not_in_channel") now.delete(id);
+  for (const item of current) {
+    if (allowed.has(item.key) || held.some((other) => other.id === item.id && allowed.has(other.key))) continue;
+    const removed = await slackApi("conversations.kick", { channel: item.id, user: slackUser });
+    if (removed?.ok || removed?.error === "not_in_channel") held.splice(held.indexOf(item), 1);
   }
-  return [...now];
+  return held;
 }
+
+const allowedFor = (user: AdminUser | undefined): Set<SlackChannel> => new Set(user?.active ? channelsFor(user) : []);
 
 let lookupOffset = 0;
 
@@ -139,16 +145,17 @@ export async function syncSlackMembers(now: Date = new Date()): Promise<number> 
   const users = listUsers();
   const byId = new Map(users.map((user) => [user.id, user]));
   if (!(await loadChannels())) return 0;
-  const managed = resolve(Object.keys(SLACK_CHANNELS) as SlackChannel[]);
   let changed = 0;
 
   for (const [id, link] of links) {
     const user = byId.get(id);
     const wanted = wantedChannels(user);
-    const scope = user?.active ? managed : null;
-    if ([...wanted].every((channel) => link.channels.includes(channel)) && link.channels.every((channel) => wanted.has(channel) || (scope && !scope.has(channel)))) continue;
-    const channels = await reconcile(link.slack, link.channels, wanted, scope);
-    if (channels.length === link.channels.length && channels.every((channel) => link.channels.includes(channel))) continue;
+    const allowed = allowedFor(user);
+    const missing = wanted.some((item) => !link.channels.some((held) => held.id === item.id));
+    const revoked = link.channels.some((held) => !allowed.has(held.key));
+    if (!missing && !revoked) continue;
+    const channels = await reconcile(link.slack, link.channels, wanted, allowed);
+    if (channels.length === link.channels.length && channels.every((item, index) => item === link.channels[index])) continue;
     save.run(`${MARK}${id}`, JSON.stringify({ ...link, channels }));
     changed += 1;
   }
@@ -160,11 +167,11 @@ export async function syncSlackMembers(now: Date = new Date()): Promise<number> 
   for (const user of batch) {
     const found = await slackApi<{ user?: { id: string } }>("users.lookupByEmail", { email: user.email });
     if (!found?.ok || !found.user) continue;
-    const channels = await reconcile(found.user.id, [], wantedChannels(user), managed);
+    const channels = await reconcile(found.user.id, [], wantedChannels(user), allowedFor(user));
     save.run(`${MARK}${user.id}`, JSON.stringify({ slack: found.user.id, at: now.toISOString(), channels }));
     changed += 1;
     if (now.getTime() - Date.parse(user.created_at) < WELCOME_WITHIN_MS) {
-      await welcome(found.user.id, user, channels.map((channel) => `<#${channel}>`));
+      await welcome(found.user.id, user, channels.map((channel) => `<#${channel.id}>`));
     }
   }
   return changed;

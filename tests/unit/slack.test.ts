@@ -133,38 +133,52 @@ describe("slack onboarding", () => {
     expect(channelsFor({ permissions: ["enquiries.view", "enquiries.all", "applications.all"] })).toEqual(["team", "announcements", "wins", "leads", "hiring"]);
   });
 
-  it("adds a member who joined Slack to their channels once, then welcomes them", async () => {
-    const user = await createUser({ email: "joiner@setuware.test", name: "New Joiner", role: "intern" });
-    const calls: string[] = [];
+  it("adds a member who joined Slack to their channels once, then follows their permissions", async () => {
+    const user = await createUser({ email: "joiner@setuware.test", name: "New Joiner", role: "hr" });
+    const calls: { method: string; channel: string | null }[] = [];
+    const count = (method: string) => calls.filter((call) => call.method === method).length;
     fetchMock.mockImplementation(async (url: string, init: RequestInit) => {
       const method = url.split("/").pop() ?? "";
-      calls.push(method);
       const params = new URLSearchParams(init.body as URLSearchParams);
+      calls.push({ method, channel: params.get("channel") });
       const reply: Record<string, unknown> = { ok: true };
       if (method === "users.lookupByEmail") {
         if (params.get("email") !== user.email) return new Response(JSON.stringify({ ok: false, error: "users_not_found" }));
         reply.user = { id: "U1" };
       }
-      if (method === "conversations.list") reply.channels = [{ id: "C1", name: "team-ops" }, { id: "C2", name: "announcements" }, { id: "C3", name: "wins" }];
+      if (method === "conversations.list") {
+        reply.channels = [
+          { id: "C1", name: "team-ops" },
+          { id: "C2", name: "announcements" },
+          { id: "C3", name: "wins" },
+          { id: "C4", name: "hiring" },
+        ];
+      }
       if (method === "conversations.open") reply.channel = { id: "D1" };
       return new Response(JSON.stringify(reply));
     });
     expect(await syncSlackMembers()).toBe(1);
-    expect(calls.filter((method) => method === "conversations.invite")).toHaveLength(3);
-    expect(calls).toContain("chat.postMessage");
+    expect(count("conversations.invite")).toBe(4);
+    expect(count("chat.postMessage")).toBe(1);
+
     calls.length = 0;
     expect(await syncSlackMembers()).toBe(0);
-    expect(calls).not.toContain("conversations.invite");
+    expect(count("conversations.invite")).toBe(0);
 
     process.env.SLACK_CHANNEL_WINS = "off";
-    calls.length = 0;
+    process.env.SLACK_CHANNEL_HIRING = "off";
     expect(await syncSlackMembers()).toBe(0);
-    expect(calls).not.toContain("conversations.kick");
-    delete process.env.SLACK_CHANNEL_WINS;
+    expect(count("conversations.kick")).toBe(0);
 
-    updateUser(user.id, { active: false });
-    calls.length = 0;
+    updateUser(user.id, { role: "intern" });
     expect(await syncSlackMembers()).toBe(1);
-    expect(calls.filter((method) => method === "conversations.kick")).toHaveLength(3);
+    expect(calls.filter((call) => call.method === "conversations.kick").map((call) => call.channel)).toEqual(["C4"]);
+    delete process.env.SLACK_CHANNEL_WINS;
+    delete process.env.SLACK_CHANNEL_HIRING;
+
+    calls.length = 0;
+    updateUser(user.id, { active: false });
+    expect(await syncSlackMembers()).toBe(1);
+    expect(count("conversations.kick")).toBe(3);
   });
 });
