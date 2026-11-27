@@ -186,12 +186,15 @@ async function setup() {
     };
     const pins = await api("pins.list", { channel: channel.id });
     const guidePin = (pins.items ?? []).find((item) => item.message?.user === me.user_id && item.message?.text?.startsWith("Channel guide"));
-    if (guidePin) {
-      if (JSON.stringify(guidePin.message.blocks?.map((b) => b.text?.text ?? "")) !== JSON.stringify(message.blocks.map((b) => b.text?.text ?? "")))
-        await api("chat.update", { ...message, ts: guidePin.message.ts });
-    } else {
+    const stale = guidePin && JSON.stringify(guidePin.message.blocks?.map((b) => b.text?.text ?? "")) !== JSON.stringify(message.blocks.map((b) => b.text?.text ?? ""));
+    const updated = stale ? (await api("chat.update", { ...message, ts: guidePin.message.ts })).ok : false;
+    if (!guidePin || (stale && !updated)) {
+      // No guide yet, or the old one can no longer be edited: pin a fresh one in its place.
       const posted = await api("chat.postMessage", message);
-      if (posted.ok) await api("pins.add", { channel: channel.id, timestamp: posted.ts });
+      if (posted.ok) {
+        await api("pins.add", { channel: channel.id, timestamp: posted.ts });
+        if (guidePin) await api("pins.remove", { channel: channel.id, timestamp: guidePin.message.ts });
+      }
     }
     console.log(`✓ ${key}: #${channel.name} ready`);
   }
