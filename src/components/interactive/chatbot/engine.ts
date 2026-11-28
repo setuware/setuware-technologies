@@ -85,6 +85,8 @@ export interface BotReply {
   startLead?: boolean;
   /** The service this reply is about, so "how much?" next is answered for it. */
   service?: ServiceKey;
+  /** The knowledge base had no confident answer; the panel may ask the server. */
+  fallback?: boolean;
 }
 
 /** What the conversation is currently about. */
@@ -133,7 +135,7 @@ const FOLLOW_UP_CHIPS: readonly Chip[] = [
 ];
 
 export const GREETING: BotReply = {
-  text: "Hello. Ask me anything about our services, pricing, timelines or past projects. I answer instantly, and our team is one tap away whenever you need a person.",
+  text: "Ask about our services, prices, timelines or past work. Our team is one tap away.",
   chips: [...MENU_CHIPS],
 };
 
@@ -879,6 +881,7 @@ export function faqReply(index: number): BotReply {
 export function fallbackReply(related: readonly string[] = []): BotReply {
   if (related.length > 0) {
     return {
+      fallback: true,
       text: "I do not have a confident answer to that yet. I can connect you with our team, or you may find one of these related questions helpful.",
       chips: [
         ...related.map((question) => ({ label: question, action: { kind: "ask", text: question } as const })),
@@ -888,6 +891,7 @@ export function fallbackReply(related: readonly string[] = []): BotReply {
     };
   }
   return {
+    fallback: true,
     text: "I am not certain I have understood that correctly. I can connect you with our team, who will be glad to help, or you can choose one of the topics below.",
     chips: [
       { label: "Book a free call", action: { kind: "intent", intent: "book-call" } },

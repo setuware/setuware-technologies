@@ -13,9 +13,6 @@ import {
   Clock,
   IndianRupee,
   Loader2,
-  Mail,
-  MessageCircle,
-  Phone,
   RotateCcw,
   X,
   type LucideIcon,
@@ -138,12 +135,15 @@ const STARTERS: readonly { icon: LucideIcon; title: string; body: string; intent
   { icon: CalendarCheck, title: "Free call", body: "30 minutes with our team", intent: "book-call" },
 ];
 
-const POPULAR = [
-  "Do you sign an NDA?",
-  "Who owns the website and code?",
-  "How are payments structured?",
-  "Which technologies do you use?",
+const POPULAR = ["Do you sign an NDA?", "Who owns the code?", "Payment terms?"];
+
+const AI_CHIPS: readonly Chip[] = [
+  { label: "Book a free call", action: { kind: "intent", intent: "book-call" } },
+  { label: "Talk on WhatsApp", action: { kind: "intent", intent: "whatsapp" } },
 ];
+
+/** More than three suggestions reads as a menu, not a conversation. */
+const MAX_CHIPS = 3;
 
 const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu";
 
@@ -173,6 +173,8 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const timers = useRef<number[]>([]);
+  /** Bumped on restart so a late server answer is not added to a fresh conversation. */
+  const generation = useRef(0);
 
   useScrollLock(open && isMobile);
 
@@ -234,7 +236,24 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
     if (!question || typing) return;
     append(userMessage(label.trim()));
     setDraft("");
-    respond(replyTo(question, context));
+    const local = replyTo(question, context);
+    if (!local.fallback) {
+      respond(local);
+      return;
+    }
+    // Nothing confident in the knowledge base: ask the server, which answers
+    // from the same site content, and keep the local reply as the fallback.
+    const turn = generation.current;
+    const recent = messages.slice(-6);
+    const firstUser = recent.findIndex((message) => message.role === "user");
+    const history = firstUser < 0 ? [] : recent.slice(firstUser).map((message) => ({ role: message.role, text: message.text.slice(0, 1000) }));
+    setTyping(true);
+    void postJson<{ answer: string | null }>("/api/assistant", { question, history }, { timeoutMs: 15_000 }).then((result) => {
+      if (generation.current !== turn) return;
+      setTyping(false);
+      const answer = result.ok ? result.data.answer : null;
+      append(botMessage(answer ? { text: answer, chips: [...AI_CHIPS] } : local));
+    });
   };
 
   const handleChip = (chip: Chip) => {
@@ -272,6 +291,7 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
   };
 
   const restart = () => {
+    generation.current += 1;
     timers.current.forEach((timer) => window.clearTimeout(timer));
     timers.current = [];
     setTyping(false);
@@ -307,7 +327,7 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
 
   const welcome = messages.length === 1 && messages[0].role === "bot" && !lead;
   const last = messages[messages.length - 1];
-  const chips = !typing && !lead && !welcome && last?.role === "bot" ? (last.chips ?? []) : [];
+  const chips = !typing && !lead && !welcome && last?.role === "bot" ? (last.chips ?? []).slice(0, MAX_CHIPS) : [];
 
   const hidden = reduce
     ? { opacity: 0, transitionEnd: { visibility: "hidden" as const } }
@@ -335,15 +355,7 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
       )}
     >
       {/* Header */}
-      <div className="relative shrink-0 overflow-hidden bg-[#0b1020] px-4 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] text-white sm:pt-4">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_160%_at_100%_0%,rgba(47,86,216,0.95)_0%,rgba(28,47,120,0.75)_38%,rgba(11,16,32,0)_75%)]"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -left-10 -top-16 size-40 rounded-full bg-cyan-400/20 blur-3xl"
-        />
+      <div className="relative shrink-0 overflow-hidden border-b border-white/10 bg-[#0b1020] px-4 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] text-white sm:pt-4">
         <div className="relative flex items-center gap-3">
           <AssistantAvatar className="size-11 rounded-2xl" online={online} />
           <div className="min-w-0 flex-1">
@@ -409,7 +421,7 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
                 type="button"
                 onClick={() => handleChip(chip)}
                 className={cn(
-                  "rounded-full border border-setu/25 bg-setu/[0.06] px-3.5 py-1.5 text-[13px] font-medium text-setu transition-colors hover:border-setu/50 hover:bg-setu/10",
+                  "rounded-full border border-border bg-surface px-3.5 py-1.5 text-[13px] font-medium text-foreground/85 transition-colors hover:border-setu/50 hover:text-setu",
                   chip.action.kind === "ask" && "text-left",
                   focusRing,
                 )}
@@ -429,7 +441,7 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
         }}
         className="shrink-0 border-t border-border bg-surface px-3 pb-[calc(0.625rem+env(safe-area-inset-bottom))] pt-3 sm:pb-3"
       >
-        <div className="flex items-center gap-2 rounded-2xl border border-border bg-background py-1.5 pl-4 pr-1.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[border-color,box-shadow] focus-within:border-setu/50 focus-within:shadow-[0_0_0_4px_rgba(47,86,216,0.12)]">
+        <div className="flex items-center gap-2 rounded-2xl border border-border bg-background py-1.5 pl-4 pr-1.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[border-color,box-shadow] focus-within:border-setu/50">
           <label htmlFor="setuware-assistant-input" className="sr-only">
             Message {ASSISTANT_NAME}
           </label>
@@ -448,7 +460,7 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
             type="submit"
             disabled={typing || draft.trim().length === 0}
             className={cn(
-              "inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#2f56d8,#1c2f78)] text-white shadow-[0_6px_16px_-6px_rgba(47,86,216,0.7)] transition-[opacity,transform] hover:opacity-90 active:scale-95 disabled:opacity-30 disabled:shadow-none",
+              "inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-setu text-white transition-[opacity,transform] hover:opacity-90 active:scale-95 disabled:opacity-30",
               focusRing,
             )}
             aria-label="Send message"
@@ -456,9 +468,6 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
             <ArrowUp className="size-[18px]" aria-hidden />
           </button>
         </div>
-        <p className="mt-2 text-center text-[11px] text-muted-foreground">
-          Instant answers · Our team is one tap away
-        </p>
       </form>
     </motion.div>
   );
@@ -500,89 +509,64 @@ function Welcome({
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{greeting}</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-2.5">
+      <ul className="overflow-hidden rounded-2xl border border-border bg-surface">
         {STARTERS.map((starter) => (
+          <li key={starter.title} className="border-b border-border last:border-b-0">
+            <button
+              type="button"
+              onClick={() => onStarter(starter)}
+              className={cn(
+                "group flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-setu/[0.05]",
+                focusRing,
+              )}
+            >
+              <starter.icon className="size-[18px] shrink-0 text-setu" aria-hidden />
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-medium text-foreground">{starter.title}</span>
+                <span className="block text-xs text-muted-foreground">{starter.body}</span>
+              </span>
+              <ChevronRight
+                className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-setu"
+                aria-hidden
+              />
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      <div className="flex flex-wrap gap-2">
+        {POPULAR.map((question) => (
           <button
-            key={starter.title}
+            key={question}
             type="button"
-            onClick={() => onStarter(starter)}
+            onClick={() => onAsk(question)}
             className={cn(
-              "group flex flex-col items-start gap-2.5 rounded-2xl border border-border bg-surface p-3.5 text-left shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[border-color,box-shadow,translate] hover:border-setu/40 hover:shadow-[0_10px_24px_-14px_rgba(47,86,216,0.55)] motion-safe:hover:-translate-y-0.5",
+              "rounded-full border border-border bg-surface px-3.5 py-1.5 text-[13px] text-foreground/85 transition-colors hover:border-setu/50 hover:text-setu",
               focusRing,
             )}
           >
-            <span className="inline-flex size-9 items-center justify-center rounded-xl bg-setu/10 text-setu ring-1 ring-inset ring-setu/15 transition-colors group-hover:bg-setu group-hover:text-white">
-              <starter.icon className="size-[18px]" aria-hidden />
-            </span>
-            <span>
-              <span className="block text-sm font-semibold text-foreground">{starter.title}</span>
-              <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{starter.body}</span>
-            </span>
+            {question}
           </button>
         ))}
       </div>
 
-      <div>
-        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-          Popular questions
-        </p>
-        <ul className="overflow-hidden rounded-2xl border border-border bg-surface">
-          {POPULAR.map((question) => (
-            <li key={question} className="border-b border-border last:border-b-0">
-              <button
-                type="button"
-                onClick={() => onAsk(question)}
-                className={cn(
-                  "group flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm text-foreground/90 transition-colors hover:bg-setu/[0.05] hover:text-foreground",
-                  focusRing,
-                )}
-              >
-                {question}
-                <ChevronRight
-                  className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-setu"
-                  aria-hidden
-                />
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div>
-        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-          Prefer a person?
-        </p>
-        <div className="grid grid-cols-3 gap-2">
-          <ContactTile href={whatsappHref} icon={MessageCircle} label="WhatsApp" newTab />
-          <ContactTile href={site.phoneHref} icon={Phone} label="Call" />
-          <ContactTile href={`mailto:${site.salesEmail}`} icon={Mail} label="Email" />
-        </div>
-      </div>
+      <p className="text-[13px] text-muted-foreground">
+        Prefer a person?{" "}
+        <ContactLink href={whatsappHref} label="WhatsApp" newTab /> ·{" "}
+        <ContactLink href={site.phoneHref} label="Call" /> ·{" "}
+        <ContactLink href={`mailto:${site.salesEmail}`} label="Email" />
+      </p>
     </div>
   );
 }
 
-function ContactTile({
-  href,
-  icon: Icon,
-  label,
-  newTab,
-}: {
-  href: string;
-  icon: LucideIcon;
-  label: string;
-  newTab?: boolean;
-}) {
+function ContactLink({ href, label, newTab }: { href: string; label: string; newTab?: boolean }) {
   return (
     <a
       href={href}
       {...(newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      className={cn(
-        "flex items-center justify-center gap-1.5 rounded-xl border border-border bg-surface px-2 py-2.5 text-[13px] font-medium text-foreground/85 transition-colors hover:border-setu/40 hover:text-setu",
-        focusRing,
-      )}
+      className={cn("font-medium text-setu underline-offset-4 hover:underline", focusRing)}
     >
-      <Icon className="size-4" aria-hidden />
       {label}
       {newTab ? <span className="sr-only"> (opens in a new tab)</span> : null}
     </a>
@@ -646,12 +630,15 @@ function Bubble({
 }) {
   const isBot = message.role === "bot";
   const time = timeFormat.format(message.at);
+  // A card already links to its page; a second button to the same page is noise.
+  const cardHrefs = new Set(message.cards?.map((card) => card.href));
+  const links = (message.links ?? []).filter((link) => !cardHrefs.has(link.href));
 
   if (!isBot) {
     return (
       <div data-message="user" className="flex flex-col items-end">
         <span className="sr-only">You said:</span>
-        <p className="max-w-[85%] whitespace-pre-line break-words rounded-[20px] rounded-br-md bg-[linear-gradient(135deg,#2f56d8,#2448c0)] px-4 py-2.5 text-sm leading-relaxed text-white shadow-[0_8px_20px_-12px_rgba(47,86,216,0.8)]">
+        <p className="max-w-[85%] whitespace-pre-line break-words rounded-[20px] rounded-br-md bg-setu px-4 py-2.5 text-sm leading-relaxed text-white">
           {message.text}
         </p>
         <time className="mt-1 pr-1 text-[10px] text-muted-foreground" dateTime={new Date(message.at).toISOString()}>
@@ -675,9 +662,9 @@ function Bubble({
           )}
         >
           <RichText text={message.text} />
-          {message.links && message.links.length > 0 ? (
+          {links.length > 0 ? (
             <div className="mt-3 flex flex-wrap gap-1.5">
-              {message.links.map((link) => (
+              {links.map((link) => (
                 <MessageLink key={link.href} link={link} onNavigate={onNavigate} />
               ))}
             </div>

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { MARK_PATHS } from "@/lib/brand-mark";
 import { cn } from "@/lib/utils";
 
@@ -11,25 +13,21 @@ export function AssistantMark({ className }: { className?: string }) {
   );
 }
 
-/**
- * Assistant avatar: the white SW mark on a navy-to-brand-blue tile, so it stays
- * legible from 24px message avatars to the 56px launcher.
- */
+/** The glossy SW ribbon icon: the same art as the favicon, so the assistant reads as Setuware. */
+export const ASSISTANT_ICON = "/images/favicon-v4-512.png";
+
+/** Assistant avatar: the brand icon, with an optional online/away dot. */
 export function AssistantAvatar({ className, online }: { className?: string; online?: boolean }) {
   return (
     <span
       aria-hidden
-      className={cn(
-        "relative inline-flex size-8 shrink-0 items-center justify-center rounded-[30%] text-white",
-        "bg-[linear-gradient(135deg,#0b1020_0%,#1c2f78_55%,#2f56d8_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12),0_4px_12px_-4px_rgba(47,86,216,0.55)]",
-        className,
-      )}
+      className={cn("relative inline-flex size-8 shrink-0 rounded-[30%] ring-1 ring-white/10", className)}
     >
-      <AssistantMark className="w-[62%]" />
+      <Image src={ASSISTANT_ICON} alt="" width={96} height={96} className="size-full rounded-[inherit] object-cover" />
       {online !== undefined ? (
         <span
           className={cn(
-            "absolute -bottom-0.5 -right-0.5 size-[30%] min-h-2 min-w-2 rounded-full ring-2 ring-[#0b1020]",
+            "absolute -bottom-0.5 -right-0.5 size-[28%] min-h-2 min-w-2 rounded-full ring-2 ring-[#0b1020]",
             online ? "bg-emerald-400" : "bg-amber-400",
           )}
         />
