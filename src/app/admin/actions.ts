@@ -621,12 +621,15 @@ export async function startTwoFactorAction(): Promise<void> {
 
 export async function confirmTwoFactorAction(_previous: FormState, form: FormData): Promise<FormState> {
   const user = await requireUser(undefined, { allowPasswordChange: true, allowTwoFactorSetup: true });
+  const currentToken = (await cookies()).get(SESSION_COOKIE)?.value;
+  if (!currentToken) return { error: "Your session expired. Sign in again and restart setup." };
   const row = getDb().prepare("SELECT totp_secret FROM users WHERE id = ?").get(user.id) as { totp_secret: string | null };
   if (!row.totp_secret) return { error: "Start the setup again." };
   const codes = enableTwoFactor(user.id, row.totp_secret, text(form, "code", 10));
   if (!codes) return { error: "That code is not correct. Check the time on your phone and try the newest code." };
+  revokeOtherSessions(user.id, currentToken);
   audit(user.name, "turned on 2-step verification", "account", user.email);
-  return { ok: "2-step verification is on.", codes };
+  return { ok: "2-step verification is on. Other devices have been signed out.", codes };
 }
 
 export async function disableTwoFactorAction(_previous: FormState, form: FormData): Promise<FormState> {

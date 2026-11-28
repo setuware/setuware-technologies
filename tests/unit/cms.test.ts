@@ -21,6 +21,7 @@ import {
   newTotpSecret,
   passwordProblem,
   pendingTwoFactor,
+  revokeOtherSessions,
   signIn,
   signOut,
   totpCode,
@@ -190,6 +191,20 @@ describe("admin auth", () => {
     const third = await signIn("b@example.com", "HrPass12345");
     if (!third.ok) throw new Error("sign-in failed");
     expect(completeTwoFactor(third.token, codes![0])).toBeNull();
+  });
+
+  it("revokes password-only sessions when 2-step verification is enabled", async () => {
+    const user = await createUser({ email: "enroll@example.com", name: "Enroll", role: "developer", password: "EnrollPass123" });
+    const first = await signIn(user.email, "EnrollPass123");
+    const second = await signIn(user.email, "EnrollPass123");
+    if (!first.ok || !second.ok) throw new Error("sign-in failed");
+
+    const secret = newTotpSecret();
+    expect(enableTwoFactor(user.id, secret, totpCode(secret))).toHaveLength(8);
+    revokeOtherSessions(user.id, first.token);
+
+    expect(userForToken(first.token)?.id).toBe(user.id);
+    expect(userForToken(second.token)).toBeNull();
   });
 
   it("matches the RFC 6238 test vector", () => {
