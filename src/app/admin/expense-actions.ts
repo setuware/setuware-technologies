@@ -5,6 +5,7 @@ import { refresh } from "next/cache";
 import { audit, getUser } from "@/lib/cms/auth";
 import { approversFor, mayApproveFor, notify } from "@/lib/cms/notify";
 import { cancelClaim, decideClaim, getClaim, markPaid, submitClaim } from "@/lib/cms/expenses";
+import { parseAmountPaise } from "@/lib/cms/expense-types";
 import { deleteUpload, saveUpload, UploadError } from "@/lib/cms/uploads";
 import { requireUser } from "@/lib/cms/session";
 
@@ -12,11 +13,6 @@ import type { FormState } from "./actions";
 
 const text = (form: FormData, key: string, max = 2000) => String(form.get(key) ?? "").trim().slice(0, max);
 const MAX_RECEIPT_BYTES = 5 * 1024 * 1024;
-
-function amountPaise(value: string): number {
-  if (!/^\d{1,7}(?:\.\d{1,2})?$/.test(value)) return Number.NaN;
-  return Math.round(Number(value) * 100);
-}
 
 export async function submitClaimAction(_previous: FormState, form: FormData): Promise<FormState> {
   const user = await requireUser();
@@ -31,13 +27,13 @@ export async function submitClaimAction(_previous: FormState, form: FormData): P
     const id = submitClaim(user.id, {
       spentOn,
       category: text(form, "category", 40),
-      amountPaise: amountPaise(text(form, "amount", 20)),
+      amountPaise: parseAmountPaise(text(form, "amount", 20)),
       description: text(form, "description", 1000),
       receiptFile,
     });
     audit(user.name, "submitted an expense claim", "expense claim", `Claim #${id}`);
     for (const approver of approversFor(user.id, "expenses.approve")) {
-      notify(approver.id, `Expense claim: ${user.name}`, [`${user.name} submitted a ${text(form, "category", 40)} claim for ₹${(amountPaise(text(form, "amount", 20)) / 100).toFixed(2)}.`], `/admin/expenses/team?month=${spentOn.slice(0, 7)}`, "Review claim");
+      notify(approver.id, `Expense claim: ${user.name}`, [`${user.name} submitted a ${text(form, "category", 40)} claim for ₹${(parseAmountPaise(text(form, "amount", 20)) / 100).toFixed(2)}.`], `/admin/expenses/team?month=${spentOn.slice(0, 7)}`, "Review claim");
     }
     refresh();
     return { ok: "Your expense claim has been submitted." };

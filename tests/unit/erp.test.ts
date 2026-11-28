@@ -4,6 +4,7 @@ import { addDays, localDay } from "@/lib/cms/attendance";
 import { createUser, getUser, updateProfile } from "@/lib/cms/auth";
 import { canDeleteDocument, canReadDocument, type CompanyDocument } from "@/lib/cms/documents";
 import { cancelClaim, decideClaim, markPaid, MAX_CLAIM_PAISE, submitClaim, type ClaimInput } from "@/lib/cms/expenses";
+import { parseAmountPaise } from "@/lib/cms/expense-types";
 import { resetDb } from "@/lib/cms/db";
 import { mayApproveFor } from "@/lib/cms/notify";
 
@@ -20,6 +21,14 @@ const claimInput = (overrides: Partial<ClaimInput> = {}): ClaimInput => ({
   amountPaise: 12500,
   description: "Taxi to client meeting",
   ...overrides,
+});
+
+describe("expense amount input", () => {
+  it("parses leading-dot decimal amounts and rejects incomplete decimals", () => {
+    expect(parseAmountPaise(".50")).toBe(50);
+    expect(parseAmountPaise("12.5")).toBe(1250);
+    expect(parseAmountPaise("1.")).toBeNaN();
+  });
 });
 
 describe("expense claims", () => {
