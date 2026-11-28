@@ -4,6 +4,7 @@ import { refresh } from "next/cache";
 
 import { audit, can, listUsers } from "@/lib/cms/auth";
 import { createDocument, deleteDocument, DOCUMENT_CATEGORIES, EMPLOYEE_DOCUMENT_CATEGORIES, getDocument, canDeleteDocument } from "@/lib/cms/documents";
+import { COMPANY_DOCUMENT_CATEGORIES } from "@/lib/cms/document-types";
 import { notify } from "@/lib/cms/notify";
 import { deleteUpload, saveUpload, UploadError } from "@/lib/cms/uploads";
 import { requireUser } from "@/lib/cms/session";
@@ -26,6 +27,9 @@ export async function uploadDocumentAction(_previous: FormState, form: FormData)
   if (!(DOCUMENT_CATEGORIES as readonly string[]).includes(category)) return { error: "Choose a document category." };
   if (!manages && !(EMPLOYEE_DOCUMENT_CATEGORIES as readonly string[]).includes(category)) {
     return { error: "Choose ID proof, Tax or Other for your personal documents." };
+  }
+  if (manages && targetId === null && !(COMPANY_DOCUMENT_CATEGORIES as readonly string[]).includes(category)) {
+    return { error: "Choose Policy, Handbook or Other for company-wide documents." };
   }
   if (targetId !== null && (!Number.isInteger(targetId) || !listUsers().some((member) => member.id === targetId && member.active))) {
     return { error: "Choose an active team member." };

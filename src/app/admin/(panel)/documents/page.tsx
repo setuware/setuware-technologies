@@ -76,7 +76,12 @@ export default async function DocumentsPage({ searchParams }: { searchParams: Pr
             </Card>
           </section>
         </div>
-        <DocumentUploadForm people={people.map(({ id, name }) => ({ id, name }))} manages={manages} />
+        <DocumentUploadForm
+          key={chosen?.id ?? "company"}
+          people={people.map(({ id, name }) => ({ id, name }))}
+          manages={manages}
+          defaultUserId={chosen?.id}
+        />
       </div>
     </>
   );

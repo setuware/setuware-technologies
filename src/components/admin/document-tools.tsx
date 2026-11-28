@@ -1,9 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { deleteDocumentAction, uploadDocumentAction } from "@/app/admin/document-actions";
-import { DOCUMENT_CATEGORIES, EMPLOYEE_DOCUMENT_CATEGORIES } from "@/lib/cms/document-types";
+import { COMPANY_DOCUMENT_CATEGORIES, DOCUMENT_CATEGORIES, EMPLOYEE_DOCUMENT_CATEGORIES } from "@/lib/cms/document-types";
 
 import { FormMessage, Label, SubmitButton } from "./form-bits";
 import { buttonClass, Card, inputClass } from "./ui";
@@ -12,12 +12,19 @@ import type { FormState } from "@/app/admin/actions";
 export function DocumentUploadForm({
   people,
   manages,
+  defaultUserId,
 }: {
   people: { id: number; name: string }[];
   manages: boolean;
+  defaultUserId?: number | null;
 }) {
   const [state, action] = useActionState<FormState, FormData>(uploadDocumentAction, {});
-  const categories = manages ? DOCUMENT_CATEGORIES : EMPLOYEE_DOCUMENT_CATEGORIES;
+  const [targetId, setTargetId] = useState(String(defaultUserId ?? ""));
+  const categories = manages
+    ? targetId ? DOCUMENT_CATEGORIES : COMPANY_DOCUMENT_CATEGORIES
+    : EMPLOYEE_DOCUMENT_CATEGORIES;
+  const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]);
+  const category = categories.includes(selectedCategory as (typeof categories)[number]) ? selectedCategory : categories[0];
   return (
     <form action={action}>
       <Card className="flex flex-col gap-4 p-5">
@@ -30,7 +37,7 @@ export function DocumentUploadForm({
           {manages ? (
             <div>
               <Label htmlFor="document-user">For</Label>
-              <select id="document-user" name="user_id" className={inputClass}>
+              <select id="document-user" name="user_id" value={targetId} onChange={(event) => setTargetId(event.target.value)} className={inputClass}>
                 <option value="">Company-wide</option>
                 {people.map((person) => <option key={person.id} value={person.id}>{person.name}</option>)}
               </select>
@@ -38,7 +45,7 @@ export function DocumentUploadForm({
           ) : null}
           <div>
             <Label htmlFor="document-category">Category</Label>
-            <select id="document-category" name="category" required className={inputClass}>
+            <select id="document-category" name="category" value={category} onChange={(event) => setSelectedCategory(event.target.value)} required className={inputClass}>
               {categories.map((category) => <option key={category}>{category}</option>)}
             </select>
           </div>
