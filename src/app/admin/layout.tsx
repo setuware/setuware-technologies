@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
-  title: { absolute: "Admin · Setuware Technologies" },
+  title: { absolute: "Setuware Core · Setuware Technologies" },
   robots: { index: false, follow: false, nocache: true },
   manifest: "/admin/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "Setuware Admin", statusBarStyle: "black-translucent" },
+  appleWebApp: { capable: true, title: "Setuware Core", statusBarStyle: "black-translucent" },
   icons: { apple: "/admin/app-icon/192" },
 };
 

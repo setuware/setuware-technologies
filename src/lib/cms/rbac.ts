@@ -135,6 +135,15 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       { key: "manage", label: "Approve leave, fix records, settings" },
     ],
   },
+  {
+    module: "expenses",
+    label: "Expenses",
+    actions: [
+      { key: "view", label: "See team claims" },
+      { key: "approve", label: "Approve and pay claims" },
+    ],
+  },
+  { module: "documents", label: "Documents", actions: [{ key: "manage", label: "Manage company documents" }] },
   { module: "roles", label: "Roles", actions: [{ key: "manage", label: "Create / edit roles" }] },
   { module: "settings", label: "Site settings", actions: [{ key: "manage", label: "Change" }] },
 ];
@@ -172,8 +181,8 @@ export const DEFAULT_ROLES: Omit<Role, "builtin">[] = [
   {
     key: "hr",
     name: "HR",
-    description: "Jobs, applications, attendance and leave approvals.",
-    permissions: [...all("jobs"), ...all("applications"), "templates.view", "templates.edit", "tasks.assign", ...all("attendance"), "timesheets.view"],
+    description: "Jobs, applications, attendance, leave approvals, expenses and documents.",
+    permissions: [...all("jobs"), ...all("applications"), "templates.view", "templates.edit", "tasks.assign", ...all("attendance"), "timesheets.view", ...all("expenses"), ...all("documents")],
   },
   {
     key: "tech_lead",

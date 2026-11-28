@@ -3,7 +3,7 @@ import QRCode from "qrcode";
 import { Laptop, ShieldCheck, Smartphone } from "lucide-react";
 
 import { revokeSessionAction, startTwoFactorAction } from "@/app/admin/actions";
-import { listSessions, otpauthUrl, recoveryCodesLeft, SESSION_COOKIE } from "@/lib/cms/auth";
+import { describeDevice, listSessions, otpauthUrl, recoveryCodesLeft, SESSION_COOKIE } from "@/lib/cms/auth";
 import { getDb } from "@/lib/cms/db";
 import { requireUser } from "@/lib/cms/session";
 import { SubmitButton } from "@/components/admin/form-bits";
@@ -13,16 +13,9 @@ import { Avatar, Card, formatWhen, PageHeader, timeAgo } from "@/components/admi
 // Signed-in page: rendered per request (see the panel layout).
 export const instant = false;
 
-function describeDevice(agent: string | null): { label: string; mobile: boolean } {
-  const ua = agent ?? "";
-  const browser = /Edg\//.test(ua) ? "Edge" : /Chrome\//.test(ua) ? "Chrome" : /Firefox\//.test(ua) ? "Firefox" : /Safari\//.test(ua) ? "Safari" : "Browser";
-  const os = /iPhone|iPad/.test(ua) ? "iPhone/iPad" : /Android/.test(ua) ? "Android" : /Mac OS X/.test(ua) ? "Mac" : /Windows/.test(ua) ? "Windows" : /Linux/.test(ua) ? "Linux" : "Unknown device";
-  return { label: `${browser} on ${os}`, mobile: /iPhone|iPad|Android/.test(ua) };
-}
-
-export default async function AccountPage({ searchParams }: { searchParams: Promise<{ required?: string }> }) {
-  const user = await requireUser(undefined, { allowPasswordChange: true });
-  const { required } = await searchParams;
+export default async function AccountPage({ searchParams }: { searchParams: Promise<{ required?: string; twofactor?: string }> }) {
+  const user = await requireUser(undefined, { allowPasswordChange: true, allowTwoFactorSetup: true });
+  const { required, twofactor } = await searchParams;
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   const sessions = listSessions(user.id, token);
   const pending = getDb().prepare("SELECT totp_secret FROM users WHERE id = ?").get(user.id) as { totp_secret: string | null };
@@ -35,6 +28,11 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
       {required || user.mustChangePassword ? (
         <p className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm font-medium text-amber-800 dark:text-amber-300">
           You signed in with a temporary password. Choose your own password to continue.
+        </p>
+      ) : null}
+      {twofactor === "required" && !user.twoFactor ? (
+        <p className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm font-medium text-amber-800 dark:text-amber-300">
+          Two-step sign-in is required for your role. Set it up below to continue using Setuware Core.
         </p>
       ) : null}
 

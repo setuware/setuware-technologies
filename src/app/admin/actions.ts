@@ -16,11 +16,13 @@ import {
   completeTwoFactor,
   createPasswordToken,
   createUser,
+  describeDevice,
   deleteUser,
   disableTwoFactor,
   enableTwoFactor,
   getUser,
   getUserByEmail,
+  isNewDeviceSignIn,
   newTotpSecret,
   ownerCount,
   passwordProblem,
@@ -63,7 +65,7 @@ import {
   type PostInput,
 } from "@/lib/cms/store";
 import { saveUpload, UploadError } from "@/lib/cms/uploads";
-import { credentialsEmail, generatePassword, inviteEmail, welcomeEmail } from "@/lib/cms/account-emails";
+import { credentialsEmail, generatePassword, inviteEmail, newSignInEmail, welcomeEmail, type WelcomeAccess } from "@/lib/cms/account-emails";
 import { sendAccountEmail, sendEmail } from "@/lib/cms/mailer";
 import { notify } from "@/lib/cms/notify";
 import { deleteRole, getRole, roleInUse, roleName, saveRole } from "@/lib/cms/rbac";
@@ -126,6 +128,29 @@ async function device(): Promise<{ userAgent?: string; ip?: string }> {
   };
 }
 
+function alertNewDeviceSignIn(user: AdminUser, token: string, info: { userAgent?: string; ip?: string }): void {
+  try {
+    if (!isNewDeviceSignIn(user.id, info.userAgent, token)) return;
+    const time = new Intl.DateTimeFormat("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone: "Asia/Kolkata",
+      timeZoneName: "short",
+    }).format(new Date());
+    const email = newSignInEmail({
+      time,
+      device: describeDevice(info.userAgent ?? null).label,
+      ip: info.ip ?? "Unknown IP",
+    });
+    void sendEmail(user.email, email).catch(() => undefined);
+  } catch {
+    return;
+  }
+}
+
 async function setSessionCookie(token: string, days = SESSION_DAYS): Promise<void> {
   (await cookies()).set(SESSION_COOKIE, token, {
     httpOnly: true,
@@ -148,7 +173,7 @@ export async function loginAction(_previous: FormState, form: FormData): Promise
   if (!result.ok) {
     if (result.reason === "locked") {
       audit(email, "account locked", "account", "too many wrong passwords");
-      slackSecurity("Admin account locked", `*${esc(email)}* was locked after too many wrong passwords.`, [["IP address", info.ip]]);
+      slackSecurity("Setuware Core account locked", `*${esc(email)}* was locked after too many wrong passwords.`, [["IP address", info.ip]]);
       return { error: `This account is locked after too many wrong passwords. Try again in ${minutesUntil(result.lockedUntil)} minutes, or ask the owner to unlock it.` };
     }
     return { error: "That email and password do not match an active account." };
@@ -158,6 +183,7 @@ export async function loginAction(_previous: FormState, form: FormData): Promise
     return { step: "code" };
   }
   await setSessionCookie(result.token);
+  alertNewDeviceSignIn(result.user, result.token, info);
   audit(result.user.name, "signed in", "account", result.user.email);
   slackSignIn(result.user, info);
   redirect("/admin");
@@ -172,6 +198,7 @@ export async function verifyCodeAction(_previous: FormState, form: FormData): Pr
   const user = completeTwoFactor(token, text(form, "code", 20));
   if (!user) return { step: "code", error: "That code is not correct. Use the current 6-digit code or a recovery code." };
   await setSessionCookie(token as string);
+  alertNewDeviceSignIn(user, token as string, info);
   audit(user.name, "signed in", "account", `${user.email} (2-step)`);
   slackSignIn(user, info);
   redirect("/admin");
@@ -194,8 +221,8 @@ export async function forgotPasswordAction(_previous: FormState, form: FormData)
     const token = createPasswordToken(user.id, "reset");
     await sendAccountEmail(
       user.email,
-      "Reset your Setuware Admin password",
-      [`Hi ${user.name.split(" ")[0]},`, "Someone asked to reset the password for your Setuware Admin account. This link works once and expires in one hour."],
+      "Reset your Setuware Core password",
+      [`Hi ${user.name.split(" ")[0]},`, "Someone asked to reset the password for your Setuware Core account. This link works once and expires in one hour."],
       { url: authUrl("set-password", `?token=${token}`), label: "Choose a new password" },
     );
     audit(user.name, "requested password reset", "account", user.email);
@@ -417,12 +444,12 @@ export async function createUserAction(_previous: FormState, form: FormData): Pr
     { text: "View profile", path: `/admin/people/${user.id}` },
   );
   slackWelcome({ name, designation: profile.designation, department: profile.department, joinedOn: profile.joinedOn, managerName: managerId ? getUser(managerId)?.name : undefined });
-  slackSecurity("New admin account", `${esc(owner.name)} created an admin account for *${esc(name)}* (${esc(email)}) with the *${esc(roleName(role))}* role.`);
+  slackSecurity("New team account", `${esc(owner.name)} created a Setuware Core account for *${esc(name)}* (${esc(email)}) with the *${esc(roleName(role))}* role.`);
   refresh();
 
   const access = password ? await emailCredentials(user.id, password, owner) : await sendInvite(user.id, owner);
   if (form.get("welcome") !== "on") return access;
-  const welcomed = await emailWelcome(user.id, owner);
+  const welcomed = await emailWelcome(user.id, owner, method);
   if (!welcomed || !access.ok) return access;
   return access.password ? access : { ...access, ok: `${access.ok} A welcome email was sent too.` };
 }
@@ -436,11 +463,12 @@ async function emailCredentials(userId: number, password: string, sender: AdminU
     : { ok: "Email is not set up, so share these login details privately (they must change the password at first sign-in).", password, link: authUrl("login") };
 }
 
-async function emailWelcome(userId: number, sender: AdminUser): Promise<boolean> {
+async function emailWelcome(userId: number, sender: AdminUser, access?: WelcomeAccess): Promise<boolean> {
   const user = getUser(userId);
   if (!user) return false;
   const manager = user.managerId ? getUser(user.managerId) : null;
-  return sendEmail(user.email, welcomeEmail({ ...user, managerName: manager?.name }, sender.name), sender.email);
+  const how = access ?? (!user.hasPassword ? "invited" : user.mustChangePassword ? "temporary" : "active");
+  return sendEmail(user.email, welcomeEmail({ ...user, managerName: manager?.name }, sender.name, how), sender.email);
 }
 
 async function sendInvite(userId: number, sender: AdminUser): Promise<FormState> {
@@ -492,7 +520,7 @@ export async function sendResetLinkAction(_previous: FormState, form: FormData):
   const url = authUrl("set-password", `?token=${token}`);
   const sent = await sendAccountEmail(
     user.email,
-    "Reset your Setuware Admin password",
+    "Reset your Setuware Core password",
     [`Hi ${user.name.split(" ")[0]},`, `${owner.name} sent you a link to choose a new password. It works once and expires in one hour.`],
     { url, label: "Choose a new password" },
   );
@@ -530,7 +558,7 @@ export async function removeUserAction(form: FormData): Promise<void> {
   if (target.role === "owner" && target.active && ownerCount() <= 1) redirect("/admin/users?error=last-owner");
   deleteUser(target.id);
   audit(owner.name, "removed team member", "user", `${target.name} (${target.email})`);
-  slackSecurity(`Team member removed · ${target.name}`, `${esc(owner.name)} removed *${esc(target.name)}* (${esc(target.email)}) and their admin access.`);
+  slackSecurity(`Team member removed · ${target.name}`, `${esc(owner.name)} removed *${esc(target.name)}* (${esc(target.email)}) and their Setuware Core access.`);
   slackTeam(`Team member removed · ${target.name}`, `${esc(owner.name)} removed *${esc(target.name)}* from the team.`);
   redirect(`/admin/users?removed=${encodeURIComponent(target.name)}`);
 }
@@ -567,7 +595,7 @@ export async function userSecurityAction(form: FormData): Promise<void> {
 }
 
 export async function changeOwnPasswordAction(_previous: FormState, form: FormData): Promise<FormState> {
-  const user = await requireUser(undefined, { allowPasswordChange: true });
+  const user = await requireUser(undefined, { allowPasswordChange: true, allowTwoFactorSetup: true });
   const current = String(form.get("current") ?? "");
   const next = String(form.get("next") ?? "");
   const row = getDb().prepare("SELECT password_hash FROM users WHERE id = ?").get(user.id) as { password_hash: string };
@@ -586,19 +614,22 @@ export async function changeOwnPasswordAction(_previous: FormState, form: FormDa
 /* Two-step verification and devices (own account) */
 
 export async function startTwoFactorAction(): Promise<void> {
-  const user = await requireUser();
+  const user = await requireUser(undefined, { allowPasswordChange: true, allowTwoFactorSetup: true });
   if (!user.twoFactor) getDb().prepare("UPDATE users SET totp_secret = ? WHERE id = ?").run(newTotpSecret(), user.id);
   refresh();
 }
 
 export async function confirmTwoFactorAction(_previous: FormState, form: FormData): Promise<FormState> {
-  const user = await requireUser();
+  const user = await requireUser(undefined, { allowPasswordChange: true, allowTwoFactorSetup: true });
+  const currentToken = (await cookies()).get(SESSION_COOKIE)?.value;
+  if (!currentToken) return { error: "Your session expired. Sign in again and restart setup." };
   const row = getDb().prepare("SELECT totp_secret FROM users WHERE id = ?").get(user.id) as { totp_secret: string | null };
   if (!row.totp_secret) return { error: "Start the setup again." };
   const codes = enableTwoFactor(user.id, row.totp_secret, text(form, "code", 10));
   if (!codes) return { error: "That code is not correct. Check the time on your phone and try the newest code." };
+  revokeOtherSessions(user.id, currentToken);
   audit(user.name, "turned on 2-step verification", "account", user.email);
-  return { ok: "2-step verification is on.", codes };
+  return { ok: "2-step verification is on. Other devices have been signed out.", codes };
 }
 
 export async function disableTwoFactorAction(_previous: FormState, form: FormData): Promise<FormState> {
@@ -613,7 +644,7 @@ export async function disableTwoFactorAction(_previous: FormState, form: FormDat
 }
 
 export async function revokeSessionAction(form: FormData): Promise<void> {
-  const user = await requireUser(undefined, { allowPasswordChange: true });
+  const user = await requireUser(undefined, { allowPasswordChange: true, allowTwoFactorSetup: true });
   const jar = await cookies();
   if (form.get("all") === "1") revokeOtherSessions(user.id, jar.get(SESSION_COOKIE)?.value);
   else revokeSession(user.id, text(form, "session", 100));
@@ -928,6 +959,15 @@ export async function saveAnnouncementAction(_previous: FormState, form: FormDat
   audit(user.name, "updated announcement", "settings", value.enabled ? value.text : "off");
   updateTag(CMS_TAGS.settings);
   return { ok: value.enabled ? "Announcement is live on the website." : "Announcement turned off." };
+}
+
+export async function saveSecuritySettingsAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser("settings.manage");
+  const required = form.get("require2faAdmins") === "on";
+  setSetting("require2faAdmins", required);
+  audit(user.name, "updated sign-in security settings", "settings", `Two-step sign-in required for admins: ${required ? "on" : "off"}`);
+  refresh();
+  return { ok: required ? "Two-step sign-in is required for administrators." : "Optional two-step sign-in is restored." };
 }
 
 /* -------------------------------------------------------------------------- */

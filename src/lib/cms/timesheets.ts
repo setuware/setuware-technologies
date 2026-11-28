@@ -204,12 +204,12 @@ export function pendingSheets(): number[] {
 }
 
 /** Expected working minutes in a week: working days (no weekly offs, holidays or approved leave) × full-day hours. */
-export function expectedMinutes(monday: string, userId?: number): number {
+export function expectedMinutes(monday: string, userId?: number, through = addDays(monday, 6)): number {
   const settings = attendanceSettings();
-  const days = workingDays(monday, addDays(monday, 6), settings);
+  const days = workingDays(monday, through, settings);
   let leave = 0;
   if (userId) {
-    for (const request of listRequests({ userId, status: "approved", from: monday, to: addDays(monday, 6) })) {
+    for (const request of listRequests({ userId, status: "approved", from: monday, to: through })) {
       if (request.kind !== "leave" || request.leave_type === "Work from home") continue;
       leave += days.filter((day) => day >= request.from_day && day <= request.to_day).length * (request.half_day ? 0.5 : 1);
     }

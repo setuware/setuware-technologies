@@ -55,8 +55,9 @@ start, so everything is editable from day one.
    and add your team under **Team**. (After the first sign-in the
    `ADMIN_PASSWORD` value is no longer used; you may remove it.)
 
-If nginx sits in front of the app, uploads need `client_max_body_size 8m;` in
-the server block (see `deploy/nginx-setuware.conf`), then `sudo nginx -s reload`.
+If nginx sits in front of the app, 10 MB document uploads need
+`client_max_body_size 12m;` in the server block (see `deploy/nginx-setuware.conf`),
+then `sudo nginx -s reload`.
 
 ## Where the data lives
 

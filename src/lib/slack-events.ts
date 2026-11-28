@@ -94,7 +94,7 @@ export function slackApplication(input: { id: number; jobTitle: string; name: st
         { text: "Review application", url: adminUrl(`/admin/applications/${input.id}`), primary: true },
         ...(whatsapp ? [{ text: "WhatsApp", url: whatsapp }] : []),
       ],
-      context: ["CV attached in the admin", istTime()],
+      context: ["CV attached in Setuware Core", istTime()],
     }),
   );
 }
@@ -229,7 +229,7 @@ export function slackSignIn(user: { id: number; name: string; email: string }, d
   } catch {
     return;
   }
-  slackSecurity(`Sign-in from a new device · ${user.name}`, `${esc(user.name)} (${esc(user.email)}) signed in to the admin from a browser not seen for them recently.`, [
+  slackSecurity(`Sign-in from a new device · ${user.name}`, `${esc(user.name)} (${esc(user.email)}) signed in to Setuware Core from a browser not seen for them recently.`, [
     ["Browser", describeAgent(device.userAgent)],
     ["IP address", device.ip],
   ]);

@@ -22,7 +22,7 @@ export default async function EnquiryPage({ params }: { params: Promise<{ id: st
   if (!item || (!seesAll(user, "enquiries") && item.assignee !== user.name)) notFound();
   const digits = item.phone.replace(/\D/g, "").replace(/^(\d{10})$/, "91$1");
   const name = item.name || item.email || "Website visitor";
-  const team = listUsers().filter((member) => member.active).map((member) => member.name);
+  const team = [...new Set(listUsers().filter((member) => member.active).map((member) => member.name))];
   const templates = listTemplates("enquiry").map(({ id: templateId, name: templateName, subject, body }) => ({ id: templateId, name: templateName, subject, body }));
   const today = new Date().toISOString().slice(0, 10);
   let booking: { slot: string; mode: string } | null = null;

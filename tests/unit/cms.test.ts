@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { postBodies } from "@/lib/post-bodies";
 import { posts } from "@/lib/posts";
 import { jobs } from "@/lib/careers";
+import { localDay } from "@/lib/cms/attendance";
 import {
   can,
   seesAll,
@@ -21,6 +22,7 @@ import {
   newTotpSecret,
   passwordProblem,
   pendingTwoFactor,
+  revokeOtherSessions,
   signIn,
   signOut,
   totpCode,
@@ -31,6 +33,8 @@ import {
   verifyPassword,
 } from "@/lib/cms/auth";
 import { getDb, resetDb } from "@/lib/cms/db";
+import { createDocument, listDocuments } from "@/lib/cms/documents";
+import { listClaims, submitClaim } from "@/lib/cms/expenses";
 import { blocksToMarkdown, markdownToBlocks, readingMinutes, slugify } from "@/lib/cms/markdown";
 import {
   listEnquiries,
@@ -192,6 +196,20 @@ describe("admin auth", () => {
     expect(completeTwoFactor(third.token, codes![0])).toBeNull();
   });
 
+  it("revokes password-only sessions when 2-step verification is enabled", async () => {
+    const user = await createUser({ email: "enroll@example.com", name: "Enroll", role: "developer", password: "EnrollPass123" });
+    const first = await signIn(user.email, "EnrollPass123");
+    const second = await signIn(user.email, "EnrollPass123");
+    if (!first.ok || !second.ok) throw new Error("sign-in failed");
+
+    const secret = newTotpSecret();
+    expect(enableTwoFactor(user.id, secret, totpCode(secret))).toHaveLength(8);
+    revokeOtherSessions(user.id, first.token);
+
+    expect(userForToken(first.token)?.id).toBe(user.id);
+    expect(userForToken(second.token)).toBeNull();
+  });
+
   it("matches the RFC 6238 test vector", () => {
     // Secret "12345678901234567890" in base32, T = 59 s → 94287082 (last 6 digits).
     expect(totpCode("GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ", 59_000)).toBe("287082");
@@ -236,6 +254,28 @@ describe("admin auth", () => {
     expect(getUserByEmail("lead@example.com")).toBeNull();
     expect(userForToken(session.token)).toBeNull();
     expect(getUserByEmail("rep@example.com")!.managerId).toBeNull();
+  });
+
+  it("does not reuse deleted user IDs that own private records", async () => {
+    const original = await createUser({ email: "original@example.com", name: "Original", role: "developer", password: "OriginalPass123" });
+    createDocument({
+      user_id: original.id,
+      title: "Tax document",
+      category: "Tax",
+      file: "tax.pdf",
+      original_name: "tax.pdf",
+      mime: "application/pdf",
+      size: 1,
+      uploaded_by: original.id,
+    });
+    submitClaim(original.id, { spentOn: localDay(), category: "Travel", amountPaise: 100, description: "Taxi fare" });
+
+    deleteUser(original.id);
+
+    const replacement = await createUser({ email: "replacement@example.com", name: "Replacement", role: "developer", password: "ReplacementPass123" });
+    expect(replacement.id).not.toBe(original.id);
+    expect(listDocuments({ userId: replacement.id })).toEqual([]);
+    expect(listClaims({ userId: replacement.id })).toEqual([]);
   });
 });
 

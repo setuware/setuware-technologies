@@ -219,7 +219,11 @@ export function getSetting<T>(key: string, fallback: T): T {
   const row = getDb().prepare("SELECT value FROM settings WHERE key = ?").get(key) as { value: string } | undefined;
   if (!row) return fallback;
   try {
-    return { ...fallback, ...(JSON.parse(row.value) as T) };
+    const value = JSON.parse(row.value) as T;
+    if (typeof fallback === "object" && fallback !== null) {
+      return value && typeof value === "object" ? { ...fallback, ...value } : fallback;
+    }
+    return value;
   } catch {
     return fallback;
   }

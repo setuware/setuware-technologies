@@ -98,7 +98,7 @@ export async function deliverLead(
     viaZohoEnabled && !byZoho ? "Zoho CRM" : "",
   ].filter(Boolean);
   if (failed.length) {
-    slackAlert(`lead:${failed.join(",")}`, "Enquiry delivery failed", `A ${lead.kind} enquiry (\`${lead.reference}\`) could not be sent by ${failed.join(", ")}. It is saved in the admin inbox.`);
+    slackAlert(`lead:${failed.join(",")}`, "Enquiry delivery failed", `A ${lead.kind} enquiry (\`${lead.reference}\`) could not be sent by ${failed.join(", ")}. It is saved in Setuware Core.`);
   }
 
   const zohoId = zohoIdsByReference.get(lead.reference);

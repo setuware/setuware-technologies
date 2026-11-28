@@ -5,17 +5,29 @@ import { can, listUsers, recentAudit, seesAll } from "@/lib/cms/auth";
 import { followUpsDue, upcomingInterviews } from "@/lib/cms/crm";
 import { leadCounts } from "@/lib/cms/crm-leads";
 import { getDb } from "@/lib/cms/db";
-import { formatMinutes, listRequests, localDay, localTime, presence, todayBoard, workedMinutes, type BoardRow } from "@/lib/cms/attendance";
+import {
+  formatMinutes,
+  leaveBalance,
+  listHolidays,
+  listRequests,
+  localDay,
+  localTime,
+  presence,
+  todayBoard,
+  weekday,
+  workedMinutes,
+  type BoardRow,
+} from "@/lib/cms/attendance";
 import { attention, enquiryFunnel, overdueByPerson, parseRange, periodMetrics, projectsAtRisk, type Range } from "@/lib/cms/insights";
 import { mayApproveFor, teamScope } from "@/lib/cms/notify";
 import { listUpdates } from "@/lib/cms/people";
-import { pendingSheets } from "@/lib/cms/timesheets";
+import { attendanceByDay, expectedMinutes, pendingSheets, weekStart } from "@/lib/cms/timesheets";
 import { listTasks, taskCounts } from "@/lib/cms/tasks";
 import { requireUser } from "@/lib/cms/session";
 import { dashboardCounts, ENQUIRY_STATUSES, listApplications, listEnquiries } from "@/lib/cms/store";
 import { LogoMark } from "@/components/layout/logo";
 import { Funnel, RangeTabs, TrendChart } from "@/components/admin/charts";
-import { Avatar, Card, Empty, PageHeader, Stat, StatusBadge, timeAgo } from "@/components/admin/ui";
+import { Avatar, Card, Empty, formatDay, PageHeader, Stat, StatusBadge, timeAgo } from "@/components/admin/ui";
 
 // Signed-in page: rendered per request (see the panel layout).
 export const instant = false;
@@ -58,6 +70,14 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
 
   const today = localDay();
   const punch = presence(user.id);
+  const monday = weekStart(today);
+  const weekDaysElapsed = ((weekday(today) + 6) % 7) + 1;
+  const completedWeekMinutes = attendanceByDay(user.id, monday).slice(0, weekDaysElapsed).reduce((sum, minutes) => sum + minutes, 0);
+  const weekWorked = completedWeekMinutes + (punch.record && !punch.record.check_out_at ? workedMinutes(punch.record) : 0);
+  const weekExpected = expectedMinutes(monday, user.id, today);
+  const weekProgress = weekExpected ? Math.min(100, Math.round((weekWorked / weekExpected) * 100)) : 0;
+  const myLeave = leaveBalance(user.id, today.slice(0, 4));
+  const upcomingHolidays = listHolidays().filter((holiday) => holiday.day >= today).slice(0, 3);
   const myTasks = listTasks({ assigneeId: user.id })
     .filter((task) => task.status !== "done")
     .sort((a, b) => (a.due_date ?? "9999").localeCompare(b.due_date ?? "9999"))
@@ -70,6 +90,11 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   // Org-wide trends only for people who see every enquiry / application.
   const teamEnquiries = showEnquiries && seesAll(user, "enquiries");
   const teamApplications = showApplications && seesAll(user, "applications");
+  const showLeadMetric = can(user, "leads");
+  const showSubscriberMetric = can(user, "subscribers");
+  const showPostMetric = can(user, "posts");
+  const showJobMetric = can(user, "jobs");
+  const showPerformance = showAnalytics || teamEnquiries || teamApplications || showLeadMetric || showSubscriberMetric || showPostMetric || showJobMetric;
   const funnel = showAnalytics && teamEnquiries ? enquiryFunnel(range) : [];
   const queue = attention({
     enquiries: showEnquiries && !seesAll(user, "enquiries") ? user.name : null,
@@ -120,7 +145,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         </span>
         <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#5fd0ec]">Setuware Admin</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#5fd0ec]">Setuware Core</p>
             <h1 className="mt-2 font-display text-[1.9rem] font-semibold leading-tight tracking-[-0.02em] sm:text-[2.2rem]">
               {greeting}, {user.name.split(" ")[0]}
             </h1>
@@ -231,6 +256,65 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         </div>
       </Card>
 
+      <div className="mb-6 grid gap-4 lg:grid-cols-3">
+        <Card className="p-5">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-foreground">My leave</h2>
+            <Link href="/admin/attendance" className="inline-flex items-center gap-1 text-xs font-medium text-setu-dark hover:underline dark:text-[#5fd0ec]">
+              Attendance <ArrowRight className="size-3.5" aria-hidden />
+            </Link>
+          </div>
+          {myLeave.length ? (
+            <ul className="mt-3 flex flex-col gap-2">
+              {myLeave.map((item) => (
+                <li key={item.type} className="flex items-center justify-between gap-3 text-sm">
+                  <span className="text-foreground">{item.type}</span>
+                  <span className="shrink-0 text-muted-foreground">
+                    <strong className="text-foreground">{item.left} days</strong> left of {item.quota}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm text-muted-foreground">No leave allowance is set for this year.</p>
+          )}
+        </Card>
+
+        <Card className="p-5">
+          <h2 className="text-sm font-semibold text-foreground">Upcoming holidays</h2>
+          {upcomingHolidays.length ? (
+            <ul className="mt-2 flex flex-col divide-y divide-border text-sm">
+              {upcomingHolidays.map((holiday) => (
+                <li key={holiday.day} className="flex justify-between gap-3 py-2">
+                  <span className="min-w-0 truncate text-foreground">{holiday.name}</span>
+                  <span className="shrink-0 text-muted-foreground">{formatDay(holiday.day)}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm text-muted-foreground">No upcoming holidays scheduled.</p>
+          )}
+        </Card>
+
+        <Card className="p-5">
+          <h2 className="text-sm font-semibold text-foreground">This week</h2>
+          <p className="mt-2 text-sm text-muted-foreground">Monday–today</p>
+          <p className="mt-1 font-display text-2xl font-semibold tabular-nums text-foreground">
+            {formatMinutes(weekWorked)} <span className="text-sm font-medium text-muted-foreground">of {formatMinutes(weekExpected)}</span>
+          </p>
+          <div
+            className="mt-3 h-2 overflow-hidden rounded-full bg-foreground/[0.06]"
+            role="progressbar"
+            aria-label="Weekly attendance progress"
+            aria-valuemin={0}
+            aria-valuemax={weekExpected}
+            aria-valuenow={Math.min(weekWorked, weekExpected)}
+          >
+            <span className="block h-full rounded-full bg-[#2f56d8]" style={{ width: `${weekProgress}%` }} />
+          </div>
+        </Card>
+      </div>
+
       <TeamUpdates />
 
       {attentionItems.length ? (
@@ -265,13 +349,15 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         </Card>
       ) : null}
 
-      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h2 className="font-semibold text-foreground">Performance</h2>
-          <p className="text-xs text-muted-foreground">Last {range} days compared with the {range} days before</p>
+      {showPerformance ? (
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="font-semibold text-foreground">Performance</h2>
+            <p className="text-xs text-muted-foreground">Last {range} days compared with the {range} days before</p>
+          </div>
+          <RangeTabs value={range} href={rangeHref} />
         </div>
-        <RangeTabs value={range} href={rangeHref} />
-      </div>
+      ) : null}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {showAnalytics ? (
           <Stat
@@ -324,7 +410,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {can(user, "leads") ? (
+        {showLeadMetric ? (
           <MiniStat
             label={seesAll(user, "leads") ? "Open CRM leads" : "My open leads"}
             value={leadCounts(seesAll(user, "leads") ? undefined : user.name).open}
@@ -333,7 +419,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             icon={<Target className="size-3.5" />}
           />
         ) : null}
-        {can(user, "subscribers") ? (
+        {showSubscriberMetric ? (
           <MiniStat
             label="New subscribers"
             value={metrics.subscribers.current}
@@ -342,7 +428,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             icon={<Mail className="size-3.5" />}
           />
         ) : null}
-        {can(user, "posts") ? (
+        {showPostMetric ? (
           <MiniStat
             label="Published posts"
             value={counts.postsPublished}
@@ -351,7 +437,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             icon={<FileText className="size-3.5" />}
           />
         ) : null}
-        {can(user, "jobs") ? (
+        {showJobMetric ? (
           <MiniStat label="Open jobs" value={counts.jobsOpen} hint="on the careers page" href="/admin/jobs" icon={<Briefcase className="size-3.5" />} />
         ) : null}
       </div>

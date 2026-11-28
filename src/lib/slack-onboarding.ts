@@ -68,12 +68,12 @@ async function welcome(slackUser: string, user: AdminUser, channels: string[]): 
       `Hi ${first}, great to have you here. You have been added to ${channels.length ? channels.join(", ") : "the team channels"}.`,
       "",
       "*Getting started*",
-      "• Sign in to the admin, choose your password and turn on 2-step verification.",
+      "• Sign in to Setuware Core, choose your password and turn on 2-step verification.",
       "• Check in from the dashboard when you start work.",
       "• Each channel has a pinned guide; read it before posting.",
       "• Say hello in the announcements thread introducing you.",
     ].join("\n"),
-    buttons: [{ text: "Open the admin", url: adminUrl("/admin"), primary: true }],
+    buttons: [{ text: "Open Setuware Core", url: adminUrl("/admin"), primary: true }],
     context: ["Questions? Ask your manager or post in the team channel"],
   });
   await slackApi("chat.postMessage", { channel: dm.channel.id, text: message.text, blocks: message.blocks, unfurl_links: "false" });

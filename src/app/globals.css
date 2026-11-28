@@ -120,6 +120,20 @@
     border-color: var(--border);
   }
 
+  /* A grid with no column utility gets an implicit `auto` track that grows to
+     fit unbreakable content (a long link or code), pushing the page wider than
+     the phone. One shrinkable column instead; `*:grid-cols-*` utilities win. */
+  .grid,
+  .inline-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Names, emails and links typed by people (enquiries, applications, tasks)
+     often have no spaces; let them wrap instead of widening the page. */
+  [data-admin-content] {
+    overflow-wrap: anywhere;
+  }
+
   html {
     scroll-behavior: smooth;
     /* Offset anchor targets so the fixed header never covers a heading. */
