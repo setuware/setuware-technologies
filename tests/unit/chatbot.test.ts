@@ -261,6 +261,12 @@ describe("parseBudget", () => {
     expect(parseBudget("store with 2k products")).toBeNull();
     expect(parseBudget("SEO budget ₹15k per month and 4,000 visitors")).toBe(15_000);
     expect(parseBudget("we spent $3k last year, budget now ₹50k")).toBe(50_000);
+    expect(parseBudget("store handling 2k monthly orders")).toBeNull();
+    expect(parseBudget("$20k–25k")).toBeNull();
+    expect(parseBudget("10 lakh AED")).toBeNull();
+    expect(parseBudget("we spent ₹2 lakh last time, budget now 50k")).toBe(50_000);
+    expect(parseBudget("website budget $5k for 2026")).toBeNull();
+    expect(parseBudget("website for 2026 under ₹30k")).toBe(30_000);
   });
 
   it("ignores text without a budget", () => {

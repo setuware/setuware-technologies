@@ -504,15 +504,19 @@ const strong = (match: Overlap | null): boolean =>
 /* Budget                                                                      */
 /* -------------------------------------------------------------------------- */
 
-/**
- * Reads a budget from "under 20k", "₹1.5 lakh", "budget 50,000" or "rs 15000".
- * Bare small numbers ("3 pages", "2 weeks") are ignored.
- */
-const BUDGET_AMOUNT = String.raw`(\d+(?:\.\d+)?)\s*(k|thousand|l|lac|lakh|lakhs|cr|crore)?\b`;
-/** Numbers followed by one of these are counts, not money ("2k products"). */
-const NOT_MONEY = String.raw`(?!\s*(?:products?|items?|users?|visitors?|pages?|orders?|customers?|students?|followers?|downloads?|skus?|members?|employees?|views?|branches|stores?|outlets?)\b)`;
+const COUNT_NOUNS =
+  "products?|items?|users?|visitors?|pages?|orders?|customers?|students?|followers?|downloads?|skus?|members?|employees?|views?|branches|stores?|outlets?|patients?|leads?|bookings?|transactions?";
+/** Numbers followed by one of these are counts, not money ("2k monthly orders"). */
+const NOT_MONEY = String.raw`(?!\s*(?:(?:monthly|daily|weekly|yearly|annual|active|unique)\s+)?(?:${COUNT_NOUNS})\b)`;
+const RUPEE_MARK = /₹|\brs\b|\binr\b|\brupees?\b/;
+const FOREIGN_MARK = /\$|€|£|\b(usd|dollars?|euros?|pounds?|aed|dirhams?)\b/;
 const FOREIGN_AMOUNT =
-  /(?:\$|€|£|\busd|\baed)\s*\d+(?:\.\d+)?\s*(?:k|m|thousand|million)?\b|\d+(?:\.\d+)?\s*(?:k|m|thousand|million)?\s*(?:usd|dollars?|euros?|pounds?|aed|dirhams?)\b/g;
+  /(?:\$|€|£|\busd|\baed)\s*\d+(?:\.\d+)?\s*(?:k|m|thousand|million|lakhs?)?(?:\s*(?:-|–|to)\s*\d+(?:\.\d+)?\s*(?:k|m|thousand|million|lakhs?)?)?\b|\d+(?:\.\d+)?\s*(?:k|m|thousand|million|lakhs?)?\s*(?:usd|dollars?|euros?|pounds?|aed|dirhams?)\b/g;
+const BUDGET_WORD = /\b(budget|under|within|below|upto|up to|around|about|max|maximum|afford)\b/;
+const AMOUNT = new RegExp(
+  String.raw`(₹|\brs\.?|\binr|\brupees?)?\s*(\d+(?:\.\d+)?)\s*(k|thousand|l|lac|lakh|lakhs|cr|crore)?\b(\s*(?:₹|rs\b|inr\b|rupees?\b))?${NOT_MONEY}`,
+  "g",
+);
 
 function budgetValue(amount: string, unit: string | undefined): number {
   const value = Number.parseFloat(amount);
@@ -521,22 +525,27 @@ function budgetValue(amount: string, unit: string | undefined): number {
   return Math.round(value * factor);
 }
 
+/**
+ * Reads a rupee budget from "under 20k", "₹1.5 lakh", "budget 50,000" or "rs 15000".
+ * The amount after a budget word wins; counts ("4,000 visitors"), years and
+ * amounts in other currencies are ignored.
+ */
 export function parseBudget(input: string): number | null {
-  // Amounts in other currencies are not rupee budgets; drop them and keep the rest.
-  const text = input.toLowerCase().replace(/,/g, "").replace(FOREIGN_AMOUNT, " ");
-  const rupee =
-    text.match(new RegExp(String.raw`(?:₹|\brs\.?|\binr|\brupees?)\s*${BUDGET_AMOUNT}${NOT_MONEY}`)) ??
-    text.match(new RegExp(String.raw`${BUDGET_AMOUNT}\s*(?:₹|rs\b|inr\b|rupees?\b)`));
-  if (rupee) return budgetValue(rupee[1], rupee[2]);
-  const scaled = text.match(
-    new RegExp(String.raw`(\d+(?:\.\d+)?)\s*(k|thousand|l|lac|lakh|lakhs|cr|crore)\b${NOT_MONEY}`),
-  );
-  if (scaled) return budgetValue(scaled[1], scaled[2]);
-  if (/\b(budget|under|within|below|upto|up to|around|about)\b/.test(text)) {
-    const plain = text.match(new RegExp(String.raw`\b(\d{4,9})\b${NOT_MONEY}`));
-    if (plain) return Number.parseInt(plain[1], 10);
+  const text = input.toLowerCase().replace(/,/g, "");
+  if (FOREIGN_MARK.test(text) && !RUPEE_MARK.test(text)) return null;
+  const cleaned = text.replace(FOREIGN_AMOUNT, " ");
+  const candidates: { at: number; value: number; marked: boolean; plain: boolean }[] = [];
+  for (const match of cleaned.matchAll(AMOUNT)) {
+    const marked = Boolean(match[1] || match[4]);
+    const unit = match[3];
+    const plain = !marked && !unit;
+    if (plain && (!/^\d{4,9}$/.test(match[2]) || /^(19|20)\d{2}$/.test(match[2]))) continue;
+    candidates.push({ at: match.index, value: budgetValue(match[2], unit), marked, plain });
   }
-  return null;
+  const keyword = cleaned.search(BUDGET_WORD);
+  const afterKeyword = keyword >= 0 ? candidates.find((candidate) => candidate.at >= keyword) : undefined;
+  const chosen = afterKeyword ?? candidates.find((candidate) => candidate.marked) ?? candidates.find((candidate) => !candidate.plain);
+  return chosen?.value ?? null;
 }
 
 /* -------------------------------------------------------------------------- */
