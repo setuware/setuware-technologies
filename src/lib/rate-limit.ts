@@ -103,3 +103,4 @@ export class RateLimiter {
 export const contactLimiter = new RateLimiter({ limit: 5, windowMs: 10 * 60_000 });
 export const newsletterLimiter = new RateLimiter({ limit: 8, windowMs: 60 * 60_000 });
 export const estimateLimiter = new RateLimiter({ limit: 20, windowMs: 10 * 60_000 });
+export const assistantLimiter = new RateLimiter({ limit: 30, windowMs: 10 * 60_000 });
