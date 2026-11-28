@@ -31,7 +31,8 @@ function ClaimRow({ claim, user }: { claim: ExpenseClaim; user: AdminUser }) {
           {claim.receipt_file ? <a href={`/admin/files/receipt/${claim.id}`} className="mt-2 inline-flex text-sm font-medium text-[#2f56d8] hover:underline dark:text-[#8fb0ff]">Download receipt</a> : null}
         </div>
       </div>
-      {canAct && claim.status === "pending" ? <ExpenseDecisionForm id={claim.id} /> : null}
+      {claim.status === "pending" && claim.user_id === user.id ? <span className="text-sm text-muted-foreground">Needs another approver</span> : null}
+      {canAct && claim.status === "pending" && claim.user_id !== user.id ? <ExpenseDecisionForm id={claim.id} /> : null}
       {canAct && claim.status === "approved" ? <MarkClaimPaidForm id={claim.id} /> : null}
     </li>
   );
