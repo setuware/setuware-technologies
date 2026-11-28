@@ -20,11 +20,11 @@ export function DocumentUploadForm({
 }) {
   const [state, action] = useActionState<FormState, FormData>(uploadDocumentAction, {});
   const [targetId, setTargetId] = useState(String(defaultUserId ?? ""));
-  const categories = manages
+  const categories: readonly string[] = manages
     ? targetId ? DOCUMENT_CATEGORIES : COMPANY_DOCUMENT_CATEGORIES
     : EMPLOYEE_DOCUMENT_CATEGORIES;
-  const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]);
-  const category = categories.includes(selectedCategory as (typeof categories)[number]) ? selectedCategory : categories[0];
+  const [selectedCategory, setSelectedCategory] = useState(categories[0] ?? "");
+  const category = categories.includes(selectedCategory) ? selectedCategory : (categories[0] ?? "");
   return (
     <form action={action}>
       <Card className="flex flex-col gap-4 p-5">
