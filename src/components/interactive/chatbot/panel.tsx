@@ -3,34 +3,54 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowUpRight, RotateCcw, ArrowUp, X } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUp,
+  ArrowUpRight,
+  BriefcaseBusiness,
+  CalendarCheck,
+  ChevronRight,
+  Clock,
+  IndianRupee,
+  Loader2,
+  Mail,
+  MessageCircle,
+  Phone,
+  RotateCcw,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 
-import { LogoMark } from "@/components/layout/logo";
 import { EASE_OUT } from "@/components/motion/ease";
 import { useReducedMotionSafe } from "@/components/motion/primitives";
+import { ServiceIcon } from "@/components/ui/service-icon";
 import { postJson } from "@/lib/client-api";
 import { useMediaQuery, useScrollLock } from "@/lib/hooks";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
+import { AssistantAvatar } from "./avatar";
 import {
   ASSISTANT_NAME,
   EMPTY_LEAD,
   GREETING,
   MENU_CHIPS,
-  advanceLead,
   confirmationReply,
   intentReply,
   leadPayload,
-  leadPrompt,
-  normalise,
+  leadServiceOptions,
   replyTo,
   serviceReply,
+  validateLead,
+  whatsappHref,
   type BotReply,
-  type Chip,
+  type ChatContext,
   type ChatLink,
+  type Chip,
+  type IntentId,
   type LeadDraft,
-  type LeadStep,
+  type LeadErrors,
+  type ReplyCard,
 } from "./engine";
 
 /* -------------------------------------------------------------------------- */
@@ -44,24 +64,23 @@ interface ChatMessage {
   at: number;
   links?: ChatLink[];
   chips?: Chip[];
+  cards?: ReplyCard[];
   tone?: "error";
 }
 
 interface LeadState {
-  step: LeadStep;
   draft: LeadDraft;
   startedAt: number;
 }
 
 interface Stored {
-  v: 1;
+  v: 2;
   messages: ChatMessage[];
   lead: LeadState | null;
+  context: ChatContext;
 }
 
-const STORAGE_KEY = "setuware.assistant.v1";
-const CANCEL_WORDS = new Set(["cancel", "stop", "exit", "quit", "menu", "main menu"]);
-const SKIP_WORDS = new Set(["skip", "no", "no thanks", "none", "not now"]);
+const STORAGE_KEY = "setuware.assistant.v2";
 
 let counter = 0;
 const nextId = () => `m${Date.now().toString(36)}${(counter++).toString(36)}`;
@@ -74,6 +93,7 @@ function botMessage(reply: BotReply, tone?: "error"): ChatMessage {
     at: Date.now(),
     links: reply.links,
     chips: reply.chips,
+    cards: reply.cards,
     tone,
   };
 }
@@ -87,14 +107,14 @@ function readStored(): Stored | null {
     const raw = window.sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Stored;
-    if (parsed?.v !== 1 || !Array.isArray(parsed.messages) || parsed.messages.length === 0) return null;
+    if (parsed?.v !== 2 || !Array.isArray(parsed.messages) || parsed.messages.length === 0) return null;
     return parsed;
   } catch {
     return null;
   }
 }
 
-function writeStored(value: Stored): void {
+function writeStored(value: Stored) {
   try {
     window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(value));
   } catch {
@@ -104,20 +124,27 @@ function writeStored(value: Stored): void {
 
 /** Long enough to read as considered, short enough never to feel slow. */
 function typingDelay(text: string, reduce: boolean): number {
-  if (reduce) return 250;
-  return Math.min(1_100, 420 + text.length * 4);
+  if (reduce) return 200;
+  return Math.min(900, 380 + text.length * 3);
 }
 
 const timeFormat = new Intl.DateTimeFormat("en-IN", { hour: "2-digit", minute: "2-digit" });
 
-const PLACEHOLDERS: Record<LeadStep, string> = {
-  name: "Your full name",
-  contact: "Email address or phone number",
-  email: "Email address",
-  phone: "Phone number",
-  service: "Choose an option above or type it here",
-  message: "Describe your project briefly",
-};
+const STARTERS: readonly { icon: LucideIcon; title: string; body: string; intent?: IntentId; ask?: string }[] = [
+  { icon: IndianRupee, title: "Pricing", body: "Packages and starting prices", intent: "pricing" },
+  { icon: Clock, title: "Timelines", body: "How long each build takes", intent: "timelines" },
+  { icon: BriefcaseBusiness, title: "Our work", body: "Projects we have delivered", ask: "Show me your past work" },
+  { icon: CalendarCheck, title: "Free call", body: "30 minutes with our team", intent: "book-call" },
+];
+
+const POPULAR = [
+  "Do you sign an NDA?",
+  "Who owns the website and code?",
+  "How are payments structured?",
+  "Which technologies do you use?",
+];
+
+const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu";
 
 /* -------------------------------------------------------------------------- */
 /* Panel                                                                       */
@@ -135,12 +162,10 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
   const titleId = useId();
 
   const [stored] = useState(readStored);
-  const [messages, setMessages] = useState<ChatMessage[]>(
-    () => stored?.messages ?? [botMessage(GREETING)],
-  );
+  const [messages, setMessages] = useState<ChatMessage[]>(() => stored?.messages ?? [botMessage(GREETING)]);
   const [lead, setLead] = useState<LeadState | null>(() => stored?.lead ?? null);
+  const [context, setContext] = useState<ChatContext>(() => stored?.context ?? {});
   const [typing, setTyping] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const [draft, setDraft] = useState("");
 
   const rootRef = useRef<HTMLDivElement>(null);
@@ -151,8 +176,8 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
   useScrollLock(open && isMobile);
 
   useEffect(() => {
-    writeStored({ v: 1, messages, lead });
-  }, [messages, lead]);
+    writeStored({ v: 2, messages, lead, context });
+  }, [messages, lead, context]);
 
   useEffect(() => {
     const pending = timers.current;
@@ -172,154 +197,71 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
     const list = scrollRef.current;
     if (!list) return;
     const maxScroll = list.scrollHeight - list.clientHeight;
-    const latest = list.querySelector<HTMLElement>("[data-message]:last-child");
+    const latest = list.querySelector<HTMLElement>("[data-message]:last-of-type");
     const top =
-      !typing && latest?.dataset.message === "bot" ? Math.min(latest.offsetTop - 12, maxScroll) : maxScroll;
+      !typing && latest?.dataset.message === "bot" && !lead
+        ? Math.min(latest.offsetTop - 12, maxScroll)
+        : maxScroll;
     list.scrollTo({ top, behavior: reduce || !open ? "auto" : "smooth" });
-  }, [messages, typing, open, reduce]);
+  }, [messages, typing, open, reduce, lead]);
 
   const append = useCallback((message: ChatMessage) => {
     setMessages((current) => [...current, message].slice(-80));
   }, []);
 
-  /** Shows the typing indicator, then posts each reply in turn. */
-  const say = useCallback(
-    (replies: BotReply[], tone?: "error") => {
+  /** Shows the typing indicator, then posts the reply. */
+  const respond = useCallback(
+    (reply: BotReply, tone?: "error") => {
+      if (reply.service) setContext({ service: reply.service });
       setTyping(true);
-      let delay = 0;
-      replies.forEach((reply, index) => {
-        delay += typingDelay(reply.text, reduce);
-        const timer = window.setTimeout(() => {
-          append(botMessage(reply, tone));
-          if (index === replies.length - 1) setTyping(false);
-        }, delay);
-        timers.current.push(timer);
-      });
+      const timer = window.setTimeout(() => {
+        append(botMessage(reply, tone));
+        setTyping(false);
+        if (reply.startLead) {
+          setLead((current) => current ?? { draft: { ...EMPTY_LEAD }, startedAt: Date.now() });
+        }
+      }, typingDelay(reply.text, reduce));
+      timers.current.push(timer);
     },
     [append, reduce],
   );
 
-  const respond = useCallback(
-    (reply: BotReply) => {
-      if (reply.startLead) {
-        const next: LeadState = { step: "name", draft: EMPTY_LEAD, startedAt: Date.now() };
-        setLead(next);
-        say([reply, leadPrompt("name", EMPTY_LEAD)]);
-        return;
-      }
-      say([reply]);
-    },
-    [say],
-  );
-
-  const submit = useCallback(
-    async (state: LeadState) => {
-      setLead(state);
-      setSubmitting(true);
-      setTyping(true);
-      const elapsed = Math.max(Date.now() - state.startedAt, 1_500);
-      const result = await postJson<{ reference: string }>("/api/contact", leadPayload(state.draft, elapsed));
-      setSubmitting(false);
-      setTyping(false);
-
-      if (result.ok) {
-        setLead(null);
-        append(botMessage(confirmationReply(state.draft)));
-        return;
-      }
-
-      const detail = Object.values(result.fields ?? {})[0] ?? result.message;
-      append(
-        botMessage(
-          {
-            text: `I could not send your request. ${detail} You may try again or contact us on WhatsApp.`,
-            chips: [
-              { label: "Try again", action: { kind: "lead-retry" } },
-              { label: "Talk on WhatsApp", action: { kind: "intent", intent: "whatsapp" } },
-              { label: "Cancel", action: { kind: "lead-cancel" } },
-            ],
-          },
-          "error",
-        ),
-      );
-    },
-    [append],
-  );
-
-  const cancelLead = useCallback(() => {
-    setLead(null);
-    say([{ text: "Certainly. I have cancelled the request. How else may I help you?", chips: [...MENU_CHIPS] }]);
-  }, [say]);
-
-  const busy = typing || submitting;
-
-  const handleText = (raw: string) => {
-    const text = raw.trim();
-    if (!text || busy) return;
-    append(userMessage(text));
+  const ask = (text: string, label = text) => {
+    const question = text.trim();
+    if (!question || typing) return;
+    append(userMessage(label.trim()));
     setDraft("");
-
-    if (!lead) {
-      respond(replyTo(text));
-      return;
-    }
-
-    const word = normalise(text);
-    if (CANCEL_WORDS.has(word)) {
-      cancelLead();
-      return;
-    }
-    if (lead.step === "phone" && SKIP_WORDS.has(word)) {
-      setLead({ ...lead, step: "service" });
-      say([leadPrompt("service", lead.draft)]);
-      return;
-    }
-
-    const result = advanceLead(lead.step, text, lead.draft);
-    if (result.error) {
-      say([{ text: result.error, chips: leadPrompt(lead.step, lead.draft).chips }], "error");
-      return;
-    }
-    if (result.next === "submit") {
-      void submit({ ...lead, step: "message", draft: result.draft });
-      return;
-    }
-    setLead({ ...lead, step: result.next, draft: result.draft });
-    say([leadPrompt(result.next, result.draft)]);
+    respond(replyTo(question, context));
   };
 
   const handleChip = (chip: Chip) => {
-    if (busy) return;
+    if (typing) return;
     const { action } = chip;
-    append(userMessage(chip.label));
-
     switch (action.kind) {
+      case "ask":
+        ask(action.text, chip.label);
+        return;
       case "intent":
-        if (lead) setLead(null);
+        append(userMessage(chip.label));
         respond(intentReply(action.intent));
         return;
       case "service":
+        append(userMessage(chip.label));
         respond(serviceReply(action.slug));
         return;
-      case "lead-service": {
-        if (!lead) return respond(intentReply("book-call"));
-        const draftWithService: LeadDraft = { ...lead.draft, service: action.slug, serviceLabel: action.label };
-        setLead({ ...lead, step: "message", draft: draftWithService });
-        say([leadPrompt("message", draftWithService)]);
-        return;
-      }
-      case "lead-skip":
-        if (!lead) return;
-        setLead({ ...lead, step: "service" });
-        say([leadPrompt("service", lead.draft)]);
-        return;
-      case "lead-retry":
-        if (lead) void submit(lead);
-        return;
-      case "lead-cancel":
-        cancelLead();
-        return;
     }
+  };
+
+  const startIntent = (intent: IntentId, label: string) => handleChip({ label, action: { kind: "intent", intent } });
+
+  const onLeadSent = (state: LeadState) => {
+    setLead(null);
+    append(botMessage(confirmationReply(state.draft)));
+  };
+
+  const cancelLead = () => {
+    setLead(null);
+    respond({ text: "Certainly. I have closed the form. How else may I help you?", chips: [...MENU_CHIPS] });
   };
 
   const restart = () => {
@@ -327,6 +269,7 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
     timers.current = [];
     setTyping(false);
     setLead(null);
+    setContext({});
     setMessages([botMessage(GREETING)]);
     inputRef.current?.focus();
   };
@@ -340,7 +283,7 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
     // Full-screen on phones, so keep keyboard focus inside the sheet.
     if (event.key !== "Tab" || !isMobile || !rootRef.current) return;
     const focusable = rootRef.current.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])',
     );
     if (focusable.length === 0) return;
     const first = focusable[0];
@@ -354,13 +297,13 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
     }
   };
 
+  const welcome = messages.length === 1 && messages[0].role === "bot" && !lead;
   const last = messages[messages.length - 1];
-  const chips = !busy && last?.role === "bot" ? (last.chips ?? []) : [];
-  const status = `${online ? "Online" : "Away"} · replies in IST hours`;
+  const chips = !typing && !lead && !welcome && last?.role === "bot" ? (last.chips ?? []) : [];
 
   const hidden = reduce
     ? { opacity: 0, transitionEnd: { visibility: "hidden" as const } }
-    : { opacity: 0, y: isMobile ? 32 : 16, scale: isMobile ? 1 : 0.97, transitionEnd: { visibility: "hidden" as const } };
+    : { opacity: 0, y: isMobile ? 32 : 18, scale: isMobile ? 1 : 0.96, transitionEnd: { visibility: "hidden" as const } };
   const shown = { opacity: 1, y: 0, scale: 1, visibility: "visible" as const };
 
   return (
@@ -377,69 +320,85 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
       transition={{ duration: reduce ? 0.15 : 0.42, ease: EASE_OUT }}
       style={{ transformOrigin: "bottom right" }}
       className={cn(
-        "fixed z-[65] flex flex-col overflow-hidden bg-surface text-foreground",
+        "fixed z-[65] flex flex-col overflow-hidden bg-background text-foreground",
         "inset-0 h-[100dvh]",
-        "sm:inset-auto sm:bottom-[160px] sm:right-5 sm:h-[560px] sm:max-h-[calc(100dvh-11.5rem)] sm:w-[380px] sm:rounded-2xl sm:border sm:border-border",
-        "sm:shadow-[0_24px_64px_-16px_rgba(15,23,42,0.35),0_2px_8px_rgba(15,23,42,0.08)]",
+        "sm:inset-auto sm:bottom-[160px] sm:right-5 sm:h-[640px] sm:max-h-[calc(100dvh-11.5rem)] sm:w-[400px] sm:rounded-[28px] sm:ring-1 sm:ring-black/5 dark:sm:ring-white/10",
+        "sm:shadow-[0_32px_80px_-20px_rgba(11,16,32,0.45),0_8px_24px_-8px_rgba(47,86,216,0.25)]",
       )}
     >
       {/* Header */}
-      <div className="flex shrink-0 items-center gap-3 border-b border-border bg-surface px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] sm:pt-3">
-        <LogoMark className="size-9 shrink-0" />
-        <div className="min-w-0 flex-1">
-          <h2 id={titleId} className="truncate text-[15px] font-semibold leading-tight text-foreground">
-            {ASSISTANT_NAME}
-          </h2>
-          <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-muted-foreground">
-            <span aria-hidden className={cn("size-1.5 shrink-0 rounded-full", online ? "bg-emerald-500" : "bg-amber-400")} />
-            {status}
-          </p>
+      <div className="relative shrink-0 overflow-hidden bg-[#0b1020] px-4 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] text-white sm:pt-4">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_160%_at_100%_0%,rgba(47,86,216,0.95)_0%,rgba(28,47,120,0.75)_38%,rgba(11,16,32,0)_75%)]"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-10 -top-16 size-40 rounded-full bg-cyan-400/20 blur-3xl"
+        />
+        <div className="relative flex items-center gap-3">
+          <AssistantAvatar className="size-11 rounded-2xl" online={online} />
+          <div className="min-w-0 flex-1">
+            <h2 id={titleId} className="truncate text-base font-semibold leading-tight tracking-tight">
+              Ask Setuware
+            </h2>
+            <p className="mt-1 truncate text-xs text-white/70">
+              {online ? "Online now" : "Away"} · {site.hours}
+            </p>
+          </div>
+          <HeaderButton onClick={restart} label="Start a new conversation">
+            <RotateCcw className="size-4" aria-hidden />
+          </HeaderButton>
+          <HeaderButton onClick={onClose} label={`Close ${ASSISTANT_NAME}`}>
+            <X className="size-5" aria-hidden />
+          </HeaderButton>
         </div>
-        <button
-          type="button"
-          onClick={restart}
-          className="inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-setu"
-          aria-label="Start a new conversation"
-          title="Start a new conversation"
-        >
-          <RotateCcw className="size-4" aria-hidden />
-        </button>
-        <button
-          type="button"
-          onClick={onClose}
-          className="inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-setu"
-          aria-label={`Close ${ASSISTANT_NAME}`}
-        >
-          <X className="size-5" aria-hidden />
-        </button>
       </div>
 
       {/* Messages */}
       <div
         ref={scrollRef}
-        className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain bg-surface px-4 py-5"
+        className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain bg-background px-4 py-5"
       >
-        <div role="log" aria-live="polite" aria-relevant="additions" aria-label="Conversation" className="flex flex-col gap-4">
-          {messages.map((message, index) => (
-            <Bubble
-              key={message.id}
-              message={message}
-              showAvatar={message.role === "bot" && messages[index - 1]?.role !== "bot"}
-              onNavigate={isMobile ? onClose : undefined}
-            />
-          ))}
-        </div>
+        {welcome ? (
+          <Welcome
+            greeting={messages[0].text}
+            onStarter={(starter) =>
+              starter.intent ? startIntent(starter.intent, starter.title) : ask(starter.ask ?? starter.title, starter.title)
+            }
+            onAsk={(question) => ask(question)}
+          />
+        ) : (
+          <div role="log" aria-live="polite" aria-relevant="additions" aria-label="Conversation" className="flex flex-col gap-4">
+            {messages.map((message, index) => (
+              <Bubble
+                key={message.id}
+                message={message}
+                showAvatar={message.role === "bot" && messages[index - 1]?.role !== "bot"}
+                onNavigate={isMobile ? onClose : undefined}
+              />
+            ))}
+          </div>
+        )}
 
         {typing ? <TypingIndicator reduce={reduce} /> : null}
 
+        {lead && !typing ? (
+          <LeadForm state={lead} onChange={setLead} onSent={onLeadSent} onCancel={cancelLead} />
+        ) : null}
+
         {chips.length > 0 ? (
-          <div role="group" aria-label="Suggested replies" className="mt-4 flex flex-wrap gap-1.5 pl-9">
+          <div role="group" aria-label="Suggested replies" className="mt-4 flex flex-wrap gap-2 pl-10">
             {chips.map((chip) => (
               <button
                 key={`${last.id}-${chip.label}`}
                 type="button"
                 onClick={() => handleChip(chip)}
-                className="rounded-full border border-border bg-background px-3 py-1.5 text-[13px] font-medium text-foreground/85 transition-colors hover:border-foreground/40 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu"
+                className={cn(
+                  "rounded-full border border-setu/25 bg-setu/[0.06] px-3.5 py-1.5 text-[13px] font-medium text-setu transition-colors hover:border-setu/50 hover:bg-setu/10",
+                  chip.action.kind === "ask" && "text-left",
+                  focusRing,
+                )}
               >
                 {chip.label}
               </button>
@@ -452,11 +411,11 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          handleText(draft);
+          ask(draft);
         }}
-        className="shrink-0 bg-surface px-3 pb-[calc(0.625rem+env(safe-area-inset-bottom))] pt-1 sm:pb-2.5"
+        className="shrink-0 border-t border-border bg-surface px-3 pb-[calc(0.625rem+env(safe-area-inset-bottom))] pt-3 sm:pb-3"
       >
-        <div className="flex items-center gap-1 rounded-2xl border border-border bg-background-subtle py-1 pl-4 pr-1 transition-colors focus-within:border-foreground/30 focus-within:bg-surface">
+        <div className="flex items-center gap-2 rounded-2xl border border-border bg-background py-1.5 pl-4 pr-1.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[border-color,box-shadow] focus-within:border-setu/50 focus-within:shadow-[0_0_0_4px_rgba(47,86,216,0.12)]">
           <label htmlFor="setuware-assistant-input" className="sr-only">
             Message {ASSISTANT_NAME}
           </label>
@@ -465,26 +424,26 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
             id="setuware-assistant-input"
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
-            placeholder={lead ? PLACEHOLDERS[lead.step] : "Type your question"}
-            autoComplete={
-              lead?.step === "name" ? "name" : lead?.step === "email" ? "email" : lead?.step === "phone" ? "tel" : "off"
-            }
-            inputMode={lead?.step === "email" ? "email" : lead?.step === "phone" ? "tel" : "text"}
-            maxLength={lead?.step === "message" ? 1500 : 200}
+            placeholder="Ask about services, pricing or our work"
+            autoComplete="off"
+            maxLength={300}
             enterKeyHint="send"
             className="h-10 min-w-0 flex-1 bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:outline-none sm:text-sm"
           />
           <button
             type="submit"
-            disabled={busy || draft.trim().length === 0}
-            className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl bg-foreground text-background transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu disabled:opacity-25"
+            disabled={typing || draft.trim().length === 0}
+            className={cn(
+              "inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#2f56d8,#1c2f78)] text-white shadow-[0_6px_16px_-6px_rgba(47,86,216,0.7)] transition-[opacity,transform] hover:opacity-90 active:scale-95 disabled:opacity-30 disabled:shadow-none",
+              focusRing,
+            )}
             aria-label="Send message"
           >
             <ArrowUp className="size-[18px]" aria-hidden />
           </button>
         </div>
         <p className="mt-2 text-center text-[11px] text-muted-foreground">
-          Automated assistant · team replies {site.hours}
+          Instant answers · Our team is one tap away
         </p>
       </form>
     </motion.div>
@@ -494,6 +453,173 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
 /* -------------------------------------------------------------------------- */
 /* Pieces                                                                      */
 /* -------------------------------------------------------------------------- */
+
+function HeaderButton({ onClick, label, children }: { onClick: () => void; label: string; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className="inline-flex size-9 items-center justify-center rounded-full text-white/75 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-white"
+    >
+      {children}
+    </button>
+  );
+}
+
+function Welcome({
+  greeting,
+  onStarter,
+  onAsk,
+}: {
+  greeting: string;
+  onStarter: (starter: (typeof STARTERS)[number]) => void;
+  onAsk: (question: string) => void;
+}) {
+  return (
+    <div data-message="bot" className="flex flex-col gap-5">
+      <div>
+        <p className="text-[22px] font-semibold leading-tight tracking-tight text-foreground">
+          How can we help you today?
+        </p>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{greeting}</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2.5">
+        {STARTERS.map((starter) => (
+          <button
+            key={starter.title}
+            type="button"
+            onClick={() => onStarter(starter)}
+            className={cn(
+              "group flex flex-col items-start gap-2.5 rounded-2xl border border-border bg-surface p-3.5 text-left shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[border-color,box-shadow,translate] hover:border-setu/40 hover:shadow-[0_10px_24px_-14px_rgba(47,86,216,0.55)] motion-safe:hover:-translate-y-0.5",
+              focusRing,
+            )}
+          >
+            <span className="inline-flex size-9 items-center justify-center rounded-xl bg-setu/10 text-setu ring-1 ring-inset ring-setu/15 transition-colors group-hover:bg-setu group-hover:text-white">
+              <starter.icon className="size-[18px]" aria-hidden />
+            </span>
+            <span>
+              <span className="block text-sm font-semibold text-foreground">{starter.title}</span>
+              <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{starter.body}</span>
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <div>
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          Popular questions
+        </p>
+        <ul className="overflow-hidden rounded-2xl border border-border bg-surface">
+          {POPULAR.map((question) => (
+            <li key={question} className="border-b border-border last:border-b-0">
+              <button
+                type="button"
+                onClick={() => onAsk(question)}
+                className={cn(
+                  "group flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm text-foreground/90 transition-colors hover:bg-setu/[0.05] hover:text-foreground",
+                  focusRing,
+                )}
+              >
+                {question}
+                <ChevronRight
+                  className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-setu"
+                  aria-hidden
+                />
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          Prefer a person?
+        </p>
+        <div className="grid grid-cols-3 gap-2">
+          <ContactTile href={whatsappHref} icon={MessageCircle} label="WhatsApp" newTab />
+          <ContactTile href={site.phoneHref} icon={Phone} label="Call" />
+          <ContactTile href={`mailto:${site.salesEmail}`} icon={Mail} label="Email" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ContactTile({
+  href,
+  icon: Icon,
+  label,
+  newTab,
+}: {
+  href: string;
+  icon: LucideIcon;
+  label: string;
+  newTab?: boolean;
+}) {
+  return (
+    <a
+      href={href}
+      {...(newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      className={cn(
+        "flex items-center justify-center gap-1.5 rounded-xl border border-border bg-surface px-2 py-2.5 text-[13px] font-medium text-foreground/85 transition-colors hover:border-setu/40 hover:text-setu",
+        focusRing,
+      )}
+    >
+      <Icon className="size-4" aria-hidden />
+      {label}
+      {newTab ? <span className="sr-only"> (opens in a new tab)</span> : null}
+    </a>
+  );
+}
+
+/** Renders "• " lines as a list and everything else as paragraphs. */
+function RichText({ text }: { text: string }) {
+  const blocks: { kind: "p" | "ul"; lines: string[] }[] = [];
+  for (const line of text.split("\n")) {
+    if (!line.trim()) continue;
+    const bullet = line.startsWith("• ");
+    const kind = bullet ? "ul" : "p";
+    const content = bullet ? line.slice(2) : line;
+    const previous = blocks[blocks.length - 1];
+    if (kind === "ul" && previous?.kind === "ul") previous.lines.push(content);
+    else blocks.push({ kind, lines: [content] });
+  }
+  return (
+    <div className="flex flex-col gap-2">
+      {blocks.map((block, index) =>
+        block.kind === "ul" ? (
+          <ul key={index} className="flex flex-col gap-1.5">
+            {block.lines.map((line) => {
+              const split = line.indexOf(": ");
+              return (
+                <li key={line} className="flex gap-2">
+                  <span aria-hidden className="mt-[0.55em] size-1.5 shrink-0 rounded-full bg-setu" />
+                  <span className="break-words">
+                    {split > 0 && split < 48 ? (
+                      <>
+                        <span className="font-semibold text-foreground">{line.slice(0, split)}</span>
+                        {line.slice(split)}
+                      </>
+                    ) : (
+                      line
+                    )}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p key={index} className="break-words">
+            {block.lines[0]}
+          </p>
+        ),
+      )}
+    </div>
+  );
+}
 
 function Bubble({
   message,
@@ -511,10 +637,10 @@ function Bubble({
     return (
       <div data-message="user" className="flex flex-col items-end">
         <span className="sr-only">You said:</span>
-        <p className="max-w-[85%] whitespace-pre-line break-words rounded-2xl rounded-br-md bg-foreground px-3.5 py-2 text-sm leading-relaxed text-background">
+        <p className="max-w-[85%] whitespace-pre-line break-words rounded-[20px] rounded-br-md bg-[linear-gradient(135deg,#2f56d8,#2448c0)] px-4 py-2.5 text-sm leading-relaxed text-white shadow-[0_8px_20px_-12px_rgba(47,86,216,0.8)]">
           {message.text}
         </p>
-        <time className="sr-only" dateTime={new Date(message.at).toISOString()}>
+        <time className="mt-1 pr-1 text-[10px] text-muted-foreground" dateTime={new Date(message.at).toISOString()}>
           {time}
         </time>
       </div>
@@ -522,28 +648,35 @@ function Bubble({
   }
 
   return (
-    <div data-message="bot" className="flex items-end gap-2">
-      <span className="w-7 shrink-0 self-start" aria-hidden>
-        {showAvatar ? <LogoMark className="size-7" /> : null}
+    <div data-message="bot" className="flex items-start gap-2">
+      <span className="w-8 shrink-0" aria-hidden>
+        {showAvatar ? <AssistantAvatar className="size-8 rounded-xl" /> : null}
       </span>
-      <div className="flex min-w-0 max-w-[85%] flex-col items-start">
+      <div className="flex min-w-0 max-w-[calc(100%-2.5rem)] flex-1 flex-col items-start gap-2">
         <span className="sr-only">{ASSISTANT_NAME}:</span>
         <div
           className={cn(
-            "rounded-2xl rounded-tl-md bg-background-subtle px-3.5 py-2.5 text-sm leading-relaxed text-foreground",
-            message.tone === "error" && "ring-1 ring-amber-300/70",
+            "rounded-[20px] rounded-tl-md border border-border bg-surface px-4 py-3 text-sm leading-relaxed text-foreground/90 shadow-[0_1px_2px_rgba(15,23,42,0.05)]",
+            message.tone === "error" && "border-amber-300/80",
           )}
         >
-          <p className="whitespace-pre-line break-words">{message.text}</p>
+          <RichText text={message.text} />
           {message.links && message.links.length > 0 ? (
-            <div className="mt-2.5 flex flex-col gap-1.5">
+            <div className="mt-3 flex flex-wrap gap-1.5">
               {message.links.map((link) => (
                 <MessageLink key={link.href} link={link} onNavigate={onNavigate} />
               ))}
             </div>
           ) : null}
         </div>
-        <time className="sr-only" dateTime={new Date(message.at).toISOString()}>
+        {message.cards && message.cards.length > 0 ? (
+          <div className="flex w-full flex-col gap-2">
+            {message.cards.map((card) => (
+              <ReplyCardView key={card.href} card={card} onNavigate={onNavigate} />
+            ))}
+          </div>
+        ) : null}
+        <time className="pl-1 text-[10px] text-muted-foreground" dateTime={new Date(message.at).toISOString()}>
           {time}
         </time>
       </div>
@@ -551,9 +684,58 @@ function Bubble({
   );
 }
 
+function ReplyCardView({ card, onNavigate }: { card: ReplyCard; onNavigate?: () => void }) {
+  const base = cn(
+    "group relative block w-full overflow-hidden rounded-2xl border border-border bg-surface p-3.5 transition-[border-color,box-shadow] hover:border-setu/40 hover:shadow-[0_12px_28px_-16px_rgba(47,86,216,0.6)]",
+    focusRing,
+  );
+
+  if (card.kind === "service") {
+    return (
+      <Link href={card.href} onClick={onNavigate} className={base}>
+        <div className="flex items-start gap-3">
+          <ServiceIcon name={card.icon} accent={card.accent} className="size-10 rounded-xl" size={18} />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-foreground">{card.title}</p>
+            <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-muted-foreground">{card.summary}</p>
+          </div>
+          <ArrowUpRight
+            className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-px group-hover:translate-x-px group-hover:text-setu"
+            aria-hidden
+          />
+        </div>
+        <div className="mt-3 flex flex-wrap gap-1.5 text-[11px] font-medium">
+          <span className="rounded-full bg-setu/10 px-2.5 py-1 text-setu">{card.price}</span>
+          <span className="rounded-full bg-surface-2 px-2.5 py-1 text-foreground/75">{card.timeline}</span>
+        </div>
+      </Link>
+    );
+  }
+
+  return (
+    <Link href={card.href} onClick={onNavigate} className={base}>
+      <span
+        aria-hidden
+        className="absolute inset-y-0 left-0 w-1"
+        style={{ backgroundImage: `linear-gradient(180deg, ${card.accent[0]}, ${card.accent[1]})` }}
+      />
+      <p className="pl-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+        {card.client} · {card.sector}
+      </p>
+      <p className="mt-1 pl-1.5 text-sm font-semibold leading-snug text-foreground">{card.title}</p>
+      <p className="mt-2 inline-flex items-center gap-1 pl-1.5 text-xs font-semibold text-setu">
+        Read case study
+        <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
+      </p>
+    </Link>
+  );
+}
+
 function MessageLink({ link, onNavigate }: { link: ChatLink; onNavigate?: () => void }) {
-  const className =
-    "group inline-flex items-center gap-1 self-start rounded-full border border-border bg-surface px-3 py-1.5 text-[13px] font-medium text-foreground transition-colors hover:border-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-setu";
+  const className = cn(
+    "group inline-flex items-center gap-1 rounded-full bg-surface-2 px-3 py-1.5 text-[12.5px] font-medium text-foreground transition-colors hover:bg-setu/10 hover:text-setu",
+    focusRing,
+  );
   const icon = (
     <ArrowUpRight
       className="size-3.5 transition-transform duration-200 group-hover:-translate-y-px group-hover:translate-x-px"
@@ -564,11 +746,7 @@ function MessageLink({ link, onNavigate }: { link: ChatLink; onNavigate?: () => 
   if (link.external) {
     const newTab = link.href.startsWith("http");
     return (
-      <a
-        href={link.href}
-        className={className}
-        {...(newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      >
+      <a href={link.href} className={className} {...(newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
         {link.label}
         {newTab ? <span className="sr-only"> (opens in a new tab)</span> : null}
         {icon}
@@ -584,17 +762,185 @@ function MessageLink({ link, onNavigate }: { link: ChatLink; onNavigate?: () => 
   );
 }
 
+function Field({
+  label,
+  error,
+  children,
+}: {
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="flex flex-col gap-1">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{label}</span>
+      {children}
+      {error ? <span className="text-xs text-red-600 dark:text-red-400">{error}</span> : null}
+    </label>
+  );
+}
+
+const inputClass =
+  "w-full rounded-xl border border-border bg-background px-3 py-2 text-base text-foreground placeholder:text-muted-foreground/80 transition-[border-color,box-shadow] focus:border-setu/60 focus:shadow-[0_0_0_3px_rgba(47,86,216,0.12)] focus:outline-none sm:text-sm";
+
+function LeadForm({
+  state,
+  onChange,
+  onSent,
+  onCancel,
+}: {
+  state: LeadState;
+  onChange: (next: LeadState) => void;
+  onSent: (state: LeadState) => void;
+  onCancel: () => void;
+}) {
+  const [errors, setErrors] = useState<LeadErrors>({});
+  const [sending, setSending] = useState(false);
+  const [failure, setFailure] = useState<string | null>(null);
+  const { draft } = state;
+
+  const set = (patch: Partial<LeadDraft>) => onChange({ ...state, draft: { ...draft, ...patch } });
+
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const found = validateLead(draft);
+    setErrors(found);
+    if (Object.keys(found).length > 0) return;
+    setSending(true);
+    setFailure(null);
+    const elapsed = Math.max(Date.now() - state.startedAt, 1_500);
+    const result = await postJson<{ reference: string }>("/api/contact", leadPayload(draft, elapsed));
+    setSending(false);
+    if (result.ok) {
+      onSent(state);
+      return;
+    }
+    setFailure(Object.values(result.fields ?? {})[0] ?? result.message);
+  };
+
+  return (
+    <form
+      onSubmit={submit}
+      noValidate
+      aria-label="Request a call back"
+      className="mt-4 ml-10 rounded-2xl border border-setu/25 bg-surface p-4 shadow-[0_16px_36px_-24px_rgba(47,86,216,0.7)]"
+    >
+      <p className="text-sm font-semibold text-foreground">Request a call back</p>
+      <p className="mt-0.5 text-xs text-muted-foreground">Our team replies within one business day.</p>
+
+      <div className="mt-3 flex flex-col gap-2.5">
+        <Field label="Name" error={errors.name}>
+          <input
+            className={inputClass}
+            value={draft.name}
+            onChange={(event) => set({ name: event.target.value })}
+            autoComplete="name"
+            maxLength={80}
+            placeholder="Your full name"
+          />
+        </Field>
+        <Field label="Email" error={errors.email}>
+          <input
+            className={inputClass}
+            value={draft.email}
+            onChange={(event) => set({ email: event.target.value })}
+            autoComplete="email"
+            inputMode="email"
+            maxLength={254}
+            placeholder="name@company.com"
+          />
+        </Field>
+        <Field label="Phone (optional)" error={errors.phone}>
+          <input
+            className={inputClass}
+            value={draft.phone}
+            onChange={(event) => set({ phone: event.target.value })}
+            autoComplete="tel"
+            inputMode="tel"
+            maxLength={24}
+            placeholder="+91 98765 43210"
+          />
+        </Field>
+        <Field label="Service">
+          <select
+            className={inputClass}
+            value={draft.service}
+            onChange={(event) => {
+              const option = leadServiceOptions().find((entry) => entry.value === event.target.value);
+              set({ service: option?.value ?? "", serviceLabel: option?.label ?? "" });
+            }}
+          >
+            <option value="">Choose a service</option>
+            {leadServiceOptions().map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Project" error={errors.message}>
+          <textarea
+            className={cn(inputClass, "min-h-20 resize-none")}
+            value={draft.message}
+            onChange={(event) => set({ message: event.target.value })}
+            maxLength={1500}
+            placeholder="A sentence or two about what you need"
+          />
+        </Field>
+      </div>
+
+      {failure ? (
+        <p role="alert" className="mt-3 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:bg-amber-400/10 dark:text-amber-200">
+          I could not send your request. {failure} You may try again or contact us on WhatsApp.
+        </p>
+      ) : null}
+
+      <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
+        By sending, you agree to our{" "}
+        <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">
+          privacy policy
+        </Link>
+        .
+      </p>
+      <div className="mt-3 flex items-center gap-2">
+        <button
+          type="submit"
+          disabled={sending}
+          className={cn(
+            "inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#2f56d8,#1c2f78)] text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(47,86,216,0.8)] transition-opacity hover:opacity-90 disabled:opacity-60",
+            focusRing,
+          )}
+        >
+          {sending ? <Loader2 className="size-4 animate-spin" aria-hidden /> : null}
+          {sending ? "Sending" : "Send request"}
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={sending}
+          className={cn(
+            "h-10 rounded-xl px-3.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground",
+            focusRing,
+          )}
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  );
+}
+
 function TypingIndicator({ reduce }: { reduce: boolean }) {
   return (
-    <div className="mt-3 flex items-end gap-2">
-      <span className="w-7 shrink-0" aria-hidden />
-      <div className="inline-flex items-center gap-1 rounded-2xl rounded-tl-md bg-background-subtle px-3.5 py-3">
+    <div className="mt-4 flex items-start gap-2">
+      <span className="w-8 shrink-0" aria-hidden />
+      <div className="inline-flex items-center gap-1 rounded-[20px] rounded-tl-md border border-border bg-surface px-4 py-3.5">
         <span className="sr-only">{ASSISTANT_NAME} is typing</span>
         {[0, 1, 2].map((dot) => (
           <motion.span
             key={dot}
             aria-hidden
-            className="size-1.5 rounded-full bg-muted-foreground/70"
+            className="size-1.5 rounded-full bg-setu/70"
             animate={reduce ? { opacity: 0.7 } : { opacity: [0.35, 1, 0.35], y: [0, -2, 0] }}
             transition={reduce ? { duration: 0 } : { duration: 1, repeat: Infinity, delay: dot * 0.15, ease: "easeInOut" }}
           />

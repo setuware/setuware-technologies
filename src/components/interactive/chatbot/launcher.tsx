@@ -2,13 +2,13 @@
 
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { MessageCircle, X } from "lucide-react";
+import { X } from "lucide-react";
 
-import { LogoMark } from "@/components/layout/logo";
 import { EASE_OUT } from "@/components/motion/ease";
 import { useReducedMotionSafe } from "@/components/motion/primitives";
 import { cn } from "@/lib/utils";
 
+import { AssistantMark } from "./avatar";
 import { isWithinHours } from "./constants";
 import { setChatOpen } from "./state";
 
@@ -82,7 +82,7 @@ export function ChatLauncher() {
           className={cn(
             // Same footprint as the WhatsApp button below it (52px, 56px from
             // `sm`), stacked 12px above it on the same centre line.
-            "group fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-[35] inline-flex size-[52px] items-center justify-center rounded-full bg-[#0b1020] text-white ring-1 ring-white/10 sm:bottom-[92px] sm:right-5 sm:size-14",
+            "group fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-[35] inline-flex size-[52px] items-center justify-center rounded-full bg-[linear-gradient(135deg,#0b1020_0%,#1c2f78_55%,#2f56d8_100%)] text-white ring-1 ring-white/15 sm:bottom-[92px] sm:right-5 sm:size-14",
             "shadow-[0_12px_30px_-10px_rgba(11,16,32,0.55),0_2px_6px_rgba(15,23,42,0.18)] transition-[box-shadow,translate] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
             "hover:shadow-[0_16px_36px_-10px_rgba(47,86,216,0.55),0_2px_6px_rgba(15,23,42,0.2)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-setu motion-safe:hover:-translate-y-0.5",
           )}
@@ -100,9 +100,7 @@ export function ChatLauncher() {
                 {open ? (
                   <X className="size-6" strokeWidth={2.2} />
                 ) : (
-                  <span className="dark">
-                    <LogoMark className="h-8 w-auto sm:h-9 sm:w-auto" />
-                  </span>
+                  <AssistantMark className="w-7 sm:w-[30px]" />
                 )}
               </motion.span>
             </AnimatePresence>
@@ -111,10 +109,11 @@ export function ChatLauncher() {
           {open ? null : (
             <span
               aria-hidden
-              className="absolute -right-0.5 -top-0.5 inline-flex size-[18px] items-center justify-center rounded-full bg-setu text-white ring-2 ring-background"
-            >
-              <MessageCircle className="size-2.5" strokeWidth={3} />
-            </span>
+              className={cn(
+                "absolute right-0 top-0 size-3.5 rounded-full ring-[2.5px] ring-background",
+                online ? "bg-emerald-400" : "bg-amber-400",
+              )}
+            />
           )}
 
           <span

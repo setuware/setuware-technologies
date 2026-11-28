@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  advanceLead,
   editDistance,
   EMPTY_LEAD,
   faqReply,
   leadPayload,
+  parseBudget,
+  validateLead,
   matchIntent,
   normalise,
   pricingReply,
@@ -143,28 +144,23 @@ describe("answers", () => {
   });
 });
 
-describe("enquiry flow", () => {
-  it("accepts a phone number first, then asks for an email", () => {
-    let step = advanceLead("name", "Priya Sharma", EMPTY_LEAD);
-    expect(step.next).toBe("contact");
-    step = advanceLead("contact", "+91 98765 43210", step.draft);
-    expect(step.next).toBe("email");
-    expect(step.draft.phone).toBe("+91 98765 43210");
-    step = advanceLead("email", "Priya@Example.com", step.draft);
-    expect(step.next).toBe("service");
-    expect(step.draft.email).toBe("priya@example.com");
+describe("enquiry form", () => {
+  const valid = {
+    name: "Priya Sharma",
+    email: "priya@example.com",
+    phone: "+91 98765 43210",
+    service: "business-websites" as const,
+    serviceLabel: "Business websites",
+    message: "A new website for our clinic",
+  };
+
+  it("accepts a complete draft", () => {
+    expect(validateLead(valid)).toEqual({});
   });
 
-  it("goes from an email to the optional phone step", () => {
-    const step = advanceLead("contact", "priya@example.com", { ...EMPTY_LEAD, name: "Priya" });
-    expect(step.next).toBe("phone");
-  });
-
-  it("rejects invalid answers without moving on", () => {
-    expect(advanceLead("name", "P", EMPTY_LEAD).error).toBeDefined();
-    expect(advanceLead("contact", "not sure", EMPTY_LEAD).error).toBeDefined();
-    expect(advanceLead("email", "priya@example.con", EMPTY_LEAD).error).toBeDefined();
-    expect(advanceLead("message", "hi", EMPTY_LEAD).next).toBe("message");
+  it("flags each fixable field", () => {
+    const errors = validateLead({ ...EMPTY_LEAD, name: "P", email: "priya@example.con", phone: "abc", message: "hi" });
+    expect(Object.keys(errors).sort()).toEqual(["email", "message", "name", "phone"]);
   });
 
   it("builds a payload the contact API accepts", () => {
@@ -190,5 +186,77 @@ describe("isWithinHours", () => {
     expect(isWithinHours(new Date("2026-11-02T06:00:00Z"))).toBe(true); // Mon 11:30 IST
     expect(isWithinHours(new Date("2026-11-02T14:00:00Z"))).toBe(false); // Mon 19:30 IST
     expect(isWithinHours(new Date("2026-11-01T06:00:00Z"))).toBe(false); // Sunday
+  });
+});
+
+describe("knowledge topics", () => {
+  it.each([
+    ["Do you sign an NDA?", "nda"],
+    ["what tech stack do you use", "stack"],
+    ["show me your past work", "work"],
+    ["can i pay in installments", "payments"],
+    ["Who are you?", "about"],
+    ["who is the founder", "founder"],
+    ["Do you work with clients outside India?", "location"],
+  ])("routes %s to %s", (question, id) => {
+    expect(matchIntent(question)).toEqual({ type: "topic", id });
+  });
+
+  it("answers an NDA question from the service FAQs", () => {
+    expect(replyTo("Will you sign an NDA?").text).toContain("NDA");
+  });
+
+  it("shows case-study cards for past work", () => {
+    const cards = replyTo("show me your past work").cards ?? [];
+    expect(cards.length).toBeGreaterThan(0);
+    expect(cards.every((card) => card.kind === "project")).toBe(true);
+  });
+
+  it("answers industry questions", () => {
+    expect(matchIntent("I run a clinic")).toEqual({ type: "industry", slug: "healthcare-clinics" });
+  });
+
+  it("gives a mobile app timeline, not a website one", () => {
+    const reply = replyTo("How long does a mobile app take?");
+    expect(reply.service).toBe("app-development");
+    expect(reply.cards?.[0]).toMatchObject({ kind: "service", slug: "app-development" });
+  });
+});
+
+describe("conversation context", () => {
+  it("answers a follow-up about the service just discussed", () => {
+    expect(matchIntent("how much?", { service: "app-development" })).toEqual({
+      type: "service-price",
+      slug: "app-development",
+    });
+    expect(matchIntent("how long will it take", { service: "app-development" })).toEqual({
+      type: "service-timeline",
+      slug: "app-development",
+    });
+    // A service's own FAQ answers the follow-up when it has one.
+    expect(matchIntent("how long will it take", { service: "ecommerce-stores" })).toMatchObject({
+      type: "service-faq",
+      slug: "ecommerce-stores",
+    });
+  });
+
+  it("falls back to general pricing without context", () => {
+    expect(matchIntent("how much?")).toEqual({ type: "intent", intent: "pricing" });
+  });
+});
+
+describe("parseBudget", () => {
+  it.each([
+    ["under 20k", 20_000],
+    ["₹1.5 lakh", 150_000],
+    ["budget 50,000", 50_000],
+    ["Rs 75000", 75_000],
+    ["2 crore", 20_000_000],
+  ])("reads %s", (input, expected) => {
+    expect(parseBudget(input)).toBe(expected);
+  });
+
+  it("ignores text without a budget", () => {
+    expect(parseBudget("I need a website for 3 branches")).toBeNull();
   });
 });
