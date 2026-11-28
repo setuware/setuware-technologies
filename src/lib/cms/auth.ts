@@ -170,7 +170,17 @@ export async function createUser(input: {
   const now = new Date().toISOString();
   const hash = input.password ? await hashPassword(input.password) : NO_PASSWORD;
   const result = getDb()
-    .prepare("INSERT INTO users (email,name,role,password_hash,must_change_password,created_at) VALUES (?,?,?,?,?,?)")
+    .prepare(
+      `INSERT INTO users (id,email,name,role,password_hash,must_change_password,created_at)
+       VALUES (
+         1 + MAX(
+           COALESCE((SELECT MAX(id) FROM users), 0),
+           COALESCE((SELECT MAX(user_id) FROM documents), 0),
+           COALESCE((SELECT MAX(user_id) FROM expense_claims), 0)
+         ),
+         ?,?,?,?,?,?
+       )`,
+    )
     .run(input.email.trim().toLowerCase(), input.name.trim(), input.role, hash, input.password && input.temporary !== false ? 1 : 0, now);
   return getUser(Number(result.lastInsertRowid)) as AdminUser;
 }

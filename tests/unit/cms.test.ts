@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { postBodies } from "@/lib/post-bodies";
 import { posts } from "@/lib/posts";
 import { jobs } from "@/lib/careers";
+import { localDay } from "@/lib/cms/attendance";
 import {
   can,
   seesAll,
@@ -32,6 +33,8 @@ import {
   verifyPassword,
 } from "@/lib/cms/auth";
 import { getDb, resetDb } from "@/lib/cms/db";
+import { createDocument, listDocuments } from "@/lib/cms/documents";
+import { listClaims, submitClaim } from "@/lib/cms/expenses";
 import { blocksToMarkdown, markdownToBlocks, readingMinutes, slugify } from "@/lib/cms/markdown";
 import {
   listEnquiries,
@@ -251,6 +254,28 @@ describe("admin auth", () => {
     expect(getUserByEmail("lead@example.com")).toBeNull();
     expect(userForToken(session.token)).toBeNull();
     expect(getUserByEmail("rep@example.com")!.managerId).toBeNull();
+  });
+
+  it("does not reuse deleted user IDs that own private records", async () => {
+    const original = await createUser({ email: "original@example.com", name: "Original", role: "developer", password: "OriginalPass123" });
+    createDocument({
+      user_id: original.id,
+      title: "Tax document",
+      category: "Tax",
+      file: "tax.pdf",
+      original_name: "tax.pdf",
+      mime: "application/pdf",
+      size: 1,
+      uploaded_by: original.id,
+    });
+    submitClaim(original.id, { spentOn: localDay(), category: "Travel", amountPaise: 100, description: "Taxi fare" });
+
+    deleteUser(original.id);
+
+    const replacement = await createUser({ email: "replacement@example.com", name: "Replacement", role: "developer", password: "ReplacementPass123" });
+    expect(replacement.id).not.toBe(original.id);
+    expect(listDocuments({ userId: replacement.id })).toEqual([]);
+    expect(listClaims({ userId: replacement.id })).toEqual([]);
   });
 });
 
