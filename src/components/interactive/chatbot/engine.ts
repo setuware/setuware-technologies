@@ -701,8 +701,8 @@ function startingPrice(service: Service): number {
   return service.entryPriceFrom ?? service.priceFrom;
 }
 
-/** Services sold under the Full Application Build package. */
-const APPLICATION_SERVICES = new Set<ServiceKey>(["web-development", "app-development", "custom-software"]);
+/** Services sold under the Full Application Build package; mobile apps are priced on their own. */
+const APPLICATION_SERVICES = new Set<ServiceKey>(["web-development", "custom-software"]);
 
 function listJoin(items: readonly string[]): string {
   if (items.length <= 1) return items.join("");
@@ -762,6 +762,7 @@ function servicePrice(service: Service): string {
     return `Landing pages start at ${formatINR(service.entryPriceFrom)} and complete business websites at ${formatINR(service.priceFrom)}.`;
   }
   if (APPLICATION_SERVICES.has(service.slug) && fullApplication) {
+    if (startingPrice(service) <= fullApplication) return `Full application builds start from ${formatINR(fullApplication)}.`;
     return `Full application builds start from ${formatINR(fullApplication)}, and a typical ${service.name.toLowerCase()} project is estimated from ${formatINR(startingPrice(service))}.`;
   }
   return `${service.priceLabel ?? `Projects start from ${formatINR(startingPrice(service))}`}.`;

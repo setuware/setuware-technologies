@@ -316,3 +316,12 @@ describe("review fixes", () => {
     expect(links.some((link) => link.href.includes("hospitality"))).toBe(false);
   });
 });
+
+describe("mobile app pricing", () => {
+  it("quotes mobile apps from ₹29,999, not the web-app package price", () => {
+    const reply = replyTo("mobile app under 25k");
+    expect(reply.text).toContain("₹29,999");
+    expect(reply.text).not.toContain("₹19,999");
+    expect(reply.cards?.[0]).toMatchObject({ kind: "service", price: "From ₹29,999" });
+  });
+});
