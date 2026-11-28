@@ -274,6 +274,9 @@ describe("parseBudget", () => {
     expect(parseBudget("how long to launch a website around 2027?")).toBeNull();
     expect(parseBudget("Last year we paid ₹10,000 for a site. This time my budget is ₹50,000.")).toBe(50_000);
     expect(parseBudget("We paid ₹10,000 last time. Our budget: ₹50,000")).toBe(50_000);
+    expect(parseBudget("How much can I spend? My website budget is 8000")).toBe(8_000);
+    expect(parseBudget("website under 2000")).toBe(2_000);
+    expect(parseBudget("website budget around 2000")).toBe(2_000);
   });
 
   it("ignores text without a budget", () => {
