@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { dataDir } from "./db";
@@ -13,7 +13,7 @@ import { dataDir } from "./db";
  * claimed type, and is saved under a random name.
  */
 
-export type UploadKind = "resumes" | "media";
+export type UploadKind = "resumes" | "media" | "private";
 
 interface Rule {
   maxBytes: number;
@@ -45,6 +45,15 @@ const RULES: Record<UploadKind, Rule> = {
       { ext: "gif", mime: "image/gif", magic: (b) => starts(b, [0x47, 0x49, 0x46, 0x38]) },
     ],
   },
+  private: {
+    maxBytes: 10 * 1024 * 1024,
+    types: [
+      { ext: "pdf", mime: "application/pdf", magic: (b) => starts(b, [0x25, 0x50, 0x44, 0x46]) },
+      { ext: "jpg", mime: "image/jpeg", magic: (b) => starts(b, [0xff, 0xd8, 0xff]) },
+      { ext: "png", mime: "image/png", magic: (b) => starts(b, [0x89, 0x50, 0x4e, 0x47]) },
+      { ext: "webp", mime: "image/webp", magic: (b) => starts(b, [0x52, 0x49, 0x46, 0x46]) && starts(b, [0x57, 0x45, 0x42, 0x50], 8) },
+    ],
+  },
 };
 
 export class UploadError extends Error {}
@@ -57,13 +66,13 @@ function folder(kind: UploadKind): string {
 export async function saveUpload(kind: UploadKind, file: File): Promise<{ file: string; original: string; mime: string }> {
   const rule = RULES[kind];
   if (file.size === 0) throw new UploadError("The file is empty.");
-  if (file.size > rule.maxBytes) throw new UploadError(`Files must be under ${rule.maxBytes / 1024 / 1024} MB.`);
+  if (file.size > rule.maxBytes) throw new UploadError(`Files must be ${rule.maxBytes / 1024 / 1024} MB or smaller.`);
 
   const bytes = new Uint8Array(await file.arrayBuffer());
   const type = rule.types.find((candidate) => candidate.magic(bytes));
   if (!type) {
     throw new UploadError(
-      kind === "resumes" ? "Please upload a PDF or Word document." : "Please upload a JPG, PNG, WebP or GIF image.",
+      kind === "resumes" ? "Please upload a PDF or Word document." : kind === "private" ? "Please upload a PDF, JPG, PNG or WebP file." : "Please upload a JPG, PNG, WebP or GIF image.",
     );
   }
 
@@ -84,5 +93,18 @@ export async function readUpload(kind: UploadKind, name: string): Promise<{ byte
     return { bytes: await readFile(path.join(folder(kind), name)), mime: type.mime };
   } catch {
     return null;
+  }
+}
+
+/** Removes a stored upload only when its name and extension match the kind. */
+export async function deleteUpload(kind: UploadKind, name: string): Promise<boolean> {
+  if (!/^[\w-]+\.(pdf|docx|doc|jpg|png|webp|gif)$/.test(name)) return false;
+  const ext = name.split(".").pop() ?? "";
+  if (!RULES[kind].types.some((candidate) => candidate.ext === ext)) return false;
+  try {
+    await unlink(path.join(folder(kind), name));
+    return true;
+  } catch {
+    return false;
   }
 }

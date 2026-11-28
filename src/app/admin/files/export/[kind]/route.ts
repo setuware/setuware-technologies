@@ -5,6 +5,7 @@ import { teamScope } from "@/lib/cms/notify";
 import { currentVerifiedUser } from "@/lib/cms/session";
 import { listSubscribers } from "@/lib/cms/crm";
 import { listApplications, listEnquiries } from "@/lib/cms/store";
+import { listClaims } from "@/lib/cms/expenses";
 
 /** Quotes a CSV cell and defuses spreadsheet formulas (=, +, -, @). */
 function cell(value: unknown): string {
@@ -77,6 +78,38 @@ export async function GET(request: Request, { params }: { params: Promise<{ kind
       headers: {
         "content-type": "text/csv; charset=utf-8",
         "content-disposition": `attachment; filename="setuware-timesheets-${monday}.csv"`,
+        "cache-control": "private, no-store",
+      },
+    });
+  }
+  const expensesScope = user ? teamScope(user, "expenses") : null;
+  if (user && expensesScope && kind === "expenses" && (expensesScope.all || expensesScope.ids.length)) {
+    const month = search.get("month") ?? undefined;
+    const status = search.get("status") ?? undefined;
+    const names = new Map(listUsers().map((member) => [member.id, member.name]));
+    const rows = listClaims({
+      month,
+      status: ["pending", "approved", "rejected", "paid", "cancelled"].includes(status ?? "") ? (status as "pending" | "approved" | "rejected" | "paid" | "cancelled") : undefined,
+    })
+      .filter((claim) => expensesScope.all || expensesScope.ids.includes(claim.user_id))
+      .map((claim) => ({
+        employee: names.get(claim.user_id) ?? "",
+        spent_on: claim.spent_on,
+        category: claim.category,
+        amount_inr: (claim.amount_paise / 100).toFixed(2),
+        description: claim.description,
+        status: claim.status,
+        decided_at: claim.decided_at ?? "",
+        decision_note: claim.decision_note,
+        paid_at: claim.paid_at ?? "",
+        created_at: claim.created_at,
+      }));
+    const body = csv(rows, ["employee", "spent_on", "category", "amount_inr", "description", "status", "decided_at", "decision_note", "paid_at", "created_at"]);
+    const monthPart = /^\d{4}-(0[1-9]|1[0-2])$/.test(month ?? "") ? `-${month}` : "";
+    return new Response(`\ufeff${body}`, {
+      headers: {
+        "content-type": "text/csv; charset=utf-8",
+        "content-disposition": `attachment; filename="setuware-expenses${monthPart}.csv"`,
         "cache-control": "private, no-store",
       },
     });

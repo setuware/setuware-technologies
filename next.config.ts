@@ -66,8 +66,8 @@ const nextConfig: NextConfig = {
   // Keep icon imports from pulling the whole library into a chunk.
   experimental: {
     optimizePackageImports: ["lucide-react"],
-    // Admin uploads (cover images) go through Server Actions; 1 MB is too small.
-    serverActions: { bodySizeLimit: "6mb" },
+    // Private document uploads go through Server Actions and may be up to 10 MB.
+    serverActions: { bodySizeLimit: "11mb" },
   },
 
   turbopack: {

@@ -343,6 +343,36 @@ CREATE TABLE IF NOT EXISTS holidays (
   day TEXT PRIMARY KEY,
   name TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS expense_claims (
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  spent_on TEXT NOT NULL,
+  category TEXT NOT NULL,
+  amount_paise INTEGER NOT NULL,
+  description TEXT NOT NULL,
+  receipt_file TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','approved','rejected','paid','cancelled')),
+  decided_by INTEGER,
+  decided_at TEXT,
+  decision_note TEXT NOT NULL DEFAULT '',
+  paid_at TEXT,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS expense_claims_user ON expense_claims(user_id, spent_on);
+CREATE INDEX IF NOT EXISTS expense_claims_status ON expense_claims(status, spent_on);
+CREATE TABLE IF NOT EXISTS documents (
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER,
+  title TEXT NOT NULL,
+  category TEXT NOT NULL,
+  file TEXT NOT NULL,
+  original_name TEXT NOT NULL,
+  mime TEXT NOT NULL,
+  size INTEGER NOT NULL,
+  uploaded_by INTEGER NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS documents_user ON documents(user_id, category, created_at);
 `;
 
 export function dataDir(): string {
@@ -530,6 +560,15 @@ function migrate(db: Database): void {
       db.prepare("UPDATE roles SET permissions = ? WHERE key = ?").run(JSON.stringify(merged), key);
     }
     db.prepare("INSERT OR REPLACE INTO settings (key,value) VALUES ('rbac_review_v1','true')").run();
+  }
+  if (!db.prepare("SELECT 1 FROM settings WHERE key = 'rbac_erp_v1'").get()) {
+    const row = db.prepare("SELECT permissions FROM roles WHERE key = 'hr'").get() as { permissions: string } | undefined;
+    if (row) {
+      const extra = ["expenses.view", "expenses.approve", "documents.manage"];
+      const merged = [...new Set([...(JSON.parse(row.permissions) as string[]), ...extra])];
+      db.prepare("UPDATE roles SET permissions = ? WHERE key = 'hr'").run(JSON.stringify(merged));
+    }
+    db.prepare("INSERT OR REPLACE INTO settings (key,value) VALUES ('rbac_erp_v1','true')").run();
   }
   // Engineering roles (Nov 2026): added once to existing installs; never overwrites a role with the same key.
   if (!db.prepare("SELECT 1 FROM settings WHERE key = 'roles_engineering_v1'").get()) {

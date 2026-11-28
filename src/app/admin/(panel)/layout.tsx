@@ -8,10 +8,11 @@ import { dashboardCounts } from "@/lib/cms/store";
 import { listRequests, localDay, presence } from "@/lib/cms/attendance";
 import { runningTimer, taskCounts } from "@/lib/cms/tasks";
 import { pendingSheets } from "@/lib/cms/timesheets";
+import { listClaims } from "@/lib/cms/expenses";
 import { mayApproveFor } from "@/lib/cms/notify";
 import { AdminShell } from "@/components/admin/shell";
 
-const AREAS = ["leads", "roles.manage", "enquiries", "bookings", "subscribers", "analytics", "posts", "jobs", "media", "applications", "users", "templates", "settings.manage", "attendance", "timesheets"] as const;
+const AREAS = ["leads", "roles.manage", "enquiries", "bookings", "subscribers", "analytics", "posts", "jobs", "media", "applications", "users", "templates", "settings.manage", "attendance", "timesheets", "expenses", "documents.manage"] as const;
 
 // Signed-in pages block on the session; per the Cache Components auth guide,
 // they opt out of instant-navigation validation.
@@ -32,12 +33,13 @@ async function Gate({ children }: { children: React.ReactNode }) {
   const counts = dashboardCounts();
   // Managers see their own team's attendance and timesheets even without the wider permission.
   const manages = reportIds(user.id).length > 0;
-  const areas = AREAS.filter((area) => can(user, area) || (manages && (area === "attendance" || area === "timesheets")));
+  const areas = AREAS.filter((area) => can(user, area) || (manages && (area === "attendance" || area === "timesheets" || area === "expenses")));
   const today = presence(user.id);
   const timer = runningTimer(user.id);
   const tasks = taskCounts(user.id, localDay());
   const approvals = areas.includes("attendance") ? listRequests({ status: "pending" }).filter((request) => mayApproveFor(user, request.user_id, "attendance.manage")).length : 0;
   const sheetsWaiting = areas.includes("timesheets") ? pendingSheets().filter((id) => mayApproveFor(user, id, "timesheets.approve")).length : 0;
+  const expenseClaimsWaiting = areas.includes("expenses") ? listClaims({ status: "pending" }).filter((claim) => mayApproveFor(user, claim.user_id, "expenses.approve")).length : 0;
   return (
     <AdminShell
       user={{ id: user.id, name: user.name, email: user.email, roleLabel: user.roleName }}
@@ -56,6 +58,7 @@ async function Gate({ children }: { children: React.ReactNode }) {
         "/admin/tasks": tasks.overdue + tasks.toReview,
         "/admin/timesheets/team": sheetsWaiting,
         "/admin/attendance/team": approvals,
+        "/admin/expenses/team": expenseClaimsWaiting,
       }}
     >
       {children}
