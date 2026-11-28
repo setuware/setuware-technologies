@@ -514,7 +514,7 @@ const FOREIGN_AMOUNT =
   /(?:\$|€|£|\busd|\baed)\s*\d+(?:\.\d+)?\s*(?:k|m|thousand|million|lakhs?)?(?:\s*(?:-|–|to)\s*\d+(?:\.\d+)?\s*(?:k|m|thousand|million|lakhs?)?)?\b|\d+(?:\.\d+)?\s*(?:k|m|thousand|million|lakhs?)?\s*(?:usd|dollars?|euros?|pounds?|aed|dirhams?)\b/g;
 const BUDGET_WORD = /\b(budget|afford|spend)\b/;
 const LIMIT_WORD = /\b(under|within|below|upto|up to|around|about|max|maximum)\b/;
-const YEAR_CONTEXT = /\b(in|for|by|since|till|until|year|from)\s*$/;
+const YEAR_CONTEXT = /\b(in|for|by|since|till|until|year|from|around|before|after)\s*$/;
 const AMOUNT = new RegExp(
   String.raw`(₹|\brs\.?|\binr|\brupees?)?\s*(\d+(?:\.\d+)?)\s*(k|thousand|l|lac|lakh|lakhs|cr|crore)?\b(\s*(?:₹|rs\b|inr\b|rupees?\b))?${NOT_MONEY}`,
   "g",
@@ -527,29 +527,48 @@ function budgetValue(amount: string, unit: string | undefined): number {
   return Math.round(value * factor);
 }
 
+const SENTENCE_BREAK = /[!?;\n]|\.(?!\d)/g;
+
+function sentenceAround(text: string, index: number): { start: number; end: number } {
+  let start = 0;
+  let end = text.length;
+  for (const match of text.matchAll(SENTENCE_BREAK)) {
+    if (match.index < index) start = match.index + 1;
+    else {
+      end = match.index;
+      break;
+    }
+  }
+  return { start, end };
+}
+
 /**
  * Reads a rupee budget from "under 20k", "₹1.5 lakh", "budget 50,000" or "rs 15000".
  * The amount nearest "budget" wins; counts ("4,000 visitors"), years and
  * amounts in other currencies are ignored.
  */
 export function parseBudget(input: string): number | null {
-  const text = input.toLowerCase().replace(/,/g, "");
+  const text = input.toLowerCase().replace(/(\d),(?=\d)/g, "$1");
   if (FOREIGN_MARK.test(text) && !RUPEE_MARK.test(text)) return null;
   const cleaned = text.replace(FOREIGN_AMOUNT, " ");
+  const keyword = cleaned.search(BUDGET_WORD);
   const candidates: { at: number; value: number; marked: boolean; plain: boolean }[] = [];
   for (const match of cleaned.matchAll(AMOUNT)) {
     const marked = Boolean(match[1] || match[4]);
     const unit = match[3];
     const plain = !marked && !unit;
     if (plain && !/^\d{4,9}$/.test(match[2])) continue;
-    if (plain && /^(19|20)\d{2}$/.test(match[2]) && YEAR_CONTEXT.test(cleaned.slice(0, match.index))) continue;
+    const yearLike = plain && /^(19|20)\d{2}$/.test(match[2]);
+    if (yearLike && (keyword < 0 || YEAR_CONTEXT.test(cleaned.slice(0, match.index)))) continue;
     candidates.push({ at: match.index, value: budgetValue(match[2], unit), marked, plain });
   }
-  // "budget" may come before or after its amount: take the nearest one.
-  const keyword = cleaned.search(BUDGET_WORD);
+  // "budget" may come before or after its amount: take the nearest one in its sentence.
+  const sentence = sentenceAround(cleaned, keyword);
   const nearest =
     keyword >= 0
-      ? candidates.reduce<(typeof candidates)[number] | undefined>(
+      ? candidates
+          .filter((candidate) => candidate.at >= sentence.start && candidate.at < sentence.end)
+          .reduce<(typeof candidates)[number] | undefined>(
           (best, candidate) =>
             !best || Math.abs(candidate.at - keyword) < Math.abs(best.at - keyword) ? candidate : best,
           undefined,
