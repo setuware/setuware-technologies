@@ -451,12 +451,12 @@ const TOPICS: readonly Topic[] = [
   {
     id: "founder",
     question: "Who founded Setuware Technologies?",
-    keywords: ["founder", "who founded", "owner", "ceo", "who run", "who started", "who owns setuware", "satyam", "team size", "your team"],
+    keywords: ["founder", "who founded", "founded by", "owner", "ceo", "who run", "who started", "who owns setuware", "satyam", "team size", "your team"],
   },
   {
     id: "about",
     question: "What is Setuware Technologies?",
-    keywords: ["setuware", "who are you", "about you", "about your company", "your company", "what do you do", "tell me about", "established", "founded", "since when", "started"],
+    keywords: ["setuware", "who are you", "about you", "about your company", "your company", "what do you do", "tell me about", "established", "founded", "since when", "when did setuware"],
   },
 ];
 

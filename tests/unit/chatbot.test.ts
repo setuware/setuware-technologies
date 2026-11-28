@@ -212,8 +212,26 @@ describe("knowledge topics", () => {
     expect(replyTo("Will you sign an NDA?").text).toContain("NDA");
   });
 
-  it("includes the founding month and year in the about answer", () => {
-    expect(replyTo("When was Setuware established?").text).toContain("August 2026");
+  it("keeps get-started questions routed to the book-call reply", () => {
+    expect(replyTo("How do I get started with Setuware?").text).toBe(replyTo("How do I get started?").text);
+  });
+
+  it.each(["Who was Setuware founded by?", "Who founded Setuware?"])(
+    "answers founder question %s with the founder's name",
+    (question) => {
+      expect(replyTo(question).text).toContain("Satyam Raj");
+    },
+  );
+
+  it.each(["When was Setuware founded?", "When was Setuware established?"])(
+    "includes the founding month and year for %s",
+    (question) => {
+      expect(replyTo(question).text).toContain("August 2026");
+    },
+  );
+
+  it("routes the founding-month phrasing to the about topic", () => {
+    expect(replyTo("When did Setuware get started?").text).toContain("August 2026");
   });
 
   it("shows case-study cards for past work", () => {
