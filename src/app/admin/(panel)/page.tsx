@@ -90,6 +90,11 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   // Org-wide trends only for people who see every enquiry / application.
   const teamEnquiries = showEnquiries && seesAll(user, "enquiries");
   const teamApplications = showApplications && seesAll(user, "applications");
+  const showLeadMetric = can(user, "leads");
+  const showSubscriberMetric = can(user, "subscribers");
+  const showPostMetric = can(user, "posts");
+  const showJobMetric = can(user, "jobs");
+  const showPerformance = showAnalytics || teamEnquiries || teamApplications || showLeadMetric || showSubscriberMetric || showPostMetric || showJobMetric;
   const funnel = showAnalytics && teamEnquiries ? enquiryFunnel(range) : [];
   const queue = attention({
     enquiries: showEnquiries && !seesAll(user, "enquiries") ? user.name : null,
@@ -344,7 +349,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         </Card>
       ) : null}
 
-      {showAnalytics || teamEnquiries || teamApplications ? (
+      {showPerformance ? (
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="font-semibold text-foreground">Performance</h2>
@@ -405,7 +410,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {can(user, "leads") ? (
+        {showLeadMetric ? (
           <MiniStat
             label={seesAll(user, "leads") ? "Open CRM leads" : "My open leads"}
             value={leadCounts(seesAll(user, "leads") ? undefined : user.name).open}
@@ -414,7 +419,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             icon={<Target className="size-3.5" />}
           />
         ) : null}
-        {can(user, "subscribers") ? (
+        {showSubscriberMetric ? (
           <MiniStat
             label="New subscribers"
             value={metrics.subscribers.current}
@@ -423,7 +428,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             icon={<Mail className="size-3.5" />}
           />
         ) : null}
-        {can(user, "posts") ? (
+        {showPostMetric ? (
           <MiniStat
             label="Published posts"
             value={counts.postsPublished}
@@ -432,7 +437,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             icon={<FileText className="size-3.5" />}
           />
         ) : null}
-        {can(user, "jobs") ? (
+        {showJobMetric ? (
           <MiniStat label="Open jobs" value={counts.jobsOpen} hint="on the careers page" href="/admin/jobs" icon={<Briefcase className="size-3.5" />} />
         ) : null}
       </div>
