@@ -219,7 +219,7 @@ export function teamEmail(lead: Lead): EmailContent {
       detailCard("Contact details", rows.filter(([name]) => name !== "When").map(([name, value]): DetailRow => ({ label: name, html: value }))),
       v.message ? `<div style="margin:0 0 10px;font:700 15px/1.4 Arial,sans-serif;color:${BRAND.ink};">${lead.kind === "booking" ? "Notes from the visitor" : "Project details"}</div>${quote(v.message)}` : "",
       nextStep ? note(nextStep, "warn") : "",
-      buttons([{ url: `${site.portalUrl}/admin/enquiries`, label: "Open in the admin", tone: "outline" }]),
+      buttons([{ url: `${site.portalUrl}/admin/enquiries`, label: "Open in Setuware Core", tone: "outline" }]),
     ],
     reason: `Sent automatically by the ${siteHost()} website.`,
   });

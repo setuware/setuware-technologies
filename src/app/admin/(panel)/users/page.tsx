@@ -40,7 +40,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
     <>
       <PageHeader
         title="Team"
-        description="Who can sign in to the admin, what each person can open, and how their account is protected."
+        description="Who can sign in to Setuware Core, what each person can open, and how their account is protected."
         actions={
           manage ? (
             <a href="#add-member" className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#2f56d8] px-4 text-sm font-semibold text-white hover:bg-[#2647b8]">
@@ -56,7 +56,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
         <p className="mb-5 rounded-xl bg-amber-500/10 px-4 py-2.5 text-sm text-amber-700 dark:text-amber-300">You cannot remove your own account.</p>
       ) : null}
       {removed ? (
-        <p role="status" className="mb-5 rounded-xl bg-emerald-500/10 px-4 py-2.5 text-sm font-medium text-emerald-700 dark:text-emerald-400">{removed} was removed from the admin.</p>
+        <p role="status" className="mb-5 rounded-xl bg-emerald-500/10 px-4 py-2.5 text-sm font-medium text-emerald-700 dark:text-emerald-400">{removed} was removed from Setuware Core.</p>
       ) : null}
 
       <dl className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -79,7 +79,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
       <div id="add-member" className="scroll-mt-24">
       <Card className="mb-6 p-6">
         <h2 className="mb-1 font-semibold text-foreground">Add a team member</h2>
-        <p className="mb-5 text-sm text-muted-foreground">Creates their account and emails their login details. Use their work email so replies to emails they send from the admin reach them.</p>
+        <p className="mb-5 text-sm text-muted-foreground">Creates their account and emails their login details. Use their work email so replies to emails they send from Setuware Core reach them.</p>
         <AddUserForm
           roles={roles}
           members={users.filter((user) => user.active).map((user) => ({ id: user.id, name: user.name }))}

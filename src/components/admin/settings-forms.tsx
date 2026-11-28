@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 
-import { saveAnnouncementAction, saveTemplateAction, type FormState } from "@/app/admin/actions";
+import { saveAnnouncementAction, saveSecuritySettingsAction, saveTemplateAction, type FormState } from "@/app/admin/actions";
 
 import { FormMessage, SubmitButton } from "./form-bits";
 import { inputClass } from "./ui";
@@ -75,6 +75,30 @@ export function AnnouncementForm({ initial }: { initial: { enabled: boolean; tex
       </div>
       <FormMessage state={state} />
       <SubmitButton className="self-start">Save</SubmitButton>
+    </form>
+  );
+}
+
+export function SecuritySettingsForm({ required }: { required: boolean }) {
+  const [state, action] = useActionState<FormState, FormData>(saveSecuritySettingsAction, {});
+  const [enabled, setEnabled] = useState(required);
+  return (
+    <form action={action} className="flex flex-col items-start gap-4">
+      <label className="flex items-start gap-2 text-sm font-medium text-foreground">
+        <input
+          type="checkbox"
+          name="require2faAdmins"
+          checked={enabled}
+          onChange={(event) => setEnabled(event.target.checked)}
+          className="mt-0.5 size-4 accent-[#2f56d8]"
+        />
+        <span>Require two-step sign-in for administrators</span>
+      </label>
+      <p className="text-xs text-muted-foreground">
+        People with access to Team, Roles &amp; access, or Site settings must turn on two-step verification before opening those sections.
+      </p>
+      <FormMessage state={state} />
+      <SubmitButton className="self-start">Save security settings</SubmitButton>
     </form>
   );
 }

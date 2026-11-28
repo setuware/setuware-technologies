@@ -5,9 +5,9 @@ export function GET(request: Request) {
   return Response.json(
     {
       id: "/admin",
-      name: "Setuware Admin",
-      short_name: "Setuware",
-      description: "Leads, enquiries, content and hiring for Setuware Technologies.",
+      name: "Setuware Core",
+      short_name: "Core",
+      description: "Tasks, attendance, leave, timesheets and team tools for Setuware.",
       start_url: "/admin",
       scope: pwaScope(request.headers.get("host")),
       display: "standalone",

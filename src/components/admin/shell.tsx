@@ -73,11 +73,11 @@ const NAV = [
   { group: "People", href: "/admin/people", label: "Team directory", Icon: Contact, area: null },
   { group: "People", href: "/admin/updates", label: "Team updates", Icon: MessageSquareText, area: null },
   { group: "People", href: "/admin/applications", label: "Applications", Icon: UsersRound, area: "applications" },
-  { group: "People", href: "/admin/users", label: "Team", Icon: Users, area: "users" },
-  { group: "People", href: "/admin/roles", label: "Roles & access", Icon: ShieldCheck, area: "roles.manage" },
-  { group: "Settings", href: "/admin/account", label: "Password & security", Icon: UserCircle, area: null },
-  { group: "Settings", href: "/admin/templates", label: "Email templates", Icon: MailPlus, area: "templates" },
-  { group: "Settings", href: "/admin/settings", label: "Site settings", Icon: Settings, area: "settings.manage" },
+  { group: "Account", href: "/admin/account", label: "Password & security", Icon: UserCircle, area: null },
+  { group: "Admin", href: "/admin/users", label: "Team", Icon: Users, area: "users" },
+  { group: "Admin", href: "/admin/roles", label: "Roles & access", Icon: ShieldCheck, area: "roles.manage" },
+  { group: "Admin", href: "/admin/templates", label: "Email templates", Icon: MailPlus, area: "templates" },
+  { group: "Admin", href: "/admin/settings", label: "Site settings", Icon: Settings, area: "settings.manage" },
 ] as const;
 
 /** Shortcuts in the phone tab bar, when the user can see them. */
@@ -105,8 +105,8 @@ export function AdminShell({
 }) {
   const pathname = usePathname() ?? "/admin";
   const [open, setOpen] = useState(false);
-  // Only people who manage accounts or the site see "Admin"; everyone else is in the team portal.
-  const portalLabel = areas.some((area) => area === "users" || area === "roles.manage" || area === "settings.manage") ? "ADMIN" : "TEAM PORTAL";
+  const searchAreas = ["tasks", "people", ...(["enquiries", "leads", "posts"] as const).filter((area) => areas.includes(area))];
+  const searchPlaceholder = `Search ${searchAreas.join(", ")}…`;
   const [install, promptInstall] = useInstall();
   const items = NAV.filter((item) => item.area === null || areas.includes(item.area));
 
@@ -186,7 +186,7 @@ export function AdminShell({
     .join("");
 
   const nav = (
-    <nav aria-label="Admin sections" className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain px-3 pb-2 [scrollbar-color:rgba(255,255,255,0.38)_transparent] [scrollbar-gutter:stable] [scrollbar-width:thin]">
+    <nav aria-label="Core sections" className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain px-3 pb-2 [scrollbar-color:rgba(255,255,255,0.38)_transparent] [scrollbar-gutter:stable] [scrollbar-width:thin]">
       {groups.map((group) => (
         <div key={group}>
           <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">{group}</p>
@@ -236,7 +236,7 @@ export function AdminShell({
         <span className="leading-none">
           <span className="block font-[family-name:var(--font-brand)] text-[1.08rem] font-bold tracking-[0.06em]">SETUWARE</span>
           <span className="mt-1.5 inline-block rounded-full bg-white/[0.08] px-2 py-0.5 text-[0.58rem] font-semibold tracking-[0.24em] text-[#5fd0ec]">
-            {portalLabel}
+            CORE
           </span>
         </span>
       </Link>
@@ -290,10 +290,10 @@ export function AdminShell({
         <header className="dark sticky top-0 z-40 flex items-center justify-between bg-[#0b1020] px-4 py-3 text-white lg:hidden">
           <Link href="/admin" className="flex items-center gap-2">
             <LogoMark className="size-8" />
-            <span className="hidden font-[family-name:var(--font-brand)] font-bold tracking-[0.06em] min-[440px]:inline">{portalLabel}</span>
+            <span className="hidden font-[family-name:var(--font-brand)] font-bold tracking-[0.06em] min-[440px]:inline">CORE</span>
           </Link>
           <div className="ml-auto mr-1 min-w-0">{presenceBar}</div>
-          <Link href="/admin/search" aria-label="Search the admin" className="rounded-lg p-2 hover:bg-white/10">
+          <Link href="/admin/search" aria-label="Search Core" className="rounded-lg p-2 hover:bg-white/10">
             <Search className="size-5" aria-hidden />
           </Link>
           <button type="button" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen(!open)} className="rounded-lg p-2 hover:bg-white/10">
@@ -311,8 +311,8 @@ export function AdminShell({
               <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
               <input
                 name="q"
-                placeholder="Search enquiries, people, posts…"
-                aria-label="Search the admin"
+                placeholder={searchPlaceholder}
+                aria-label="Search Core"
                 className="h-9 w-full rounded-full border border-border bg-surface pl-9 pr-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-setu focus:ring-2 focus:ring-setu/20"
               />
             </form>

@@ -24,6 +24,7 @@ const scrypt = promisify(scryptCb) as (password: string, salt: Buffer, keylen: n
 
 export const SESSION_COOKIE = "stw_admin";
 export const SESSION_DAYS = 7;
+export const IDLE_TIMEOUT_HOURS = 12;
 const MAX_FAILURES = 5;
 const LOCK_MINUTES = 15;
 const PENDING_MINUTES = 10;
@@ -37,6 +38,10 @@ export type Role = string;
  */
 export function can(user: Pick<AdminUser, "permissions">, permission: string): boolean {
   return allows(user.permissions, permission);
+}
+
+export function needsTwoFactorSetup(user: Pick<AdminUser, "permissions" | "twoFactor">, required: boolean): boolean {
+  return required && !user.twoFactor && ["users", "roles.manage", "settings.manage"].some((permission) => can(user, permission));
 }
 
 /** True when the person sees every record of a scoped module, not only their own. */
@@ -365,19 +370,33 @@ export function pendingTwoFactor(token: string | undefined): boolean {
 export function userForToken(token: string | undefined): AdminUser | null {
   if (!token) return null;
   const id = sha256(token);
-  const now = new Date().toISOString();
+  const nowMillis = Date.now();
+  const now = new Date(nowMillis).toISOString();
   const row = getDb()
     .prepare(
-      `SELECT u.*, s.last_seen_at AS seen FROM sessions s JOIN users u ON u.id = s.user_id
+      `SELECT u.*, s.last_seen_at AS seen, s.created_at AS session_created_at FROM sessions s JOIN users u ON u.id = s.user_id
        WHERE s.id = ? AND s.expires_at > ? AND s.mfa_ok = 1 AND u.active = 1`,
     )
     .get(id, now) as Record<string, unknown> | undefined;
   if (!row) return null;
+  const lastSeen = row.seen ?? row.session_created_at;
+  if (lastSeen && Date.parse(String(lastSeen)) < nowMillis - IDLE_TIMEOUT_HOURS * 60 * 60_000) {
+    getDb().prepare("DELETE FROM sessions WHERE id = ?").run(id);
+    return null;
+  }
   // Record activity at most every five minutes.
-  if (!row.seen || Date.parse(String(row.seen)) < Date.now() - 5 * 60_000) {
+  if (!row.seen || Date.parse(String(row.seen)) < nowMillis - 5 * 60_000) {
     getDb().prepare("UPDATE sessions SET last_seen_at = ? WHERE id = ?").run(now, id);
   }
   return rowToUser(row);
+}
+
+export function isNewDeviceSignIn(userId: number, userAgent: string | undefined, currentToken: string): boolean {
+  const sessions = getDb()
+    .prepare("SELECT user_agent FROM sessions WHERE user_id = ? AND id != ? AND mfa_ok = 1")
+    .all(userId, sha256(currentToken)) as { user_agent: string | null }[];
+  const currentAgent = userAgent?.slice(0, 300) ?? null;
+  return sessions.length > 0 && !sessions.some((session) => session.user_agent === currentAgent);
 }
 
 export function signOut(token: string | undefined): void {
@@ -395,6 +414,13 @@ export interface SessionInfo {
   created_at: string;
   last_seen_at: string | null;
   current: boolean;
+}
+
+export function describeDevice(agent: string | null): { label: string; mobile: boolean } {
+  const ua = agent ?? "";
+  const browser = /Edg\//.test(ua) ? "Edge" : /Chrome\//.test(ua) ? "Chrome" : /Firefox\//.test(ua) ? "Firefox" : /Safari\//.test(ua) ? "Safari" : "Browser";
+  const os = /iPhone|iPad/.test(ua) ? "iPhone/iPad" : /Android/.test(ua) ? "Android" : /Mac OS X/.test(ua) ? "Mac" : /Windows/.test(ua) ? "Windows" : /Linux/.test(ua) ? "Linux" : "Unknown device";
+  return { label: `${browser} on ${os}`, mobile: /iPhone|iPad|Android/.test(ua) };
 }
 
 export function listSessions(userId: number, currentToken?: string): SessionInfo[] {
@@ -515,8 +541,8 @@ export function newTotpSecret(): string {
 }
 
 export function otpauthUrl(secret: string, email: string): string {
-  const label = encodeURIComponent(`Setuware Admin:${email}`);
-  return `otpauth://totp/${label}?secret=${secret}&issuer=${encodeURIComponent("Setuware Admin")}&algorithm=SHA1&digits=6&period=30`;
+  const label = encodeURIComponent(`Setuware Core:${email}`);
+  return `otpauth://totp/${label}?secret=${secret}&issuer=${encodeURIComponent("Setuware Core")}&algorithm=SHA1&digits=6&period=30`;
 }
 
 /** Turns 2-step on once the user proves the app works; returns recovery codes. */

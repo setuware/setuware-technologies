@@ -11,6 +11,7 @@ export const site = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://setuware.in",
   /** Admin and employee portal: sign-in and dashboards only, no website pages. */
   portalUrl: process.env.NEXT_PUBLIC_PORTAL_URL ?? "https://core.setuware.in",
+  portalName: "Setuware Core",
   locale: "en_IN",
   /** Primary address on CTAs: new projects and quotes. */
   email: "sales@setuware.in",

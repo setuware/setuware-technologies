@@ -57,9 +57,11 @@ describe("reporting lines and approvals", () => {
     expect(() => requestLeave(dev, { type: "Sick", from: old, to: old, halfDay: false, reason: "" })).toThrow(/60 days/);
     saveAttendanceSettings({ ...DEFAULT_ATTENDANCE, weeklyOff: [0, 6] });
     expect(expectedMinutes("2026-11-02", dev)).toBe(5 * 8 * 60);
+    expect(expectedMinutes("2026-11-02", dev, "2026-11-04")).toBe(3 * 8 * 60);
     const id = requestLeave(dev, { type: "Casual", from: "2026-11-03", to: "2026-11-04", halfDay: false, reason: "" });
     decideRequest(id, true, "Lead");
     expect(expectedMinutes("2026-11-02", dev)).toBe(3 * 8 * 60);
+    expect(expectedMinutes("2026-11-02", dev, "2026-11-04")).toBe(1 * 8 * 60);
   });
 });
 

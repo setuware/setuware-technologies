@@ -1,6 +1,6 @@
 import { DEFAULT_ANNOUNCEMENT, getSetting, type Announcement } from "@/lib/cms/crm";
 import { requireUser } from "@/lib/cms/session";
-import { AnnouncementForm } from "@/components/admin/settings-forms";
+import { AnnouncementForm, SecuritySettingsForm } from "@/components/admin/settings-forms";
 import { Card, PageHeader } from "@/components/admin/ui";
 
 // Signed-in page: rendered per request (see the panel layout).
@@ -13,6 +13,13 @@ export default async function SettingsPage() {
     <>
       <PageHeader title="Site settings" description="Changes here go live on the website straight away." />
       <Card className="p-6">
+        <h2 className="font-semibold text-foreground">Sign-in security</h2>
+        <p className="mb-5 mt-1 text-sm text-muted-foreground">
+          Require two-step verification for people with access to Team, Roles &amp; access, or Site settings.
+        </p>
+        <SecuritySettingsForm required={getSetting("require2faAdmins", false)} />
+      </Card>
+      <Card className="mt-6 p-6">
         <h2 className="font-semibold text-foreground">Announcement bar</h2>
         <p className="mb-5 mt-1 text-sm text-muted-foreground">
           A thin bar above the navigation on every page, for offers, launches or holiday hours. Visitors can dismiss it.

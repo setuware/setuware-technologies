@@ -36,7 +36,7 @@ export function hrApplicationEmail(application: ApplicationDetails): EmailConten
       blocks: [
         detailCard("Applicant", rows),
         application.note ? `<div style="margin:0 0 10px;font:700 15px/1.4 Arial,sans-serif;color:#0b1020;">Note from the applicant</div>${quote(application.note)}` : "",
-        buttons([{ url: admin, label: "Review in the admin" }, { url: `mailto:${application.email}`, label: "Reply by email", tone: "outline" }]),
+        buttons([{ url: admin, label: "Review in Setuware Core" }, { url: `mailto:${application.email}`, label: "Reply by email", tone: "outline" }]),
       ],
       reason: `Sent automatically by the careers page on ${siteHost()}.`,
     }),
@@ -48,7 +48,7 @@ export function hrApplicationEmail(application: ApplicationDetails): EmailConten
       ...(application.links ? [`Links: ${application.links}`] : []),
       ...(application.note ? ["", application.note] : []),
       "",
-      `Review it in the admin: ${admin}`,
+      `Review it in Setuware Core: ${admin}`,
     ].join("\n"),
   };
 }

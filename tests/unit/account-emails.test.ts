@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { credentialsEmail, generatePassword, inviteEmail, loginUrl, welcomeEmail } from "@/lib/cms/account-emails";
+import { credentialsEmail, generatePassword, inviteEmail, loginUrl, newSignInEmail, welcomeEmail } from "@/lib/cms/account-emails";
 import { passwordProblem } from "@/lib/cms/auth";
 
 const member = { name: "Priya <b>Sharma</b>", email: "priya@setuware.in", roleName: "Editor" };
@@ -19,7 +19,7 @@ describe("generatePassword", () => {
 describe("account emails", () => {
   it("sends the sign-in page, email and temporary password", () => {
     const email = credentialsEmail(member, "Kq7m-xT3p-Rw9a", "Satyam Raj");
-    expect(email.subject).toContain("login details");
+    expect(email.subject).toBe("Your Setuware Core login details");
     for (const part of [email.html, email.text]) {
       expect(part).toContain("Kq7m-xT3p-Rw9a");
       expect(part).toContain("priya@setuware.in");
@@ -43,7 +43,8 @@ describe("account emails", () => {
     expect(full.text).toContain("Joining date: 1 December 2026");
     const bare = welcomeEmail(member, "Satyam Raj");
     expect(bare.text).not.toContain("Reports to");
-    expect(bare.text).toContain("Admin access: Editor");
+    expect(bare.text).toContain("Role: Editor");
+    expect(bare.text).toContain("Your Setuware Core account is ready.");
   });
 
   it("welcome says how they sign in", () => {
@@ -53,5 +54,19 @@ describe("account emails", () => {
     expect(welcomeEmail(member, "Satyam Raj").text).not.toContain("separate email");
     expect(welcomeEmail(member, "Satyam Raj", "invited").text).not.toContain("separate email");
     expect(welcomeEmail(member, "Satyam Raj", "temporary").text).not.toContain("separate email");
+  });
+
+  it("alerts about a new sign-in with device details and recovery links", () => {
+    const email = newSignInEmail({ time: "29 Dec 2026, 11:30 am IST", device: "Chrome on Mac", ip: "203.0.113.8" });
+    expect(email.subject).toBe("New sign-in to Setuware Core");
+    for (const part of [email.html, email.text]) {
+      expect(part).toContain("29 Dec 2026, 11:30 am IST");
+      expect(part).toContain("Chrome on Mac");
+      expect(part).toContain("203.0.113.8");
+      expect(part).toContain("https://core.setuware.in/admin/account");
+    }
+    expect(email.text).toContain("If this wasn't you, reset your password now: https://core.setuware.in/forgot.");
+    expect(email.html).toContain("If this wasn&#39;t you,");
+    expect(email.html).toContain('href="https://core.setuware.in/forgot"');
   });
 });

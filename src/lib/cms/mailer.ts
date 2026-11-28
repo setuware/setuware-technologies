@@ -9,13 +9,13 @@ export async function sendAccountEmail(to: string, subject: string, lines: strin
   const html = renderEmail({
     subject,
     preheader: lines[0] ?? subject,
-    tag: "Team portal",
+    tag: site.portalName,
     heading: subject,
     blocks: [...lines.map((line) => paragraph(esc(line))), buttons([{ url: link.url, label: link.label }]), paragraph(`<span style="font-size:12px;color:#5b6577;">If the button does not work, copy this link into your browser:<br><span style="color:#2f56d8;word-break:break-all;">${esc(link.url)}</span></span>`)],
-    reason: `You are receiving this email because you have an account in the ${site.name} admin. If you did not expect it you can ignore it.`,
+    reason: `You are receiving this email because you have an account in ${site.portalName}. If you did not expect it you can ignore it.`,
   });
   try {
-    await getTransporter().sendMail({ from: { name: `${site.name} Admin`, address: senderAddress() }, to, subject, text, html });
+    await getTransporter().sendMail({ from: { name: site.portalName, address: senderAddress() }, to, subject, text, html });
     return true;
   } catch (error) {
     console.error("[admin] account email failed", error instanceof Error ? error.message : error);
@@ -27,7 +27,7 @@ export async function sendAccountEmail(to: string, subject: string, lines: strin
 export async function sendEmail(to: string, content: EmailContent, replyTo?: string): Promise<boolean> {
   if (!emailConfigured()) return false;
   try {
-    await getTransporter().sendMail({ from: { name: site.name, address: senderAddress() }, to, ...(replyTo ? { replyTo } : {}), ...content });
+    await getTransporter().sendMail({ from: { name: site.portalName, address: senderAddress() }, to, ...(replyTo ? { replyTo } : {}), ...content });
     return true;
   } catch (error) {
     console.error("[admin] account email failed", error instanceof Error ? error.message : error);

@@ -39,7 +39,7 @@ async function Body({ searchParams }: { searchParams: Promise<{ token?: string }
   return (
     <AuthCard
       title={found.purpose === "invite" ? `Welcome, ${first}` : "Choose a new password"}
-      subtitle={found.purpose === "invite" ? `Set a password for ${found.user.email} to start using Setuware Admin.` : found.user.email}
+      subtitle={found.purpose === "invite" ? `Set a password for ${found.user.email} to start using Setuware Core.` : found.user.email}
     >
       <SetPasswordForm token={token} />
     </AuthCard>

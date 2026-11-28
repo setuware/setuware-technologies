@@ -39,14 +39,18 @@ interface Letter {
   tag?: string;
   heading: string;
   intro: string[];
+  actionLine?: { before: string; label: string; url: string; after?: string };
   panel?: { title: string; rows: Row[] };
   button?: { url: string; label: string };
+  links?: { url: string; label: string }[];
   steps?: { title: string; items: string[] };
   outro?: string[];
+  reason?: string;
   from: string;
 }
 
 function render(letter: Letter): EmailContent {
+  const links = letter.links ?? (letter.button ? [letter.button] : []);
   const html = renderEmail({
     subject: letter.subject,
     preheader: letter.preheader,
@@ -54,6 +58,11 @@ function render(letter: Letter): EmailContent {
     heading: letter.heading,
     blocks: [
       ...letter.intro.map((line) => paragraph(esc(line))),
+      letter.actionLine
+        ? paragraph(
+            `${esc(letter.actionLine.before)} <a href="${esc(letter.actionLine.url)}" style="color:#0f766e;font-weight:700;text-decoration:underline;">${esc(letter.actionLine.label)}</a>${esc(letter.actionLine.after ?? "")}`,
+          )
+        : "",
       letter.panel
         ? detailCard(
             letter.panel.title,
@@ -63,25 +72,58 @@ function render(letter: Letter): EmailContent {
             })),
           )
         : "",
-      letter.button ? buttons([{ url: letter.button.url, label: letter.button.label }]) : "",
+      links.length ? buttons(links) : "",
       letter.steps ? steps(letter.steps.title, letter.steps.items.map(esc)) : "",
       ...(letter.outro ?? []).map((line) => paragraph(esc(line))),
     ],
     signature: { name: letter.from, role: site.name },
-    reason: `This email was sent to you because an account was created for you in the ${site.name} admin.`,
+    reason: letter.reason ?? `This email was sent to you because an account was created for you in ${site.portalName}.`,
   });
 
   const text = [
     letter.heading,
     ...letter.intro,
+    ...(letter.actionLine
+      ? [`${letter.actionLine.before} ${letter.actionLine.label}: ${letter.actionLine.url}${letter.actionLine.after ?? ""}`]
+      : []),
     ...(letter.panel ? [`${letter.panel.title}\n${letter.panel.rows.map((row) => `${row.label}: ${row.value}`).join("\n")}`] : []),
-    ...(letter.button ? [`${letter.button.label}: ${letter.button.url}`] : []),
+    ...links.map((link) => `${link.label}: ${link.url}`),
     ...(letter.steps ? [`${letter.steps.title}\n${letter.steps.items.map((item, index) => `${index + 1}. ${item}`).join("\n")}`] : []),
     ...(letter.outro ?? []),
     `Regards,\n${letter.from}\n${site.name}`,
   ].join("\n\n");
 
   return { subject: letter.subject, html, text };
+}
+
+export interface NewSignInDetails {
+  time: string;
+  device: string;
+  ip: string;
+}
+
+export function newSignInEmail(details: NewSignInDetails): EmailContent {
+  return render({
+    subject: "New sign-in to Setuware Core",
+    preheader: "A new device signed in to your Setuware Core account.",
+    tag: "Security alert",
+    heading: "New sign-in to Setuware Core",
+    intro: ["A sign-in to your Setuware Core account just completed."],
+    actionLine: { before: "If this wasn't you,", label: "reset your password now", url: authUrl("forgot"), after: "." },
+    panel: {
+      title: "Sign-in details",
+      rows: [
+        { label: "Time", value: details.time },
+        { label: "Device", value: details.device },
+        { label: "IP address", value: details.ip },
+      ],
+    },
+    links: [
+      { url: `${site.portalUrl.replace(/\/$/, "")}/admin/account`, label: "Password & security" },
+    ],
+    reason: "This email was sent to notify you about a sign-in to your Setuware Core account.",
+    from: site.portalName,
+  });
 }
 
 export interface NewMember {
@@ -93,13 +135,13 @@ export interface NewMember {
 /** Sign-in address, email and temporary password; they choose their own password at first sign-in. */
 export function credentialsEmail(member: NewMember, password: string, from: string): EmailContent {
   return render({
-    subject: `Your ${site.name} admin login details`,
+    subject: `Your ${site.portalName} login details`,
     preheader: `Sign in at ${host()}/admin with the temporary password inside.`,
     tag: "Team account",
     heading: "Your login details",
     intro: [
       `Hi ${first(member.name)},`,
-      `${from} has created your ${site.name} admin account with ${member.roleName} access. Use the details below to sign in.`,
+      `${from} has created your ${site.portalName} account with ${member.roleName} access. Use the details below to sign in.`,
     ],
     panel: {
       title: "Sign-in details",
@@ -121,13 +163,13 @@ export function credentialsEmail(member: NewMember, password: string, from: stri
 /** Invite link (no password in the email): they choose their password from the link. */
 export function inviteEmail(member: NewMember, url: string, from: string): EmailContent {
   return render({
-    subject: `${from} invited you to the ${site.name} admin`,
+    subject: `${from} invited you to ${site.portalName}`,
     preheader: "Choose your password to activate your account. The link expires in 3 days.",
     tag: "Invitation",
     heading: "Set up your account",
     intro: [
       `Hi ${first(member.name)},`,
-      `${from} has given you ${member.roleName} access to the ${site.name} admin. Choose your password to activate your account.`,
+      `${from} has given you ${member.roleName} access to ${site.portalName}. Choose your password to activate your account.`,
     ],
     panel: { title: "Your account", rows: [{ label: "Email", value: member.email }, { label: "Sign-in page", value: loginUrl() }] },
     button: { url, label: "Choose my password" },
@@ -154,11 +196,11 @@ function day(iso: string): string {
 }
 
 const ACCESS_LINE: Record<WelcomeAccess, string> = {
-  credentials: "Your admin account is ready. Your login details, with a temporary password, are in a separate email.",
-  invite: "Your admin account is ready. We have sent you an invite link in a separate email so you can choose your password.",
-  temporary: "Your admin account is ready. Sign in with the temporary password your admin gave you, then choose your own.",
-  invited: "Your admin account is ready. Use the invite link from your admin to choose your password.",
-  active: "Your admin account is ready. Sign in with your work email and the password you chose.",
+  credentials: "Your Setuware Core account is ready. Your login details, with a temporary password, are in a separate email.",
+  invite: "Your Setuware Core account is ready. We have sent you an invite link in a separate email so you can choose your password.",
+  temporary: "Your Setuware Core account is ready. Sign in with the temporary password your admin gave you, then choose your own.",
+  invited: "Your Setuware Core account is ready. Use the invite link from your admin to choose your password.",
+  active: "Your Setuware Core account is ready. Sign in with your work email and the password you chose.",
 };
 
 const FIRST_STEP: Record<WelcomeAccess, string> = {
@@ -166,7 +208,7 @@ const FIRST_STEP: Record<WelcomeAccess, string> = {
   invite: "Open the invite link and choose your password. The link works once and expires in 3 days.",
   temporary: "Sign in with your temporary password, then choose your own password.",
   invited: "Open your invite link and choose your password. If it has expired, ask your admin to send a new one.",
-  active: "Sign in to the admin with your work email.",
+  active: "Sign in to Setuware Core with your work email.",
 };
 
 /** The welcome note: who they are on the team and what to do on day one. */
@@ -176,7 +218,7 @@ export function welcomeEmail(member: WelcomeDetails, from: string, access: Welco
     ...(member.department ? [{ label: "Department", value: member.department }] : []),
     ...(member.managerName ? [{ label: "Reports to", value: member.managerName }] : []),
     ...(member.joinedOn ? [{ label: "Joining date", value: day(member.joinedOn) }] : []),
-    { label: "Admin access", value: member.roleName },
+    { label: "Role", value: member.roleName },
   ];
   return render({
     subject: `Welcome to ${site.name}, ${first(member.name)}`,
@@ -200,7 +242,7 @@ export function welcomeEmail(member: WelcomeDetails, from: string, access: Welco
           : []),
       ],
     },
-    button: { url: loginUrl(), label: "Open the admin" },
+    button: { url: loginUrl(), label: "Open Setuware Core" },
     outro: [`If you have any questions, reply to this email${member.managerName ? ` or reach out to ${member.managerName}` : ""}.`],
     from,
   });

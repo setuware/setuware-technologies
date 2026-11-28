@@ -378,7 +378,7 @@ export function RemoveUser({ id, name }: { id: number; name: string }) {
     <form
       action={removeUserAction}
       onSubmit={(event) => {
-        if (!window.confirm(`Remove ${name} from the admin? They lose access immediately. Their past tasks and time entries stay on record.`)) {
+        if (!window.confirm(`Remove ${name} from Setuware Core? They lose access immediately. Their past tasks and time entries stay on record.`)) {
           event.preventDefault();
         }
       }}
