@@ -113,6 +113,12 @@ export type Match =
 
 export { ASSISTANT_NAME, WHATSAPP_MESSAGE, whatsappHref, isWithinHours };
 
+const foundedMonthYear = new Intl.DateTimeFormat("en-IN", {
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+}).format(new Date(`${site.founded}T00:00:00Z`));
+
 const whatsappLink: ChatLink = {
   label: "Chat on WhatsApp",
   href: whatsappHref,
@@ -445,12 +451,12 @@ const TOPICS: readonly Topic[] = [
   {
     id: "founder",
     question: "Who founded Setuware Technologies?",
-    keywords: ["founder", "founded", "owner", "ceo", "who run", "who started", "who owns setuware", "satyam", "team size", "your team"],
+    keywords: ["founder", "founded", "who founded", "owner", "ceo", "who run", "who started", "who owns setuware", "satyam", "team size", "your team"],
   },
   {
     id: "about",
     question: "What is Setuware Technologies?",
-    keywords: ["setuware", "who are you", "about you", "about your company", "your company", "what do you do", "tell me about"],
+    keywords: ["setuware", "who are you", "about you", "about your company", "your company", "what do you do", "tell me about", "established", "founded", "since when", "started"],
   },
 ];
 
@@ -1027,7 +1033,7 @@ export function topicReply(id: TopicId): BotReply {
   switch (id) {
     case "about":
       return {
-        text: `${site.name} is a Gurugram-based digital studio. ${site.slogan} We design, build and support websites, e-commerce platforms, mobile apps and custom software for growing businesses.`,
+        text: `${site.name} is a Gurugram-based digital studio. ${site.slogan} We design, build and support websites, e-commerce platforms, mobile apps and custom software for growing businesses. ${site.name} was founded in ${foundedMonthYear}.`,
         links: [
           { label: "About us", href: "/about" },
           { label: "Our work", href: "/work" },

@@ -193,6 +193,10 @@ describe("isWithinHours", () => {
 
 describe("knowledge topics", () => {
   it.each([
+    ["When was Setuware established?", "about"],
+    ["When was Setuware founded?", "about"],
+    ["Since when has Setuware been around?", "about"],
+    ["When did Setuware get started?", "about"],
     ["Do you sign an NDA?", "nda"],
     ["what tech stack do you use", "stack"],
     ["show me your past work", "work"],
@@ -206,6 +210,10 @@ describe("knowledge topics", () => {
 
   it("answers an NDA question from the service FAQs", () => {
     expect(replyTo("Will you sign an NDA?").text).toContain("NDA");
+  });
+
+  it("includes the founding month and year in the about answer", () => {
+    expect(replyTo("When was Setuware established?").text).toContain("August 2026");
   });
 
   it("shows case-study cards for past work", () => {
