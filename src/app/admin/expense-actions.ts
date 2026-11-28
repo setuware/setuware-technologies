@@ -23,12 +23,13 @@ export async function submitClaimAction(_previous: FormState, form: FormData): P
   const receiptValue = form.get("receipt");
   const receipt = typeof File !== "undefined" && receiptValue instanceof File && receiptValue.size > 0 ? receiptValue : null;
   if (receipt && receipt.size > MAX_RECEIPT_BYTES) return { error: "Receipts must be 5 MB or smaller." };
+  const spentOn = text(form, "spent_on", 10);
 
   let receiptFile: string | null = null;
   try {
     if (receipt) receiptFile = (await saveUpload("private", receipt)).file;
     const id = submitClaim(user.id, {
-      spentOn: text(form, "spent_on", 10),
+      spentOn,
       category: text(form, "category", 40),
       amountPaise: amountPaise(text(form, "amount", 20)),
       description: text(form, "description", 1000),
@@ -36,7 +37,7 @@ export async function submitClaimAction(_previous: FormState, form: FormData): P
     });
     audit(user.name, "submitted an expense claim", "expense claim", `Claim #${id}`);
     for (const approver of approversFor(user.id, "expenses.approve")) {
-      notify(approver.id, `Expense claim: ${user.name}`, [`${user.name} submitted a ${text(form, "category", 40)} claim for ₹${(amountPaise(text(form, "amount", 20)) / 100).toFixed(2)}.`], "/admin/expenses/team", "Review claim");
+      notify(approver.id, `Expense claim: ${user.name}`, [`${user.name} submitted a ${text(form, "category", 40)} claim for ₹${(amountPaise(text(form, "amount", 20)) / 100).toFixed(2)}.`], `/admin/expenses/team?month=${spentOn.slice(0, 7)}`, "Review claim");
     }
     refresh();
     return { ok: "Your expense claim has been submitted." };

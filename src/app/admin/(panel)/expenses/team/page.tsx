@@ -46,7 +46,7 @@ export default async function TeamExpensesPage({ searchParams }: { searchParams:
   const month = /^\d{4}-(0[1-9]|1[0-2])$/.test(params.month ?? "") ? (params.month as string) : today.slice(0, 7);
   const status = STATUSES.includes(params.status as ExpenseStatus) ? (params.status as ExpenseStatus) : "";
   const claims = listClaims({ month, status: status || undefined }).filter((claim) => scope.all || scope.ids.includes(claim.user_id));
-  const pending = claims.filter((claim) => claim.status === "pending");
+  const pending = listClaims({ status: "pending" }).filter((claim) => scope.all || scope.ids.includes(claim.user_id));
   const approved = claims.filter((claim) => claim.status === "approved");
   const history = claims.filter((claim) => claim.status !== "pending" && claim.status !== "approved");
   const query = new URLSearchParams({ month, ...(status ? { status } : {}) }).toString();
