@@ -41,7 +41,7 @@ export function can(user: Pick<AdminUser, "permissions">, permission: string): b
 }
 
 export function needsTwoFactorSetup(user: Pick<AdminUser, "permissions" | "twoFactor">, required: boolean): boolean {
-  return required && !user.twoFactor && ["users", "roles.manage", "settings.manage"].some((permission) => can(user, permission));
+  return required && !user.twoFactor && ["users", "users.manage", "roles.manage", "settings.manage"].some((permission) => can(user, permission));
 }
 
 /** True when the person sees every record of a scoped module, not only their own. */

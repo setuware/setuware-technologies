@@ -10,6 +10,7 @@ afterEach(() => resetDb());
 describe("required two-step sign-in", () => {
   it("requires setup only for privileged users without two-step enabled", () => {
     expect(needsTwoFactorSetup({ permissions: ["users.view"], twoFactor: false }, true)).toBe(true);
+    expect(needsTwoFactorSetup({ permissions: ["users.manage"], twoFactor: false }, true)).toBe(true);
     expect(needsTwoFactorSetup({ permissions: ["roles.manage"], twoFactor: false }, true)).toBe(true);
     expect(needsTwoFactorSetup({ permissions: ["settings.manage"], twoFactor: false }, true)).toBe(true);
     expect(needsTwoFactorSetup({ permissions: ["settings.manage"], twoFactor: true }, true)).toBe(false);
