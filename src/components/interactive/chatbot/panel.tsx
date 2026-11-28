@@ -62,6 +62,7 @@ interface ChatMessage {
   at: number;
   links?: ChatLink[];
   chips?: Chip[];
+  menu?: boolean;
   cards?: ReplyCard[];
   tone?: "error";
 }
@@ -91,6 +92,7 @@ function botMessage(reply: BotReply, tone?: "error"): ChatMessage {
     at: Date.now(),
     links: reply.links,
     chips: reply.chips,
+    menu: reply.menu,
     cards: reply.cards,
     tone,
   };
@@ -287,7 +289,11 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
 
   const cancelLead = () => {
     setLead(null);
-    respond({ text: "Certainly. I have closed the form. How else may I help you?", chips: [...MENU_CHIPS] });
+    respond({
+      text: "Certainly. I have closed the form. How else may I help you?",
+      chips: [...MENU_CHIPS],
+      menu: true,
+    });
   };
 
   const restart = () => {
@@ -327,7 +333,12 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
 
   const welcome = messages.length === 1 && messages[0].role === "bot" && !lead;
   const last = messages[messages.length - 1];
-  const chips = !typing && !lead && !welcome && last?.role === "bot" ? (last.chips ?? []).slice(0, MAX_CHIPS) : [];
+  const chips =
+    !typing && !lead && !welcome && last?.role === "bot"
+      ? last.menu
+        ? last.chips ?? []
+        : (last.chips ?? []).slice(0, MAX_CHIPS)
+      : [];
 
   const hidden = reduce
     ? { opacity: 0, transitionEnd: { visibility: "hidden" as const } }

@@ -80,6 +80,8 @@ export interface BotReply {
   text: string;
   links?: ChatLink[];
   chips?: Chip[];
+  /** Chips are a list of choices; show them all. */
+  menu?: boolean;
   cards?: ReplyCard[];
   /** Asks the panel to show the enquiry form after this reply. */
   startLead?: boolean;
@@ -137,6 +139,7 @@ const FOLLOW_UP_CHIPS: readonly Chip[] = [
 export const GREETING: BotReply = {
   text: "Ask about our services, prices, timelines or past work. Our team is one tap away.",
   chips: [...MENU_CHIPS],
+  menu: true,
 };
 
 /* -------------------------------------------------------------------------- */
@@ -754,6 +757,7 @@ export function servicesReply(): BotReply {
       label: service.name,
       action: { kind: "service", slug: service.slug } as const,
     })),
+    menu: true,
     links: [{ label: "View all services", href: "/services" }],
   };
 }
@@ -884,9 +888,10 @@ export function fallbackReply(related: readonly string[] = []): BotReply {
       fallback: true,
       text: "I do not have a confident answer to that yet. I can connect you with our team, or you may find one of these related questions helpful.",
       chips: [
-        ...related.map((question) => ({ label: question, action: { kind: "ask", text: question } as const })),
+        ...related
+          .slice(0, 2)
+          .map((question) => ({ label: question, action: { kind: "ask", text: question } as const })),
         { label: "Book a free call", action: { kind: "intent", intent: "book-call" } },
-        { label: "Talk on WhatsApp", action: { kind: "intent", intent: "whatsapp" } },
       ],
     };
   }
@@ -905,13 +910,14 @@ export function fallbackReply(related: readonly string[] = []): BotReply {
 export function intentReply(intent: IntentId): BotReply {
   switch (intent) {
     case "menu":
-      return { text: "How else may I help you?", chips: [...MENU_CHIPS] };
+      return { text: "How else may I help you?", chips: [...MENU_CHIPS], menu: true };
     case "greeting":
-      return { text: "Hello. How may I help you today?", chips: [...MENU_CHIPS] };
+      return { text: "Hello. How may I help you today?", chips: [...MENU_CHIPS], menu: true };
     case "thanks":
       return {
         text: "You are welcome. Is there anything else I can help you with?",
         chips: [...MENU_CHIPS],
+        menu: true,
       };
     case "services":
       return servicesReply();
@@ -1101,6 +1107,7 @@ export function topicReply(id: TopicId): BotReply {
           label: industry.name,
           action: { kind: "industry", slug: industry.slug } as const,
         })),
+        menu: true,
         links: [{ label: "All industries", href: "/industries" }],
       };
     case "why-us":

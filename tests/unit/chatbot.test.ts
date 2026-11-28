@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   editDistance,
   EMPTY_LEAD,
+  fallbackReply,
   faqReply,
   leadPayload,
   parseBudget,
@@ -12,11 +13,12 @@ import {
   pricingReply,
   replyTo,
   serviceReply,
+  servicesReply,
   whatsappHref,
   wordMatches,
 } from "@/components/interactive/chatbot/engine";
 import { isWithinHours } from "@/components/interactive/chatbot/constants";
-import { faqs } from "@/lib/content";
+import { faqs, services } from "@/lib/content";
 import { contactSchema } from "@/lib/validation";
 
 describe("chatbot text helpers", () => {
@@ -285,6 +287,16 @@ describe("parseBudget", () => {
 });
 
 describe("review fixes", () => {
+  it("shows every service choice and keeps the call action in related-question fallbacks", () => {
+    const reply = servicesReply();
+    expect(reply.menu).toBe(true);
+    expect(reply.chips).toHaveLength(services.length);
+
+    const fallback = fallbackReply(["a", "b", "c"]);
+    expect(fallback.chips).toHaveLength(3);
+    expect(fallback.chips?.at(-1)?.label).toBe("Book a free call");
+  });
+
   it("answers a verbatim service FAQ instead of a generic quote", () => {
     expect(matchIntent("Is advertising spend included in your fee?")).toMatchObject({
       type: "service-faq",
