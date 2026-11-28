@@ -267,6 +267,9 @@ describe("parseBudget", () => {
     expect(parseBudget("we spent ₹2 lakh last time, budget now 50k")).toBe(50_000);
     expect(parseBudget("website budget $5k for 2026")).toBeNull();
     expect(parseBudget("website for 2026 under ₹30k")).toBe(30_000);
+    expect(parseBudget("about 5,000 subscribers, my budget is ₹50k")).toBe(50_000);
+    expect(parseBudget("50,000 is my website budget")).toBe(50_000);
+    expect(parseBudget("business website budget 2000")).toBe(2_000);
   });
 
   it("ignores text without a budget", () => {

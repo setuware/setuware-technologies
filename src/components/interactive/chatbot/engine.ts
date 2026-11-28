@@ -505,14 +505,16 @@ const strong = (match: Overlap | null): boolean =>
 /* -------------------------------------------------------------------------- */
 
 const COUNT_NOUNS =
-  "products?|items?|users?|visitors?|pages?|orders?|customers?|students?|followers?|downloads?|skus?|members?|employees?|views?|branches|stores?|outlets?|patients?|leads?|bookings?|transactions?";
+  "products?|items?|users?|visitors?|pages?|orders?|customers?|students?|followers?|downloads?|skus?|members?|employees?|views?|branches|stores?|outlets?|patients?|leads?|bookings?|transactions?|subscribers?|clients?|locations?";
 /** Numbers followed by one of these are counts, not money ("2k monthly orders"). */
 const NOT_MONEY = String.raw`(?!\s*(?:(?:monthly|daily|weekly|yearly|annual|active|unique)\s+)?(?:${COUNT_NOUNS})\b)`;
 const RUPEE_MARK = /₹|\brs\b|\binr\b|\brupees?\b/;
 const FOREIGN_MARK = /\$|€|£|\b(usd|dollars?|euros?|pounds?|aed|dirhams?)\b/;
 const FOREIGN_AMOUNT =
   /(?:\$|€|£|\busd|\baed)\s*\d+(?:\.\d+)?\s*(?:k|m|thousand|million|lakhs?)?(?:\s*(?:-|–|to)\s*\d+(?:\.\d+)?\s*(?:k|m|thousand|million|lakhs?)?)?\b|\d+(?:\.\d+)?\s*(?:k|m|thousand|million|lakhs?)?\s*(?:usd|dollars?|euros?|pounds?|aed|dirhams?)\b/g;
-const BUDGET_WORD = /\b(budget|under|within|below|upto|up to|around|about|max|maximum|afford)\b/;
+const BUDGET_WORD = /\b(budget|afford|spend)\b/;
+const LIMIT_WORD = /\b(under|within|below|upto|up to|around|about|max|maximum)\b/;
+const YEAR_CONTEXT = /\b(in|for|by|since|till|until|year|from)\s*$/;
 const AMOUNT = new RegExp(
   String.raw`(₹|\brs\.?|\binr|\brupees?)?\s*(\d+(?:\.\d+)?)\s*(k|thousand|l|lac|lakh|lakhs|cr|crore)?\b(\s*(?:₹|rs\b|inr\b|rupees?\b))?${NOT_MONEY}`,
   "g",
@@ -527,7 +529,7 @@ function budgetValue(amount: string, unit: string | undefined): number {
 
 /**
  * Reads a rupee budget from "under 20k", "₹1.5 lakh", "budget 50,000" or "rs 15000".
- * The amount after a budget word wins; counts ("4,000 visitors"), years and
+ * The amount nearest "budget" wins; counts ("4,000 visitors"), years and
  * amounts in other currencies are ignored.
  */
 export function parseBudget(input: string): number | null {
@@ -539,12 +541,24 @@ export function parseBudget(input: string): number | null {
     const marked = Boolean(match[1] || match[4]);
     const unit = match[3];
     const plain = !marked && !unit;
-    if (plain && (!/^\d{4,9}$/.test(match[2]) || /^(19|20)\d{2}$/.test(match[2]))) continue;
+    if (plain && !/^\d{4,9}$/.test(match[2])) continue;
+    if (plain && /^(19|20)\d{2}$/.test(match[2]) && YEAR_CONTEXT.test(cleaned.slice(0, match.index))) continue;
     candidates.push({ at: match.index, value: budgetValue(match[2], unit), marked, plain });
   }
+  // "budget" may come before or after its amount: take the nearest one.
   const keyword = cleaned.search(BUDGET_WORD);
-  const afterKeyword = keyword >= 0 ? candidates.find((candidate) => candidate.at >= keyword) : undefined;
-  const chosen = afterKeyword ?? candidates.find((candidate) => candidate.marked) ?? candidates.find((candidate) => !candidate.plain);
+  const nearest =
+    keyword >= 0
+      ? candidates.reduce<(typeof candidates)[number] | undefined>(
+          (best, candidate) =>
+            !best || Math.abs(candidate.at - keyword) < Math.abs(best.at - keyword) ? candidate : best,
+          undefined,
+        )
+      : undefined;
+  const limit = cleaned.search(LIMIT_WORD);
+  const afterLimit = limit >= 0 ? candidates.find((candidate) => candidate.at >= limit) : undefined;
+  const chosen =
+    nearest ?? afterLimit ?? candidates.find((candidate) => candidate.marked) ?? candidates.find((candidate) => !candidate.plain);
   return chosen?.value ?? null;
 }
 
