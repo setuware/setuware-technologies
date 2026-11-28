@@ -277,6 +277,7 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
     setTyping(false);
     setLead(null);
     setContext({});
+    setDraft("");
     setMessages([botMessage(GREETING)]);
     inputRef.current?.focus();
   };

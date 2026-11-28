@@ -259,6 +259,8 @@ describe("parseBudget", () => {
   it("ignores other currencies and counts", () => {
     expect(parseBudget("$5k budget")).toBeNull();
     expect(parseBudget("store with 2k products")).toBeNull();
+    expect(parseBudget("SEO budget ₹15k per month and 4,000 visitors")).toBe(15_000);
+    expect(parseBudget("we spent $3k last year, budget now ₹50k")).toBe(50_000);
   });
 
   it("ignores text without a budget", () => {

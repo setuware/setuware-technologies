@@ -508,23 +508,32 @@ const strong = (match: Overlap | null): boolean =>
  * Reads a budget from "under 20k", "₹1.5 lakh", "budget 50,000" or "rs 15000".
  * Bare small numbers ("3 pages", "2 weeks") are ignored.
  */
+const BUDGET_AMOUNT = String.raw`(\d+(?:\.\d+)?)\s*(k|thousand|l|lac|lakh|lakhs|cr|crore)?\b`;
+/** Numbers followed by one of these are counts, not money ("2k products"). */
+const NOT_MONEY = String.raw`(?!\s*(?:products?|items?|users?|visitors?|pages?|orders?|customers?|students?|followers?|downloads?|skus?|members?|employees?|views?|branches|stores?|outlets?)\b)`;
+const FOREIGN_AMOUNT =
+  /(?:\$|€|£|\busd|\baed)\s*\d+(?:\.\d+)?\s*(?:k|m|thousand|million)?\b|\d+(?:\.\d+)?\s*(?:k|m|thousand|million)?\s*(?:usd|dollars?|euros?|pounds?|aed|dirhams?)\b/g;
+
+function budgetValue(amount: string, unit: string | undefined): number {
+  const value = Number.parseFloat(amount);
+  if (!unit) return Math.round(value);
+  const factor = unit === "k" || unit === "thousand" ? 1_000 : unit === "cr" || unit === "crore" ? 10_000_000 : 100_000;
+  return Math.round(value * factor);
+}
+
 export function parseBudget(input: string): number | null {
-  const text = input.toLowerCase().replace(/,/g, "");
-  // Another currency is not a rupee budget; leave it to the team to quote.
-  if (/\$|€|£|\b(usd|dollars?|euros?|pounds?|aed|dirhams?)\b/.test(text)) return null;
+  // Amounts in other currencies are not rupee budgets; drop them and keep the rest.
+  const text = input.toLowerCase().replace(/,/g, "").replace(FOREIGN_AMOUNT, " ");
+  const rupee =
+    text.match(new RegExp(String.raw`(?:₹|\brs\.?|\binr|\brupees?)\s*${BUDGET_AMOUNT}${NOT_MONEY}`)) ??
+    text.match(new RegExp(String.raw`${BUDGET_AMOUNT}\s*(?:₹|rs\b|inr\b|rupees?\b)`));
+  if (rupee) return budgetValue(rupee[1], rupee[2]);
   const scaled = text.match(
-    /(\d+(?:\.\d+)?)\s*(k|thousand|l|lac|lakh|lakhs|cr|crore)\b(?!\s*(?:products?|items?|users?|visitors?|pages?|orders?|customers?|students?|followers?|downloads?|skus?|members?|employees?|views?|monthly|daily|per)\b)/,
+    new RegExp(String.raw`(\d+(?:\.\d+)?)\s*(k|thousand|l|lac|lakh|lakhs|cr|crore)\b${NOT_MONEY}`),
   );
-  if (scaled) {
-    const value = Number.parseFloat(scaled[1]);
-    const unit = scaled[2];
-    const factor = unit === "k" || unit === "thousand" ? 1_000 : unit === "cr" || unit === "crore" ? 10_000_000 : 100_000;
-    return Math.round(value * factor);
-  }
-  const rupees = text.match(/(?:₹|rs\.?|inr|rupees?)\s*(\d{4,9})|(\d{4,9})\s*(?:₹|rs|inr|rupees?)\b/);
-  if (rupees) return Number.parseInt(rupees[1] ?? rupees[2], 10);
+  if (scaled) return budgetValue(scaled[1], scaled[2]);
   if (/\b(budget|under|within|below|upto|up to|around|about)\b/.test(text)) {
-    const plain = text.match(/\b(\d{4,9})\b/);
+    const plain = text.match(new RegExp(String.raw`\b(\d{4,9})\b${NOT_MONEY}`));
     if (plain) return Number.parseInt(plain[1], 10);
   }
   return null;
