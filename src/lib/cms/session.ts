@@ -13,6 +13,13 @@ export async function currentUser(): Promise<AdminUser | null> {
   return userForToken(token);
 }
 
+/** Signed-in admin who has completed required password and 2-step setup. */
+export async function currentVerifiedUser(): Promise<AdminUser | null> {
+  const user = await currentUser();
+  if (!user || user.mustChangePassword || needsTwoFactorSetup(user, getSetting("require2faAdmins", false))) return null;
+  return user;
+}
+
 /**
  * Signed-in admin allowed to use `area`; otherwise redirects. People with a
  * temporary password are sent to My account until they choose their own.

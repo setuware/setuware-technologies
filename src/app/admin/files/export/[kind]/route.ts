@@ -2,7 +2,7 @@ import { can, listUsers, seesAll } from "@/lib/cms/auth";
 import { localDay, localTime, register } from "@/lib/cms/attendance";
 import { getSheet, sheetRows, weekDays, weekStart } from "@/lib/cms/timesheets";
 import { teamScope } from "@/lib/cms/notify";
-import { currentUser } from "@/lib/cms/session";
+import { currentVerifiedUser } from "@/lib/cms/session";
 import { listSubscribers } from "@/lib/cms/crm";
 import { listApplications, listEnquiries } from "@/lib/cms/store";
 
@@ -19,7 +19,7 @@ function csv(rows: Record<string, unknown>[], columns: string[]): string {
 
 export async function GET(request: Request, { params }: { params: Promise<{ kind: string }> }) {
   const { kind } = await params;
-  const user = await currentUser();
+  const user = await currentVerifiedUser();
   const search = new URL(request.url).searchParams;
   const attendanceScope = user ? teamScope(user, "attendance") : null;
   if (user && attendanceScope && kind === "attendance" && (attendanceScope.all || attendanceScope.ids.length)) {
