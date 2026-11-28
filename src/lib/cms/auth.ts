@@ -425,9 +425,12 @@ export function describeDevice(agent: string | null): { label: string; mobile: b
 
 export function listSessions(userId: number, currentToken?: string): SessionInfo[] {
   const current = currentToken ? sha256(currentToken) : "";
+  const idleCutoff = new Date(Date.now() - IDLE_TIMEOUT_HOURS * 60 * 60_000).toISOString();
   return (getDb()
-    .prepare("SELECT id,user_agent,ip,created_at,last_seen_at FROM sessions WHERE user_id = ? AND mfa_ok = 1 AND expires_at > ? ORDER BY last_seen_at DESC")
-    .all(userId, new Date().toISOString()) as Omit<SessionInfo, "current">[]).map((row) => ({ ...row, current: row.id === current }));
+    .prepare(
+      "SELECT id,user_agent,ip,created_at,last_seen_at FROM sessions WHERE user_id = ? AND mfa_ok = 1 AND expires_at > ? AND COALESCE(last_seen_at, created_at) >= ? ORDER BY COALESCE(last_seen_at, created_at) DESC",
+    )
+    .all(userId, new Date().toISOString(), idleCutoff) as Omit<SessionInfo, "current">[]).map((row) => ({ ...row, current: row.id === current }));
 }
 
 export function revokeSession(userId: number, sessionId: string): void {

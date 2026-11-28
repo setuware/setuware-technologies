@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { createUser, IDLE_TIMEOUT_HOURS, isNewDeviceSignIn, needsTwoFactorSetup, signIn, userForToken } from "@/lib/cms/auth";
+import { createUser, IDLE_TIMEOUT_HOURS, isNewDeviceSignIn, listSessions, needsTwoFactorSetup, signIn, userForToken } from "@/lib/cms/auth";
 import { getDb, resetDb } from "@/lib/cms/db";
 import { getSetting, setSetting } from "@/lib/cms/crm";
 
@@ -62,5 +62,13 @@ describe("idle session timeout", () => {
 
     expect(userForToken(token)).toBeNull();
     expect(getDb().prepare("SELECT id FROM sessions WHERE user_id = ?").get(user.id)).toBeUndefined();
+  });
+
+  it("does not list idle-expired sessions", async () => {
+    const { user, token } = await signedIn();
+    const stale = new Date(Date.now() - (IDLE_TIMEOUT_HOURS + 1) * 60 * 60_000).toISOString();
+    getDb().prepare("UPDATE sessions SET last_seen_at = ? WHERE user_id = ?").run(stale, user.id);
+
+    expect(listSessions(user.id, token)).toEqual([]);
   });
 });
