@@ -58,6 +58,19 @@ export const newsletterSchema = z.object({
   honeypot: z.string().max(0).optional().or(z.literal("")),
 });
 
+export const assistantSchema = z.object({
+  question: trimmed(500).min(1),
+  history: z
+    .array(
+      z.object({
+        role: z.enum(["user", "bot"]),
+        text: z.string().max(1000),
+      }),
+    )
+    .max(8)
+    .default([]),
+});
+
 export type NewsletterInput = z.infer<typeof newsletterSchema>;
 
 // Cast to a non-empty tuple of the literal union so `z.infer` yields

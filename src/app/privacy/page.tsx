@@ -33,6 +33,7 @@ const SECTIONS: LegalSection[] = [
     heading: "Who else can see it",
     paragraphs: [
       "Enquiries are delivered to our internal tooling and the email provider we use to reply to you. Those processors act on our instructions only. We do not transfer your data to any third party for their own purposes.",
+      "If you ask our website chat assistant something it cannot answer from our own site content, that question and the last few messages of the chat are sent to Google's Gemini API to write the reply. Do not share sensitive personal information in the chat.",
     ],
   },
   {

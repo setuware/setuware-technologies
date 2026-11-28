@@ -8,8 +8,10 @@
  * unit-testable without rendering the panel.
  */
 
-import { faqs, services, type Service } from "@/lib/content";
+import { caseStudies, faqs, processSteps, services, type CaseStudy, type Service } from "@/lib/content";
+import { industries, type Industry } from "@/lib/industries";
 import { projectPackages, carePlans } from "@/lib/plans";
+import { founder } from "@/lib/team";
 import type { ServiceKey } from "@/lib/pricing";
 import { site } from "@/lib/site";
 import { formatINR } from "@/lib/utils";
@@ -37,10 +39,9 @@ export type IntentId =
 export type ChipAction =
   | { kind: "intent"; intent: IntentId }
   | { kind: "service"; slug: ServiceKey }
-  | { kind: "lead-service"; slug: ServiceKey | "other"; label: string }
-  | { kind: "lead-skip" }
-  | { kind: "lead-retry" }
-  | { kind: "lead-cancel" };
+  /** Sends the label as the visitor's question, e.g. a "related question" suggestion. */
+  | { kind: "ask"; text: string }
+  | { kind: "industry"; slug: string };
 
 export interface Chip {
   label: string;
@@ -53,12 +54,46 @@ export interface ChatLink {
   external?: boolean;
 }
 
+/** Rich content shown under a reply: a service summary or a delivered project. */
+export type ReplyCard =
+  | {
+      kind: "service";
+      slug: ServiceKey;
+      icon: Service["icon"];
+      accent: readonly [string, string];
+      title: string;
+      summary: string;
+      price: string;
+      timeline: string;
+      href: string;
+    }
+  | {
+      kind: "project";
+      client: string;
+      sector: string;
+      title: string;
+      href: string;
+      accent: readonly [string, string];
+    };
+
 export interface BotReply {
   text: string;
   links?: ChatLink[];
   chips?: Chip[];
-  /** Asks the panel to begin the enquiry flow after this reply. */
+  /** Chips are a list of choices; show them all. */
+  menu?: boolean;
+  cards?: ReplyCard[];
+  /** Asks the panel to show the enquiry form after this reply. */
   startLead?: boolean;
+  /** The service this reply is about, so "how much?" next is answered for it. */
+  service?: ServiceKey;
+  /** The knowledge base had no confident answer; the panel may ask the server. */
+  fallback?: boolean;
+}
+
+/** What the conversation is currently about. */
+export interface ChatContext {
+  service?: ServiceKey;
 }
 
 export type Match =
@@ -67,6 +102,9 @@ export type Match =
   | { type: "service-price"; slug: ServiceKey }
   | { type: "service-timeline"; slug: ServiceKey }
   | { type: "faq"; index: number }
+  | { type: "service-faq"; slug: ServiceKey; index: number }
+  | { type: "topic"; id: TopicId }
+  | { type: "industry"; slug: string }
   | { type: "none" };
 
 /* -------------------------------------------------------------------------- */
@@ -74,6 +112,12 @@ export type Match =
 /* -------------------------------------------------------------------------- */
 
 export { ASSISTANT_NAME, WHATSAPP_MESSAGE, whatsappHref, isWithinHours };
+
+const foundedMonthYear = new Intl.DateTimeFormat("en-IN", {
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+}).format(new Date(`${site.founded}T00:00:00Z`));
 
 const whatsappLink: ChatLink = {
   label: "Chat on WhatsApp",
@@ -84,6 +128,7 @@ const whatsappLink: ChatLink = {
 export const MENU_CHIPS: readonly Chip[] = [
   { label: "Services", action: { kind: "intent", intent: "services" } },
   { label: "Pricing", action: { kind: "intent", intent: "pricing" } },
+  { label: "Our work", action: { kind: "ask", text: "Show me your past work" } },
   { label: "Timelines", action: { kind: "intent", intent: "timelines" } },
   { label: "Book a free call", action: { kind: "intent", intent: "book-call" } },
   { label: "Talk on WhatsApp", action: { kind: "intent", intent: "whatsapp" } },
@@ -98,8 +143,9 @@ const FOLLOW_UP_CHIPS: readonly Chip[] = [
 ];
 
 export const GREETING: BotReply = {
-  text: "Hi there. Ask me about our services, prices or timelines, or book a free 30-minute call with our team.",
+  text: "Ask about our services, prices, timelines or past work. Our team is one tap away.",
   chips: [...MENU_CHIPS],
+  menu: true,
 };
 
 /* -------------------------------------------------------------------------- */
@@ -138,7 +184,9 @@ function stem(word: string): string {
 }
 
 export function tokenise(input: string): string[] {
+  // The company name is not a question about technology.
   return normalise(input)
+    .replace(/\bsetuware technologies\b/g, "setuware")
     .split(" ")
     .filter(Boolean)
     .map(stem);
@@ -213,7 +261,7 @@ const INTENT_KEYWORDS = {
     "opening", "resume", "cv", "fresher", "employment", "join your team",
   ],
   pricing: [
-    "price", "pricing", "cost", "costing", "quote", "quotation", "budget",
+    "price", "pricing", "cost", "quote", "quotation", "budget",
     "rate", "charge", "fee", "₹", "rupee", "inr", "how much", "expensive",
     "cheap", "affordable", "package",
   ],
@@ -273,7 +321,7 @@ export const SERVICE_KEYWORDS: Record<ServiceKey, readonly string[]> = {
 };
 
 /* -------------------------------------------------------------------------- */
-/* Matcher                                                                     */
+/* Service and FAQ scoring                                                     */
 /* -------------------------------------------------------------------------- */
 
 interface ScoredService {
@@ -313,12 +361,256 @@ function bestFaq(tokens: string[]): { index: number; overlap: number; ratio: num
   return best;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Knowledge: industries, topics and service FAQs                              */
+/* -------------------------------------------------------------------------- */
+
+/** Words that point at an industry page in `lib/industries.ts`. */
+export const INDUSTRY_KEYWORDS: Record<string, readonly string[]> = {
+  "retail-ecommerce": ["retail", "boutique", "showroom", "kirana", "fashion", "clothing", "jewellery", "jewelry", "garment"],
+  "healthcare-clinics": ["clinic", "hospital", "doctor", "dental", "dentist", "healthcare", "pharmacy", "diagnostic", "patient", "physiotherapy"],
+  "education-coaching": ["school", "college", "coaching", "institute", "tuition", "education", "edtech", "academy", "student", "lms"],
+  "real-estate-construction": ["real estate", "property", "builder", "construction", "broker", "realtor", "interior"],
+  "manufacturing-distribution": ["factory", "manufacturing", "manufacturer", "distributor", "distribution", "wholesale", "dealer", "plant"],
+  "logistics-transport": ["logistics", "transport", "fleet", "courier", "trucking", "warehouse", "delivery business"],
+  "hospitality-restaurants": ["restaurant", "cafe", "hotel", "resort", "bakery", "cloud kitchen", "food"],
+  "professional-services": ["ca firm", "chartered accountant", "law firm", "lawyer", "consultant", "consultancy", "agency", "accountant"],
+  "startups-saas": ["startup", "start up", "saas", "mvp", "founder"],
+};
+
+function bestIndustry(tokens: string[]): Industry | undefined {
+  let best: { industry: Industry; score: number } | undefined;
+  for (const industry of industries) {
+    const value = score(tokens, INDUSTRY_KEYWORDS[industry.slug] ?? []);
+    if (value > 0 && (!best || value > best.score)) best = { industry, score: value };
+  }
+  return best?.industry;
+}
+
+export type TopicId =
+  | "about"
+  | "founder"
+  | "nda"
+  | "payments"
+  | "stack"
+  | "work"
+  | "process"
+  | "location"
+  | "industries"
+  | "why-us";
+
+interface Topic {
+  id: TopicId;
+  /** Shown as a "related question" suggestion. */
+  question: string;
+  keywords: readonly string[];
+}
+
+/** Questions visitors ask that are not a service, a price or an FAQ. */
+const TOPICS: readonly Topic[] = [
+  {
+    id: "nda",
+    question: "Do you sign an NDA?",
+    keywords: ["nda", "non disclosure", "confidential", "confidentiality", "idea safe", "steal my idea", "copy my idea", "secret"],
+  },
+  {
+    id: "payments",
+    question: "How are payments structured?",
+    keywords: ["payment", "pay", "instalment", "installment", "emi", "advance", "upfront", "milestone", "part payment", "invoice me"],
+  },
+  {
+    id: "stack",
+    question: "Which technologies do you use?",
+    keywords: ["tech stack", "stack", "technology", "technologies", "tech", "framework", "programming language", "language do you use", "tools do you use"],
+  },
+  {
+    id: "work",
+    question: "Can I see your past work?",
+    keywords: ["portfolio", "case study", "past work", "previous work", "your work", "sample", "example", "projects done", "past project", "previous project", "your project", "done before", "built before", "show me", "references", "clients you"],
+  },
+  {
+    id: "process",
+    question: "How does a project work with you?",
+    keywords: ["process", "how do you work", "how does it work", "how it work", "step", "methodology", "what happens after", "working style", "approach"],
+  },
+  {
+    id: "location",
+    question: "Do you work with clients outside Gurugram or India?",
+    keywords: ["outside india", "international", "abroad", "overseas", "usa", "uk", "dubai", "uae", "canada", "australia", "other country", "foreign", "remote", "other city", "different city", "visit your office", "where are you", "based"],
+  },
+  {
+    id: "industries",
+    question: "Which industries do you work with?",
+    keywords: ["industry", "industries", "sector", "niche", "vertical", "business type"],
+  },
+  {
+    id: "why-us",
+    question: "Why choose Setuware Technologies?",
+    keywords: ["why choose", "why you", "why should", "why setuware", "different from", "better than", "trust you", "advantage", "benefit"],
+  },
+  {
+    id: "founder",
+    question: "Who founded Setuware Technologies?",
+    keywords: ["founder", "who founded", "founded by", "owner", "ceo", "who run", "who started", "who owns setuware", "satyam", "team size", "your team"],
+  },
+  {
+    id: "about",
+    question: "What is Setuware Technologies?",
+    keywords: ["setuware", "who are you", "about you", "about your company", "your company", "what do you do", "tell me about", "established", "founded", "since when", "when did setuware"],
+  },
+];
+
+function bestTopic(tokens: string[]): { topic: Topic; score: number } | null {
+  let best: { topic: Topic; score: number } | null = null;
+  for (const topic of TOPICS) {
+    const value = score(tokens, topic.keywords);
+    // A bare "setuware" appears in many questions; let a specific topic win.
+    const adjusted = topic.id === "about" ? value - 0.5 : value;
+    if (adjusted > 0 && (!best || adjusted > best.score)) best = { topic, score: adjusted };
+  }
+  return best;
+}
+
+/** Every service page's FAQ, prepared once for matching. */
+const SERVICE_FAQS = services.flatMap((service) =>
+  (service.faqs ?? []).map((faq, index) => ({
+    slug: service.slug,
+    index,
+    question: faq.question,
+    tokens: Array.from(new Set(tokenise(faq.question).filter((word) => !STOPWORDS.has(word)))),
+  })),
+);
+
+interface Overlap {
+  overlap: number;
+  ratio: number;
+}
+
+function overlapWith(meaningful: string[], questionTokens: string[]): Overlap {
+  const overlap = questionTokens.filter((keyword) => meaningful.some((word) => wordMatches(word, keyword))).length;
+  return { overlap, ratio: questionTokens.length === 0 ? 0 : overlap / questionTokens.length };
+}
+
+function bestServiceFaq(tokens: string[], service: ServiceKey | undefined) {
+  const meaningful = tokens.filter((word) => !STOPWORDS.has(word));
+  if (meaningful.length === 0) return null;
+  let best: ((typeof SERVICE_FAQS)[number] & Overlap & { raw: number }) | null = null;
+  for (const entry of SERVICE_FAQS) {
+    const result = overlapWith(meaningful, entry.tokens);
+    // A question about the service already in view counts one word extra.
+    const overlap = result.overlap + (service && entry.slug === service && result.overlap > 0 ? 1 : 0);
+    if (overlap > 0 && (!best || overlap > best.overlap || (overlap === best.overlap && result.ratio > best.ratio))) {
+      best = { ...entry, overlap, raw: result.overlap, ratio: result.ratio };
+    }
+  }
+  return best;
+}
+
+const verbatim = (match: Overlap | null): boolean => !!match && match.overlap >= 3 && match.ratio >= 0.8;
+
+const strong = (match: Overlap | null): boolean =>
+  !!match && (match.overlap >= 3 || (match.overlap >= 2 && match.ratio >= 0.6));
+
+/* -------------------------------------------------------------------------- */
+/* Budget                                                                      */
+/* -------------------------------------------------------------------------- */
+
+const COUNT_NOUNS =
+  "products?|items?|users?|visitors?|pages?|orders?|customers?|students?|followers?|downloads?|skus?|members?|employees?|views?|branches|stores?|outlets?|patients?|leads?|bookings?|transactions?|subscribers?|clients?|locations?";
+/** Numbers followed by one of these are counts, not money ("2k monthly orders"). */
+const NOT_MONEY = String.raw`(?!\s*(?:(?:monthly|daily|weekly|yearly|annual|active|unique)\s+)?(?:${COUNT_NOUNS})\b)`;
+const RUPEE_MARK = /₹|\brs\b|\binr\b|\brupees?\b/;
+const FOREIGN_MARK = /\$|€|£|\b(usd|dollars?|euros?|pounds?|aed|dirhams?)\b/;
+const FOREIGN_AMOUNT =
+  /(?:\$|€|£|\busd|\baed)\s*\d+(?:\.\d+)?\s*(?:k|m|thousand|million|lakhs?)?(?:\s*(?:-|–|to)\s*\d+(?:\.\d+)?\s*(?:k|m|thousand|million|lakhs?)?)?\b|\d+(?:\.\d+)?\s*(?:k|m|thousand|million|lakhs?)?\s*(?:usd|dollars?|euros?|pounds?|aed|dirhams?)\b/g;
+const BUDGET_WORD = /\b(budget|afford|spend)\b/;
+const BUDGET_WORDS = new RegExp(BUDGET_WORD.source, "g");
+const CAP_BEFORE = /\b(under|within|below|upto|up to|max|maximum)\s*$/;
+const LIMIT_WORD = /\b(under|within|below|upto|up to|around|about|max|maximum)\b/;
+const YEAR_CONTEXT = /\b(in|for|by|since|till|until|year|from|before|after)\s*$/;
+const AMOUNT = new RegExp(
+  String.raw`(₹|\brs\.?|\binr|\brupees?)?\s*(\d+(?:\.\d+)?)\s*(k|thousand|l|lac|lakh|lakhs|cr|crore)?\b(\s*(?:₹|rs\b|inr\b|rupees?\b))?${NOT_MONEY}`,
+  "g",
+);
+
+function budgetValue(amount: string, unit: string | undefined): number {
+  const value = Number.parseFloat(amount);
+  if (!unit) return Math.round(value);
+  const factor = unit === "k" || unit === "thousand" ? 1_000 : unit === "cr" || unit === "crore" ? 10_000_000 : 100_000;
+  return Math.round(value * factor);
+}
+
+const SENTENCE_BREAK = /[!?;\n]|\.(?!\d)/g;
+
+function sentenceAround(text: string, index: number): { start: number; end: number } {
+  let start = 0;
+  let end = text.length;
+  for (const match of text.matchAll(SENTENCE_BREAK)) {
+    if (match.index < index) start = match.index + 1;
+    else {
+      end = match.index;
+      break;
+    }
+  }
+  return { start, end };
+}
+
+/**
+ * Reads a rupee budget from "under 20k", "₹1.5 lakh", "budget 50,000" or "rs 15000".
+ * The amount nearest "budget" wins; counts ("4,000 visitors"), years and
+ * amounts in other currencies are ignored.
+ */
+export function parseBudget(input: string): number | null {
+  const text = input.toLowerCase().replace(/(\d),(?=\d)/g, "$1");
+  if (FOREIGN_MARK.test(text) && !RUPEE_MARK.test(text)) return null;
+  const cleaned = text.replace(FOREIGN_AMOUNT, " ");
+  const candidates: { at: number; value: number; marked: boolean; plain: boolean }[] = [];
+  for (const match of cleaned.matchAll(AMOUNT)) {
+    const marked = Boolean(match[1] || match[4]);
+    const unit = match[3];
+    const plain = !marked && !unit;
+    if (plain && !/^\d{4,9}$/.test(match[2])) continue;
+    if (plain && /^(19|20)\d{2}$/.test(match[2]) && looksLikeYear(cleaned, match.index)) continue;
+    candidates.push({ at: match.index, value: budgetValue(match[2], unit), marked, plain });
+  }
+  // "budget" may come before or after its amount: take the nearest one in the same sentence.
+  for (const keyword of cleaned.matchAll(BUDGET_WORDS)) {
+    const sentence = sentenceAround(cleaned, keyword.index);
+    const nearest = candidates
+      .filter((candidate) => candidate.at >= sentence.start && candidate.at < sentence.end)
+      .reduce<(typeof candidates)[number] | undefined>(
+        (best, candidate) =>
+          !best || Math.abs(candidate.at - keyword.index) < Math.abs(best.at - keyword.index) ? candidate : best,
+        undefined,
+      );
+    if (nearest) return nearest.value;
+  }
+  const limit = cleaned.search(LIMIT_WORD);
+  const afterLimit = limit >= 0 ? candidates.find((candidate) => candidate.at >= limit) : undefined;
+  const chosen = afterLimit ?? candidates.find((candidate) => candidate.marked) ?? candidates.find((candidate) => !candidate.plain);
+  return chosen?.value ?? null;
+}
+
+/** "under 2000" and "budget around 2000" are money; "launch around 2027" and "in 2026" are years. */
+function looksLikeYear(text: string, index: number): boolean {
+  const before = text.slice(0, index);
+  if (CAP_BEFORE.test(before)) return false;
+  if (YEAR_CONTEXT.test(before)) return true;
+  const sentence = sentenceAround(text, index);
+  return !BUDGET_WORD.test(text.slice(sentence.start, sentence.end));
+}
+
+/* -------------------------------------------------------------------------- */
+/* Matcher                                                                     */
+/* -------------------------------------------------------------------------- */
+
 /**
  * Maps free text to the most useful answer. The order of the checks is the
- * priority: an explicit job enquiry or a near-verbatim FAQ beats everything;
- * a price or timeline question is answered for the service it mentions.
+ * priority: a job enquiry first; then a price or timeline question for a named
+ * service; then near-verbatim FAQs and named topics; then broader intents.
+ * `context` answers follow-ups such as "how much?" for the service in view.
  */
-export function matchIntent(input: string): Match {
+export function matchIntent(input: string, context: ChatContext = {}): Match {
   const text = normalise(input);
   if (text.length === 0) return { type: "none" };
   const tokens = tokenise(input);
@@ -326,18 +618,45 @@ export function matchIntent(input: string): Match {
   const s = (id: keyof typeof INTENT_KEYWORDS) => score(tokens, INTENT_KEYWORDS[id]);
   const service = bestService(tokens);
   const faq = bestFaq(tokens);
+  const serviceFaq = bestServiceFaq(tokens, service?.slug ?? context.service);
+  const topic = bestTopic(tokens);
+  const pricing = s("pricing") > 0 || parseBudget(input) !== null;
+  const timeline = s("timelines") > 0;
 
   if (s("careers") > 0) return { type: "intent", intent: "careers" };
 
-  if (faq && (faq.overlap >= 3 || (faq.overlap >= 2 && faq.ratio >= 0.6))) {
-    return { type: "faq", index: faq.index };
+  // A question picked almost word for word from an FAQ gets that FAQ's answer.
+  if (verbatim(serviceFaq) && (!faq || serviceFaq!.raw > faq.overlap)) {
+    return { type: "service-faq", slug: serviceFaq!.slug, index: serviceFaq!.index };
+  }
+  if (verbatim(faq)) return { type: "faq", index: faq!.index };
+
+  if (service && pricing) return { type: "service-price", slug: service.slug };
+  if (service && timeline) return { type: "service-timeline", slug: service.slug };
+
+  // A bare follow-up ("how much?") is about the service just discussed.
+  if (!service && context.service && (pricing || timeline)) {
+    if (strong(serviceFaq) && serviceFaq!.slug === context.service) {
+      return { type: "service-faq", slug: serviceFaq!.slug, index: serviceFaq!.index };
+    }
+    return pricing
+      ? { type: "service-price", slug: context.service }
+      : { type: "service-timeline", slug: context.service };
   }
 
-  if (s("pricing") > 0) {
-    return service ? { type: "service-price", slug: service.slug } : { type: "intent", intent: "pricing" };
+  if (strong(faq) && (!serviceFaq || faq!.overlap >= serviceFaq.raw)) return { type: "faq", index: faq!.index };
+  if (strong(serviceFaq)) return { type: "service-faq", slug: serviceFaq!.slug, index: serviceFaq!.index };
+  if (topic && topic.score >= 1 && !(service && topic.topic.id === "about")) {
+    return { type: "topic", id: topic.topic.id };
   }
-  if (s("timelines") > 0) {
-    return service ? { type: "service-timeline", slug: service.slug } : { type: "intent", intent: "timelines" };
+
+  if (pricing) {
+    return context.service ? { type: "service-price", slug: context.service } : { type: "intent", intent: "pricing" };
+  }
+  if (timeline) {
+    return context.service
+      ? { type: "service-timeline", slug: context.service }
+      : { type: "intent", intent: "timelines" };
   }
   if (s("whatsapp") > 0) return { type: "intent", intent: "whatsapp" };
   if (s("support") > 0 && service?.slug !== "support-maintenance") {
@@ -345,6 +664,8 @@ export function matchIntent(input: string): Match {
   }
   if (s("book-call") > 0) return { type: "intent", intent: "book-call" };
   if (service) return { type: "service", slug: service.slug };
+  const industry = bestIndustry(tokens);
+  if (industry) return { type: "industry", slug: industry.slug };
   if (s("contact") > 0) return { type: "intent", intent: "contact" };
   if (faq && faq.overlap >= 2) return { type: "faq", index: faq.index };
   if (s("services") > 0) return { type: "intent", intent: "services" };
@@ -352,7 +673,31 @@ export function matchIntent(input: string): Match {
   if (s("thanks") > 0) return { type: "intent", intent: "thanks" };
   // Last resort: a single distinctive word from an FAQ ("payment", "launch").
   if (faq && faq.overlap >= 1) return { type: "faq", index: faq.index };
+  if (topic && topic.score > 0) return { type: "topic", id: topic.topic.id };
   return { type: "none" };
+}
+
+/**
+ * Up to three questions sharing a word with the visitor's message, offered
+ * when nothing matched confidently.
+ */
+export function relatedQuestions(input: string): string[] {
+  const meaningful = tokenise(input).filter((word) => !STOPWORDS.has(word));
+  if (meaningful.length === 0) return [];
+  const pool = [
+    ...faqs.map((faq) => faq.question),
+    ...SERVICE_FAQS.map((entry) => entry.question),
+    ...TOPICS.map((topic) => topic.question),
+  ];
+  return pool
+    .map((question) => {
+      const words = Array.from(new Set(tokenise(question).filter((word) => !STOPWORDS.has(word))));
+      return { question, ...overlapWith(meaningful, words) };
+    })
+    .filter((entry) => entry.overlap > 0)
+    .sort((a, b) => b.overlap - a.overlap || b.ratio - a.ratio)
+    .slice(0, 3)
+    .map((entry) => entry.question);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -367,8 +712,8 @@ function startingPrice(service: Service): number {
   return service.entryPriceFrom ?? service.priceFrom;
 }
 
-/** Services sold under the Full Application Build package. */
-const APPLICATION_SERVICES = new Set<ServiceKey>(["web-development", "app-development", "custom-software"]);
+/** Services sold under the Full Application Build package; mobile apps are priced on their own. */
+const APPLICATION_SERVICES = new Set<ServiceKey>(["web-development", "custom-software"]);
 
 function listJoin(items: readonly string[]): string {
   if (items.length <= 1) return items.join("");
@@ -418,21 +763,76 @@ export function servicesReply(): BotReply {
       label: service.name,
       action: { kind: "service", slug: service.slug } as const,
     })),
+    menu: true,
     links: [{ label: "View all services", href: "/services" }],
   };
 }
 
-export function serviceReply(slug: ServiceKey, focus: "summary" | "price" | "timeline" = "summary"): BotReply {
+function servicePrice(service: Service): string {
+  const fullApplication = projectPackages.find((plan) => plan.id === "full-application-build")?.setupFrom;
+  if (service.slug === "business-websites" && service.entryPriceFrom) {
+    return `Landing pages start at ${formatINR(service.entryPriceFrom)} and complete business websites at ${formatINR(service.priceFrom)}.`;
+  }
+  if (APPLICATION_SERVICES.has(service.slug) && fullApplication) {
+    if (startingPrice(service) <= fullApplication) return `Full application builds start from ${formatINR(fullApplication)}.`;
+    return `Full application builds start from ${formatINR(fullApplication)}, and a typical ${service.name.toLowerCase()} project is estimated from ${formatINR(startingPrice(service))}.`;
+  }
+  return `${service.priceLabel ?? `Projects start from ${formatINR(startingPrice(service))}`}.`;
+}
+
+/** The lowest published figure a visitor can start this service at. */
+function entryPrice(service: Service): number {
+  const fullApplication = projectPackages.find((plan) => plan.id === "full-application-build")?.setupFrom;
+  if (APPLICATION_SERVICES.has(service.slug) && fullApplication) return fullApplication;
+  return startingPrice(service);
+}
+
+export function serviceCard(service: Service): ReplyCard {
+  return {
+    kind: "service",
+    slug: service.slug,
+    icon: service.icon,
+    accent: service.accent,
+    title: service.name,
+    summary: service.summary,
+    price: service.priceLabel ?? `From ${formatINR(entryPrice(service))}`,
+    timeline: service.typicalTimeline,
+    href: `/services/${service.slug}`,
+  };
+}
+
+function projectCard(study: CaseStudy): ReplyCard {
+  return {
+    kind: "project",
+    client: study.client,
+    sector: study.sector,
+    title: study.title,
+    href: `/work/${study.slug}`,
+    accent: study.accent,
+  };
+}
+
+function budgetLine(service: Service, budget: number): string {
+  const from = entryPrice(service);
+  const full = service.priceFrom;
+  if (service.entryPriceFrom && budget >= service.entryPriceFrom && budget < full) {
+    return `Your budget of ${formatINR(budget)} covers a focused starter build from ${formatINR(service.entryPriceFrom)}; the complete ${service.name.toLowerCase()} package starts at ${formatINR(full)}.`;
+  }
+  if (budget >= from) {
+    return `Your budget of ${formatINR(budget)} is within our published range for ${service.name.toLowerCase()}, which starts at ${formatINR(from)}.`;
+  }
+  return `Our published starting price for ${service.name.toLowerCase()} is ${formatINR(from)}, above the ${formatINR(budget)} you mentioned. On a free call, our team can suggest a focused first phase that fits your budget.`;
+}
+
+export function serviceReply(
+  slug: ServiceKey,
+  focus: "summary" | "price" | "timeline" = "summary",
+  extras: { budget?: number | null; industry?: Industry } = {},
+): BotReply {
   const service = getServiceBySlug(slug);
   if (!service) return servicesReply();
 
-  const fullApplication = projectPackages.find((plan) => plan.id === "full-application-build")?.setupFrom;
-  const price =
-    service.slug === "business-websites" && service.entryPriceFrom
-      ? `Landing pages start at ${formatINR(service.entryPriceFrom)} and complete business websites at ${formatINR(service.priceFrom)}.`
-      : APPLICATION_SERVICES.has(service.slug) && fullApplication
-        ? `Full application builds start from ${formatINR(fullApplication)}, and a typical ${service.name.toLowerCase()} project is estimated from ${formatINR(startingPrice(service))}.`
-        : `${service.priceLabel ?? `Projects start from ${formatINR(startingPrice(service))}`}.`;
+  const price = servicePrice(service);
   const timeline = `Typical timeline: ${service.typicalTimeline}.`;
   const stack = service.stack.length > 0 ? ` We commonly work with ${listJoin(service.stack.slice(0, 3))}.` : "";
 
@@ -442,11 +842,20 @@ export function serviceReply(slug: ServiceKey, focus: "summary" | "price" | "tim
       : focus === "timeline"
         ? `${service.name}. ${timeline} ${price}`
         : `${service.name}. ${service.summary}${stack} ${price} ${timeline}`;
+  const budget = extras.budget ? ` ${budgetLine(service, extras.budget)}` : "";
+
+  const links = [serviceLink(service)];
+  if (extras.industry) {
+    links.push({ label: `Solutions for ${extras.industry.name.toLowerCase()}`, href: `/industries/${extras.industry.slug}` });
+  }
+  const studies = caseStudies.filter((study) => study.services.includes(service.slug)).slice(0, 1);
 
   return {
-    text: `${opening} The final figure is confirmed in a fixed written quote.`,
-    links: [serviceLink(service)],
+    text: `${opening}${budget} The final figure is confirmed in a fixed written quote.`,
+    cards: [serviceCard(service), ...studies.map(projectCard)],
+    links,
     chips: [...FOLLOW_UP_CHIPS],
+    service: service.slug,
   };
 }
 
@@ -479,8 +888,21 @@ export function faqReply(index: number): BotReply {
   };
 }
 
-export function fallbackReply(): BotReply {
+export function fallbackReply(related: readonly string[] = []): BotReply {
+  if (related.length > 0) {
+    return {
+      fallback: true,
+      text: "I do not have a confident answer to that yet. I can connect you with our team, or you may find one of these related questions helpful.",
+      chips: [
+        ...related
+          .slice(0, 2)
+          .map((question) => ({ label: question, action: { kind: "ask", text: question } as const })),
+        { label: "Book a free call", action: { kind: "intent", intent: "book-call" } },
+      ],
+    };
+  }
   return {
+    fallback: true,
     text: "I am not certain I have understood that correctly. I can connect you with our team, who will be glad to help, or you can choose one of the topics below.",
     chips: [
       { label: "Book a free call", action: { kind: "intent", intent: "book-call" } },
@@ -494,13 +916,14 @@ export function fallbackReply(): BotReply {
 export function intentReply(intent: IntentId): BotReply {
   switch (intent) {
     case "menu":
-      return { text: "How else may I help you?", chips: [...MENU_CHIPS] };
+      return { text: "How else may I help you?", chips: [...MENU_CHIPS], menu: true };
     case "greeting":
-      return { text: "Hello. How may I help you today?", chips: [...MENU_CHIPS] };
+      return { text: "Hello. How may I help you today?", chips: [...MENU_CHIPS], menu: true };
     case "thanks":
       return {
         text: "You are welcome. Is there anything else I can help you with?",
         chips: [...MENU_CHIPS],
+        menu: true,
       };
     case "services":
       return servicesReply();
@@ -510,7 +933,7 @@ export function intentReply(intent: IntentId): BotReply {
       return timelinesReply();
     case "book-call":
       return {
-        text: "Our free 30-minute consultation covers your goals, scope and budget, followed by a written proposal. You can pick a time yourself, or leave a few details here and we will call you.",
+        text: "Our free 30-minute consultation covers your goals, scope and budget, followed by a written proposal. You can pick a time yourself, or leave your details below and we will call you back.",
         links: [{ label: "Pick a time slot", href: "/book" }],
         startLead: true,
       };
@@ -561,9 +984,167 @@ export function intentReply(intent: IntentId): BotReply {
   }
 }
 
+function serviceFaqReply(slug: ServiceKey, index: number): BotReply {
+  const service = getServiceBySlug(slug);
+  const faq = service?.faqs?.[index];
+  if (!service || !faq) return fallbackReply();
+  return {
+    text: faq.answer,
+    links: [serviceLink(service)],
+    chips: [...FOLLOW_UP_CHIPS],
+    service: slug,
+  };
+}
+
+export function industryReply(slug: string, budget?: number | null): BotReply {
+  const industry = industries.find((entry) => entry.slug === slug);
+  if (!industry) return servicesReply();
+  const builds = industry.builds.slice(0, 4);
+  const lead = builds[0] ? getServiceBySlug(builds[0].service) : undefined;
+  const budgetNote = budget && lead ? `\n\n${budgetLine(lead, budget)}` : "";
+  return {
+    text:
+      `${industry.summary.replace(/[.\s]*$/, ".")} For ${industry.sector}, we typically build:\n` +
+      builds.map((build) => `• ${build.title}: ${build.body}`).join("\n") +
+      budgetNote,
+    links: [{ label: `Solutions for ${industry.name.toLowerCase()}`, href: `/industries/${industry.slug}` }],
+    chips: [
+      ...Array.from(new Set(builds.map((build) => build.service)))
+        .slice(0, 2)
+        .map((service) => ({
+          label: getServiceBySlug(service)?.name ?? service,
+          action: { kind: "service", slug: service } as const,
+        })),
+      { label: "Book a free call", action: { kind: "intent", intent: "book-call" } },
+    ],
+    service: lead?.slug,
+  };
+}
+
+function serviceFaqAnswer(fragment: string): string | undefined {
+  for (const service of services) {
+    const faq = service.faqs?.find((entry) => entry.question.toLowerCase().includes(fragment));
+    if (faq) return faq.answer;
+  }
+  return undefined;
+}
+
+export function topicReply(id: TopicId): BotReply {
+  switch (id) {
+    case "about":
+      return {
+        text: `${site.name} is a Gurugram-based digital studio. ${site.slogan} We design, build and support websites, e-commerce platforms, mobile apps and custom software for growing businesses. ${site.name} was founded in ${foundedMonthYear}.`,
+        links: [
+          { label: "About us", href: "/about" },
+          { label: "Our work", href: "/work" },
+        ],
+        chips: [
+          { label: "Services", action: { kind: "intent", intent: "services" } },
+          { label: "Our work", action: { kind: "ask", text: "Show me your past work" } },
+          { label: "Book a free call", action: { kind: "intent", intent: "book-call" } },
+        ],
+      };
+    case "founder":
+      return {
+        text: `${site.name} was founded by ${founder.name}. ${founder.bio}`,
+        links: [
+          { label: "About us", href: "/about" },
+          ...(founder.linkedin ? [{ label: `${founder.name} on LinkedIn`, href: founder.linkedin, external: true }] : []),
+        ],
+        chips: [...FOLLOW_UP_CHIPS],
+      };
+    case "nda":
+      return {
+        text:
+          serviceFaqAnswer("non-disclosure") ??
+          "Yes. We sign NDAs before detailed discussions, and our standard contract assigns all intellectual property to you.",
+        links: [{ label: "Terms of service", href: "/terms" }],
+        chips: [
+          { label: "Who owns the code?", action: { kind: "ask", text: "Who owns the website and code?" } },
+          { label: "Book a free call", action: { kind: "intent", intent: "book-call" } },
+        ],
+      };
+    case "payments": {
+      const index = faqs.findIndex((faq) => faq.question.toLowerCase().includes("payment"));
+      return index >= 0 ? faqReply(index) : pricingReply();
+    }
+    case "stack": {
+      const rows = (["business-websites", "ecommerce-stores", "web-development", "app-development", "ai-integration", "managed-hosting"] as const)
+        .map((slug) => getServiceBySlug(slug))
+        .filter((service): service is Service => !!service && service.stack.length > 0)
+        .map((service) => `• ${service.name}: ${listJoin(service.stack.slice(0, 4))}`);
+      return {
+        text: `We choose the stack per project and explain the choice in the proposal. Our usual tools:\n${rows.join("\n")}`,
+        links: [{ label: "All services", href: "/services" }],
+        chips: [...FOLLOW_UP_CHIPS],
+      };
+    }
+    case "work":
+      return {
+        text: "Here are projects we have delivered. Each case study covers the brief, our approach and the result.",
+        cards: caseStudies.slice(0, 3).map(projectCard),
+        links: [{ label: "View all projects", href: "/work" }],
+        chips: [...FOLLOW_UP_CHIPS],
+      };
+    case "process":
+      return {
+        text: `Every project follows the same six stages:\n${processSteps
+          .map((step) => `• ${step.title} (${step.duration}): ${step.description}`)
+          .join("\n")}`,
+        links: [{ label: "How we work", href: "/process" }],
+        chips: [...FOLLOW_UP_CHIPS],
+      };
+    case "location":
+      return {
+        text: `Our studio is on ${site.address.street}, ${site.address.city}, and we work with businesses across India. Discovery calls and progress reviews take place online, so you do not need to visit the office. If you are based outside India, share your requirement and our team will confirm the engagement details on a call.`,
+        links: [
+          { label: "Contact us", href: "/contact" },
+          whatsappLink,
+        ],
+        chips: [
+          { label: "Book a free call", action: { kind: "intent", intent: "book-call" } },
+          { label: "Main menu", action: { kind: "intent", intent: "menu" } },
+        ],
+      };
+    case "industries":
+      return {
+        text: `We build for ${listJoin(industries.map((industry) => industry.name.toLowerCase()))}. Choose a sector to see what we typically build for it.`,
+        chips: industries.slice(0, 6).map((industry) => ({
+          label: industry.name,
+          action: { kind: "industry", slug: industry.slug } as const,
+        })),
+        menu: true,
+        links: [{ label: "All industries", href: "/industries" }],
+      };
+    case "why-us":
+      return {
+        text:
+          "What clients receive with every engagement:\n" +
+          "• Transparent pricing: a detailed proposal and a fixed quote before any work begins.\n" +
+          "• A dedicated project manager: one point of contact and regular progress updates.\n" +
+          "• Complete ownership: your code, domains and accounts remain yours.\n" +
+          "• Support after launch: three months included, with maintenance plans available.",
+        links: [
+          { label: "About us", href: "/about" },
+          { label: "Our work", href: "/work" },
+        ],
+        chips: [...FOLLOW_UP_CHIPS],
+      };
+  }
+}
+
 /** Free-text entry point: match, then answer. */
-export function replyTo(input: string): BotReply {
-  return replyForMatch(matchIntent(input));
+export function replyTo(input: string, context: ChatContext = {}): BotReply {
+  const match = matchIntent(input, context);
+  const budget = parseBudget(input);
+  const tokens = tokenise(input);
+  if (match.type === "service" || match.type === "service-price" || match.type === "service-timeline") {
+    const focus = match.type === "service-price" ? "price" : match.type === "service-timeline" ? "timeline" : "summary";
+    return serviceReply(match.slug, focus, { budget, industry: bestIndustry(tokens) });
+  }
+  if (match.type === "industry") return industryReply(match.slug, budget);
+  if (match.type === "none") return fallbackReply(relatedQuestions(input));
+  return replyForMatch(match);
 }
 
 export function replyForMatch(match: Match): BotReply {
@@ -578,6 +1159,12 @@ export function replyForMatch(match: Match): BotReply {
       return serviceReply(match.slug, "timeline");
     case "faq":
       return faqReply(match.index);
+    case "service-faq":
+      return serviceFaqReply(match.slug, match.index);
+    case "topic":
+      return topicReply(match.id);
+    case "industry":
+      return industryReply(match.slug);
     case "none":
       return fallbackReply();
   }
@@ -586,8 +1173,6 @@ export function replyForMatch(match: Match): BotReply {
 /* -------------------------------------------------------------------------- */
 /* Enquiry flow                                                                */
 /* -------------------------------------------------------------------------- */
-
-export type LeadStep = "name" | "contact" | "email" | "phone" | "service" | "message";
 
 export interface LeadDraft {
   name: string;
@@ -626,107 +1211,36 @@ export function firstName(name: string): string {
   return first.charAt(0).toUpperCase() + first.slice(1);
 }
 
-export const SKIP_CHIP: Chip = { label: "Skip", action: { kind: "lead-skip" } };
-export const CANCEL_CHIP: Chip = { label: "Cancel", action: { kind: "lead-cancel" } };
-
-export function leadServiceChips(): Chip[] {
+/** Services offered in the enquiry form, plus "Not sure yet". */
+export function leadServiceOptions(): { value: ServiceKey | "other"; label: string }[] {
   return [
-    ...services.map((service) => ({
-      label: service.name,
-      action: { kind: "lead-service", slug: service.slug, label: service.name } as const,
-    })),
-    { label: "Not sure yet", action: { kind: "lead-service", slug: "other", label: "Not sure yet" } },
+    ...services.map((service) => ({ value: service.slug, label: service.name })),
+    { value: "other", label: "Not sure yet" },
   ];
 }
 
-export function leadPrompt(step: LeadStep, draft: LeadDraft): BotReply {
-  switch (step) {
-    case "name":
-      return { text: "May I have your full name?", chips: [CANCEL_CHIP] };
-    case "contact":
-      return {
-        text: `Thank you, ${firstName(draft.name)}. What is the best email address or phone number to reach you on?`,
-        chips: [CANCEL_CHIP],
-      };
-    case "email":
-      return {
-        text: "Thank you. Please also share an email address so that we can send you a written proposal.",
-        chips: [CANCEL_CHIP],
-      };
-    case "phone":
-      return {
-        text: "Would you like to add a phone number for a call back? You may skip this step.",
-        chips: [SKIP_CHIP, CANCEL_CHIP],
-      };
-    case "service":
-      return { text: "What do you need help with?", chips: leadServiceChips() };
-    case "message":
-      return {
-        text: "Finally, please describe your project or requirement in a sentence or two. By sending it, you agree to our privacy policy.",
-        links: [{ label: "Privacy policy", href: "/privacy" }],
-        chips: [CANCEL_CHIP],
-      };
-  }
-}
+export type LeadErrors = Partial<Record<"name" | "email" | "phone" | "message", string>>;
 
-export interface LeadAdvance {
-  /** The step to ask next, or `"submit"` when the draft is complete. */
-  next: LeadStep | "submit";
-  draft: LeadDraft;
-  /** Set when the answer was not accepted; the step stays the same. */
-  error?: string;
-}
-
-/**
- * Applies a typed answer to the current step. Validation mirrors
- * `contactSchema` so the final submit does not fail on a field the visitor
- * could have corrected in the conversation.
- */
-export function advanceLead(step: LeadStep, answer: string, draft: LeadDraft): LeadAdvance {
-  const value = answer.trim();
-  switch (step) {
-    case "name":
-      if (value.length < 2 || value.length > 80) {
-        return { next: step, draft, error: "Please enter your name (at least two characters)." };
-      }
-      return { next: "contact", draft: { ...draft, name: value } };
-    case "contact":
-      if (looksLikeEmail(value)) return { next: "phone", draft: { ...draft, email: value.toLowerCase() } };
-      if (looksLikePhone(value)) return { next: "email", draft: { ...draft, phone: value } };
-      return {
-        next: step,
-        draft,
-        error: "That does not look like a valid email address or phone number. Please try again.",
-      };
-    case "email":
-      if (!looksLikeEmail(value)) {
-        return { next: step, draft, error: "Please enter a valid email address, for example name@company.com." };
-      }
-      return { next: "service", draft: { ...draft, email: value.toLowerCase() } };
-    case "phone":
-      if (!looksLikePhone(value)) {
-        return { next: step, draft, error: "Please enter a valid phone number, or choose Skip." };
-      }
-      return { next: "service", draft: { ...draft, phone: value } };
-    case "service":
-      return { next: "message", draft: { ...draft, service: "other", serviceLabel: value.slice(0, 60) } };
-    case "message":
-      if (value.length < 5) {
-        return { next: step, draft, error: "A little more detail would help our team prepare. Please add a sentence." };
-      }
-      return { next: "submit", draft: { ...draft, message: value.slice(0, 3500) } };
-  }
+/** Mirrors `contactSchema`, so the submit never fails on a fixable field. */
+export function validateLead(draft: LeadDraft): LeadErrors {
+  const errors: LeadErrors = {};
+  const name = draft.name.trim();
+  if (name.length < 2 || name.length > 80) errors.name = "Please enter your name.";
+  if (!looksLikeEmail(draft.email)) errors.email = "Please enter a valid email address.";
+  if (draft.phone.trim() && !looksLikePhone(draft.phone)) errors.phone = "Please enter a valid phone number.";
+  if (draft.message.trim().length < 10) errors.message = "A sentence or two about the project helps our team prepare.";
+  return errors;
 }
 
 /** Shapes the draft for `/api/contact` (see `contactSchema`). */
 export function leadPayload(draft: LeadDraft, elapsedMs: number) {
   const need = draft.serviceLabel || "Not specified";
   return {
-    name: draft.name,
-    email: draft.email,
-    phone: draft.phone,
+    name: draft.name.trim(),
+    email: draft.email.trim().toLowerCase(),
+    phone: draft.phone.trim(),
     service: draft.service && draft.service !== "other" ? draft.service : undefined,
-    message: `Enquiry via the website assistant.\nRequirement: ${need}\n\n${draft.message}`,
+    message: `Enquiry via the website assistant.\nRequirement: ${need}\n\n${draft.message.trim().slice(0, 3500)}`,
     consent: true as const,
     honeypot: "",
     elapsedMs,
