@@ -14,7 +14,7 @@ export function DocumentUploadForm({
   manages,
   defaultUserId,
 }: {
-  people: { id: number; name: string }[];
+  people: { id: number; name: string; active: boolean }[];
   manages: boolean;
   defaultUserId?: number | null;
 }) {
@@ -39,7 +39,7 @@ export function DocumentUploadForm({
               <Label htmlFor="document-user">For</Label>
               <select id="document-user" name="user_id" value={targetId} onChange={(event) => setTargetId(event.target.value)} className={inputClass}>
                 <option value="">Company-wide</option>
-                {people.map((person) => <option key={person.id} value={person.id}>{person.name}</option>)}
+                {people.map((person) => <option key={person.id} value={person.id}>{person.name}{person.active ? "" : " (inactive)"}</option>)}
               </select>
             </div>
           ) : null}

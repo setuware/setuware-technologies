@@ -30,7 +30,7 @@ function DocumentRow({ document, user }: { document: CompanyDocument; user: Awai
 export default async function DocumentsPage({ searchParams }: { searchParams: Promise<{ person?: string }> }) {
   const user = await requireUser();
   const manages = can(user, "documents.manage");
-  const people = listUsers().filter((member) => member.active);
+  const people = manages ? listUsers().sort((a, b) => Number(b.active) - Number(a.active)) : [];
   const params = await searchParams;
   const chosen = manages ? people.find((person) => person.id === Number(params.person)) : undefined;
   const target = chosen?.id ?? user.id;
@@ -47,7 +47,7 @@ export default async function DocumentsPage({ searchParams }: { searchParams: Pr
             <label htmlFor="person-filter" className="flex-1 text-sm font-medium text-foreground">Browse employee documents
               <select id="person-filter" name="person" defaultValue={chosen?.id ?? ""} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground">
                 <option value="">My documents</option>
-                {people.filter((person) => person.id !== user.id).map((person) => <option key={person.id} value={person.id}>{person.name}</option>)}
+                {people.filter((person) => person.id !== user.id).map((person) => <option key={person.id} value={person.id}>{person.name}{person.active ? "" : " (inactive)"}</option>)}
               </select>
             </label>
             <button type="submit" className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-foreground/[0.04]">View documents</button>
@@ -78,7 +78,7 @@ export default async function DocumentsPage({ searchParams }: { searchParams: Pr
         </div>
         <DocumentUploadForm
           key={chosen?.id ?? "company"}
-          people={people.map(({ id, name }) => ({ id, name }))}
+          people={people.map(({ id, name, active }) => ({ id, name, active }))}
           manages={manages}
           defaultUserId={chosen?.id}
         />

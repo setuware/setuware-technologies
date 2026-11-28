@@ -31,8 +31,9 @@ export async function uploadDocumentAction(_previous: FormState, form: FormData)
   if (manages && targetId === null && !(COMPANY_DOCUMENT_CATEGORIES as readonly string[]).includes(category)) {
     return { error: "Choose Policy, Handbook or Other for company-wide documents." };
   }
-  if (targetId !== null && (!Number.isInteger(targetId) || !listUsers().some((member) => member.id === targetId && member.active))) {
-    return { error: "Choose an active team member." };
+  if (targetId !== null) {
+    const target = Number.isInteger(targetId) ? listUsers().find((member) => member.id === targetId) : undefined;
+    if (!target || (!manages && !target.active)) return { error: "Choose a team member." };
   }
   if (!file) return { error: "Choose a PDF or image to upload." };
 
