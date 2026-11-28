@@ -38,6 +38,7 @@ describe("assistantKnowledge", () => {
     expect(knowledge).toContain("Satyam Raj");
     expect(knowledge).toContain("MG Road");
     expect(knowledge).toContain("NDA");
+    expect(knowledge).not.toContain("₹0");
   });
 });
 

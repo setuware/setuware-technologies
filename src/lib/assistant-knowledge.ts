@@ -34,8 +34,12 @@ export function assistantKnowledge(): string {
     .map((plan) =>
       [
         `Name: ${plan.name}`,
-        ...(plan.setupFrom !== undefined ? [`Setup from: ${formatINR(plan.setupFrom)}`] : []),
-        ...(plan.monthly !== null ? [`Monthly: ${formatINR(plan.monthly)}`] : []),
+        ...(plan.setupFrom !== undefined
+          ? [plan.setupFrom === 0 ? "Setup: custom quote" : `Setup from: ${formatINR(plan.setupFrom)}`]
+          : []),
+        ...(plan.monthly !== null
+          ? [plan.monthly === 0 ? "Monthly: custom quote" : `Monthly: ${formatINR(plan.monthly)}`]
+          : []),
         `Best for: ${plan.bestFor}`,
         `Features: ${plan.features.join("; ")}`,
       ].join("\n"),
