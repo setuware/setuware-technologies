@@ -40,7 +40,8 @@ export type ChipAction =
   | { kind: "intent"; intent: IntentId }
   | { kind: "service"; slug: ServiceKey }
   /** Sends the label as the visitor's question, e.g. a "related question" suggestion. */
-  | { kind: "ask"; text: string };
+  | { kind: "ask"; text: string }
+  | { kind: "industry"; slug: string };
 
 export interface Chip {
   label: string;
@@ -172,7 +173,9 @@ function stem(word: string): string {
 }
 
 export function tokenise(input: string): string[] {
+  // The company name is not a question about technology.
   return normalise(input)
+    .replace(/\bsetuware technologies\b/g, "setuware")
     .split(" ")
     .filter(Boolean)
     .map(stem);
@@ -359,7 +362,7 @@ export const INDUSTRY_KEYWORDS: Record<string, readonly string[]> = {
   "real-estate-construction": ["real estate", "property", "builder", "construction", "broker", "realtor", "interior"],
   "manufacturing-distribution": ["factory", "manufacturing", "manufacturer", "distributor", "distribution", "wholesale", "dealer", "plant"],
   "logistics-transport": ["logistics", "transport", "fleet", "courier", "trucking", "warehouse", "delivery business"],
-  "hospitality-restaurants": ["restaurant", "cafe", "hotel", "resort", "bakery", "cloud kitchen", "food", "salon", "spa", "gym", "fitness"],
+  "hospitality-restaurants": ["restaurant", "cafe", "hotel", "resort", "bakery", "cloud kitchen", "food"],
   "professional-services": ["ca firm", "chartered accountant", "law firm", "lawyer", "consultant", "consultancy", "agency", "accountant"],
   "startups-saas": ["startup", "start up", "saas", "mvp", "founder"],
 };
@@ -492,6 +495,8 @@ function bestServiceFaq(tokens: string[], service: ServiceKey | undefined) {
   return best;
 }
 
+const verbatim = (match: Overlap | null): boolean => !!match && match.overlap >= 3 && match.ratio >= 0.8;
+
 const strong = (match: Overlap | null): boolean =>
   !!match && (match.overlap >= 3 || (match.overlap >= 2 && match.ratio >= 0.6));
 
@@ -505,7 +510,11 @@ const strong = (match: Overlap | null): boolean =>
  */
 export function parseBudget(input: string): number | null {
   const text = input.toLowerCase().replace(/,/g, "");
-  const scaled = text.match(/(\d+(?:\.\d+)?)\s*(k|thousand|l|lac|lakh|lakhs|cr|crore)\b/);
+  // Another currency is not a rupee budget; leave it to the team to quote.
+  if (/\$|€|£|\b(usd|dollars?|euros?|pounds?|aed|dirhams?)\b/.test(text)) return null;
+  const scaled = text.match(
+    /(\d+(?:\.\d+)?)\s*(k|thousand|l|lac|lakh|lakhs|cr|crore)\b(?!\s*(?:products?|items?|users?|visitors?|pages?|orders?|customers?|students?|followers?|downloads?|skus?|members?|employees?|views?|monthly|daily|per)\b)/,
+  );
   if (scaled) {
     const value = Number.parseFloat(scaled[1]);
     const unit = scaled[2];
@@ -545,6 +554,12 @@ export function matchIntent(input: string, context: ChatContext = {}): Match {
   const timeline = s("timelines") > 0;
 
   if (s("careers") > 0) return { type: "intent", intent: "careers" };
+
+  // A question picked almost word for word from an FAQ gets that FAQ's answer.
+  if (verbatim(serviceFaq) && (!faq || serviceFaq!.raw > faq.overlap)) {
+    return { type: "service-faq", slug: serviceFaq!.slug, index: serviceFaq!.index };
+  }
+  if (verbatim(faq)) return { type: "faq", index: faq!.index };
 
   if (service && pricing) return { type: "service-price", slug: service.slug };
   if (service && timeline) return { type: "service-timeline", slug: service.slug };
@@ -727,6 +742,10 @@ function projectCard(study: CaseStudy): ReplyCard {
 
 function budgetLine(service: Service, budget: number): string {
   const from = entryPrice(service);
+  const full = service.priceFrom;
+  if (service.entryPriceFrom && budget >= service.entryPriceFrom && budget < full) {
+    return `Your budget of ${formatINR(budget)} covers a focused starter build from ${formatINR(service.entryPriceFrom)}; the complete ${service.name.toLowerCase()} package starts at ${formatINR(full)}.`;
+  }
   if (budget >= from) {
     return `Your budget of ${formatINR(budget)} is within our published range for ${service.name.toLowerCase()}, which starts at ${formatINR(from)}.`;
   }
@@ -1016,7 +1035,7 @@ export function topicReply(id: TopicId): BotReply {
         text: `We build for ${listJoin(industries.map((industry) => industry.name.toLowerCase()))}. Choose a sector to see what we typically build for it.`,
         chips: industries.slice(0, 6).map((industry) => ({
           label: industry.name,
-          action: { kind: "ask", text: `Solutions for ${industry.name.toLowerCase()}` } as const,
+          action: { kind: "industry", slug: industry.slug } as const,
         })),
         links: [{ label: "All industries", href: "/industries" }],
       };

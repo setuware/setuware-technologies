@@ -36,6 +36,7 @@ import {
   GREETING,
   MENU_CHIPS,
   confirmationReply,
+  industryReply,
   intentReply,
   leadPayload,
   leadServiceOptions,
@@ -175,6 +176,8 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
 
   useScrollLock(open && isMobile);
 
+  const leadOpen = lead !== null;
+
   useEffect(() => {
     writeStored({ v: 2, messages, lead, context });
   }, [messages, lead, context]);
@@ -199,11 +202,11 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
     const maxScroll = list.scrollHeight - list.clientHeight;
     const latest = list.querySelector<HTMLElement>("[data-message]:last-of-type");
     const top =
-      !typing && latest?.dataset.message === "bot" && !lead
+      !typing && latest?.dataset.message === "bot" && !leadOpen
         ? Math.min(latest.offsetTop - 12, maxScroll)
         : maxScroll;
     list.scrollTo({ top, behavior: reduce || !open ? "auto" : "smooth" });
-  }, [messages, typing, open, reduce, lead]);
+  }, [messages, typing, open, reduce, leadOpen]);
 
   const append = useCallback((message: ChatMessage) => {
     setMessages((current) => [...current, message].slice(-80));
@@ -248,6 +251,10 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
       case "service":
         append(userMessage(chip.label));
         respond(serviceReply(action.slug));
+        return;
+      case "industry":
+        append(userMessage(chip.label));
+        respond(industryReply(action.slug));
         return;
     }
   };
@@ -384,7 +391,13 @@ export default function ChatPanel({ open, onClose, online }: ChatPanelProps) {
         {typing ? <TypingIndicator reduce={reduce} /> : null}
 
         {lead && !typing ? (
-          <LeadForm state={lead} onChange={setLead} onSent={onLeadSent} onCancel={cancelLead} />
+          <LeadForm
+            state={lead}
+            onChange={setLead}
+            onSent={onLeadSent}
+            onCancel={cancelLead}
+            onNavigate={isMobile ? onClose : undefined}
+          />
         ) : null}
 
         {chips.length > 0 ? (
@@ -788,11 +801,13 @@ function LeadForm({
   onChange,
   onSent,
   onCancel,
+  onNavigate,
 }: {
   state: LeadState;
   onChange: (next: LeadState) => void;
   onSent: (state: LeadState) => void;
   onCancel: () => void;
+  onNavigate?: () => void;
 }) {
   const [errors, setErrors] = useState<LeadErrors>({});
   const [sending, setSending] = useState(false);
@@ -897,7 +912,7 @@ function LeadForm({
 
       <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
         By sending, you agree to our{" "}
-        <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">
+        <Link href="/privacy" onClick={onNavigate} className="underline underline-offset-2 hover:text-foreground">
           privacy policy
         </Link>
         .

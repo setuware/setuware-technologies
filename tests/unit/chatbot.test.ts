@@ -256,7 +256,45 @@ describe("parseBudget", () => {
     expect(parseBudget(input)).toBe(expected);
   });
 
+  it("ignores other currencies and counts", () => {
+    expect(parseBudget("$5k budget")).toBeNull();
+    expect(parseBudget("store with 2k products")).toBeNull();
+  });
+
   it("ignores text without a budget", () => {
     expect(parseBudget("I need a website for 3 branches")).toBeNull();
+  });
+});
+
+describe("review fixes", () => {
+  it("answers a verbatim service FAQ instead of a generic quote", () => {
+    expect(matchIntent("Is advertising spend included in your fee?")).toMatchObject({
+      type: "service-faq",
+      slug: "seo-marketing",
+    });
+    expect(matchIntent("How long does SEO take to show results?")).toMatchObject({
+      type: "service-faq",
+      slug: "seo-marketing",
+    });
+  });
+
+  it("says when a budget only covers the starter build", () => {
+    const text = replyTo("business website budget 8000").text;
+    expect(text).toContain("starter build");
+    expect(text).toContain("₹9,999");
+  });
+
+  it("opens industry answers from the industries chips", () => {
+    const chips = replyTo("which industries do you work with").chips ?? [];
+    expect(chips[0]?.action.kind).toBe("industry");
+  });
+
+  it("treats the company name as a name, not a technology question", () => {
+    expect(matchIntent("Who founded Setuware Technologies?")).toEqual({ type: "topic", id: "founder" });
+  });
+
+  it("does not tie gyms to hospitality", () => {
+    const links = replyTo("app for my gym under 20k").links ?? [];
+    expect(links.some((link) => link.href.includes("hospitality"))).toBe(false);
   });
 });
